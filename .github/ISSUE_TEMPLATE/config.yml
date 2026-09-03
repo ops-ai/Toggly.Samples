@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://docs.toggly.io
+    about: Guides, SDK references, and how-to content for integrating Toggly.
+  - name: Community Discussions
+    url: https://github.com/ops-ai/Toggly.FeatureManagement/discussions
+    about: Ask questions, share ideas, and talk with the community.
+  - name: Toggly website
+    url: https://toggly.io
+    about: Product overview, pricing, and sign-up (Always Free plan available).
+  - name: Security vulnerability
+    url: https://github.com/ops-ai/Toggly.Samples/security/advisories/new
+    about: Report a security issue privately (do not open a public issue).
+  - name: SDK bug or feature
+    url: https://github.com/ops-ai/Toggly.FeatureManagement/issues/new/choose
+    about: Report SDK package bugs or request SDK features in the monorepo.

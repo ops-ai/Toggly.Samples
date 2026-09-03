@@ -1,0 +1,51 @@
+name: Feature request
+description: Propose a new sample or an improvement to an existing one
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the problem you are trying to solve. Maintainers may ask clarifying questions before implementation.
+        For **SDK API** features, use [Toggly.FeatureManagement](https://github.com/ops-ai/Toggly.FeatureManagement/issues/new/choose).
+  - type: dropdown
+    id: sample
+    attributes:
+      label: Sample scope
+      description: Where should this land (if known)?
+      multiple: false
+      options:
+        - New sample
+        - nextjs-server-sdk
+        - Repo-wide (docs / CI / templates)
+        - Other / unsure
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to learn or demonstrate that is hard today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How would you like the sample (or new sample) to work?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional — other approaches you evaluated
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Optional — links, screenshots, or related issues
+    validations:
+      required: false

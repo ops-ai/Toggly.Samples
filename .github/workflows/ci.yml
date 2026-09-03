@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nextjs-server-sdk:
+    name: nextjs-server-sdk
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nextjs-server-sdk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: nextjs-server-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          NEXT_PUBLIC_TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
