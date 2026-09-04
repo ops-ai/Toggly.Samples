@@ -64,8 +64,12 @@ Exact `parameters` keys follow SDK / MCP conventions (e.g. `Country:0`, Audience
 ### `/client/filters`
 
 - Subset: browser-family, browser-language, device-type, os (+ AlwaysOn control).
-- Local `TogglyProvider` with `evaluationMode: 'local'` for UA-based local eval.
-- Hooks show live results; server page remains authoritative for Country / Targeting / Claims / Time / Percentage / Context.
+- Evaluate with request `User-Agent` / `Accept-Language` via server
+  `isServerFeatureOn` (reliable localhost demo).
+- Browser `evaluationMode: 'local'` against `definitions-signed` needs CORS on
+  `definitions.toggly.io`; without it client hooks stay OFF.
+- Server page remains authoritative for Country / Targeting / Claims / Time /
+  Percentage / Context.
 
 ### Nav / docs
 

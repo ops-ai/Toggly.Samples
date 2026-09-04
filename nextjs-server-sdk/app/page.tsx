@@ -60,6 +60,11 @@ export default async function HomePage() {
             <code>beta-access</code> →{' '}
             <Link href="/edge/beta">/edge/beta</Link> (middleware)
           </li>
+          <li>
+            <code>filter-*</code> →{' '}
+            <Link href="/server/filters">/server/filters</Link>,{' '}
+            <Link href="/client/filters">/client/filters</Link>
+          </li>
         </ul>
       </div>
 

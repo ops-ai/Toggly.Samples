@@ -97,7 +97,46 @@ pre {
 }
 
 input,
-button {
+button,
+select,
+textarea {
   margin-right: 0.5rem;
   margin-top: 0.25rem;
+}
+
+.filter-controls {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.filter-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.filter-controls input,
+.filter-controls select,
+.filter-controls textarea {
+  width: 100%;
+  max-width: 100%;
+}
+
+.filter-checkbox {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem !important;
+}
+
+.filter-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.filter-matrix {
+  display: grid;
+  gap: 0.5rem;
 }

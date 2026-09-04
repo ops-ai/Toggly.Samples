@@ -18,6 +18,10 @@ export default function ClientIndexPage() {
           <Link href="/client/components">Components</Link> — Feature,
           FeatureGate, FeatureSwitch, FeatureVariant
         </li>
+        <li>
+          <Link href="/client/filters">Filters</Link> — request-UA browser /
+          device / OS matrix
+        </li>
       </ul>
     </>
   )

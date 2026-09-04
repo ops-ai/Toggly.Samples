@@ -22,25 +22,29 @@ Open [http://localhost:3000](http://localhost:3000).
    - `Id` (string, key)
    - `Vip` (boolean)
    - `Total` (number, optional)
-3. Feature flags:
-   - `new-dashboard` (boolean) — server components / client demos
-   - `api-v2` (boolean) — `/api/data` + multi-key gates
-   - `enhanced-submit` (boolean) — Server Actions
-   - `ExpressCheckout` with context kind **Order** and Context Property filter:
-     - Property `Vip`, operator `eq`, value `true`
-   - `beta-access` (boolean) — **required for Edge** middleware on `/edge/beta`
-4. Copy `.env.example` to `.env.local` and set:
+3. Feature flags (demos):
+   - `new-dashboard` — server components / client demos
+   - `api-v2` — `/api/data` + multi-key gates
+   - `enhanced-submit` — Server Actions
+   - `ExpressCheckout` — Order Vip Context Property
+   - `beta-access` — Edge middleware on `/edge/beta`
+4. Filter matrix flags (`Filters` category) — one per filter type:
+   - `filter-always-on`, `filter-percentage`, `filter-targeting`,
+     `filter-user-claims`, `filter-time-window`, `filter-country`,
+     `filter-browser-family`, `filter-browser-language`, `filter-device-type`,
+     `filter-os`, `filter-context-property`
+5. Copy `.env.example` to `.env.local` and set:
    - `TOGGLY_APP_KEY` (server + edge)
    - `NEXT_PUBLIC_TOGGLY_APP_KEY` (same key for client demos)
-5. Optionally set `TOGGLY_ENVIRONMENT` (default `Production`).
+6. Optionally set `TOGGLY_ENVIRONMENT` (default `Production`).
 
 ## Sections
 
 | Path | Package | What it demos |
 |------|---------|---------------|
 | `/` | — | Map + flag checklist + snapshot |
-| `/server/*` | `@ops-ai/nextjs-toggly-server` | Feature/negate/variant, programmatic, actions, cache, identity, orders, API |
-| `/client/*` | `@ops-ai/nextjs-toggly-client` | TogglyProvider, hooks, client components |
+| `/server/*` | `@ops-ai/nextjs-toggly-server` | Feature/negate/variant, programmatic, actions, cache, identity, orders, API, **filters matrix** |
+| `/client/*` | `@ops-ai/nextjs-toggly-client` | TogglyProvider, hooks, components; `/client/filters` uses request UA via server eval |
 | `/edge/*` | `@ops-ai/nextjs-toggly-edge` | Path middleware (`beta-access` → waitlist) |
 
 Legacy paths (`/dashboard`, `/actions`, `/api-demo`, `/orders`) redirect under `/server/*`.
@@ -49,14 +53,26 @@ Legacy paths (`/dashboard`, `/actions`, `/api-demo`, `/orders`) redirect under `
 
 Published npm packages:
 
-- `@ops-ai/nextjs-toggly-core` `^1.7.0`
-- `@ops-ai/nextjs-toggly-server` `^1.3.0`
-- `@ops-ai/nextjs-toggly-client` `^1.2.0`
-- `@ops-ai/nextjs-toggly-edge` `^1.2.2`
+- `@ops-ai/nextjs-toggly-core` `^1.8.1`
+- `@ops-ai/nextjs-toggly-server` `^1.5.0`
+- `@ops-ai/nextjs-toggly-client` `^1.4.0`
+- `@ops-ai/nextjs-toggly-edge` `^1.2.3`
 
 `next.config.ts` sets `serverExternalPackages: ['ws']` so Turbopack does not
 rewrite the WebSocket client. Do **not** externalize `@ops-ai/nextjs-toggly-server`
 itself (its `next/cache` import only resolves inside the Next bundler).
+
+## Filters matrix
+
+- **`/server/filters`** — all `filter-*` flags via per-call
+  `isServerFeatureOn` with controllable identity, claims, country, UA,
+  Accept-Language, and Order Vip cookies.
+- **`/client/filters`** — AlwaysOn + browser/language/device/OS evaluated with
+  this browser’s request `User-Agent` / `Accept-Language` (server local eval;
+  browser `evaluationMode: 'local'` needs CORS on `definitions-signed`).
+
+Use **Matching preset** / **Non-matching preset** on the server page, then
+Apply & refresh.
 
 ## Behavioral rules
 
@@ -89,12 +105,15 @@ Debug: `GET /api/toggly-debug` (optional `?refresh=1`).
 - [ ] `/server/api-demo` → `GET /api/data` version 1 ↔ 2 with `api-v2`
 - [ ] `/server/orders`: `ord-vip` ExpressCheckout ON; standard / high-value OFF
 - [ ] `/server/orders/ord-vip`: entity ON; no entity OFF; kind `Unknown` OFF
+- [ ] `/server/filters` Matching preset → AlwaysOn, Targeting (alice), Claims, Country US, Chrome/en/Desktop/Mac, TimeWindow, Context Vip ON; Percentage sticky for identity
+- [ ] `/server/filters` Non-matching preset → Targeting/Claims/Country/UA/Vip OFF (AlwaysOn + TimeWindow still ON)
 
 ### Client
 
 - [ ] Without `NEXT_PUBLIC_TOGGLY_APP_KEY`, client section shows muted banner (no crash)
 - [ ] `/client/hooks` — each hook shows loading then state; live update after flag flip
 - [ ] `/client/components` — Feature / FeatureGate / FeatureSwitch / FeatureVariant
+- [ ] `/client/filters` — AlwaysOn ON; Chrome desktop Mac → browser/device/os ON (uses request UA)
 
 ### Edge
 

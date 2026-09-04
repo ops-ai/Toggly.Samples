@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 15 App Router, `@ops-ai/nextjs-toggly-{core,server,client,edge}`, Vitest, Toggly MCP for flag provisioning.
 
-**Linear:** (create OPS issue if missing — “Next.js showcase: latest packages + full filters matrix”)
+**Linear:** [OPS-896](https://linear.app/opsai/issue/OPS-896/nextjs-showcase-latest-packages-full-filters-matrix)
 
 **Design:** `Samples/docs/plans/2026-09-04-nextjs-showcase-filters-matrix-design.md`
 
@@ -24,8 +24,7 @@
 | `nextjs-server-sdk/lib/filter-eval-options.ts` | Build `FeatureCheckOptions` from cookies + Order fixture |
 | `nextjs-server-sdk/components/filter-context-controls.tsx` | Client form to set filter-demo cookies |
 | `nextjs-server-sdk/app/(server)/server/filters/page.tsx` | Server matrix |
-| `nextjs-server-sdk/app/(client)/client/filters/page.tsx` | Client UA subset |
-| `nextjs-server-sdk/app/(client)/client/filters/layout.tsx` | Local-eval `TogglyProvider` wrapper |
+| `nextjs-server-sdk/app/(client)/client/filters/page.tsx` | Request-UA subset (server eval; CORS blocks browser local) |
 | `nextjs-server-sdk/tests/filter-eval-options.test.ts` | Unit tests for options builder |
 | `nextjs-server-sdk/README.md`, home/server/client indexes | Docs + nav links |
 
@@ -63,13 +62,13 @@ npm test
 ```bash
 git add nextjs-server-sdk/package.json nextjs-server-sdk/package-lock.json nextjs-server-sdk/README.md
 git commit -m "$(cat <<'EOF'
-Bump Next.js showcase Toggly packages to latest [OPS-XXX]
+Bump Next.js showcase Toggly packages to latest [OPS-896]
 
 Align the showcase with published core 1.8.x / server 1.5.x /
 client 1.4.x / edge 1.2.3 for local-eval and per-call filters.
 
 Linear Issues:
-- OPS-XXX: Next.js showcase: latest packages + full filters matrix
+- OPS-896: Next.js showcase: latest packages + full filters matrix
 EOF
 )"
 ```
@@ -150,13 +149,13 @@ npm test -- tests/filter-eval-options.test.ts
 
 ```bash
 git commit -m "$(cat <<'EOF'
-Add filter catalog and eval options helpers [OPS-XXX]
+Add filter catalog and eval options helpers [OPS-896]
 
 Centralize filter showcase flag keys and map demo cookies into
 per-call FeatureCheckOptions for the server filters page.
 
 Linear Issues:
-- OPS-XXX: Next.js showcase: latest packages + full filters matrix
+- OPS-896: Next.js showcase: latest packages + full filters matrix
 EOF
 )"
 ```
@@ -191,35 +190,21 @@ for (const entry of FILTER_CATALOG) {
 
 ---
 
-### Task 5: Client filters page (local eval)
+### Task 5: Client filters page (request UA)
 
 **Files:**
-- Create: `nextjs-server-sdk/app/(client)/client/filters/layout.tsx`
 - Create: `nextjs-server-sdk/app/(client)/client/filters/page.tsx`
 - Modify: `app/(client)/client/page.tsx`
 
-- [ ] **Step 1: Layout with nested `TogglyProvider`**
+- [x] **Step 1: Server page** reads `headers()` and evaluates CLIENT_FILTER_KEYS
+  with `isServerFeatureOn(..., { headers })`. (Nested local `TogglyProvider`
+  blocked by missing CORS on `definitions-signed` from localhost.)
 
-```tsx
-<TogglyProvider
-  config={{
-    appKey,
-    environment,
-    evaluationMode: 'local',
-  }}
-  autoInit
->
-  {children}
-</TogglyProvider>
-```
+- [x] **Step 2: Show** AlwaysOn + browser-family/language/device/os.
 
-(If nested providers are awkward, use a dedicated client wrapper component that only mounts on this route.)
+- [x] **Step 3: Link from `/client` index.**
 
-- [ ] **Step 2: Page shows `useFeature` / Feature for** `filter-always-on`, `filter-browser-family`, `filter-browser-language`, `filter-device-type`, `filter-os`.
-
-- [ ] **Step 3: Link from `/client` index.**
-
-- [ ] **Step 4: Smoke in Chrome** — browser/device/os should be ON for typical desktop Mac Chrome; AlwaysOn ON.
+- [x] **Step 4: Smoke** — Chrome Mac UA → all expected ON.
 
 - [ ] **Step 5: Commit**
 

@@ -17,6 +17,7 @@ const SECTIONS = [
       ['/server/dashboard', 'Dashboard'],
       ['/server/api-demo', 'API'],
       ['/server/orders', 'Orders'],
+      ['/server/filters', 'Filters'],
     ] as const,
   },
   {
@@ -25,6 +26,7 @@ const SECTIONS = [
       ['/client', 'Index'],
       ['/client/hooks', 'Hooks'],
       ['/client/components', 'Components'],
+      ['/client/filters', 'Filters'],
     ] as const,
   },
   {
