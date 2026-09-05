@@ -15,9 +15,9 @@
     "@ops-ai/nextjs-toggly-core": "^1.8.1",
     "@ops-ai/nextjs-toggly-edge": "^1.2.3",
     "@ops-ai/nextjs-toggly-server": "^1.5.0",
-    "next": "15.5.24",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "next": "15.5.25",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
