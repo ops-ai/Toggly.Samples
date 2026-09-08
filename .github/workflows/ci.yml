@@ -31,3 +31,25 @@ jobs:
           TOGGLY_APP_KEY: ci-placeholder
           NEXT_PUBLIC_TOGGLY_APP_KEY: ci-placeholder
           TOGGLY_ENVIRONMENT: Production
+
+  # Template for Node samples (copy when the sample folder lands):
+  # <sample-id>:
+  #   name: <sample-id>
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: <sample-id>
+  #   steps:
+  #     - uses: actions/checkout@v7
+  #     - uses: actions/setup-node@v7
+  #       with:
+  #         node-version: "22"
+  #         cache: npm
+  #         cache-dependency-path: <sample-id>/package-lock.json
+  #     - run: npm ci
+  #     - run: npm test
+  #     - run: npm run build
+  #       env:
+  #         TOGGLY_APP_KEY: ci-placeholder
+  #         NEXT_PUBLIC_TOGGLY_APP_KEY: ci-placeholder # Or the stack-specific public key.
+  #         TOGGLY_ENVIRONMENT: Production
