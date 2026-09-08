@@ -1,3 +1,5 @@
+// Request-controlled labels are escaped when inserted into HTML. The view only
+// presents already-evaluated booleans; it does not implement feature filters.
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const sections = ['home', 'declarative', 'programmatic', 'identity', 'entity', 'filters', 'unique', 'configuration'];
 export function page({ section, source, context, order, flags, filters, query }) {
@@ -6,6 +8,8 @@ export function page({ section, source, context, order, flags, filters, query })
   const role = context.claims?.role ?? 'user';
   const roleValues = [...new Set(['user', 'admin', role])].map(value => [value, value]);
   const link = (path, text) => `<a href="${path}${query ? `?${escape(query)}` : ''}">${text}</a>`;
+  // Unlike featuresHandler, these table values came from per-request core calls
+  // with the selected Order. Conditional HTML shows content variants only.
   const snapshot = names => `<table><tr><th>Flag checklist</th><th>Evaluated for this request</th></tr>${names.map(key => `<tr><td>${key}</td><td>${flags[key] ? 'ON' : 'OFF'}</td></tr>`).join('')}</table>`;
   const content = {
     home: `<p>Explore eight sections using the same flags and presets as the Next.js showcase.</p>${snapshot(Object.keys(flags))}`,

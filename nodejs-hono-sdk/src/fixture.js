@@ -1,7 +1,13 @@
 // Offline transport fixture only. Published core performs every evaluation.
 import { createServer } from 'node:http';
+// Only the definition transport is local: rules below are data passed to the
+// installed core evaluator. This fixture does not prove live provisioning or
+// signature verification and must never be labelled as a live Toggly response.
 const rule = (featureKey, name, parameters = {}) => ({ featureKey, filters: [{ name, parameters }] });
 const entity = key => ({ ...rule(key, 'ContextProperty', { Property: 'Vip', Operator: 'eq', Value: 'true', ValueType: 'boolean' }), contextKind: 'Order' });
+// AlwaysOff makes api-v2's denied/negated paths observable. Segment and claim
+// rules use 100% so membership controls the result; only Percentage uses 50%.
+// ContextProperty also needs contextKind: Order to select the separate entity.
 export const definitions = [
   ...['new-dashboard', 'enhanced-submit', 'beta-access', 'filter-always-on'].map(key => rule(key, 'AlwaysOn')),
   rule('api-v2', 'AlwaysOff'), entity('ExpressCheckout'), entity('filter-context-property'),
@@ -12,6 +18,9 @@ export const definitions = [
   ...[['country', 'Country', 'US'], ['browser-family', 'BrowserFamily', 'Chrome'], ['browser-language', 'BrowserLanguage', 'en'], ['device-type', 'DeviceType', 'Macintosh'], ['os', 'OperatingSystem', 'Mac']].map(([key, name, value]) => rule(`filter-${key}`, name, { [`${name}:0`]: value, Percentage: 100 })),
 ];
 export async function startFixture() {
+  // Tests change status/definitions then call the real SDK refresh(): a failed
+  // first fetch has no definitions, while a later failure retains cached rules.
+  // This is in-process last-known-good state, not a disk cache across restarts.
   const state = { status: 200, definitions, requests: 0 };
   const server = createServer((req, res) => {
     state.requests++;
