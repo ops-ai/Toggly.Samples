@@ -1,0 +1,28 @@
+name: Fastify sample
+on:
+  push:
+    paths: ['nodejs-fastify-sdk/**', '.github/workflows/fastify.yml', 'README.md', 'docs/**']
+  pull_request:
+    paths: ['nodejs-fastify-sdk/**', '.github/workflows/fastify.yml', 'README.md', 'docs/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fastify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nodejs-fastify-sdk
+    env:
+      TOGGLY_APP_KEY: ci-placeholder
+      TOGGLY_ENVIRONMENT: Production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: nodejs-fastify-sdk/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
