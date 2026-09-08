@@ -1,0 +1,11 @@
+:root { font-family: Inter, ui-sans-serif, system-ui; color: #e8edf5; background: #0c1220; }
+body { margin: 0; } main { max-width: 1100px; margin: auto; padding: 2rem 1rem 5rem; }
+h1 { font-size: clamp(2rem, 5vw, 3.6rem); margin-bottom: .4rem; } h2 { margin-top: 0; }
+.lede { color: #aebbd0; max-width: 70ch; } .banner { padding: 1rem; border: 1px solid #efb44b; background: #392b12; border-radius: 10px; }
+nav { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.5rem 0; position: sticky; top: 0; background: #0c1220e8; padding: .7rem 0; }
+nav a, button { color: white; background: #243557; border: 1px solid #49628e; padding: .55rem .75rem; border-radius: 7px; text-decoration: none; cursor: pointer; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+section, .card { background: #151f32; border: 1px solid #293a57; border-radius: 12px; padding: 1.1rem; margin: 1rem 0; }
+code { color: #8bd5ff; } .on { color: #6ee7a8; } .off { color: #ff9e9e; } .muted { color: #9caac0; }
+label { display: block; margin: .6rem 0; } input, select { margin-left: .5rem; padding: .45rem; background: #0c1220; color: white; border: 1px solid #49628e; }
+table { width: 100%; border-collapse: collapse; } td, th { padding: .55rem; border-bottom: 1px solid #293a57; text-align: left; }
