@@ -37,6 +37,11 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 **Planned (Wave 1):** JavaScript (`javascript-sdk/`), React (`react-sdk/`),
 Remix (`remix-sdk/`), Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
 Hono (`nodejs-hono-sdk/`), and Koa
+| JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, variants, session identity, entity context, and live refresh with `@ops-ai/feature-flags-toggly` |
+
+**Planned (Wave 1):** React (`react-sdk/`), Remix (`remix-sdk/`),
+Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
+Fastify (`nodejs-fastify-sdk/`), Hono (`nodejs-hono-sdk/`), and Koa
 (`nodejs-koa-sdk/`). These folders are listed as plans only and will be linked
 when their samples land.
 

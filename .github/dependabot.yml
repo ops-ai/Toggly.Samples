@@ -2,6 +2,21 @@ version: 2
 
 updates:
   - package-ecosystem: npm
+    directory: /javascript-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    groups:
+      npm-patch-and-minor:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: npm
     directory: /nextjs-server-sdk
     schedule:
       interval: weekly
