@@ -32,9 +32,10 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Sample | Stack | Path | What it demos |
 |--------|-------|------|---------------|
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
+| JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, variants, session identity, entity context, and live refresh with `@ops-ai/feature-flags-toggly` |
 
-**Planned (Wave 1):** JavaScript (`javascript-sdk/`), React (`react-sdk/`),
-Remix (`remix-sdk/`), Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
+**Planned (Wave 1):** React (`react-sdk/`), Remix (`remix-sdk/`),
+Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
 Fastify (`nodejs-fastify-sdk/`), Hono (`nodejs-hono-sdk/`), and Koa
 (`nodejs-koa-sdk/`). These folders are listed as plans only and will be linked
 when their samples land.
