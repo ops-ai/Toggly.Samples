@@ -14,6 +14,9 @@ export default async function ServerFiltersPage() {
   const bag = await readFilterEvalCookieBag()
   const options = await readFilterEvalOptions()
 
+  // Every row uses the same per-call inputs against a separately provisioned
+  // filter flag. Parallel checks do not mutate shared identity. If a row is OFF,
+  // compare its exact flag key, configured rule, and options before blaming the SDK.
   const rows = await Promise.all(
     SERVER_FILTER_CATALOG.map(async (entry) => {
       const on = await isServerFeatureOn(entry.key, options)

@@ -14,6 +14,10 @@ export default async function ServerCachePage() {
   const identity = await getRequestIdentity()
   const vipOrder = getOrder('ord-vip')!
 
+  // This adds a Next.js result cache on top of SDK definitions. A live update
+  // to definitions does not invalidate this result immediately; revalidation is
+  // 60 seconds and tags permit explicit invalidation in a real application.
+  // Identity and entity inputs belong in the check so cached decisions reflect them.
   const cachedDashboard = await cachedIsFeatureOn('new-dashboard', {
     identity,
     revalidate: 60,
