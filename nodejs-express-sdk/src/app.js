@@ -7,6 +7,10 @@ export function createApp({ appKey = '', environment = 'Production', fixtureUrl,
   const app = express();
   const offline = Boolean(fixtureUrl);
   const configured = Boolean(appKey && appKey !== 'ci-placeholder');
+  app.use((req, res, next) => {
+    res.set('X-Toggly-Source', offline ? 'Offline fixture' : configured ? 'Configured service' : 'Missing app key');
+    next();
+  });
   app.use(togglyMiddleware({
     appKey: offline ? 'offline-fixture' : configured ? appKey : undefined,
     environment, baseUrl: fixtureUrl, verifySignatures: !offline,
@@ -21,7 +25,10 @@ export function createApp({ appKey = '', environment = 'Production', fixtureUrl,
   }));
   app.use((req, res, next) => {
     const state = req.toggly.client.state;
-    req.provenance = !offline && !configured ? 'Missing app key — defaults only; no network' : state.error ? `${state.definitions.size ? 'Cached' : 'Unavailable'} — definition refresh failed` : offline ? 'Offline fixture — published SDK evaluation, no live Toggly service' : 'Live definitions — signature verified';
+    const status = state.error ? `${state.definitions.size ? 'Cached' : 'Unavailable'} — definition refresh failed` : 'published SDK evaluation, no live Toggly service';
+    req.provenance = offline ? `Offline fixture — ${status}` : !configured ? 'Missing app key — defaults only; no network' : state.error ? status : 'Live definitions — signature verified';
+    // HTTP headers use ASCII; preserve the same mode/status on SDK-owned responses.
+    res.set('X-Toggly-Source', req.provenance.replaceAll('—', '-'));
     res.set('Cache-Control', 'no-store');
     next();
   });

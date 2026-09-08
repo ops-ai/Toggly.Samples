@@ -25,6 +25,26 @@ test('actual published adapter/core HTTP integration', async t => {
         assert.match(await (await request('/entity?preset=matching')).text(), /Express checkout available/);
         assert.match(await (await request('/entity?preset=non-matching')).text(), /Standard checkout/);
       });
+      await t.test('visible controls reflect active preset, role and Order', async () => {
+        for (const [query, preset, role, order] of [
+          ['preset=matching', 'matching', 'admin', 'ord-vip'],
+          ['preset=non-matching', 'non-matching', 'user', 'ord-standard'],
+          ['identity=carol&role=auditor&order=ord-vip', '', 'auditor', 'ord-vip'],
+        ]) {
+          const html = await (await request(`/filters?${query}`)).text();
+          for (const [name, value] of [['preset', preset], ['role', role], ['order', order]]) {
+            const select = html.match(new RegExp(`<select name="${name}">(.+?)</select>`))[1];
+            assert.ok(select.includes(`<option value="${value}" selected>`), `${name} selection`);
+            assert.equal((select.match(/ selected/g) ?? []).length, 1);
+          }
+        }
+      });
+      await t.test('adapter-owned response headers retain offline provenance', async () => {
+        for (const path of ['/api/features', '/gates/enabled', '/gates/all', '/unique/route', '/unique/wrapped']) {
+          const response = await request(path, { redirect: 'manual' });
+          assert.match(response.headers.get('x-toggly-source'), /^Offline fixture/);
+        }
+      });
       await t.test('all filter rows and 30 simultaneous request identities, claims, Order and HTTP headers', async () => {
         const globalIdentity = getExpressToggly().identity;
         await Promise.all(Array.from({ length: 30 }, async (_, index) => {
@@ -59,14 +79,22 @@ test('actual published adapter/core HTTP integration', async t => {
       });
       await t.test('failed refresh preserves last known definitions and reports cached provenance', async () => {
         fixture.state.status = 503; await getExpressToggly().refresh();
-        const data = await (await request('/api/evaluate')).json(); assert.match(data.source, /^Cached/); assert.equal(data.flags['new-dashboard'], true);
+        const data = await (await request('/api/evaluate')).json(); assert.match(data.source, /^Offline fixture — Cached/); assert.equal(data.flags['new-dashboard'], true);
+        const snapshot = await request('/api/features');
+        assert.match(snapshot.headers.get('x-toggly-source'), /^Offline fixture - Cached/);
+        assert.match(await (await request('/')).text(), /Offline fixture — Cached/);
       });
     });
     await t.test('first fetch fails: unavailable, not live; gates still deny', async () => {
       await serve({ fixtureUrl: fixture.baseUrl }, async request => {
-        const data = await (await request('/api/evaluate')).json(); assert.match(data.source, /^Unavailable/); assert.equal(data.flags['new-dashboard'], false);
-        assert.equal((await request('/gates/enabled')).status, 404);
-        assert.equal((await request('/gates/beta', { redirect: 'manual' })).status, 302);
+        const data = await (await request('/api/evaluate')).json(); assert.match(data.source, /^Offline fixture — Unavailable/); assert.equal(data.flags['new-dashboard'], false);
+        const gate = await request('/gates/enabled');
+        assert.equal(gate.status, 404);
+        assert.match(gate.headers.get('x-toggly-source'), /^Offline fixture - Unavailable/);
+        const redirect = await request('/gates/beta', { redirect: 'manual' });
+        assert.equal(redirect.status, 302);
+        assert.match(redirect.headers.get('x-toggly-source'), /^Offline fixture - Unavailable/);
+        assert.match(await (await request('/')).text(), /Offline fixture — Unavailable/);
       });
     });
     await t.test('configured signed mode rejects unsigned transport and never claims live', async () => {

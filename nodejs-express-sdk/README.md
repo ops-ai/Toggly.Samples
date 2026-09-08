@@ -15,7 +15,7 @@ The dev/start commands load `.env` then `.env.local` (the latter wins); both rem
 npm run offline
 ```
 
-Offline mode starts a loopback definitions HTTP fixture. The unmodified published SDK fetches those definitions and evaluates all rules; no replacement evaluator or local SDK tarball is used. Every page and evaluated JSON response labels the fixture. Fixture baseline: dashboard, enhanced-submit and beta enabled, api-v2 disabled. `npm test` starts its own ephemeral HTTP listeners; `npm run build` syntax-checks all runnable JavaScript (there is no compilation/bundle step).
+Offline mode starts a loopback definitions HTTP fixture. The unmodified published SDK fetches those definitions and evaluates all rules; no replacement evaluator or local SDK tarball is used. Every page and evaluated JSON response labels the fixture, including cached/unavailable failures. The common `X-Toggly-Source` response header also labels adapter-owned snapshots, gate denials and redirects. Fixture baseline: dashboard, enhanced-submit and beta enabled, api-v2 disabled. `npm test` starts its own ephemeral HTTP listeners; `npm run build` syntax-checks all runnable JavaScript (there is no compilation/bundle step).
 
 ## Provision the live application (pending)
 
