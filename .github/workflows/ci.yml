@@ -11,8 +11,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: sample changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      nextjs-server-sdk: ${{ steps.filter.outputs.nextjs-server-sdk }}
+      javascript-sdk: ${{ steps.filter.outputs.javascript-sdk }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            nextjs-server-sdk:
+              - 'nextjs-server-sdk/**'
+              - '.github/workflows/ci.yml'
+              - 'README.md'
+              - 'docs/**'
+            javascript-sdk:
+              - 'javascript-sdk/**'
+              - '.github/workflows/ci.yml'
+              - 'README.md'
+              - 'docs/**'
+
   nextjs-server-sdk:
     name: nextjs-server-sdk
+    needs: changes
+    if: needs.changes.outputs.nextjs-server-sdk == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,6 +59,28 @@ jobs:
           TOGGLY_APP_KEY: ci-placeholder
           NEXT_PUBLIC_TOGGLY_APP_KEY: ci-placeholder
           TOGGLY_ENVIRONMENT: Production
+
+  javascript-sdk:
+    name: javascript-sdk
+    needs: changes
+    if: needs.changes.outputs.javascript-sdk == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: javascript-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: javascript-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          VITE_TOGGLY_APP_KEY: ci-placeholder
+          VITE_TOGGLY_ENVIRONMENT: Production
 
   # Template for Node samples (copy when the sample folder lands):
   # <sample-id>:
