@@ -1,3 +1,5 @@
+// Presentation only: app.js already evaluated flags with this request's context.
+// Escape reflected demo inputs before placing them in HTML or attribute values.
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const sections = ['home', 'declarative', 'programmatic', 'identity', 'entity', 'filters', 'unique', 'configuration'];
 export function page({ section, source, context, order, flags, filters, query }) {
@@ -5,8 +7,12 @@ export function page({ section, source, context, order, flags, filters, query })
   const options = (values, selected) => values.map(([value, label]) => `<option value="${escape(value)}"${value === selected ? ' selected' : ''}>${escape(label)}</option>`).join('');
   const role = context.claims?.role ?? 'user';
   const roleValues = [...new Set(['user', 'admin', role])].map(value => [value, value]);
+  // Preserve demo inputs when navigating so changing pages does not change identity.
+  // The custom form omits preset, intentionally returning HTTP fields to header input.
   const link = (path, text) => `<a href="${path}${query ? `?${escape(query)}` : ''}">${text}</a>`;
   const snapshot = names => `<table><tr><th>Flag checklist</th><th>Evaluated for this request</th></tr>${names.map(key => `<tr><td>${key}</td><td>${flags[key] ? 'ON' : 'OFF'}</td></tr>`).join('')}</table>`;
+  // Boolean variants choose HTML content. They are not an experiment-assignment API,
+  // and hiding content here does not enforce access control on an API route.
   const content = {
     home: `<p>Explore eight sections using the same flags and presets as the Next.js showcase.</p>${snapshot(Object.keys(flags))}`,
     declarative: `<h2>${flags['new-dashboard'] ? 'Dashboard v2 variant' : 'Classic dashboard variant'}</h2><p>These variants are boolean content branches; the published SDK has no experiment assignment API.</p>${['enabled', 'negate', 'all', 'any', 'beta'].map(name => link(`/gates/${name}`, `${name} HTTP gate`)).join(' · ')}<p>Gates execute the actual Express featureGate middleware. Disabled routes return 404; beta redirects here.</p>`,
