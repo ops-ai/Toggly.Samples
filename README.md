@@ -33,6 +33,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 |--------|-------|------|---------------|
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
+| Docusaurus SDK Workshop | Docusaurus 3 + React | [`docusaurus-sdk/`](docusaurus-sdk/) | Native MDX/React flags, core Order mapping, live snapshots and build/browser boundaries |
 
 **Planned (Wave 1):** JavaScript (`javascript-sdk/`), React (`react-sdk/`),
 Remix (`remix-sdk/`), Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
