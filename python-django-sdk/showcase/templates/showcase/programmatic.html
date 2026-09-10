@@ -1,0 +1,5 @@
+{% extends 'showcase/base.html' %}
+{% block content %}
+<h2>Programmatic API</h2><section><p><code>request.toggly.is_enabled('new-dashboard')</code>: {{ native|yesno:'ON,OFF' }}</p><p><code>is_feature_enabled('new-dashboard', context=request.sample_context)</code>: {{ explicit|yesno:'ON,OFF' }}</p><p>Application data API choice: version {{ api_v2|yesno:'2,1' }}. <a href="/native/switch/">Open the native view switch</a>.</p><pre>client = get_client()
+enabled = client.is_enabled('api-v2', context=request.sample_context)</pre><p>The middleware helper is convenient for native identity/Order gates. Explicit context additionally supplies claims and HTTP segments.</p></section><section><h3>Enhanced submission</h3><p>The POST view uses <code>@feature_flag_required('enhanced-submit')</code>. A denied flag returns 403 before the session counter changes. CSRF protection remains enabled.</p><form method="post" action="/submit/">{% csrf_token %}<button>Submit enhanced action</button></form></section>
+{% endblock %}
