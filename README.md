@@ -31,6 +31,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 
 | Sample | Stack | Path | What it demos |
 |--------|-------|------|---------------|
+| Vue SDK Workshop | Vue 3 + Vite | [`vue-sdk/`](vue-sdk/) | Native Feature/composables, user and Order context, variants, local gates, signed responses and offline exercises |
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
 
