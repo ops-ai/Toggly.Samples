@@ -1,4 +1,4 @@
-const { chromium } = require("@playwright/test");
+const { chromium, expect } = require("@playwright/test");
 const { webcrypto, createHash } = require("node:crypto");
 const http = require("node:http"),
   fs = require("node:fs"),
@@ -8,6 +8,17 @@ const { execFileSync } = require("node:child_process");
 const assert = require("node:assert/strict");
 const catalog = require("../src/sample/catalog.cjs");
 const root = path.resolve(__dirname, "..");
+async function expectNativeReady(page, enabled) {
+  // Feature branches exist in SSR HTML. The native hook only reports ON/OFF
+  // after provider evaluation, so wait for that before trusting or clicking UI.
+  const value = enabled ? "ON" : "OFF";
+  await expect(page.getByTestId("native-hook")).toHaveText(
+    `Native useFlag: ${value}`,
+  );
+  await expect(page.getByTestId("toggle-new-dashboard")).toHaveText(
+    `new-dashboard: ${value}`,
+  );
+}
 (async () => {
   const output = fs.mkdtempSync(
     path.join(os.tmpdir(), "toggly-docusaurus-browser-"),
@@ -70,10 +81,13 @@ const root = path.resolve(__dirname, "..");
     const errors = [];
     page.on("pageerror", (e) => errors.push(String(e)));
     await page.goto(url);
+    await expectNativeReady(page, true);
     await page.getByTestId("new-ui").waitFor();
     assert.match(await page.getByTestId("mode").innerText(), /No App Key/);
     await page.getByTestId("toggle-new-dashboard").click();
+    await expectNativeReady(page, false);
     await page.getByTestId("old-ui").waitFor();
+    await expect(page.getByTestId("new-ui")).not.toBeVisible();
     assert.match(await page.getByTestId("native-hook").innerText(), /OFF/);
     assert.match(await page.getByTestId("all").innerText(), /OFF/);
     assert.match(await page.getByTestId("any").innerText(), /ON/);
@@ -151,6 +165,10 @@ const root = path.resolve(__dirname, "..");
     await page
       .getByText("New documentation visible", { exact: true })
       .waitFor();
+    // Both MDX branches are present during SSR; only hydration removes negate.
+    await expect(
+      page.getByText("Existing documentation visible", { exact: true }),
+    ).not.toBeVisible();
     assert.deepEqual(errors, []);
     await page.close();
     // Production browser proof keeps the real native signature verifier. Only HTTP
@@ -227,6 +245,7 @@ const root = path.resolve(__dirname, "..");
       return { p, context };
     }
     let { p, context } = await livePage();
+    await expectNativeReady(p, true);
     await p.getByTestId("new-ui").waitFor();
     await p.waitForFunction(() =>
       document
@@ -277,6 +296,7 @@ const root = path.resolve(__dirname, "..");
       fail = mode === "failure";
       enabled = true;
       ({ p, context } = await livePage());
+      await expectNativeReady(p, false);
       await p.getByTestId("old-ui").waitFor();
       await p.waitForFunction(() =>
         document
