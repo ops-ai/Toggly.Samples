@@ -34,6 +34,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
 | Angular SDK Workshop | Angular 22 standalone | [`angular-sdk/`](angular-sdk/) | Native templates, directives, variants, route guard, local gates and Order context |
+| Java Spring MVC SDK Sample | Spring MVC 7 + Tomcat 11 + FreeMarker | [`java-spring-mvc-sdk/`](java-spring-mvc-sdk/) | Native context/gate interceptors, Boolean argument injection, model-driven templates, Order and eleven-filter matrix |
 
 **Planned (Wave 1):** JavaScript (`javascript-sdk/`), React (`react-sdk/`),
 Remix (`remix-sdk/`), Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
