@@ -48,17 +48,35 @@ export function createWorkshop(env = import.meta.env) {
     enableVariants: true,
   });
   let service;
+  let stopRefresh = () => {};
+  let disposed = false;
+  let snapshotRevision = 0;
   async function snapshot() {
-    state.snapshot = Object.fromEntries(
+    if (disposed) return;
+    const revision = ++snapshotRevision;
+    const order = state.order;
+    const user = state.user;
+    const values = Object.fromEntries(
       await Promise.all(
         allKeys.map(async (key) => [
           key,
-          await service.isFeatureOn(key, state.order, "Order"),
+          await service.isFeatureOn(key, order, "Order"),
         ]),
       ),
     );
+    // A slower check must not publish results for an older user or Order.
+    // Refresh listeners only read the SDK; they never request another fetch.
+    if (
+      !disposed &&
+      revision === snapshotRevision &&
+      order === state.order &&
+      user === state.user
+    ) {
+      state.snapshot = values;
+    }
   }
   async function updateContext() {
+    ++snapshotRevision;
     state.busy = true;
     state.error = "";
     try {
@@ -81,6 +99,12 @@ export function createWorkshop(env = import.meta.env) {
     variantService,
     async attach(instance) {
       service = instance;
+      stopRefresh();
+      stopRefresh = service.subscribeFeaturesRefresh(() => {
+        void snapshot().catch((error) => {
+          if (!disposed) state.error = String(error);
+        });
+      });
       service.registerContext("Order", (order) => ({
         kind: "Order",
         key: order.Id,
@@ -139,6 +163,9 @@ export function createWorkshop(env = import.meta.env) {
       return service.isFeatureOn("beta-access");
     },
     dispose() {
+      disposed = true;
+      ++snapshotRevision;
+      stopRefresh();
       stopTransport();
       service?.stopWebSocket();
       variantService.stopWebSocket();

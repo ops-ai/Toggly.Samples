@@ -40,6 +40,76 @@ describe("real published Vue plugin and native surfaces", () => {
     expect(w.findAll("tbody tr")).toHaveLength(11);
     expect(w.get('[data-testid="variant-name"]').text()).toBe("compact");
   });
+  it("follows native background refresh in the checklist and matrix without another fetch, then unsubscribes", async () => {
+    const w = await mountWorkshop();
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(
+        new Response(
+          JSON.stringify({ "new-dashboard": false, "filter-always-on": false }),
+          { status: 200 },
+        ),
+      );
+    // This public SDK call emits the same refresh notification as a WebSocket
+    // reload. No workshop toggle or context control copies the snapshot for us.
+    await togglyService.setContext({
+      identity: "alice",
+      groups: ["beta"],
+      claims: { role: "admin" },
+    });
+    await flushPromises();
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(w.find('[data-testid="new-ui"]').exists()).toBe(false);
+    expect(w.get('[data-testid="toggle-new-dashboard"]').text()).toContain(
+      "OFF",
+    );
+    expect(w.findAll("tbody tr")[0].text()).toContain("OFF");
+    expect(workshop.state.snapshot["new-dashboard"]).toBe(false);
+
+    w.unmount();
+    wrapper = undefined;
+    workshop.dispose();
+    const checks = vi.spyOn(togglyService, "isFeatureOn");
+    await togglyService.setContext({ identity: "alice" });
+    await flushPromises();
+    expect(checks).not.toHaveBeenCalled();
+  });
+  it("does not publish delayed snapshot checks after a newer Order/user or disposal", async () => {
+    workshop = createWorkshop({});
+    const service = new Toggly().init(workshop.options);
+    await workshop.attach(service);
+    const evaluate = service.isFeatureOn.bind(service);
+    let pending = [];
+    const checks = vi
+      .spyOn(service, "isFeatureOn")
+      .mockImplementation(async (...args) => {
+        const value = await evaluate(...args); // preserve actual SDK evaluation
+        await new Promise((resolve) => pending.push(resolve));
+        return value;
+      });
+    // Delay the old VIP snapshot, then allow a newer standard Order to win.
+    const oldOrder = workshop.order("vip");
+    await flushPromises();
+    checks.mockImplementation(evaluate);
+    await workshop.preset("nonmatching");
+    pending.splice(0).forEach((resolve) => resolve());
+    await oldOrder;
+    expect(workshop.state.snapshot.ExpressCheckout).toBe(false);
+    expect(workshop.state.snapshot["filter-targeting"]).toBe(false);
+
+    checks.mockImplementation(async (...args) => {
+      const value = await evaluate(...args);
+      await new Promise((resolve) => pending.push(resolve));
+      return value;
+    });
+    const lateOrder = workshop.order("vip");
+    await flushPromises();
+    const beforeDispose = workshop.state.snapshot;
+    workshop.dispose();
+    pending.splice(0).forEach((resolve) => resolve());
+    await lateOrder;
+    expect(workshop.state.snapshot).toBe(beforeDispose);
+  });
   it("updates native negate and any/all gates, then denies the actual service action", async () => {
     const w = await mountWorkshop();
     await workshop.toggle("new-dashboard");
