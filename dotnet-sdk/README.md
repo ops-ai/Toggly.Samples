@@ -39,7 +39,7 @@ health requirement; the latter controls recurring job registration.
 ## Connect your dedicated Toggly app
 
 1. Open [app.toggly.io](https://app.toggly.io), select **Toggly Samples**, and
-   create **.NET SDK Sample**. Select **.NET** in the technology picker.
+   create **.NET SDK Sample**. Select **C#** (the .NET SDK technology) in the technology picker.
 2. Use the **Production** environment (case-sensitive). Add
    `http://localhost:5000` to Allowed Web Origins. This app evaluates on the
    server; origins are included to keep the catalog app configuration consistent.
