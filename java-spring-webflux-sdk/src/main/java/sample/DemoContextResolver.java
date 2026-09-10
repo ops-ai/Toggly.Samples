@@ -16,7 +16,7 @@ public final class DemoContextResolver implements ReactiveContextResolver {
     @Override public Mono<EvaluationContext> resolve(ServerWebExchange exchange) {
         return exchange.getSession().flatMap(session -> exchange.getFormData().map(form -> {
             var request = exchange.getRequest(); var query = request.getQueryParams();
-            boolean saving = request.getMethod().name().equals("POST") && request.getPath().value().equals("/context");
+            boolean saving = request.getMethod().name().equals("POST") && SamplePaths.CONTEXT.test(exchange);
             var inputs = saving ? form : query;
             String preset = inputs.getFirst("preset");
             Persona saved = session.getAttribute(SESSION_KEY);

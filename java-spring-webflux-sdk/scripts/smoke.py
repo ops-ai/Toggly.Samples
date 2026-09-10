@@ -23,17 +23,23 @@ with (root / 'target' / 'smoke.log').open('w') as log:
                 time.sleep(0.1)
         else:
             raise RuntimeError('Packaged process did not start')
-        for path in ['/', '/gates', '/programmatic', '/identity', '/orders', '/filters', '/webflux', '/configuration']:
+        for path in ['/', '/gates', '/programmatic', '/identity', '/orders', '/filters', '/webflux', '/configuration', '/%66ilters', '/filters;x=1']:
             with urllib.request.urlopen('http://localhost:8089' + path) as response:
                 assert response.status == 200
                 assert 'Missing TOGGLY_APP_KEY' in response.read().decode()
-        for path in ['/gated/feature', '/gated/negate', '/gated/all', '/gated/any', '/gated/beta', '/native/reactive']:
+        for path in ['/gated/feature', '/gated/negate', '/gated/all', '/gated/any', '/gated/beta', '/native/reactive', '/%67ated/beta', '/gated/beta;x=1', '/%6eative/reactive', '/native/reactive;x=1']:
             try:
                 urllib.request.urlopen('http://localhost:8089' + path)
                 raise AssertionError('Unconfigured protected/native route unexpectedly allowed: ' + path)
             except urllib.error.HTTPError as error:
                 assert error.code == 503
-        print('Packaged smoke: eight pages rendered, five gates and native reactive example denied')
+        for path in ['/api/%72efresh', '/api/refresh;x=1', '/actions/%73ubmit', '/actions/submit;x=1']:
+            try:
+                urllib.request.urlopen(urllib.request.Request('http://localhost:8089' + path, data=b'', method='POST'))
+                raise AssertionError('Unconfigured action unexpectedly allowed: ' + path)
+            except urllib.error.HTTPError as error:
+                assert error.code == 503
+        print('Packaged smoke: eight pages plus encoded/matrix equivalents rendered; protected routes/actions denied')
     finally:
         process.terminate()
         try:

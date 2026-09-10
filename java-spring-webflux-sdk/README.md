@@ -70,13 +70,15 @@ the dependency byte inventory.
 4. Set Allowed Web Origins to **http://localhost:8089** and **http://127.0.0.1:8089**. Server-side definitions
    do not use browser CORS, but keep the app's origin aligned with this sample.
 5. Add context kind **Order** with `Id` (**string, key**), `Vip` (**boolean**),
-   and `Total` (**number, optional**).
+   and `Total` (**number; optional in sample data**). The context editor has no
+   per-property optional checkbox.
 6. Add the five application flags below. Create a **Filters** category and add
-   the eleven filter flags in the following table.
+   the eleven filter flags in the following table. Bind ExpressCheckout and
+   filter-context-property to **Order** in their feature Context field.
 7. Copy the application key into your ignored `.env` as `TOGGLY_APP_KEY`. Keep
    `TOGGLY_ENVIRONMENT=Production`. Export the file and restart as above.
 
-| Flag | Dashboard configuration |
+| Flag | Intended configuration (UI or API below) |
 |---|---|
 | `new-dashboard` | Baseline environment toggle; start enabled, then switch off |
 | `api-v2` | Baseline environment toggle; switch independently for ALL/ANY gates |
@@ -101,7 +103,46 @@ In the signed definitions wire format, segment lists use indexed keys such as
 parameter; 100 means every matching identity. ContextProperty parameters are
 `Property=Vip`, `Operator=eq`, `Value=true`, `ValueType=boolean`, with
 `contextKind=Order` on the feature definition. The test fixture demonstrates
-these exact shapes. Use dashboard rule controls when creating your live app.
+these exact shapes. For visible rules, click the flag switch in the environment
+feature list to open Conditions. Set segment Percentage to 100, then Save
+conditions and Save Changes/Request
+Changes. Order rules use Add condition on Order (Vip equals Boolean true);
+remove the default AlwaysOn row so it cannot enable the flag independently.
+
+### Java picker limitation and manual fallback
+
+The source-defined Java picker omits **Percentage, Targeting and TimeWindow**.
+Creating custom filter metadata does not add those types to the current picker.
+Keep the application technology as Java. After creating the dedicated sample
+keys, use an existing authorized **management API client** for these three rules;
+`TOGGLY_APP_KEY` is an SDK key, not management authorization.
+
+1. Against your actual management API origin, read the existing feature with
+   `GET /api/v2/applications/{applicationId}/environments/Production/features/{featureKey}`.
+   Use the application short ID from its URL or management response.
+2. Review and replace that one feature/environment's complete filter list with
+   `PUT` to the same path, `Content-Type: application/json`, and the corresponding
+   exact one-item list below. This does not create the feature or change Context
+   binding. Apply only to the dedicated sample flags; replacing rules can stop an
+   experiment on that feature.
+
+   | Feature key | JSON body |
+   |---|---|
+   | `filter-percentage` | `[{"name":"Percentage","parameters":{"Value":50}}]` |
+   | `filter-targeting` | `[{"name":"Targeting","parameters":{"users":"alice"}}]` |
+   | `filter-time-window` | `[{"name":"TimeWindow","parameters":{"Start":"2020-01-01T00:00:00Z","End":"2099-12-31T23:59:59Z"}}]` |
+
+3. Follow the account's normal approval workflow. HTTP 200 can mean a change was
+   requested while old rules remain active. After approval, GET the same feature
+   and verify the applied list, then refresh/reload this sample and check results.
+4. Preserve API-managed rules through the management client. Do not reopen/save
+   them in a picker that cannot represent their aliases/parameters; it can discard
+   values. Targeting's dashboard Audience.Users selector represents stored list
+   IDs, so do not substitute the literal user `alice` into that selector.
+
+This fallback is based on platform source, not a verified live dashboard/API
+round trip. It requires your existing authorization and any required approvals;
+this repository supplies no management credentials.
 
 Provisioning is a manual step. The sample's deterministic tests do not establish
 that your live app, allowed origins, context catalog or flags have been created.
@@ -203,8 +244,9 @@ SDK to validate entity kind. The integration suite records this native limitatio
   `Mono.defer(() -> chain.filter(exchange)).subscribeOn(Schedulers.boundedElastic())`
   before native gates. The order -80 missing-key guard returns 503 for protected examples.
 - **Native gates:** order 0 `FeatureGateFilter` beans exercise `features`, exact
-  `pathPattern`, `matchAll`, `matchAny`, `negate` and `blockedStatus`. Exact paths
-  are intentional; the adapter's simple wildcard matcher is not the host router.
+  `pathMatcher`, `matchAll`, `matchAny`, `negate` and `blockedStatus`. The supported
+  matcher extension uses compiled Spring PathPattern objects so gates and
+  controller dispatch agree on decoded segments and matrix parameters.
 - **Native reactive client:** a real bean wraps the single core client. Controllers
   use `isEnabled`, `evaluateAll`, `allEnabled`, `anyEnabled`, `switchOn`, `ifEnabled`,
   `enabledFeatures`, `getFeatureKeys`, `getFeatureDefinition` and `refresh`.
@@ -218,6 +260,28 @@ SDK to validate entity kind. The integration suite records this native limitatio
 - **Unsupported:** core/WebFlux 1.5.1 provides no native variant allocation.
   `switchOn` selects one of two caller publishers using a Boolean result;
   telemetry variant labels do not allocate an experiment.
+
+### Match the same route that Spring dispatches
+
+The SDK's `pathPattern` convenience matcher compares raw path text. Spring
+controller mappings decode each path segment and ignore matrix parameters, so
+raw equality can miss a request such as `/gated/%62eta` or `/gated/beta;x=1` that
+Spring dispatches to `/gated/beta`. Use the native predicate extension instead:
+
+```java
+PathPattern beta = PathPatternParser.defaultInstance.parse("/gated/beta");
+return FeatureGateFilter.builder(client)
+    .features("beta-access")
+    .pathMatcher(exchange -> beta.matches(
+        exchange.getRequest().getPath().pathWithinApplication()))
+    .build();
+```
+
+`SamplePaths` compiles these patterns once. It also aligns the missing-key guard,
+context save/clear selection and page model selection with Spring's defaults.
+The match is application route composition; the native filter still owns the
+feature evaluation and denial. Do not decode the entire path yourself: an encoded
+slash within a segment must remain distinct from a path separator.
 
 ## Cold fetch, asynchronous work and cancellation
 
@@ -283,6 +347,7 @@ is implied by a rendering page or a completed refresh attempt.
 | `src/main/java/sample/Main.java` | Real Spring context/Reactor Netty socket server and shutdown |
 | `src/main/java/sample/WebConfig.java` | Native context ordering, deferred offload, keyless guard and views |
 | `src/main/java/sample/NativeSdkConfig.java` | Real native filter and ReactiveTogglyClient beans |
+| `src/main/java/sample/SamplePaths.java` | Compiled Spring route semantics shared by gates, setup guard, forms and pages |
 | `src/main/java/sample/DemoContextResolver.java` | Async session/form resolution and immutable context |
 | `src/main/java/sample/ShowcaseController.java` | Native publishers, delayed request work, Order comparisons |
 | `src/main/resources/templates/workshop.ftlh` | Escaped teaching UI consuming actual native evaluations |
@@ -290,6 +355,7 @@ is implied by a rendering page or a completed refresh attempt.
 | `src/test/java/sample/DefinitionsServer.java` | Signed loopback transport with ephemeral EC keys |
 | `src/test/java/sample/NativeIntegrationTest.java` | Eight pages, eleven filters, gates, sessions, signing, polling |
 | `src/test/java/sample/ReactiveIsolationTest.java` | Concurrent async users/Orders, cancellation, error cleanup, cold offload |
+| `src/test/java/sample/RouteSemanticsTest.java` | Actual-host encoded/matrix routes, keyless denial, page models, context forms and encoded-slash boundaries |
 | `src/test/java/sample/ShowcaseTest.java` | Keyless startup/denial |
 | `src/test/java/sample/PackagedProbe.java` | Signed configured host with application loaded from production JAR |
 | `scripts/check-dependencies.py`, `scripts/smoke.py` | Dependency bytes and production-process HTTP smoke |

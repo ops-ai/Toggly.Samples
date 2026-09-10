@@ -33,7 +33,7 @@ public class ShowcaseController {
         return reactive == null ? Mono.just(Set.of()) : offload(reactive::getFeatureKeys);
     }
     @GetMapping({"/","/gates","/programmatic","/identity","/orders","/filters","/webflux","/configuration"})
-    public Mono<Rendering> page(ServerWebExchange exchange) { return view(exchange.getRequest().getPath().value()); }
+    public Mono<Rendering> page(ServerWebExchange exchange) { return view(SamplePaths.page(exchange)); }
     private Mono<Rendering> view(String path) {
         return TogglyContextFilter.getContext().flatMap(context -> {
             var model = new HashMap<String,Object>();

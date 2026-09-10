@@ -22,7 +22,8 @@ public class NativeSdkConfig {
     @Bean @Order(0) public FeatureGateFilter unknown() { return gate("/gated/unknown","unknown").build(); }
     @Bean @Order(0) public FeatureGateFilter submit() { return gate("/actions/submit","enhanced-submit").blockedStatus(HttpStatus.FORBIDDEN).build(); }
     private FeatureGateFilter.Builder gate(String path,String... flags) {
-        // Exact paths keep the route boundary obvious; the SDK's simple wildcard matcher is not a router.
-        return FeatureGateFilter.builder(runtime.client()).features(flags).pathPattern(path);
+        // Native pathPattern compares raw text. The supported matcher extension aligns this native
+        // gate with Spring's decoded segments/matrix parameters; evaluation stays entirely native.
+        return FeatureGateFilter.builder(runtime.client()).features(flags).pathMatcher(SamplePaths.matching(path));
     }
 }

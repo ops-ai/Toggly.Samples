@@ -30,9 +30,7 @@ public class WebConfig implements WebFluxConfigurer {
             var headers = exchange.getResponse().getHeaders();
             headers.set("Cache-Control","no-store"); headers.set("X-Content-Type-Options","nosniff");
             headers.set("Content-Security-Policy","default-src 'self'; style-src 'self'; form-action 'self'; frame-ancestors 'none'");
-            String path = exchange.getRequest().getPath().value();
-            if (!runtime.configured() && (path.startsWith("/gated/") || path.startsWith("/native/")
-                    || path.equals("/actions/submit") || path.equals("/api/refresh"))) {
+            if (!runtime.configured() && SamplePaths.PROTECTED.test(exchange)) {
                 exchange.getResponse().setStatusCode(HttpStatus.SERVICE_UNAVAILABLE);
                 return exchange.getResponse().setComplete();
             }
