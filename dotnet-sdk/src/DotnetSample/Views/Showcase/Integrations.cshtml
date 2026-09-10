@@ -1,0 +1,16 @@
+@model ShowcaseModel
+@{ ViewData["Title"] = "Native integrations"; }
+<h1>Let flags reach the rest of your .NET app.</h1><p class="lead">These sections use the published Hangfire, HealthChecks and NSwag packages, alongside Core and Web.</p>
+<section><h2>Hangfire · recurring work</h2><pre>featureState.AddOrUpdateJob&lt;PracticeJob&gt;(app.Services,
+    "enhanced-submit", "enhanced-submit-practice",
+    job =&gt; job.RunAsync(), Cron.Minutely());</pre>
+<p>Registered recurring jobs: <strong id="jobs">@(Model.JobIds.Count == 0 ? "none" : string.Join(", ", Model.JobIds))</strong>.</p>
+<p>When the environment toggle is AlwaysOn, the package registers a real recurring job. When it turns off, the package removes it. The sample worker writes a harmless timestamp to the server log each minute. In-memory Hangfire storage resets when the app stops.</p>
+<p>This integration follows global definition state. Do not use a user-targeted flag to schedule a process-wide job. Change <code>enhanced-submit</code> in Toggly, then refresh to see registration/removal.</p></section>
+<section><h2>HealthChecks · readiness information</h2><pre>services.AddHealthChecks().AddTogglyHealthCheck(configure: options =&gt;
+    options.RequiredFeatures = ["api-v2"]);</pre>
+<p><a href="/health/toggly">Run the actual health endpoint</a>. It checks definition loading, freshness and the required <code>api-v2</code> baseline flag. Fresh offline definitions can report Healthy even without a live WebSocket; this is not proof of Toggly connectivity. Stale definitions with a disconnected socket fail the check.</p>
+<p>The sample suppresses detailed diagnostics in health responses. Inspect your server logs for failures and protect diagnostic endpoints in deployed apps.</p></section>
+<section><h2>NSwag · feature-aware OpenAPI</h2><pre>document.AddFeatureGateFiltering(services);
+app.UseFeatureAwareOpenApi();</pre><p><a href="/swagger/v1/swagger.json">Generate the actual OpenAPI document</a>. The <code>/api/beta</code> path disappears when <code>beta-access</code> is off, and the endpoint itself returns 404.</p>
+<p>The middleware generates the document per request rather than serving a stale cached feature decision. Feature gates on both controller and action are supported. OpenAPI visibility is documentation, not authentication.</p></section>

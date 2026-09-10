@@ -1,0 +1,20 @@
+@model ShowcaseModel
+@{ ViewData["Title"] = "Home"; }
+<h1>Ship one app. Choose what is on.</h1>
+<p class="lead">A feature flag is a named decision you can change without deploying new code. This sample walks from your first Boolean gate to user targeting and background jobs.</p>
+<section><h2>Try your first flag</h2><ol><li>Open <a href="/gates">Declarative gates</a> to see the dashboard content.</li>
+<li>Follow the README to connect your dedicated Toggly app. Turn <code>new-dashboard</code> off in its Production environment.</li>
+<li>Refresh this page and the gates page. The snapshot becomes OFF and the fallback appears. Turn it on to restore the feature.</li></ol>
+<p>In offline practice, set <code>Sample__DashboardEnabled=false</code> before starting the app to try the same transition. Restart when changing offline fixture settings.</p></section>
+<section><h2>Choose a section</h2><div class="cards">
+<a href="/gates"><strong>Show or hide UI</strong><span>Feature, negate, All / Any, named variants</span></a>
+<a href="/programmatic"><strong>Choose application behavior</strong><span>Async checks, defaults and server endpoints</span></a>
+<a href="/identity"><strong>Target a person</strong><span>Request context and isolated sessions</span></a>
+<a href="/orders"><strong>Target an order</strong><span>VIP rules and missing-context defaults</span></a>
+<a href="/filters"><strong>Explore the eleven filters</strong><span>Matching and Non-matching presets</span></a>
+<a href="/integrations"><strong>Connect native integrations</strong><span>Hangfire, HealthChecks and NSwag</span></a></div></section>
+<section><h2>Flag checklist + current request snapshot</h2><p>These values come from the SDK on this request. An unknown flag is OFF; it is not proof that your dashboard flag is configured correctly.</p>
+<table><thead><tr><th>Required key</th><th>Result</th></tr></thead><tbody>
+@foreach (var flag in Model.Flags) { <tr><td><code>@flag.Key</code></td><td><span class="@(flag.Value ? "on" : "off")">@(flag.Value ? "ON" : "OFF")</span></td></tr> }
+</tbody></table><p>Last definitions check: @(Model.LastDefinitionsCheck?.ToString("u") ?? "none"). WebSocket: @(Model.Connected ? "connected" : "disconnected").</p>
+<a href="/api/snapshot">Read this snapshot as JSON</a></section>
