@@ -67,8 +67,9 @@ the dependency byte inventory.
 1. At [app.toggly.io](https://app.toggly.io), select workspace **Toggly Samples**.
 2. Create **Java Spring WebFlux SDK Sample**. Choose **Java** technology.
 3. Use environment **Production**.
-4. Set Allowed Web Origins to **http://localhost:8089** and **http://127.0.0.1:8089**. Server-side definitions
-   do not use browser CORS, but keep the app's origin aligned with this sample.
+4. Set **Application URL** to **http://localhost:8089**; add **http://localhost:8089**
+   and **http://127.0.0.1:8089** under **Allowed Web Origins** only if the existing
+   client-side section is present. Server-side definitions do not use browser CORS.
 5. Add context kind **Order** with `Id` (**string, key**), `Vip` (**boolean**),
    and `Total` (**number; optional in sample data**). The context editor has no
    per-property optional checkbox.
@@ -108,6 +109,10 @@ feature list to open Conditions. Set segment Percentage to 100, then Save
 conditions and Save Changes/Request
 Changes. Order rules use Add condition on Order (Vip equals Boolean true);
 remove the default AlwaysOn row so it cannot enable the flag independently.
+
+Review the confirmation dialog and choose **Save** or **Request** to submit.
+See the [shared setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+for the complete application and condition controls.
 
 ### Java picker limitation and manual fallback
 
