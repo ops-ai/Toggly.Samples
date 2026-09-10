@@ -95,9 +95,10 @@ this opens editing rather than immediately turning it off.
   adding the Order condition. Each of the eleven filter flags should retain
   only its intended rule; an extra AlwaysOn rule can enable a flag independently.
 
-Select **Save conditions**, then the outer **Save Changes** or **Request Changes**.
-The inner button stages your edit in the page; the outer button submits it.
-Complete the account's normal approval workflow when requested.
+Select **Save conditions** to stage your edit in the page. The outer **Save
+Changes** or **Request Changes** opens a confirmation dialog. Review the changes
+there, then select **Save** or **Request** in that dialog to submit them. Complete
+the account's normal approval workflow when requested.
 
 The UI labels **Operating System** with selector ID `OS`; its values describe
 operating systems such as Mac, separately from Device Type Macintosh. Targeting's
