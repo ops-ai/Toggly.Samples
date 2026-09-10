@@ -62,10 +62,11 @@ The lock covers dependencies, while plugin versions are fixed in the POM.
 1. At [app.toggly.io](https://app.toggly.io), select workspace **Toggly Samples**.
 2. Create **Java Servlet SDK Sample**. Choose **Java** technology.
 3. Use environment **Production**.
-4. Set Allowed Web Origins to **http://localhost:8086**. Server-side definitions
-   do not use browser CORS, but keep the app's origin aligned with this sample.
+4. Set **Application URL** to **http://localhost:8086**; add that origin under
+   **Allowed Web Origins** only if the existing client-side section is present.
+   Server-side definitions do not use browser CORS.
 5. Add context kind **Order** with `Id` (**string, key**), `Vip` (**boolean**),
-   and `Total` (**number, optional**).
+   and `Total` (**number, optional in sample data**, not an editor checkbox).
 6. Add the five application flags below. Create a **Filters** category and add
    the eleven filter flags in the following table.
 7. Copy the application key into your ignored `.env` as `TOGGLY_APP_KEY`. Keep
@@ -96,7 +97,10 @@ In the signed definitions wire format, segment lists use indexed keys such as
 parameter; 100 means every matching identity. ContextProperty parameters are
 `Property=Vip`, `Operator=eq`, `Value=true`, `ValueType=boolean`, with
 `contextKind=Order` on the feature definition. The test fixture demonstrates
-these exact shapes. Use dashboard rule controls when creating your live app.
+these exact shapes. Java's picker omits **Percentage, Targeting and TimeWindow**.
+Follow the [shared setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+for visible conditions, final save controls, and the authorized single-feature
+management API fallback. The SDK app key is not management authorization.
 
 Provisioning is a manual step. The sample's deterministic tests do not establish
 that your live app, allowed origins, context catalog or flags have been created.
