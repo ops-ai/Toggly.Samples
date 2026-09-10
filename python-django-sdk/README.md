@@ -160,7 +160,10 @@ These are human-run steps for the shared [flag template](../docs/FLAG_TEMPLATE.m
 
 1. In [app.toggly.io](https://app.toggly.io), choose workspace **Toggly Samples**.
    Create **Python Django SDK Sample**, technology **Python**, environment
-   **Production**. Add origins `http://localhost:8000` and `http://127.0.0.1:8000`.
+   **Production**. Set **Application URL** to `http://localhost:8000`; add that
+   origin and `http://127.0.0.1:8000` under **Allowed Web Origins** only if the
+   existing client-side section is present. Server-only definitions do not use
+   browser CORS.
 2. In **Contexts**, choose **New Context**, Kind `Order`. Add `Id` type string,
    `Vip` type boolean, `Total` type number; choose `Id` as **Key property**, Save.
    The UI has no optional-property checkbox: optional `Total` describes entity data.
@@ -175,7 +178,10 @@ These are human-run steps for the shared [flag template](../docs/FLAG_TEMPLATE.m
 5. In the environment feature list, the flag switch opens the inline Conditions
    editor. Use the available **User filter** types or **Add condition on Order**.
    Set every segment Percentage explicitly to **100**. Save conditions, then
-   **Save Changes** or **Request Changes**, as offered; finish any approval process.
+   **Save Changes** or **Request Changes** to open the confirmation dialog.
+   Review it and choose **Save** or **Request** to submit; finish any approval
+   process. See the [shared setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+   for the complete application and condition controls.
 6. Python's source-defined picker omits **Percentage, Targeting and TimeWindow**.
    Use the ordinary single-feature management API fallback below for these rules
    (or consistently for all table rows). Do not change application technology or
