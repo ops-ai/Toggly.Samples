@@ -47,7 +47,9 @@ Fastify (`nodejs-fastify-sdk/`), Hono (`nodejs-hono-sdk/`), and Koa
 when their samples land.
 
 All new samples follow the [Sample Contract](docs/SAMPLE_CONTRACT.md) and the
-shared [flag and app template](docs/FLAG_TEMPLATE.md).
+shared [flag and app template](docs/FLAG_TEMPLATE.md). Follow the
+[application setup guide](docs/APP_SETUP.md) for dashboard controls and the
+management API procedure when a filter type is missing from the picker.
 
 ## Related
 
