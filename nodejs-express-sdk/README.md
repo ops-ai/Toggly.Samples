@@ -81,9 +81,7 @@ The preset device value `Macintosh` is the installed evaluator's device-family
 match, not a generic `desktop` label. Custom request mode uses actual HTTP
 headers; selecting a preset deliberately overrides segment fields for repeatability.
 
-## Provision the live application (pending)
-
-Browser access to app.toggly.io required sign-in during implementation. No app or flags were provisioned and no live-key verification is claimed.
+## Create the Toggly application
 
 1. Sign into [Toggly](https://app.toggly.io), use a workspace you can manage (the one from signup is enough). Create **Node Express SDK Sample**, choose the matching Express/Node technology and **Production** environment. Allow `http://localhost:3000`.
 2. Create context kind **Order**: `Id` string/key, `Vip` boolean, `Total` number.
