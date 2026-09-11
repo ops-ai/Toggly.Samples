@@ -1,0 +1,10 @@
+<section class="card">
+  <p class="eyebrow">REQUEST OWNERSHIP</p>
+  <h2>A persona belongs to this browser</h2>
+  <p>Signed, HTTP-only session cookies keep these demo inputs separate between browsers. Each request constructs a new immutable native context before its first evaluation. The shared client holds definitions, never a global current user.</p>
+  <%= partial('context_controls') %>
+</section>
+<section class="card">
+  <h2>Current native context</h2><pre><code><%= h(JSON.pretty_generate(@context.to_h)) %></code></pre><p>Choosing actual headers maps the current HTTP request with <code>Toggly::HttpRequestMapper</code>. It does not infer identity or claims. In production, trust forwarding headers only from your controlled proxy.</p><pre><code>base = Toggly::Context.new(identity: identity, claims: claims)
+context = Toggly::HttpRequestMapper.merge_into(headers, base)
+client.enabled?("beta-access", context: context)</code></pre></section>

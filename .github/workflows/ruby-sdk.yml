@@ -1,0 +1,49 @@
+name: Ruby SDK Sample
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'ruby-sdk/**'
+      - '.github/workflows/ruby-sdk.yml'
+      - '.github/dependabot.yml'
+      - 'README.md'
+      - 'docs/**'
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'ruby-sdk/**'
+      - '.github/workflows/ruby-sdk.yml'
+      - '.github/dependabot.yml'
+      - 'README.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ruby-sdk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ruby-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ruby-sdk
+    env:
+      RACK_ENV: production
+      TOGGLY_APP_KEY: ''
+      TOGGLY_ENVIRONMENT: Production
+      BUNDLE_FROZEN: 'true'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.6'
+          bundler: '4.0.20'
+          bundler-cache: true
+          working-directory: ruby-sdk
+      - run: bundle check
+      - run: bundle exec rake test build
+      - run: bundle exec ruby script/production_smoke.rb
