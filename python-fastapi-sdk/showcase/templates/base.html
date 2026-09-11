@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title | default('Feature flag workshop') }} · Toggly + FastAPI</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="eyebrow">TOGGLY SAMPLES · PYTHON</div>
+    <h1>FastAPI feature flag workshop</h1>
+    <p>Learn a flag, change its context, and watch the native SDK decide.</p>
+    <p class="status">This session: <strong>{{ persona }}</strong> ·
+      {{ 'Offline fixture' if offline else 'Configured app' }}</p>
+  </header>
+  <nav aria-label="Workshop sections">
+    {% for path, name in sections %}
+      <a href="{{ path }}" {% if request.url.path == path %}aria-current="page"{% endif %}>{{ name }}</a>
+    {% endfor %}
+  </nav>
+  <main>
+    {% if offline %}
+      <aside class="banner" role="status">
+        <strong>Missing TOGGLY_APP_KEY — offline fixture mode</strong>
+        <p>The real SDK evaluates local demonstration rules. These results are
+          not downloaded from a Toggly app. Follow the README to connect yours.</p>
+      </aside>
+    {% endif %}
+    <p class="demo-warning">Local learning app: Alice/Bob controls are demo identities,
+      not authentication. Feature flags do not grant permissions.</p>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>Published toggly + toggly-fastapi · Server-rendered Jinja · Native ASGI lifecycle</footer>
+</body>
+</html>

@@ -20,6 +20,9 @@ export default async function ClientFiltersPage() {
   }
 
   await initSampleToggly()
+  // The route name is a teaching category, not the execution runtime. This file
+  // is a Server Component: it uses the actual incoming browser headers rather
+  // than the editable server-matrix cookies or browser provider state.
   const h = await headers()
   const userAgent = h.get('user-agent') ?? undefined
   const acceptLanguage = h.get('accept-language') ?? undefined

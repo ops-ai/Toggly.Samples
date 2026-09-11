@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Start with one flag</h2>
+<ol>
+  <li>Open Declarative gates. The fixture enables new-dashboard and disables api-v2.</li>
+  <li>Provision your dedicated app using the README and add its key locally.</li>
+  <li>Change new-dashboard in Production, apply it, refresh here, then reload the gates.</li>
+  <li>Read routes.py and gates.html together: the SDK decides; the template chooses the UI.</li>
+</ol>
+<div class="cards">
+  {% for path, name in sections if path != '/' %}
+    <a href="{{ path }}">{{ name }} →</a>
+  {% endfor %}
+</div>
+<section>
+  <h2>Client status and refresh</h2>
+  <p>Initialized: {{ initialized }} · Last refresh: {{ last_refresh | default('none', true) }} ·
+    Recorded refresh error: {{ refresh_error }}</p>
+  <p>Each worker owns one shared definition client. Contextual checks below do not
+    fetch definitions for every user. Live polling defaults to 30 seconds.</p>
+  <form method="post" action="/refresh/">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button>Refresh definitions now</button>
+  </form>
+</section>
+<section>
+  <h2>Sixteen-flag checklist and live request snapshot</h2>
+  <p>This evaluates every key with this request's complete context.
+    Shared client identity: {{ snapshot.shared_identity | default('none', true) }}.</p>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Flag key</th><th>Decision</th></tr></thead>
+      <tbody>
+        {% for key, enabled in snapshot.flags.items() %}
+          <tr><td><code>{{ key }}</code></td>
+            <td class="{{ 'on' if enabled else 'off' }}">{{ 'ON' if enabled else 'OFF' }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <pre>{{ snapshot | tojson(indent=2) }}</pre>
+  <a href="/api/snapshot/">Read the same contextual snapshot as JSON</a>
+</section>
+{% endblock %}

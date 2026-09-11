@@ -1,0 +1,18 @@
+@model ShowcaseModel
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>@ViewData["Title"] · Toggly .NET sample</title><link rel="stylesheet" href="/site.css"/></head>
+<body><header><a class="brand" href="/">Toggly <span>.NET SDK</span></a><span class="eyebrow">LEARN BY CHANGING A FLAG</span></header>
+<div class="shell"><nav aria-label="Sample sections">
+<a href="/">01 · Home</a><a href="/gates">02 · Declarative gates</a><a href="/programmatic">03 · Programmatic API</a>
+<a href="/identity">04 · Identity</a><a href="/orders">05 · Order context</a><a href="/filters">06 · Filters matrix</a>
+<a href="/integrations">07 · Integrations</a></nav><main>
+@if (Model.Offline) { <aside class="banner" role="status"><strong>Offline practice — missing Toggly app key.</strong>
+These are local fixture definitions evaluated by the real SDK. Add TOGGLY_APP_KEY in your shell to connect your app; see README. No live Toggly service is contacted.</aside> }
+else { <aside class="banner live">Connected configuration · signed definitions · refresh this page after changing a flag. A configured key alone does not prove definitions have loaded.</aside> }
+<div class="context"><span>Persona: <strong>@(Model.Persona.Name.Length == 0 ? "anonymous" : Model.Persona.Name)</strong></span>
+<span>Order: @Model.Persona.Order.Id</span><span>Definitions: @(Model.Loaded ? "loaded" : "not loaded; defaults OFF")</span></div>
+@RenderBody()
+<footer>Feature flags choose behavior. Authentication and authorization still protect your data.<br/>Source map and step-by-step setup: dotnet-sdk/README.md</footer>
+</main></div></body></html>
