@@ -1,0 +1,107 @@
+<main class="workshop">
+  <p>ANGULAR · FEATURE FLAGS, STEP BY STEP</p>
+  <h1>Ship the feature.<br />Choose the experience.</h1>
+  <p>
+    Follow one flag through native templates, a service check, a route guard and
+    an Order-specific decision.
+  </p>
+  <div class="notice" data-testid="mode">
+    {{w.offline ? 'OFFLINE FIXTURES · No App Key configured. Native SDKs consume
+    recorded payloads; no real Toggly requests. Add your public App Key to
+    .env.local and restart.' : 'LIVE SDK · Signed definitions. Change flags in
+    your Toggly application.'}}
+  </div>
+  @if(w.error()){
+  <p role="alert">
+    Most recent SDK error: {{w.error()}}. The SDK retains this diagnostic after
+    recovery; the live snapshot shows current results.
+  </p>
+  }
+  <nav class="row">
+    <a href="#home">01 Start</a><a href="#gates">02 Gates</a
+    ><a href="#actions">03 Actions</a><a href="#identity">04 Identity</a
+    ><a href="#order">05 Order</a><a href="#filters">06 Filters</a
+    ><a href="#variants">07 Variants</a><a href="#surfaces">08 Angular</a>
+  </nav>
+  <section class="panel" id="home">
+    <h2>01 · Your first flag: new-dashboard</h2>
+    <p>
+      Switch it off and watch native component/directive content disappear while
+      negate restores the old UI. Live mode follows dashboard updates through
+      native refresh notifications.
+    </p>
+    @if(w.snapshot$ | async; as flags){
+    <div class="snapshot" data-testid="snapshot-ready">
+      @for(key of keys;track key){<button
+        [attr.data-testid]="'toggle-'+key"
+        [disabled]="!w.offline || w.busy || key==='ExpressCheckout'"
+        (click)="w.toggle(key)"
+      >
+        {{key}}: {{flags[key] ? 'ON' : 'OFF'}}</button
+      >}
+    </div>
+    }@else{
+    <p>Loading native SDK checks…</p>
+    }
+    <p>
+      The checklist and matrix are a subscription bridge over actual service
+      evaluations, including background updates and the selected Order.
+    </p>
+  </section>
+  <app-native-gates />
+  <section class="panel" id="identity">
+    <h2>04 · Target a session, not a permission</h2>
+    <button [disabled]="w.busy" (click)="w.selectPreset('matching')">
+      Matching · alice
+    </button>
+    <button [disabled]="w.busy" (click)="w.selectPreset('nonmatching')">
+      Non-matching · bob
+    </button>
+    <pre data-testid="identity">{{users[w.preset] | json}}</pre>
+    <p>
+      Identity, groups and claims are supplied before the first evaluation.
+      Later setContext refreshes each service once; do not add a duplicate
+      refresh. Browser identity/claims are untrusted presentation inputs, never
+      authorization.
+    </p>
+  </section>
+  <app-order-panel /><app-filter-matrix /><app-variants />
+  <section class="panel" id="surfaces">
+    <h2>08 · Angular-specific building blocks</h2>
+    <p>
+      provideToggly configures the injectable root service in standalone
+      bootstrap. NgxFeatureFlagsTogglyModule imports the actual component,
+      template, flag, builder and variant directives.
+    </p>
+    <button (click)="w.local()">
+      Device prerequisite: {{w.localAllowed ? 'ready' : 'not ready'}}
+    </button>
+    <p>
+      Native local gates AND with the remote result. A local prerequisite can
+      restrict an enabled flag but cannot enable a denied one.
+    </p>
+    <a routerLink="/beta" data-testid="beta-link"
+      >Try the native guarded Beta route</a
+    >
+    <p>
+      featureFlagGuard reads beta-access before navigation and redirects denied
+      attempts to the existing workshop. It is not a server access-control
+      boundary.
+    </p>
+    <button [disabled]="!w.offline || w.busy" (click)="w.failure()">
+      {{w.transportFailed ? 'Recover fixture transport' : 'Simulate fixture
+      transport failure'}}
+    </button>
+    <p>
+      Failures surface through the native lastError value. Safe OFF defaults
+      keep startup usable; cache persistence is disabled for independent
+      workshop sessions.
+    </p>
+    <p>
+      Zone.js, provideZoneChangeDetection and Eager host components support this
+      SDK's asynchronous native rendering on Angular22. Browser crypto
+      externalization keeps the genuine WebCrypto signature verifier enabled; it
+      is not a crypto replacement.
+    </p>
+  </section>
+</main>

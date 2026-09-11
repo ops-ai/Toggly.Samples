@@ -1,0 +1,36 @@
+<%= render 'controls' %>
+<section class="card">
+  <h2>Eleven filters, exact shared presets</h2>
+  <p>Matching and Non-matching columns evaluate immutable reference contexts. Current follows this browser’s controls.
+    All columns use the published SDK against the currently loaded definitions.</p>
+  <% matching = flags_for(RequestContext.build(RequestContext::PRESETS.fetch('matching'))) %>
+  <% other = flags_for(RequestContext.build(RequestContext::PRESETS.fetch('non-matching'))) %>
+  <div class="table-scroll">
+    <table>
+      <caption>Native outcomes; package limitations remain visible</caption>
+      <thead>
+        <tr>
+          <th>Filter</th>
+          <th>Matching</th>
+          <th>Non-matching</th>
+          <th>Current</th>
+          <th>What to expect</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% Catalog::FILTERS.each do |suffix, name, note| %>
+          <% key = "filter-#{suffix}" %>
+          <tr data-filter="<%= key %>">
+            <td><strong><%= name %></strong><br><code><%= key %></code></td>
+            <td><%= state_badge(matching.fetch(key)) %></td>
+            <td><%= state_badge(other.fetch(key)) %></td>
+            <td><%= state_badge(feature_enabled?(key)) %></td>
+            <td><%= note %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <p>Reference native results with the shared fixture: Targeting is ON/ON; Macintosh DeviceType is OFF/OFF.
+    The rules remain unchanged. Percentage may be the same for both identities. No extra denial rule or replacement parser is introduced.</p>
+</section>
