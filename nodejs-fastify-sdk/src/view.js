@@ -1,3 +1,5 @@
+// Rendering consumes server-evaluated booleans; this page does not initialize a
+// browser SDK. Escape request-derived text when inserting it into HTML.
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const sections = ['home', 'declarative', 'programmatic', 'identity', 'entity', 'filters', 'unique', 'configuration'];
 export function page({ section, source, context, order, flags, filters, query }) {
@@ -7,6 +9,9 @@ export function page({ section, source, context, order, flags, filters, query })
   const roleValues = [...new Set(['user', 'admin', role])].map(value => [value, value]);
   const link = (path, text) => `<a href="${path}${query ? `?${escape(query)}` : ''}">${text}</a>`;
   const snapshot = names => `<table><tr><th>Flag checklist</th><th>Evaluated for this request</th></tr>${names.map(key => `<tr><td>${key}</td><td>${flags[key] ? 'ON' : 'OFF'}</td></tr>`).join('')}</table>`;
+  // "Variant" here means the true/false branch of a boolean flag. No experiment
+  // allocation, named treatment, or conversion measurement happens in this view.
+  // Each form causes a new request/context; it never changes a global SDK identity.
   const content = {
     home: `<p>Explore eight sections using the same flags and presets as the Next.js showcase.</p>${snapshot(Object.keys(flags))}`,
     declarative: `<h2>${flags['new-dashboard'] ? 'Dashboard v2 variant' : 'Classic dashboard variant'}</h2><p>These variants are boolean content branches; the published SDK has no experiment assignment API.</p>${['enabled', 'negate', 'all', 'any', 'beta'].map(name => link(`/gates/${name}`, `${name} HTTP gate`)).join(' · ')}<p>Gates execute the actual Fastify featureGate preHandler. Disabled routes return 404; beta redirects here.</p>`,

@@ -1,0 +1,21 @@
+---
+title: Beta guide
+x-feature: beta-access
+---
+
+import { Feature } from "@ops-ai/toggly-docusaurus-plugin/client";
+
+# A native MDX flag
+
+This page's `x-feature` frontmatter enters the plugin's page-feature manifest.
+The plugin may hide its navbar link; a public static URL is not authorization.
+
+<Feature flag="new-dashboard">
+  <p>New documentation visible</p>
+</Feature>
+<Feature flag="new-dashboard" negate>
+  <p>Existing documentation visible</p>
+</Feature>
+
+During this sample's static build, both branches are retained. Browser flags
+choose the rendered branch after hydration. Keep secrets out of either branch.

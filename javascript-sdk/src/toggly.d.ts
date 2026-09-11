@@ -1,3 +1,6 @@
+// Compatibility declarations for the installed 1.7.4 browser artifact: its
+// package.json points to missing typings. These declarations add no runtime
+// implementation or ESM exports; tests exercise the actual window.Toggly bundle.
 declare module '@ops-ai/feature-flags-toggly' {
 }
 

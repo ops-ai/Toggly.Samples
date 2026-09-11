@@ -15,6 +15,9 @@ export default async function OrdersPage() {
     return <p className="off">Toggly client not initialized.</p>
   }
 
+  // Keep the user constant and vary only the Order. The registered mapper makes
+  // Order.Vip available to ContextProperty; it does not make this user a VIP.
+  // An entity gate selects behavior, not permission to view someone else's order.
   const rows = await Promise.all(
     ORDERS.map(async (order) => {
       const on = await toggly.isFeatureOn(

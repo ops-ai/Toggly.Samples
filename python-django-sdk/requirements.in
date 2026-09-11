@@ -1,0 +1,9 @@
+# Exact published versions checked on 2026-09-10. Compile with uv pip compile --generate-hashes.
+Django==6.1.1
+toggly==0.7.0
+toggly-django==0.3.0
+gunicorn==26.2.0
+python-dotenv==1.2.3
+# Used only by deterministic test fixtures to sign local definitions.
+cryptography==50.0.1
+whitenoise==6.12.0

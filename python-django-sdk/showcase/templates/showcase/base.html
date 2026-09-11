@@ -1,0 +1,10 @@
+{% load static %}<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Python Django · Toggly SDK Sample</title><link rel="stylesheet" href="{% static 'showcase/style.css' %}"></head>
+<body><header><p class="eyebrow">TOGGLY / PYTHON</p><h1>Django SDK workshop</h1><p>One request. One identity. Native feature decisions.</p></header>
+<nav aria-label="Sections"><a href="/">Home</a><a href="/gates/">Declarative gates</a><a href="/programmatic/">Programmatic API</a><a href="/identity/">Identity</a><a href="/orders/">Order context</a><a href="/filters/">Filters matrix</a><a href="/integrations/">Django integration</a></nav>
+<main>{% if offline %}<aside class="banner"><strong>Missing TOGGLY_APP_KEY — offline fixture mode</strong><p>These are deterministic demonstration definitions evaluated by the installed SDK. Add your dedicated app key to .env and restart to read real definitions. No live app has been provisioned for you.</p></aside>{% endif %}
+<p class="status">Persona: <strong>{{ persona }}</strong> · Preset: {{ preset }} · Server-rendered, evaluated on each request</p>
+<aside class="demo-warning">Local learning app: persona buttons intentionally sign in demo users without passwords. Do not expose this sample as an authentication service.</aside>
+{% block content %}{% endblock %}</main><footer>Python 3.14.7 · Django 6.1.1 · toggly 0.7.0 · toggly-django 0.3.0</footer></body></html>

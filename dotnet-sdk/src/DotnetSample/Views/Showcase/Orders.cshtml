@@ -1,0 +1,10 @@
+@model ShowcaseModel
+@{ ViewData["Title"] = "Order context"; }
+<h1>A person can have more than one order.</h1><p class="lead">Pass the actual entity to the decision. Being an admin does not make every order VIP.</p>
+<section><h2>Choose an order</h2><p><a class="button" href="/orders?order=vip">VIP order</a> <a class="button" href="/orders?order=standard">Standard order</a></p>
+<dl><dt>Id</dt><dd>@Model.Persona.Order.Id</dd><dt>Vip</dt><dd>@Model.Persona.Order.Vip</dd><dt>Total</dt><dd>@Model.Persona.Order.Total</dd></dl>
+<pre>await features.IsEnabledAsync("ExpressCheckout", order);</pre>
+<feature name="ExpressCheckout" context="@Model.Persona.Order"><div class="result" id="express-on">Express checkout available for this order.</div></feature>
+<feature name="ExpressCheckout" context="@Model.Persona.Order" negate="true"><div class="result" id="express-off">Use standard checkout for this order.</div></feature></section>
+<section><h2>Fail closed when context is missing</h2><table><tr><th>Evaluation</th><th>Result</th></tr><tr><td>Registered Order instance</td><td>@Model.Flags[FeatureFlags.Express]</td></tr><tr><td>No entity argument</td><td>@Model.NoEntity</td></tr><tr><td>Unregistered anonymous object with Vip=true</td><td>@Model.UnknownEntity</td></tr></table>
+<p>Register the context kind once in Program.cs. <code>Id</code> identifies this entity; <code>Vip</code> drives the rule. User filters run first when a flag combines user and entity rules.</p></section>

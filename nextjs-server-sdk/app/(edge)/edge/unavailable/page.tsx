@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+// This is an alternate teaching destination only: current middleware uses
+// redirectTo=/edge/waitlist, not rewriteTo or onDisabled for this page.
 export default function EdgeUnavailablePage() {
   return (
     <>

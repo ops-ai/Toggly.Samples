@@ -7,6 +7,9 @@ import {
   FeatureVariant,
 } from '@ops-ai/nextjs-toggly-client'
 
+// The provider owns asynchronous state; loading UI prevents treating "not yet
+// loaded" as a deliberate disabled result. negate inverts the combined gate.
+// FeatureVariant and FeatureSwitch choose boolean UI branches, not A/B cohorts.
 function ComponentsDemo() {
   return (
     <>

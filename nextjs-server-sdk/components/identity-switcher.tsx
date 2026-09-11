@@ -9,6 +9,9 @@ export function IdentitySwitcher({ current }: { current?: string }) {
   const router = useRouter()
   const [value, setValue] = useState(current ?? '')
 
+  // A session cookie makes the next server render see this targeting key. Refresh
+  // reruns Server Components; it does not call the browser SDK setIdentity hook
+  // and does not authenticate a user. No expiry is set on a nonempty cookie.
   function setIdentity(next: string) {
     if (next) {
       document.cookie = `${COOKIE}=${encodeURIComponent(next)}; path=/; SameSite=Lax`
