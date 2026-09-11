@@ -48,6 +48,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Python Django SDK Sample | Python 3.14 + Django 6.1 | [`python-django-sdk/`](python-django-sdk/) | Native middleware, decorators, templates, session identity, Order and eleven-filter matrix |
 | Python Flask SDK Workshop | Flask 3 + Python 3.14 | [`python-flask-sdk/`](python-flask-sdk/) | Native extension, Jinja, decorators, Blueprint gates, request identity and Order/filter matrix |
 | Python FastAPI SDK Sample | FastAPI 0.141 + Python 3.14 | [`python-fastapi-sdk/`](python-fastapi-sdk/) | Native ASGI middleware, dependencies, router gates, async variants, request identity, Order and filter matrix |
+| Ruby SDK Sample | Ruby 4 / Rack 3 / Puma 8 | [`ruby-sdk/`](ruby-sdk/) | Native request contexts, ERB gates, Order, eleven filters, snapshots and lifecycle |
 
 New to feature flags? Start with a sample's **first-toggle exercise**, then its
 source-reading map. Follow configuration → initialization → one flag check →

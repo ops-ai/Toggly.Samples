@@ -1,0 +1,33 @@
+# frozen_string_literal: true
+
+require 'rake/testtask'
+require 'erb'
+
+Rake::TestTask.new(:test) do |task|
+  task.pattern = 'test/*_test.rb'
+end
+
+desc 'Compile every Ruby/ERB source and verify the production application boots without a key'
+task :build do
+  (Dir['{lib,config,script}/**/*.rb'] + %w[app.rb config.ru]).each do |path|
+    RubyVM::InstructionSequence.compile_file(path)
+  end
+  Dir['views/*.erb'].each do |path|
+    RubyVM::InstructionSequence.compile(ERB.new(File.read(path)).src, path)
+  end
+  require_relative 'app'
+  require 'rack/mock'
+  service = RubyShowcase::FeatureService.new(RubyShowcase::Configuration.new({}))
+  begin
+    app = RubyShowcase::Application.build(service: service, secret: 'build-only-not-a-deployed-secret-' * 3)
+    RubyShowcase::Catalog::SECTIONS.each_key do |path|
+      response = Rack::MockRequest.new(app).get(path)
+      raise "Production render failed for #{path}" unless response.status == 200
+    end
+    puts 'Ruby and ERB compiled; all eight production pages rendered with offline defaults.'
+  ensure
+    service.close
+  end
+end
+
+task default: %i[test build]

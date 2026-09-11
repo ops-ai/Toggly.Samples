@@ -1,0 +1,40 @@
+<div class="two-columns">
+  <section class="card">
+    <p class="eyebrow">GET /api/v2</p>
+    <h2>Enforce the route</h2>
+    <p>The server checks <code>api-v2</code> with this request’s context. OFF returns HTTP 403; ON returns JSON with <code>allowed: true</code>.</p>
+    <p>Current gate <%= state_badge(enabled?('api-v2')) %>
+    </p>
+    <a class="button secondary" href="/api/v2">Call the API ↗</a>
+    <pre><code>allowed = client.enabled?(
+  "api-v2", context: context
+)
+status = allowed ? 200 : 403</code></pre>
+  </section>
+  <section class="card">
+    <p class="eyebrow">GET /beta</p>
+    <h2>Package integration boundary</h2>
+    <p>Core Ruby has no Rack middleware. This Rack route composes a native <code>beta-access</code> check before returning content.</p>
+    <p>Current gate <%= state_badge(enabled?('beta-access')) %>
+    </p>
+    <a class="button secondary" href="/beta">Try the beta route ↗</a>
+    <p class="small">Demo identity is not access control. A real application must authenticate and authorize the user independently.</p>
+  </section>
+</div>
+<section class="card">
+  <p class="eyebrow">POST /actions/submit</p>
+  <h2>Check again on the server</h2>
+  <p>Submit remains callable so you can observe the actual HTTP denial. The server verifies CSRF, evaluates <code>enhanced-submit</code>, validates the title, then records native usage and three metric types. No business data is persisted.</p>
+  <p>Action gate <%= state_badge(enabled?('enhanced-submit')) %>
+  </p>
+  <form action="/actions/submit" method="post" class="form-row">
+    <%= csrf_field %>
+    <label>Demo title<input name="title" maxlength="80" required value="A better checkout">
+    </label>
+    <button type="submit">Submit demo →</button>
+  </form>
+  <pre><code>client.record_usage("enhanced-submit", identity: context.identity)
+client.measure("submission-title-length", title.length, feature: "enhanced-submit")
+client.increment_counter("submissions", feature: "enhanced-submit")
+client.observe("submission-size", title.bytesize, feature: "enhanced-submit")</code></pre>
+</section>

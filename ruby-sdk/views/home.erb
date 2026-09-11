@@ -1,0 +1,51 @@
+<section class="hero card">
+  <div>
+    <span class="tag">START HERE</span>
+    <h2>Meet your next<br>feature release.</h2>
+    <p>One long-lived client loads definitions. Each request brings its own identity, headers and Order to the native evaluator.</p>
+    <a class="button" href="/gates">Explore the gates <span>↗</span>
+    </a>
+  </div>
+  <div class="hero-code">
+    <span class="code-label">YOUR FIRST CHECK</span>
+    <pre><code>context = Toggly::Context.new(
+  identity: "alice"
+)
+
+client.enabled?(
+  "new-dashboard",
+  context: context
+)</code></pre>
+    <p>Current result <%= state_badge(enabled?('new-dashboard')) %>
+    </p>
+  </div>
+</section>
+<section class="card">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">01 / TRY IT</p>
+      <h2>Your first flag, in four steps</h2>
+    </div>
+  </div>
+  <ol class="steps">
+    <li>Start with no key and see the visible OFF fallback.</li>
+    <li>Use <a href="/setup">Configuration</a> to connect your own app, or run the README’s local fixture command.</li>
+    <li>Open <a href="/gates">Declarative gates</a>. Change <code>new-dashboard</code> in your app.</li>
+    <li>Wait <%= @service.configuration.refresh_interval %> seconds for native polling, then reload a gate page. The snapshot below checks every 3 seconds.</li>
+  </ol>
+</section>
+<section class="section-grid">
+  <% Catalog::SECTIONS.reject { |path, _| path == '/' }.each_with_index do |(path, (name, description)), index| %>
+    <a class="card section-link" href="<%= h(path) %>">
+      <span class="eyebrow">
+        <%= format('%02d', index + 2) %> / EXPLORE</span>
+      <h3>
+        <%= h(name) %> <span>↗</span>
+      </h3>
+      <p>
+        <%= h(description) %>
+      </p>
+    </a>
+  <% end %>
+</section>
+<%= partial('snapshot') %>

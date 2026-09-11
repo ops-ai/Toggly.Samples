@@ -1,0 +1,33 @@
+<section class="card">
+  <p class="eyebrow">CONFIGURATION STATE</p>
+  <h2>
+    <%= @service.configuration.mode == 'offline' ? 'No app key? The sample still works.' : 'Your runtime configuration' %>
+  </h2>
+  <p>Mode: <strong>
+      <%= h(@service.configuration.mode) %>
+    </strong>. Environment: <strong>
+      <%= h(@service.configuration.environment) %>
+    </strong>. Native ready: <strong>
+      <%= h(@client.ready) %>
+    </strong>.</p>
+  <p>No key selects explicit OFF defaults for all sixteen flags. It makes no definitions request. Supply your application key through the server environment and restart to connect. Keys are never placed in page HTML, browser JavaScript, or session cookies.</p>
+  <pre><code>export TOGGLY_APP_KEY='your-application-key'
+export TOGGLY_ENVIRONMENT=Production
+bundle exec puma -e production -C config/puma.rb</code></pre>
+</section>
+<section class="card">
+  <h2>Set up your own application</h2>
+  <ol class="steps">
+    <li>Workspace: <strong>Toggly Samples</strong>. App name: <strong>Ruby SDK Sample</strong>.</li>
+    <li>Select technology <strong>Ruby on Rails</strong> (<code>ruby-on-rails</code>) in the picker. This sample itself uses plain Ruby/Rack.</li>
+    <li>Environment: <strong>Production</strong>. Application URL: <code>http://localhost:9292</code>. Server-only origins controls are conditional; do not enable browser access simply to reveal them.</li>
+    <li>Add Order with Id string key, Vip boolean and optional Total number. Configure the sixteen keys from the README and bind the two entity flags to Order.</li>
+    <li>Use the normal final Save or approval flow, then reopen and read back the environment, rules and bindings.</li>
+  </ol>
+  <p>See <a href="https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md">the shared application setup guide</a> for actual picker labels and the supported single-feature API recipe when a filter is absent from the catalog.</p>
+</section>
+<section class="card limitation">
+  <h2>Defaults, failure and restored state</h2>
+  <p>Initial connected fetch is synchronous and bounded by the native HTTP timeout. A failed fetch keeps defaults or the last available definitions. The snapshot UI displays native readiness separately from evaluated values: restored definitions may be usable even while readiness is false.</p>
+  <p>Session signing uses ephemeral process-local material unless <code>SESSION_SECRET</code> is provided. A restart then resets demo sessions. Use a stable secret from your normal runtime environment and secure cookies when serving through HTTPS.</p>
+</section>

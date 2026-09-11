@@ -1,0 +1,43 @@
+<div class="preset-row">
+  <% { 'matching' => 'Matching preset', 'non-matching' => 'Non-matching preset' }.each do |preset, label| %>
+    <form action="/context" method="post">
+      <%= csrf_field %>
+      <input type="hidden" name="preset" value="<%= h(preset) %>">
+      <input type="hidden" name="return_to" value="<%= h(@path) %>">
+      <button class="secondary" type="submit">
+        <%= h(label) %>
+      </button>
+    </form>
+  <% end %>
+</div>
+<form action="/context" method="post" class="context-form">
+  <%= csrf_field %>
+  <input type="hidden" name="return_to" value="<%= h(@path) %>">
+  <label>Identity<input name="identity" maxlength="128" value="<%= h(@state['identity']) %>">
+    <small>Empty means anonymous; fixed identity keeps Percentage sticky.</small>
+  </label>
+  <label>Demo role claim<input name="role" maxlength="32" value="<%= h(@state['role']) %>">
+  </label>
+  <label>Country<input name="country" maxlength="2" value="<%= h(@state['country']) %>">
+  </label>
+  <label>Accept-Language<input name="language" maxlength="128" value="<%= h(@state['language']) %>">
+  </label>
+  <label class="wide">User-Agent<input name="user_agent" maxlength="512" value="<%= h(@state['user_agent']) %>">
+  </label>
+  <label>Order<select name="order">
+      <% RequestContext::ORDERS.each_key do |key| %>
+        <option value="<%= h(key) %>" <%= 'selected' if @state['order'] == key %>>
+          <%= h(key) %>
+        </option>
+      <% end %>
+    </select>
+  </label>
+  <label>Header source<select name="header_source">
+      <option value="preset" <%= 'selected' if @state['header_source'] == 'preset' %>>Demo inputs above</option>
+      <option value="actual" <%= 'selected' if @state['header_source'] == 'actual' %>>Actual request headers</option>
+    </select>
+  </label>
+  <div class="wide">
+    <button type="submit">Apply this context →</button>
+  </div>
+</form>

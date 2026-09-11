@@ -1,0 +1,60 @@
+<p class="intro">Plain ERB composes Ruby booleans. The checks below call the native client; ERB conditions and multi-key composition are sample code, not Toggly template helpers.</p>
+<div class="two-columns">
+  <section class="card">
+    <p class="eyebrow">FEATURE</p>
+    <h2>Dashboard gate</h2>
+    <% if enabled?('new-dashboard') %>
+      <div class="result positive">New dashboard is visible.</div>
+    <% else %>
+      <div class="result">Classic dashboard fallback is visible.</div>
+    <% end %>
+    <pre><code>&lt;% if client.enabled?("new-dashboard", context: context) %&gt;
+  New dashboard
+&lt;% else %&gt;
+  Classic dashboard
+&lt;% end %&gt;</code></pre>
+  </section>
+  <section class="card">
+    <p class="eyebrow">NEGATE</p>
+    <h2>Inverse gate</h2>
+    <% if @client.disabled?('new-dashboard', context: @context) %>
+      <div class="result positive">The inverse branch is visible.</div>
+    <% else %>
+      <div class="result">The inverse branch is hidden.</div>
+    <% end %>
+    <pre><code>client.disabled?(
+  "new-dashboard", context: context
+)</code></pre>
+    <p>Native <code>disabled?</code> negates the enabled check and preserves its defaults.</p>
+  </section>
+</div>
+<section class="card">
+  <p class="eyebrow">MULTI-KEY COMPOSITION</p>
+  <h2>All and Any</h2>
+  <% checks = %w[new-dashboard api-v2].map { |key| enabled?(key) } %>
+  <div class="metrics">
+    <div>
+      <span>All flags enabled</span>
+      <strong>
+        <%= state_badge(checks.all?) %>
+      </strong>
+    </div>
+    <div>
+      <span>Any flag enabled</span>
+      <strong>
+        <%= state_badge(checks.any?) %>
+      </strong>
+    </div>
+  </div>
+  <pre><code>checks = %w[new-dashboard api-v2].map do |key|
+  client.enabled?(key, context: context)
+end
+checks.all?
+checks.any?</code></pre>
+  <p>Evaluate both first so native usage sees both checks. Calling <code>all?</code> with a checking block can short-circuit.</p>
+</section>
+<section class="card limitation">
+  <p class="eyebrow">VARIANTS / NATIVE LIMIT</p>
+  <h2>Boolean flags, no variant allocation</h2>
+  <p>Toggly Ruby 0.5.0 does not expose a native variant allocation API. This sample does not assign a substitute variant. Telemetry’s <code>variant:</code> argument labels an event supplied by your application; it does not choose an experimental treatment.</p>
+</section>
