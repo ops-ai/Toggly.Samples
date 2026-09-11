@@ -48,9 +48,7 @@ Trace `ExpressCheckout` from the catalog, through its fixture `ContextProperty` 
 
 `.env.example` documents the server variables; `TOGGLY_APP_KEY` selects the app and `TOGGLY_ENVIRONMENT` selects its environment. `PORT` controls the local listener only. They are read on server startup, so edits require a restart. No browser build prefix such as `VITE_` or `NEXT_PUBLIC_` is involved. The offline command does not load the `.env` files; it supplies its own loopback endpoint and disables signature verification only for that fixture. Do not copy that unsigned configuration into live mode.
 
-## Provision the live application (pending)
-
-Browser access to app.toggly.io required sign-in during implementation. No app or flags were provisioned and no live-key verification is claimed.
+## Create the Toggly application
 
 1. Sign into [Toggly](https://app.toggly.io), use a workspace you can manage (the one from signup is enough). Create **Node Hono SDK Sample**, choose the matching Hono/Node technology and **Production** environment. Allow `http://localhost:3000`.
 2. Create context kind **Order**: `Id` string/key, `Vip` boolean, `Total` number.
