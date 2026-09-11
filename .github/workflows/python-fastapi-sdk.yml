@@ -1,0 +1,55 @@
+name: Python FastAPI SDK sample
+on:
+  pull_request:
+    paths:
+      - 'python-fastapi-sdk/**'
+      - '.github/workflows/python-fastapi-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'docs/APP_SETUP.md'
+      - 'README.md'
+  push:
+    branches: [develop]
+    paths:
+      - 'python-fastapi-sdk/**'
+      - '.github/workflows/python-fastapi-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'docs/APP_SETUP.md'
+      - 'README.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  python-fastapi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: python-fastapi-sdk
+    env:
+      TOGGLY_APP_KEY: ci-placeholder
+      SAMPLE_PRODUCTION: '1'
+      SAMPLE_HTTPS: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: python-fastapi-sdk/.python-version
+          cache: pip
+          cache-dependency-path: python-fastapi-sdk/requirements.txt
+      - name: Install published hash-locked dependencies
+        run: python -m pip install --require-hashes -r requirements.txt
+      - name: Generate process-only FastAPI signing secret
+        run: python -c "import secrets; print('SAMPLE_SESSION_SECRET=' + secrets.token_urlsafe(64))" >> "$GITHUB_ENV"
+      - name: Check dependencies and host configuration
+        run: |
+          python -m pip check
+          python scripts/verify_lock.py
+      - name: Test native FastAPI and signed localhost transport
+        run: python -m unittest discover -s tests -v
+      - name: Build production package and exercise ASGI
+        run: |
+          python -m compileall -q showcase tests scripts asgi.py
+          python -m build --wheel
+          python scripts/smoke.py

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Native FastAPI surfaces</h2>
+<section>
+  <h3>Try actual native routes</h3>
+  <ul>
+    <li><a href="/native/targeted/">require_feature dependency</a> — Alice only.</li>
+    <li><a href="/native/all/">require_features All</a> — fixture returns 403.</li>
+    <li><a href="/native/any/">require_features Any</a> — fixture allows.</li>
+    <li><a href="/native/negate/">feature_gate_required negate</a> — fixture allows.</li>
+    <li><a href="/native/fallback/">feature_flag_required fallback</a> — API v1.</li>
+    <li><a href="/native/switch/">feature_switch</a> — API v1.</li>
+    <li><a href="/native/optional/">FeatureGateDependency</a> — required plus optional states.</li>
+    <li><a href="/beta/welcome/">FeatureFlagRouter</a> — entire beta router gate.</li>
+    <li><a href="/docs">FastAPI OpenAPI UI</a> and <a href="/openapi.json">schema</a>.</li>
+  </ul>
+  <p>OpenAPI describes routes, not your current flag permissions. Use the HTML
+    forms for state-changing examples so they include the session's CSRF token.</p>
+</section>
+<section>
+  <h3>Middleware and lifespan</h3>
+  <p>SessionMiddleware → demo principal/Order mapping → TogglyASGIMiddleware →
+    dependencies and endpoints. The native pure ASGI middleware resets its
+    ContextVar in finally, including exceptions and cancelled requests.</p>
+  <p>TogglyDep provides the same request helper; ContextDep exposes its cached
+    context. Do not pass AsyncTogglyClient to these helpers: they call synchronous
+    methods without awaiting. One sync client serves local evaluations per worker;
+    startup/refresh/close run off the event loop. Remote variants use an explicitly
+    isolated async client only for their action.</p>
+  <p>feature_switch returns a generic callable. The sample's typed wrapper passes
+    Request to that native switch, rather than exposing *args/**kwargs as query
+    parameters. with_feature_context creates a narrower context that drops entity;
+    use explicit with_entity copies for Order examples.</p>
+</section>
+{% endblock %}

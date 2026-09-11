@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Filters matrix</h2>
+<p>Presets supply the exact shared Alice/Chrome/US/VIP or Bob/Firefox/CA/standard
+  data. These are simulated inputs, not claims about this browser or its location.</p>
+<form method="post" action="/filters/">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button name="preset" value="matching">Matching preset</button>
+  <button name="preset" value="nonmatching">Non-matching preset</button>
+</form>
+<section>
+  <p>On small screens, scroll the table horizontally to compare every column.</p>
+  <div class="table-scroll">
+    <table class="matrix-table">
+      <thead><tr><th>Flag / native alias</th><th>Explicit context</th><th>Native helper</th><th>Meaning / limit</th></tr></thead>
+      <tbody>
+        {% for row in rows %}
+          <tr data-key="{{ row.key }}">
+            <td><code>{{ row.key }}</code><br>{{ row.alias }}</td>
+            <td class="{{ 'on' if row.enabled else 'off' }}">{{ 'ON' if row.enabled else 'OFF' }}</td>
+            <td class="{{ 'on' if row.native else 'off' }}">{{ 'ON' if row.native else 'OFF' }}</td>
+            <td>{{ row.note }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p>The native helper extracts identity, groups, some traits and Order. It does not
+    populate structured claims or HTTP request fields. The explicit column copies
+    that context and maps the preset claims/headers using HttpRequestMapper.</p>
+  <pre>{{ demo_context | tojson(indent=2) }}</pre>
+</section>
+{% endblock %}

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "toggly-fastapi-showcase"
+version = "0.1.0"
+description = "Native FastAPI feature flag workshop with request and Order context"
+requires-python = ">=3.14"
+dependencies = [
+  "fastapi==0.141.1", "toggly==0.7.0", "toggly-fastapi==0.3.0",
+  "starlette==1.6.0", "anyio==4.15.1",
+  "uvicorn==0.52.4", "jinja2==3.1.6", "itsdangerous==2.2.0",
+  "python-multipart==0.0.32", "python-dotenv==1.2.3", "cryptography==50.0.1",
+]
+
+[tool.setuptools]
+packages = ["showcase"]
+include-package-data = false
+py-modules = ["asgi"]
+
+[tool.setuptools.package-data]
+showcase = ["templates/*.html", "static/*.css"]
