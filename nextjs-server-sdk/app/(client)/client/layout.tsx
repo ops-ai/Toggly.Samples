@@ -7,6 +7,10 @@ export default async function ClientLayout({
 }: {
   children: React.ReactNode
 }) {
+  // getFeatures uses process defaults, not the identity cookie or an Order.
+  // Hydration supplies a starting snapshot; the browser subsequently fetches its
+  // own results. Matching server/browser keys and environments avoids accidental
+  // cross-environment defaults, but this is not per-user SSR authorization.
   // Prefer boolean snapshot for TogglyProvider hydration
   let initialFeatures: Record<string, boolean> = {}
   if (getServerToggly()) {

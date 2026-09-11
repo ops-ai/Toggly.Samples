@@ -24,6 +24,23 @@ Use the applications, context kind, flags, and filter presets in
 
 - The sample README includes a quick start, Toggly app setup, package versions,
   a section table, and a manual checklist.
+- Teach a reader who is new to feature flags: include a first-toggle exercise
+  with enabled/disabled expectations and a source-reading map. Explain keys,
+  definitions, environments, evaluation, initialization, defaults, refresh/cache
+  and failure behavior, identity scope, entity mapping, and the distinction
+  between boolean branches and experiment assignment where those surfaces exist.
+- Place useful why/how comments at the actual configuration, evaluation, gate,
+  identity/context, and framework-boundary callsites. Explain non-obvious SDK
+  behavior and limitations rather than narrating syntax. Demo claims are not
+  authentication, and presentation gates do not replace authorization.
+- Explain environment variables in the example file and README, including any
+  browser-exposure prefix, build-time substitution, and actual fallback behavior.
+- Verify teaching text against the pinned published package implementations and
+  declarations, existing checks, and corresponding Toggly Docs pages. Record
+  contradictions and unsupported behavior explicitly; do not promise APIs or
+  isolation available only in unreleased source. Offline fixtures/builds do not
+  prove live dashboard provisioning or connectivity. Preserve behavior for
+  teaching-only changes and report runtime defects for separate follow-up.
 - Use published packages only. Do not depend on `.local-sdk/` tarballs.
 - Add offline unit or smoke tests where practical.
 - CI must build and test with placeholder environment values only.

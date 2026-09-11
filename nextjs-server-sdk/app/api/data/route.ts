@@ -12,6 +12,9 @@ export async function GET() {
     )
   }
 
+  // Route Handlers can be called without visiting a page. Initialize here and
+  // evaluate on every request, using its cookie identity. Missing configuration
+  // above is a 503; a configured but OFF flag below keeps the legacy API response.
   await initSampleToggly()
   const identity = await getRequestIdentity()
   const toggly = getServerToggly()

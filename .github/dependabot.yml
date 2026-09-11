@@ -81,6 +81,54 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+  - package-ecosystem: npm
+    directory: /nodejs-express-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: npm
+    directory: /nodejs-hono-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: npm
+    directory: /vue-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: npm
+    directory: /docusaurus-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: nuget
+    directory: /dotnet-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: maven
+    directory: /java-servlet-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
   - package-ecosystem: maven
     directory: /java-spring-mvc-sdk
     schedule:

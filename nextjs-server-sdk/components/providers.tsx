@@ -9,6 +9,9 @@ type ProvidersProps = {
 
 export function Providers({ children, initialFeatures }: ProvidersProps) {
   const appKey = process.env.NEXT_PUBLIC_TOGGLY_APP_KEY?.trim()
+  // NEXT_PUBLIC_ references are inlined at browser build time. TOGGLY_ENVIRONMENT
+  // is a fallback in this source, but normal Next.js browser bundles cannot read
+  // that server-only variable: set NEXT_PUBLIC_TOGGLY_ENVIRONMENT outside Production.
   const environment =
     process.env.NEXT_PUBLIC_TOGGLY_ENVIRONMENT?.trim() ||
     process.env.TOGGLY_ENVIRONMENT?.trim() ||
@@ -27,6 +30,9 @@ export function Providers({ children, initialFeatures }: ProvidersProps) {
     )
   }
 
+  // initialFeatures seeds boolean defaults, not definitions or an Order context.
+  // autoInit starts the browser client; its default remote evaluation and identity
+  // are independent of the server cookie. The initial snapshot may later change.
   return (
     <TogglyProvider
       config={{

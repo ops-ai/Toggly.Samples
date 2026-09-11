@@ -1,0 +1,10 @@
+@model ShowcaseModel
+@{ ViewData["Title"] = "Identity"; }
+<h1>Keep each visitor's targeting in their request.</h1><p class="lead">Identity makes a rollout sticky and lets an audience rule include Alice. It is not the same as the Order being evaluated.</p>
+<section><h2>Try a session preference</h2><form method="post" action="/identity">@Html.AntiForgeryToken()
+<button name="preset" value="matching">Use Alice · admin</button><button name="preset" value="nonmatching">Use Bob · user</button><button name="preset" value="anonymous">Clear preference</button></form>
+<p>The cookie saves a demonstration preset. Clearing it removes that preference; subsequent visits stay anonymous until you choose a persona.</p>
+<dl><dt>Identity</dt><dd>@(Model.Persona.Name.Length == 0 ? "anonymous" : Model.Persona.Name)</dd><dt>Claim</dt><dd>role=@Model.Persona.Role</dd><dt>Targeting flag</dt><dd>@Model.Flags["filter-targeting"]</dd><dt>Sticky 50% result</dt><dd>@Model.Flags["filter-percentage"]</dd></dl></section>
+<section><h2>Read the context flow</h2><ol><li><code>SamplePersonas.Apply</code> establishes a demo principal and headers before routing reaches a gate.</li><li><code>RequestTargetingAccessor</code> reads the current request via <code>IHttpContextAccessor</code>.</li><li>The shared SDK caches definitions; no request writes a process-wide identity.</li></ol>
+<p>Open Alice and Bob links in separate tabs: <a href="/identity?preset=matching">Alice request</a> / <a href="/identity?preset=nonmatching">Bob request</a>. Explicit query presets override the cookie for that request only.</p>
+<p>In your application, replace the demo middleware with authenticated claims and trusted proxy headers. Do not trust a visitor-supplied role or country for authorization.</p></section>
