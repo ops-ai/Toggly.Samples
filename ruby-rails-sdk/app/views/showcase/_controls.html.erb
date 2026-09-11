@@ -1,0 +1,42 @@
+<section class="card">
+  <h2>Request context controls</h2>
+  <p>Changes apply only to this browser’s encrypted session. Demo identities and claims are editable inputs, not signed-in users.</p>
+  <div class="preset-row">
+    <%= button_to 'Matching preset', '/context', params: { preset: 'matching' }, class: 'button' %>
+    <%= button_to 'Non-matching preset', '/context', params: { preset: 'non-matching' }, class: 'button secondary' %>
+  </div>
+  <%= form_with url: '/context', method: :post do |form| %>
+    <div class="form-grid">
+      <div>
+        <%= form.label :identity, 'Demo identity' %>
+        <%= form.text_field :identity, value: demo_state['identity'], maxlength: 128 %>
+      </div>
+      <div>
+        <%= form.label :role, 'Demo role claim' %>
+        <%= form.text_field :role, value: demo_state['role'], maxlength: 32 %>
+      </div>
+      <div>
+        <%= form.label :country, 'Country / cf-ipcountry' %>
+        <%= form.text_field :country, value: demo_state['country'], maxlength: 2 %>
+      </div>
+      <div>
+        <%= form.label :language, 'Accept-Language' %>
+        <%= form.text_field :language, value: demo_state['language'], maxlength: 128 %>
+      </div>
+      <div>
+        <%= form.label :order, 'Order' %>
+        <%= form.select :order, RequestContext::ORDERS.keys, selected: demo_state['order'] %>
+      </div>
+      <div>
+        <%= form.label :header_source, 'Request header source' %>
+        <%= form.select :header_source, [['Demo preset fields', 'preset'], ['Actual HTTP headers', 'actual']], selected: demo_state['header_source'] %>
+      </div>
+      <div class="wide">
+        <%= form.label :user_agent, 'User-Agent' %>
+        <%= form.text_area :user_agent, value: demo_state['user_agent'], rows: 3, maxlength: 512 %>
+      </div>
+    </div>
+    <%= form.submit 'Apply & refresh', class: 'button' %>
+  <% end %>
+  <p>Actual headers come from this browser’s request. Only trust forwarded country headers from infrastructure you control in a real application.</p>
+</section>

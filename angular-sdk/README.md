@@ -57,7 +57,7 @@ The sample forwards later identity changes to both services. `setContext` alread
 
 ## Create the Toggly application
 
-1. In workspace **Toggly Samples**, create **Angular SDK Sample**, select **Angular** technology and **Production** environment.
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can manage (the one from signup is enough). Create **Angular SDK Sample**, select **Angular** technology and **Production** environment.
 2. Add allowed Web Origin **http://localhost:4200**.
 3. Add context kind **Order**: `Id` string as key, `Vip` boolean, optional `Total` number.
 4. Create the following flags and enable them in Production. Copy the public App Key into `.env.local`.
