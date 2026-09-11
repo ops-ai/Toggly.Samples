@@ -5,6 +5,9 @@ import {
 } from '@ops-ai/nextjs-toggly-server'
 import { initSampleToggly } from '@/lib/toggly'
 
+// A sample diagnostic surface: raw process state can explain fetch failures,
+// but does not prove a particular user/Order check. refresh=1 requests definitions
+// again; it does not invalidate the separate cached-helper page results.
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {

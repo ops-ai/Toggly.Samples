@@ -21,6 +21,9 @@ export default async function OrderDetailPage({
   if (!toggly) {
     return <p className="off">Toggly client not initialized.</p>
   }
+  // These controls isolate why the rule matches: correct entity + registered
+  // kind, no entity, and unregistered kind. Missing context fails this configured
+  // ContextProperty rule; it is not a promise that every flag fails without context.
   const withEntity = await toggly.isFeatureOn(
     'ExpressCheckout',
     order,

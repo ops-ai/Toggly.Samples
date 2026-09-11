@@ -27,10 +27,16 @@ function Status({
 }
 
 function HooksDemo() {
+  // Hooks subscribe to the provider and expose loading separately from OFF.
+  // "all" requires both flags; "any" allows either. These are boolean decisions,
+  // not experiment allocation or conversion tracking.
   const flag = useFeatureFlag('new-dashboard')
   const gateAll = useFeatureGate(['new-dashboard', 'api-v2'], 'all')
   const gateAny = useFeatureGate(['new-dashboard', 'api-v2'], 'any')
   const { features, isLoading: featuresLoading } = useFeatures()
+  // This changes only this browser provider's identity, not toggly-identity cookies
+  // used by the server demo. In this published version, failed identity refresh
+  // is not a transactional rollback; inspect errors before trusting a new result.
   const { identity, setIdentity, isUpdating } = useIdentity()
   const toggly = useToggly()
   const [draft, setDraft] = useState('')
