@@ -41,6 +41,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 Remix (`remix-sdk/`), Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
 Hono (`nodejs-hono-sdk/`), and Koa
 | JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, variants, session identity, entity context, and live refresh with `@ops-ai/feature-flags-toggly` |
+| Node Express SDK Sample | Express 5 | [`nodejs-express-sdk/`](nodejs-express-sdk/) | Request middleware, HTTP gates, identities, Order context and filter matrix |
 
 **Planned (Wave 1):** React (`react-sdk/`), Remix (`remix-sdk/`),
 Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
