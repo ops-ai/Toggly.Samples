@@ -1,3 +1,6 @@
+// These editable demo cookies simulate evaluation inputs, including an admin
+// claim. They are not a login session or proof of permission. Production claims
+// must come from verified authentication, not these browser-controlled values.
 export const FILTER_CLAIMS_COOKIE = 'toggly-filter-claims'
 export const FILTER_COUNTRY_COOKIE = 'toggly-filter-country'
 export const FILTER_UA_COOKIE = 'toggly-filter-ua'
@@ -28,6 +31,8 @@ export function parseClaimsPreset(raw: string | undefined): ClaimsPreset {
   return 'none'
 }
 
+// The checkbox writes 1/0. Parse explicitly: Boolean("0") would incorrectly
+// mark the standard order VIP, hiding the difference the filter demonstrates.
 export function parseVipCookie(raw: string | undefined): boolean {
   return raw === '1' || raw === 'true'
 }

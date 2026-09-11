@@ -18,6 +18,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // Establish application configuration for rendering. Actions and API handlers
+  // also initialize themselves because they can run independently of this layout.
   await initSampleToggly()
 
   return (

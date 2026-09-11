@@ -13,6 +13,9 @@ export async function FlagSnapshot() {
   }
 
   const identity = await getRequestIdentity()
+  // This is process state for diagnosis, not a fresh evaluation for the cookie
+  // shown above. Use a per-call helper for identity/Order-dependent decisions.
+  // SDK initialization can generate a process identity even without a user cookie.
   const features = client.state.features
   const error = client.state.error
 
@@ -23,7 +26,7 @@ export async function FlagSnapshot() {
         Request identity (cookie): <code>{identity ?? '(none)'}</code>
       </p>
       <p>
-        Process client.identity (should stay empty):{' '}
+        Process client.identity (SDK default, not request cookie):{' '}
         <code>{client.identity ?? '(none)'}</code>
       </p>
       <p>

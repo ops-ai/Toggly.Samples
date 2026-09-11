@@ -14,6 +14,9 @@ export default async function DashboardPage() {
   if (!toggly) {
     return <p className="off">Toggly client not initialized.</p>
   }
+  // The method and JSX gates use the same flag key and request identity.
+  // new-dashboard is the exact dashboard key, not its human-readable title.
+  // Server rendering chooses markup now; refresh the route to render new results.
   const programmatic = await toggly.isFeatureOn(
     'new-dashboard',
     null,

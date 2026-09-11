@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+.env
+.env.*
+!.env.example
+appsettings.Local.json
