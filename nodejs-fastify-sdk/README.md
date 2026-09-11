@@ -83,11 +83,9 @@ Adapter 0.3.0 evaluation helpers bind ambient context only, rather than acceptin
 
 The published adapter owns a process-wide client singleton. Run one app/configuration per process; this sample never changes its global identity. Its `onDisabled` callback receives only the request and does not itself stop the route. This sample uses built-in 404 and redirect gate responses instead. No installed artifact is patched.
 
-## Exact Toggly setup (manual, pending sign-in)
+## Create the Toggly application
 
-Provisioning could not be performed because app.toggly.io requires sign-in. No live app or flag creation is claimed.
-
-1. Sign in, select workspace **Toggly Samples**, create **Fastify SDK Sample**, select Fastify technology (if unavailable, select Node.js and record that choice), environment **Production**. Add origin `http://localhost:3000`.
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can manage (the one from signup is enough). Create **Fastify SDK Sample**, select Fastify technology (if unavailable, select Node.js and record that choice), environment **Production**. Add origin `http://localhost:3000`.
 2. Create context kind **Order**: `Id` string (key), `Vip` boolean, `Total` number. Use `ord-vip` with Vip=true/Total=199 and `ord-standard` with Vip=false/Total=49.
 3. Create baseline flags `new-dashboard`, `api-v2`, `enhanced-submit`, `beta-access`. For the initial fixture-equivalent state, enable all except `api-v2`.
 4. Create `ExpressCheckout` using ContextProperty `Order.Vip = true`.
