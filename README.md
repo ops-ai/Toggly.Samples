@@ -31,12 +31,14 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 
 | Sample | Stack | Path | What it demos |
 |--------|-------|------|---------------|
-| Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, client hooks, Order context, filters and edge middleware; read its published edge limitation before per-user gating |
-| JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, boolean branches, browser-wide identity, entity context and refresh with `@ops-ai/feature-flags-toggly` |
-| Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order context and filter matrix with `@ops-ai/toggly-fastify` |
+| Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
+| Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
 | Angular SDK Workshop | Angular 22 standalone | [`angular-sdk/`](angular-sdk/) | Native templates, directives, variants, route guard, local gates and Order context |
 | Ruby Rails SDK Sample | Rails 8.1 / Ruby 4 | [`ruby-rails-sdk/`](ruby-rails-sdk/) | Native Railtie and view/controller gates, request contexts, Orders, filter matrix and cache snapshots |
 | PHP Laravel SDK Sample | PHP 8.5 + Laravel 13 | [`php-laravel-sdk/`](php-laravel-sdk/) | Native Blade, middleware, attributes, request identity, variants, filter matrix and explicit Order support limits |
+| JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, variants, session identity, entity context, and live refresh with `@ops-ai/feature-flags-toggly` |
+| Node Express SDK Sample | Express 5 | [`nodejs-express-sdk/`](nodejs-express-sdk/) | Request middleware, HTTP gates, identities, Order context and filter matrix |
+| Node Hono SDK Showcase | Hono 4 / Node 22 | [`nodejs-hono-sdk/`](nodejs-hono-sdk/) | Request context, middleware gates, eleven filters and Order entities with `@ops-ai/toggly-hono` |
 
 New to feature flags? Start with a sample's **first-toggle exercise**, then its
 source-reading map. Follow configuration → initialization → one flag check →
@@ -53,8 +55,6 @@ separate status; previews and blocked checkpoints are not merged runnable entrie
 
 | Sample | Status | Details |
 |--------|--------|---------|
-| Express | [PR #16 preview](https://github.com/ops-ai/Toggly.Samples/pull/16) | Follow the PR's sample README and check current review/CI status before using the preview. |
-| Hono | [PR #18 preview](https://github.com/ops-ai/Toggly.Samples/pull/18) | Follow the PR's sample README and check current review/CI status before using the preview. |
 | React | [Blocked: OPS-1083](https://linear.app/opsai/issue/OPS-1083) | SDK 1.11.0 bundles a private React 18.3.1; provider/hooks fail with the required latest-stable host React 19.2.8. |
 | Koa | [Blocked: OPS-1087](https://linear.app/opsai/issue/OPS-1087) | Adapter 0.3.0 declares Koa ^2, excluding required latest-stable Koa 3.2.1; dependency resolution fails. |
 | Remix | [Blocked: OPS-1088](https://linear.app/opsai/issue/OPS-1088) | Client 1.3.0 requires React/ReactDOM ^18 and @remix-run/react ^2, incompatible with the sample's current React Router 8.3.1 / React 19.2.8 target. |
