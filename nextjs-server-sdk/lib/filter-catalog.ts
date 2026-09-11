@@ -8,6 +8,9 @@ export type FilterCatalogEntry = {
   surfaces: FilterSurface[]
 }
 
+// This table describes flags to provision, not local definitions or forced results.
+// A filter is a rule attached to a flag in Toggly; changing these labels does not
+// change that rule. "client" rows are evaluated on the server using browser headers.
 /** Dedicated filter-* flags for the showcase matrix (existing demos untouched). */
 export const FILTER_CATALOG: FilterCatalogEntry[] = [
   {

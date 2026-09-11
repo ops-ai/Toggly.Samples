@@ -10,6 +10,9 @@ export default async function ServerIdentityPage() {
 
   const identity = await getRequestIdentity()
 
+  // Compare the explicit cookie override with the SDK's process defaults.
+  // A global boolean matches for both; targeting/percentage rules make identity
+  // relevant. "Without" means no override, not necessarily an empty SDK identity.
   const withIdentity = await isServerFeatureOn('new-dashboard', identity)
   const withoutIdentity = await isServerFeatureOn('new-dashboard')
 
