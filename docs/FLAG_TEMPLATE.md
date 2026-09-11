@@ -1,8 +1,10 @@
-# Flag + app template (Toggly Samples workspace)
+# Flag + app template
 
 ## Create application
 
-1. Workspace: **Toggly Samples**
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can
+   manage (the one created at signup is enough). You do not need a workspace
+   named Toggly Samples.
 2. Name: **{Stack} SDK Sample** (for example, **Remix SDK Sample**)
 3. Technology: select the matching stack in the picker.
 4. Environment: **Production** (default).

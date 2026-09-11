@@ -56,10 +56,10 @@ and [the Laravel adapter](https://packagist.org/packages/toggly/laravel).
 ## Create the dedicated Toggly app
 
 Provisioning is a manual step; this sample does not create or claim an existing
-live application. Follow the reviewed [shared app setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
-and [shared flag template](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/FLAG_TEMPLATE.md).
+live application. Follow the shared [flag template](../docs/FLAG_TEMPLATE.md).
 
-1. In workspace **Toggly Samples**, choose **Applications → Add new application**.
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can
+   manage (the one from signup is enough). Choose **Applications → Add new application**.
    Set name **PHP Laravel SDK Sample**, Technology Stack **Laravel** (`laravel`),
    and Application URL **http://localhost:8010**. Check **Adding to** before saving.
 2. Use environment **Production**. This is server-only: the Allowed Web Origins
