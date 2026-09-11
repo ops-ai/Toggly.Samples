@@ -2,7 +2,41 @@
 
 Standalone server-rendered HTML and HTTP API using published **Fastify 5.12.3**, **@ops-ai/toggly-fastify 0.3.0**, and **@ops-ai/toggly-node-core 0.7.0** (npm latest verified 2026-09-08). Node 22+.
 
-## Quick start
+A **feature flag** is a named decision in your application: `new-dashboard` ON renders the new dashboard and OFF renders the classic one. Its key must match the definition exactly. The **app key** selects your Toggly application; the **environment** selects that app's rules (for example, Production). An **evaluation context** supplies who/what this request represents, so one rule can return different results for different people or orders.
+
+## First toggle: follow a decision from rule to response
+
+Start without an account using the fixture:
+
+```sh
+cd nodejs-fastify-sdk
+npm ci
+npm run offline
+# Open http://localhost:3000/declarative
+```
+
+1. Confirm the **Offline fixture** banner. The initial `new-dashboard` rule is AlwaysOn, so the page shows Dashboard v2. Visit `/gates/enabled`: the same flag permits an HTTP 200 response.
+2. In [src/fixture.js](src/fixture.js), remove only `'new-dashboard'` from the AlwaysOn key list and add `rule('new-dashboard', 'AlwaysOff'),` as its own entry in `definitions`. Stop and restart `npm run offline`, then reload. The page now shows Classic dashboard and `/gates/enabled` returns 404. This edit is a local learning exercise; restore it afterward.
+3. Open `/filters?preset=matching`, then `/filters?preset=non-matching`. This time the rules stay fixed and the request changes. Targeting matches alice; UserClaims matches admin; the Order filter matches `Vip: true`. AlwaysOn and the open TimeWindow stay ON. Percentage is stable for the same flag key/identity, but a 50% threshold does not guarantee either preset's result.
+4. Open `/api/override?identity=bob`: `ambientBefore` is false, the alice `override` is true, and `ambientAfter` is false. A one-call context override does not change bob's next check.
+5. For the live equivalent, complete the manual setup below, set `.env.local`, stop offline mode and run `npm run dev`. Toggle `new-dashboard` in the selected environment, wait up to the three-minute refresh interval (plus fetch time) or restart, then reload. The signed Live banner and live behavior still require your own verification.
+
+This is a boolean rollout exercise. The two displayed dashboard “variants” are application branches, not named experiment assignments or measured A/B treatments.
+
+## Read the source in this order
+
+| File | What to follow |
+|---|---|
+| [src/catalog.js](src/catalog.js) | Exact flag keys, preset inputs, and mapping a demo order to `{ kind, key, attributes }` |
+| [src/fixture.js](src/fixture.js) | Rule definitions; an HTTP transport fixture feeding the real published evaluator |
+| [src/server.js](src/server.js) | Environment variables, initialization before listening, and shutdown |
+| [src/app.js](src/app.js) | Shared client, request-local context, core overrides/entity arguments, gates and source status |
+| [src/view.js](src/view.js) | Server-rendered ON/OFF branches and controls that start a new request |
+| [test/http.test.js](test/http.test.js) | Observable expectations, including concurrent identities and failed refreshes |
+
+For adapter API details, see the [Fastify documentation](https://docs.toggly.io/sdks/nodejs/fastify). The [Samples catalog](../README.md) lists other frameworks and their status.
+
+## Quick start with local configuration
 
 ```sh
 cd nodejs-fastify-sdk
@@ -20,7 +54,7 @@ npm run build
 npm test
 ```
 
-Offline mode starts an ephemeral loopback definition server. The **published SDK evaluates all filters**; the fixture only supplies definitions. Every response carries `X-Toggly-Source`, including adapter-owned gates, redirects, snapshots and errors. Offline remains explicitly labelled after failed startup or refresh. Configured failures display Unavailable or Cached, never Live. Streaming is disabled; configured mode refreshes every three minutes. The plain JavaScript build checks every source module's syntax.
+Offline mode starts an ephemeral loopback definition server. The **published SDK evaluates all filters**; the fixture only supplies definitions. Every response carries `X-Toggly-Source`, including adapter-owned gates, redirects, snapshots and errors. Offline remains explicitly labelled after failed startup or refresh. Definition-fetch failures display Unavailable or Cached, never Live. Cached means last-known definitions remain in memory; no disk cache is configured here. With no definitions and no custom defaults, checks return OFF. OFF is a valid boolean result, whereas an exception such as failed context extraction produces HTTP 503. Streaming is disabled; configured mode refreshes every three minutes. The plain JavaScript build checks every source module's syntax.
 
 ## Sections
 
@@ -41,7 +75,11 @@ Query controls are demonstration inputs, not authentication. Custom HTTP inputs:
 
 The adapter registers a `preHandler` for per-request context and an `onClose` hook that closes its client. Native `featureGate`, `featureRoutes`, `withFeature` (a preHandler, not a handler wrapper) and `featuresHandler` are exercised. `getFastifyToggly` is used for lifecycle/refresh checks in tests; normal cleanup is `app.close()`.
 
-Adapter 0.3.0 evaluation helpers bind ambient context only, despite the documentation's override example. Explicit overrides and Order entities therefore go through `request.toggly.client` with explicit request context. `featuresHandler` returns the global SDK snapshot, not request-specific filter evaluation; compare `/api/evaluate`. No experiment assignment API is published: the dashboard variants are boolean content branches.
+The plugin is initialized once before the server listens. Initialization can finish with fallback results after a fetch error; it does not prove the service was reached. Each request then gets its own context in the plugin's `preHandler`, followed by route gates and handlers. `onSend` labels even gate-owned responses and prevents shared response caching; `app.close()` runs the plugin's cleanup.
+
+For the initial fixture, `/gates/enabled`, `/gates/negate`, and `/gates/any` return 200; `/gates/all` returns 404. `all` requires both keys ON, `any` requires one, and `negate` reverses the combined result. Thus the negated `api-v2` check permits the legacy route while that flag is OFF. The beta gate redirects to `/declarative` when disabled. These checks control feature availability, not permission to access protected data.
+
+Adapter 0.3.0 evaluation helpers bind ambient context only, rather than accepting a second context argument. Explicit overrides and Order entities therefore go through `request.toggly.client` with explicit request context. `featuresHandler` returns the global SDK snapshot, not request-specific filter evaluation; compare `/api/evaluate`. No experiment assignment API is published: the dashboard variants are boolean content branches.
 
 The published adapter owns a process-wide client singleton. Run one app/configuration per process; this sample never changes its global identity. Its `onDisabled` callback receives only the request and does not itself stop the route. This sample uses built-in 404 and redirect gate responses instead. No installed artifact is patched.
 

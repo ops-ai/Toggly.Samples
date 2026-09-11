@@ -6,6 +6,10 @@ import { hasTogglyAppKey } from '@/lib/env'
 import { getRequestIdentity } from '@/lib/identity'
 import { getOrder } from '@/lib/orders'
 
+// Feature renders children only when its boolean gate succeeds; negate renders
+// the opposite. With multiple keys, all/any is applied before negate, so "not
+// both ON" also includes one-on/one-off. FeatureVariant selects enabled/disabled
+// markup; its name does not imply experiment assignment or analytics.
 export default async function ServerComponentsPage() {
   if (!hasTogglyAppKey()) {
     return <p className="muted">Configure App Key to evaluate components.</p>
