@@ -1,0 +1,393 @@
+/* A small, responsive teaching layout. No build tool or remote font is required. */
+:root {
+    color-scheme: light;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #172d32;
+    background: #f4f6f3;
+    line-height: 1.6;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+a {
+    color: #075e57;
+    text-underline-offset: 0.2em;
+}
+
+a:hover {
+    color: #063f3a;
+}
+
+button, input, select {
+    font: inherit;
+}
+
+:focus-visible {
+    outline: 3px solid #af5718;
+    outline-offset: 4px;
+}
+
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -5rem;
+    z-index: 2;
+    background: white;
+    padding: 0.8rem;
+}
+
+.skip-link:focus {
+    top: 0.5rem;
+}
+
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.3rem 2rem;
+    background: #fff;
+    border-bottom: 1px solid #d8e2de;
+}
+
+.brand {
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+}
+
+.brand span {
+    color: #4f6367;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+.badge {
+    padding: 0.25rem 0.7rem;
+    border: 1px solid #b4cdc3;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.shell {
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.sidebar {
+    padding: 2rem 1.2rem;
+    border-right: 1px solid #d8e2de;
+}
+
+.eyebrow {
+    color: #516662;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+}
+
+nav {
+    display: grid;
+    gap: 0.35rem;
+}
+
+nav a {
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.4rem;
+    font-size: 0.88rem;
+    text-decoration: none;
+}
+
+nav a[aria-current="page"] {
+    background: #dfeae4;
+    font-weight: 700;
+}
+
+.sidebar-note {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-top: 1px solid #cfdbd4;
+    font-size: 0.85rem;
+}
+
+.sidebar-note p {
+    margin: 0.35rem 0;
+}
+
+main {
+    padding: 2rem clamp(1.2rem, 4vw, 4rem);
+    min-width: 0;
+}
+
+h1 {
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.04em;
+    margin: 0.65rem 0 1rem;
+}
+
+h2 {
+    font-size: 1.25rem;
+    line-height: 1.35;
+    margin-top: 0;
+}
+
+h3 {
+    margin: 0.45rem 0;
+}
+
+.lead {
+    color: #506164;
+    font-size: 1.1rem;
+    max-width: 780px;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #d8e2de;
+    border-radius: 0.65rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    min-width: 0;
+}
+
+.accent {
+    border-left: 4px solid #176c58;
+    background: #eef5ef;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.grid .card {
+    margin-bottom: 0;
+}
+
+.trail {
+    color: inherit;
+    text-decoration: none;
+}
+
+.trail:hover {
+    border-color: #668f7a;
+    background: #f8fbf8;
+}
+
+.notice {
+    border: 1px solid #d7b97b;
+    background: #fff6e3;
+    border-radius: 0.5rem;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.6rem;
+    font-size: 0.88rem;
+}
+
+.notice p:last-child {
+    margin-bottom: 0;
+}
+
+.connected {
+    background: #eaf5ed;
+    border-color: #a4c8ad;
+}
+
+.error {
+    background: #fff0eb;
+    border-color: #c5947e;
+}
+
+.button, button {
+    display: inline-block;
+    border: 0;
+    border-radius: 0.4rem;
+    background: #125f51;
+    color: #fff;
+    padding: 0.7rem 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button:hover, button:hover {
+    color: #fff;
+    background: #0b493e;
+}
+
+.controls {
+    display: grid;
+    gap: 1.25rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 650;
+}
+
+select {
+    width: 100%;
+    border: 1px solid #8baba0;
+    border-radius: 0.35rem;
+    padding: 0.7rem;
+    background: white;
+    color: inherit;
+}
+
+small {
+    display: block;
+    margin-top: 0.4rem;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.84em;
+    overflow-wrap: anywhere;
+}
+
+pre {
+    background: #eef2f0;
+    border: 1px solid #dce6df;
+    border-radius: 0.4rem;
+    padding: 1rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 0.93rem;
+    line-height: 1.65;
+}
+
+.result {
+    background: #e7f1e8;
+    border-left: 3px solid #277451;
+    padding: 0.75rem;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+caption {
+    text-align: left;
+    margin-bottom: 1rem;
+    color: #506164;
+}
+
+th, td {
+    padding: 0.85rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid #e0e7e2;
+}
+
+th {
+    font-weight: 600;
+}
+
+thead {
+    background: #f0f4f1;
+}
+
+.flag-state {
+    display: inline-block;
+    padding: 0.12rem 0.6rem;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.on {
+    background: #dceedd;
+    color: #1d5731;
+}
+
+.off {
+    background: #edf0ee;
+    color: #4a5550;
+}
+
+.unknown {
+    background: #fff0cf;
+    color: #744416;
+}
+
+.gap {
+    display: block;
+    color: #81551b;
+    font-size: 0.8rem;
+}
+
+.facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+dd {
+    margin: 0;
+}
+
+footer {
+    padding-top: 1.5rem;
+    border-top: 1px solid #d0dcd4;
+    color: #576a61;
+    font-size: 0.78rem;
+}
+
+/* Keep navigation and tables usable on a phone without hiding the examples. */
+@media (max-width: 800px) {
+    .shell {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid #d8e2de;
+        padding: 1rem;
+    }
+
+    nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sidebar-note {
+        display: none;
+    }
+
+    .grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .site-header {
+        flex-wrap: wrap;
+        padding: 1rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .brand span {
+        display: block;
+    }
+}
