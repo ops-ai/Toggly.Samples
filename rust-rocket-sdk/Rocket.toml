@@ -1,0 +1,9 @@
+[default]
+address = "127.0.0.1"
+port = 8016
+workers = 8
+log_level = "critical"
+
+[default.limits]
+form = "16 KiB"
+json = "16 KiB"

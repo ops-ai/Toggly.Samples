@@ -1,0 +1,33 @@
+name: Rust Rocket sample
+on:
+  push:
+    branches: [develop, main]
+    paths: ['rust-rocket-sdk/**', '.github/workflows/rust-rocket-sdk.yml', 'docs/SAMPLE_CONTRACT.md', 'docs/FLAG_TEMPLATE.md']
+  pull_request:
+    branches: [develop, main]
+    paths: ['rust-rocket-sdk/**', '.github/workflows/rust-rocket-sdk.yml', 'docs/SAMPLE_CONTRACT.md', 'docs/FLAG_TEMPLATE.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: rust-rocket-sdk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  rust-rocket-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust-rocket-sdk
+    env:
+      TOGGLY_APP_KEY: placeholder
+      TOGGLY_ENVIRONMENT: Production
+      NO_PROXY: 127.0.0.1,localhost
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install pinned stable toolchain
+        run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
+      - run: cargo fmt --check
+      - run: cargo test --locked
+      - run: cargo clippy --locked --all-targets -- -D warnings
+      - run: cargo build --release --locked
+      - run: python3 scripts/http_smoke.py

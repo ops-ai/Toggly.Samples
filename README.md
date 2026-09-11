@@ -33,6 +33,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 |--------|-------|------|---------------|
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
+| Rust Rocket SDK Workshop | Rust 1.98.1 + Rocket 0.5.1 | [`rust-rocket-sdk/`](rust-rocket-sdk/) | Native Feature guard, request context, signed fixtures, gates, Order and eleven-filter matrix |
 | Angular SDK Workshop | Angular 22 standalone | [`angular-sdk/`](angular-sdk/) | Native templates, directives, variants, route guard, local gates and Order context |
 
 **Planned (Wave 1):** JavaScript (`javascript-sdk/`), React (`react-sdk/`),
