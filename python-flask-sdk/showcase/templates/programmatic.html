@@ -1,4 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Programmatic API</h2><section><p><code>g.toggly.is_enabled('new-dashboard')</code>: {{ native }}</p><p><code>get_toggly().is_enabled(..., context=g.sample_context)</code>: {{ explicit }}</p><p>API choice through the native core: version {{ 2 if api_v2 else 1 }}.</p><p>Pass explicit context for claims/HTTP filters. Unknown keys default OFF; choosing another default is an application decision, not a permission grant.</p></section><section><h3>Gate the action on the server</h3><p>The native enhanced-submit decorator runs before a reversible session counter changes. Hiding a button alone would not protect the route. Feature flags do not replace authentication or authorization.</p><form method="post" action="/submit/"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button>Enhanced submit</button></form><p>CSRF remains active. A disabled flag returns 403; GET cannot submit.</p></section>
+  <h2>Programmatic API</h2>
+  <section>
+    <p><code>g.toggly.is_enabled('new-dashboard')</code>: {{ native }}</p>
+    <p><code>get_toggly().is_enabled(..., context=g.sample_context)</code>: {{ explicit }}</p>
+    <p>API choice through the native core: version {{ 2 if api_v2 else 1 }}.</p>
+    <p>Pass explicit context for claims/HTTP filters. Unknown keys default OFF; choosing another
+    default is an application decision, not a permission grant.</p>
+  </section>
+  <section>
+    <h3>Gate the action on the server</h3>
+    <p>The native enhanced-submit decorator runs before a reversible session counter changes. Hiding
+    a button alone would not protect the route. Feature flags do not replace authentication or
+    authorization.</p>
+    {# A hidden button would not protect the action. This POST includes a CSRF
+    token and reaches the native enhanced-submit decorator before the view can
+    increment its demo session counter. CSRF protection belongs to Flask-WTF. #}
+    <form method="post" action="/submit/">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button>Enhanced submit</button>
+    </form>
+    <p>CSRF remains active. A disabled flag returns 403; GET cannot submit.</p>
+  </section>
 {% endblock %}

@@ -1,9 +1,50 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,">
-<title>Python Flask · Toggly SDK Sample</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
-<body><header><p class="eyebrow">TOGGLY / PYTHON</p><h1>Flask SDK workshop</h1><p>One request. One identity. Native feature decisions.</p></header>
-<nav aria-label="Sections"><a href="/">Home</a><a href="/gates/">Declarative gates</a><a href="/programmatic/">Programmatic API</a><a href="/identity/">Identity</a><a href="/orders/">Order context</a><a href="/filters/">Filters matrix</a><a href="/integrations/">Flask integration</a></nav>
-<main>{% if config.OFFLINE %}<aside class="banner"><strong>Missing TOGGLY_APP_KEY — offline fixture mode</strong><p>The installed SDK evaluates deterministic demonstration definitions. Add your dedicated app key to .env and restart for real definitions. No live app has been provisioned for you.</p></aside>{% endif %}
-<p class="status">Persona: <strong>{{ persona }}</strong> · Preset: {{ preset }} · Evaluated on each server request</p>
-<aside class="demo-warning">Local learning app: persona buttons intentionally sign in fixed demo users without passwords. Keep the localhost bind; these buttons are not an authentication service.</aside>
-{% block content %}{% endblock %}</main><footer>Python 3.14.7 · Flask 3.1.3 · toggly 0.7.0 · toggly-flask 0.3.0</footer></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
+    <title>Python Flask · Toggly SDK Sample</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <header>
+      <p class="eyebrow">TOGGLY / PYTHON</p>
+      <h1>Flask SDK workshop</h1>
+      <p>One request. One identity. Native feature decisions.</p>
+    </header>
+    <nav aria-label="Sections">
+      <a href="/">Home</a>
+      <a href="/gates/">Declarative gates</a>
+      <a href="/programmatic/">Programmatic API</a>
+      <a href="/identity/">Identity</a>
+      <a href="/orders/">Order context</a>
+      <a href="/filters/">Filters matrix</a>
+      <a href="/integrations/">Flask integration</a>
+    </nav>
+    {# The missing-key notice explains the sample fixture mode. A connected app
+    uses the same native evaluation surfaces with downloaded definitions. #}
+    <main>
+      {% if config.OFFLINE %}
+        <aside class="banner">
+          <strong>
+            Missing TOGGLY_APP_KEY — offline fixture mode
+          </strong>
+          <p>The installed SDK evaluates deterministic demonstration definitions. Add your dedicated
+          app key to .env and restart for real definitions. No live app has been provisioned for
+          you.</p>
+        </aside>
+      {% endif %}
+      <p class="status">Persona: <strong>{{ persona }}</strong> · Preset: {{ preset }} · Evaluated on each server request</p>
+      <aside class="demo-warning">
+        Local learning app: persona buttons intentionally sign in fixed demo users without
+        passwords. Keep the localhost bind; these buttons are not an authentication service.
+      </aside>
+      {% block content %}
+      {% endblock %}
+    </main>
+    <footer>
+      Python 3.14.7 · Flask 3.1.3 · toggly 0.7.0 · toggly-flask 0.3.0
+    </footer>
+  </body>
+</html>
