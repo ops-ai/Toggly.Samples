@@ -1,6 +1,14 @@
 version: 2
 
 updates:
+  - package-ecosystem: composer
+    directory: /php-laravel-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
   - package-ecosystem: npm
     directory: /javascript-sdk
     schedule:
@@ -56,6 +64,23 @@ updates:
     labels:
       - dependencies
 
+  - package-ecosystem: npm
+    directory: /angular-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+
+  - package-ecosystem: bundler
+    directory: /ruby-rails-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
   - package-ecosystem: npm
     directory: /nodejs-hono-sdk
     schedule:

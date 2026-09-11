@@ -1,0 +1,46 @@
+<section class="hero card">
+  <p class="eyebrow">START WITH ONE FLAG</p>
+  <h2>Ship the code. Choose the experience.</h2>
+  <p>This native Rails application shows how feature decisions connect controllers, views and request context.</p>
+  <ol>
+    <li>Configure <code>new-dashboard</code> in the dedicated sample app.</li>
+    <li>Switch it on in Production. Wait for the configured refresh interval.</li>
+    <li>Watch the snapshot below, then open <%= link_to 'Declarative gates', '/gates' %>.</li>
+  </ol>
+  <p>Without a key, start the local fixture demo described in the README to exercise the same published SDK offline.</p>
+</section>
+<div class="section-grid">
+  <% Catalog::SECTIONS.drop(1).each do |path, (title, description)| %>
+    <%= link_to path, class: 'card section-link' do %>
+      <h2><%= title %> <span aria-hidden="true">↗</span></h2>
+      <p><%= description %></p>
+    <% end %>
+  <% end %>
+</div>
+<section class="card">
+  <h2>Sixteen-flag checklist & current snapshot</h2>
+  <p>The browser asks Rails for fresh evaluations every five seconds. SDK definition polling runs independently at
+    <%= Toggly::Rails.configuration.refresh_interval %> seconds. Browser polling is not an SDK push subscription.</p>
+  <p id="snapshot-status" role="status">Server-rendered values below.</p>
+  <div class="table-scroll">
+    <table>
+      <caption>Native values for this browser’s current context</caption>
+      <thead>
+        <tr>
+          <th>Flag key</th>
+          <th>Decision</th>
+          <th>Native reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% snapshot_data[:flags].each do |flag| %>
+          <tr data-flag="<%= flag[:key] %>">
+            <td><code><%= flag[:key] %></code></td>
+            <td data-value><%= state_badge(flag[:enabled]) %></td>
+            <td data-reason><%= flag[:reason] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
