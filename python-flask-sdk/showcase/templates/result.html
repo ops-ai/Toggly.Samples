@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+  {# Native gates and sample actions reuse this presentation. The route chooses
+  the status and content; this template does not make an access decision. #}
+  <h2>{{ title }}</h2>
+  {% if message %}
+    <p>{{ message }}</p>
+  {% endif %}
+  {% if variant %}
+    <pre>{{ variant | tojson(indent=2) }}</pre>
+  {% endif %}
+  <p><a href="/">Back to Home</a> · <a href="/gates/">Declarative gates</a> · <a
+  href="/integrations/">Integration</a></p>
+{% endblock %}

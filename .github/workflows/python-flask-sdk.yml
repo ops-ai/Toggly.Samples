@@ -1,0 +1,56 @@
+name: Python Flask SDK sample
+on:
+  pull_request:
+    paths:
+      - 'python-flask-sdk/**'
+      - '.github/workflows/python-flask-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'docs/APP_SETUP.md'
+      - 'README.md'
+  push:
+    branches: [develop]
+    paths:
+      - 'python-flask-sdk/**'
+      - '.github/workflows/python-flask-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'docs/APP_SETUP.md'
+      - 'README.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  python-flask:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: python-flask-sdk
+    env:
+      TOGGLY_APP_KEY: ci-placeholder
+      SAMPLE_PRODUCTION: '1'
+      SAMPLE_HTTPS: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: python-flask-sdk/.python-version
+          cache: pip
+          cache-dependency-path: python-flask-sdk/requirements.txt
+      - name: Install published hash-locked dependencies
+        run: python -m pip install --require-hashes -r requirements.txt
+      - name: Generate process-only Flask signing secret
+        run: python -c "import secrets; print('FLASK_SECRET_KEY=' + secrets.token_urlsafe(64))" >> "$GITHUB_ENV"
+      - name: Check dependencies and host configuration
+        run: |
+          python -m pip check
+          python scripts/verify_lock.py
+          flask --app wsgi:application check-config
+      - name: Test native Flask and signed localhost transport
+        run: python -m unittest discover -s tests -v
+      - name: Build production package and exercise WSGI
+        run: |
+          python -m compileall -q showcase tests scripts wsgi.py gunicorn.conf.py
+          python -m build --wheel
+          python scripts/smoke.py

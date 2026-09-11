@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Declarative gates</h2>
+  <p>These are the actual adapter's Jinja context helpers, rendered inside a real Flask request.
+  Read <code>templates/gates.html</code> beside <code>views.py</code>.</p>
+  {# Unlike the precomputed multi-key booleans below, toggly.check and the
+  attribute helpers evaluate through the native Flask Jinja context object. #}
+  <section>
+    <h3>Feature and disabled fallback</h3>
+    {# check accepts the EXACT dashboard key. Jinja attribute access maps underscores. #}
+    {% if toggly.check('new-dashboard') %}
+      <p class="on">Native dashboard ON</p>
+    {% else %}
+      <p class="off">Classic dashboard fallback</p>
+    {% endif %}
+    <p>Attribute helper <code>toggly.is_enabled.new_dashboard</code>: {{
+    toggly.is_enabled.new_dashboard }}</p>
+    {% if toggly.is_disabled.api_v2 %}
+      <p>Native api-v2 disabled</p>
+    {% else %}
+      <p>Native api-v2 enabled</p>
+    {% endif %}
+  </section>
+  <section>
+    <h3>Any / All / negate</h3>
+    <p>The view uses native <code>g.toggly.evaluate_gate</code>; Jinja receives each boolean.</p>
+    {# The Flask view supplied these booleans from g.toggly.evaluate_gate.
+    Any needs at least one enabled key; All needs every key; negate inverts All. #}
+    <ul>
+      <li>Any gate {{ 'ON' if any_gate else 'OFF' }}</li>
+      <li>All gate {{ 'ON' if all_gate else 'OFF' }}</li>
+      <li>Negated All {{ 'ON' if negated else 'OFF' }}</li>
+    </ul>
+    <p><a href="/native/any/">Native Any route</a> · <a href="/native/all/">Native All route</a> ·
+    <a href="/native/negate/">Native negated All route</a></p>
+  </section>
+  <section>
+    <h3>Variants</h3>
+    <p><a href="/native/variant/">Try the native feature_variant decorator</a>. It has an
+    enabled-view and disabled fallback, but the current core's feature-state metadata does not
+    include the assigned variant name. Named dispatch is unavailable on this decorator; the sample
+    does not invent metadata.</p>
+    <p>The explicit action below uses native <code>get_variant</code> on one isolated remote client
+    with the selected user's context present before initialization, then closes it. Ordinary pages
+    share local definitions. Baseline flags and offline fixtures have no experiment assignment.</p>
+    {# Remote assignment is an explicit POST, not part of ordinary rendering.
+    The action configures known user context before its isolated client initializes
+    and always closes that client. Offline mode reports that no assignment exists. #}
+    <form method="post" action="/variant/">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button>Fetch this user's remote assignment</button>
+    </form>
+  </section>
+{% endblock %}

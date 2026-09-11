@@ -46,6 +46,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Java Spring MVC SDK Sample | Spring MVC 7 + Tomcat 11 + FreeMarker | [`java-spring-mvc-sdk/`](java-spring-mvc-sdk/) | Native context/gate interceptors, Boolean argument injection, model-driven templates, Order and eleven-filter matrix |
 | Java Spring WebFlux SDK Sample | Spring WebFlux 7 + Reactor Netty + Java 26 | [`java-spring-webflux-sdk/`](java-spring-webflux-sdk/) | Native reactive filters/client, isolated async users and Orders, eleven filters, signed refresh and cancellation |
 | Python Django SDK Sample | Python 3.14 + Django 6.1 | [`python-django-sdk/`](python-django-sdk/) | Native middleware, decorators, templates, session identity, Order and eleven-filter matrix |
+| Python Flask SDK Workshop | Flask 3 + Python 3.14 | [`python-flask-sdk/`](python-flask-sdk/) | Native extension, Jinja, decorators, Blueprint gates, request identity and Order/filter matrix |
 
 New to feature flags? Start with a sample's **first-toggle exercise**, then its
 source-reading map. Follow configuration → initialization → one flag check →
