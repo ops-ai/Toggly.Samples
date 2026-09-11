@@ -1,6 +1,6 @@
 # Node Hono SDK Sample
 
-Eight navigable sections backed by the actual published Hono adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-08: Hono **4.13.7**, `@hono/node-server` **2.1.1**, `@ops-ai/toggly-hono` **0.3.0**, `@ops-ai/toggly-node-core` **0.7.0** (exact pins + lockfile).
+Eight navigable sections backed by the actual published Hono adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-08: Hono **4.13.7**, `@hono/node-server` **2.1.1**, `@ops-ai/toggly-hono` **0.3.0**, `@ops-ai/toggly-node-core` **0.9.0** (exact pins + lockfile).
 
 ```sh
 npm ci
@@ -81,7 +81,7 @@ curl -i 'http://localhost:3000/gates/all'
 
 ## Published capability boundaries
 
-Hono adapter 0.3.0 binds ambient context to `c.get('toggly').isFeatureOn`, `isFeatureOff`, and `evaluateFeatureGate`; their installed signatures **do not accept per-call overrides or entities**. This sample calls `c.get('toggly').client.isFeatureOn(key, context, entity)` from core 0.7.0 for those operations, preserving ambient context with an explicit spread for overrides. No request changes global identity. The adapter owns a process singleton: run one configured app per process, and call `closeHonoToggly()` on shutdown; tests close between app instances.
+Hono adapter 0.3.0 binds ambient context to `c.get('toggly').isFeatureOn`, `isFeatureOff`, and `evaluateFeatureGate`; their installed signatures **do not accept per-call overrides or entities**. This sample calls `c.get('toggly').client.isFeatureOn(key, context, entity)` from core 0.9.0 for those operations, preserving ambient context with an explicit spread for overrides. No request changes global identity. The adapter owns a process singleton: run one configured app per process, and call `closeHonoToggly()` on shutdown; tests close between app instances.
 
 `featuresHandler` is a handler value, registered as `app.get('/api/features', featuresHandler)`, not called as a factory. It returns the shared SDK boolean snapshot alongside the **current request identity**. Those flags were not evaluated for that identity or its request claims/entities; the response identity does not make the snapshot user-specific. Use `/api/evaluate` for request-evaluated results and provenance. Boolean content branches demonstrate variants; these packages expose no experiment-assignment API. All eleven template filters are supported by the installed core evaluator. AlwaysOn/open TimeWindow remain on in both presets; Percentage is identity-sticky and has no prescribed matching outcome.
 

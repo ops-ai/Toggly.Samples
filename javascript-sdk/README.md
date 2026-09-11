@@ -96,8 +96,8 @@ identity and claims.
 
 ## Package versions
 
-- `@ops-ai/feature-flags-toggly` `1.7.4`
-- Vite `8.2.2`
+- `@ops-ai/feature-flags-toggly` `1.8.0`
+- Vite `8.3.0`
 - TypeScript `7.0.2`
 - Vitest `5.0.0`
 - jsdom `30.0.1` (browser interaction tests)

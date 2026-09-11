@@ -1,6 +1,6 @@
 # Fastify SDK Sample
 
-Standalone server-rendered HTML and HTTP API using published **Fastify 5.12.3**, **@ops-ai/toggly-fastify 0.3.0**, and **@ops-ai/toggly-node-core 0.7.0** (npm latest verified 2026-09-08). Node 22+.
+Standalone server-rendered HTML and HTTP API using published **Fastify 5.12.4**, **@ops-ai/toggly-fastify 0.3.0**, and **@ops-ai/toggly-node-core 0.9.0** (npm latest verified 2026-09-08). Node 22+.
 
 A **feature flag** is a named decision in your application: `new-dashboard` ON renders the new dashboard and OFF renders the classic one. Its key must match the definition exactly. The **app key** selects your Toggly application; the **environment** selects that app's rules (for example, Production). An **evaluation context** supplies who/what this request represents, so one rule can return different results for different people or orders.
 
@@ -105,7 +105,7 @@ The published adapter owns a process-wide client singleton. Run one app/configur
 | filter-os | OperatingSystem Mac |
 | filter-context-property | ContextProperty Order.Vip=true |
 
-Presets use the exact identities, claims and User-Agent strings in [FLAG_TEMPLATE](../docs/FLAG_TEMPLATE.md). Matching is alice/admin/US/English/Chrome on macOS/ord-vip; Non-matching is bob/user/CA/French/Firefox on Windows/ord-standard. AlwaysOn and open TimeWindow remain on; Percentage is sticky, not prescribed. All eleven filters are exercised locally with core 0.7.0.
+Presets use the exact identities, claims and User-Agent strings in [FLAG_TEMPLATE](../docs/FLAG_TEMPLATE.md). Matching is alice/admin/US/English/Chrome on macOS/ord-vip; Non-matching is bob/user/CA/French/Firefox on Windows/ord-standard. AlwaysOn and open TimeWindow remain on; Percentage is sticky, not prescribed. All eleven filters are exercised locally with core 0.9.0.
 
 ## Verification and pending live checklist
 
