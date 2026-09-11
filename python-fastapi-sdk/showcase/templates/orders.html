@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Entity context: Order</h2>
+<p>An entity describes the business object, independently of who is using it.
+  ExpressCheckout checks this Order's Vip property.</p>
+<form method="post" action="/orders/">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button name="order" value="vip">VIP Order</button>
+  <button name="order" value="standard">Standard Order</button>
+  <button name="order" value="missing">Missing Order</button>
+</form>
+<section>
+  <h3>Native helper for selected Order: {{ native }}</h3>
+  <p>DemoContextMiddleware sets request.state.toggly_entity before the native helper
+    caches context. Changing that state after a helper read would not rebuild it.</p>
+  <pre>request.state.toggly_entity = TogglyEntityContext(
+    'Order', 'ord-vip', {'Id': 'ord-vip', 'Vip': True, 'Total': 125.0}
+)</pre>
+</section>
+<section>
+  <h3>Multiple entities in one request</h3>
+  <pre>{{ orders | tojson(indent=2) }}</pre>
+  <pre>client.is_enabled('ExpressCheckout', context=context.with_entity(order(True)))
+client.is_enabled('ExpressCheckout', context=context.with_entity(order(False)))
+client.is_enabled('ExpressCheckout', context=context.with_entity(None))</pre>
+  <p>with_entity copies the user context; it does not change the shared client.
+    Wrong-kind is a diagnostic: the Python filter checks properties without
+    validating kind, so a wrong-kind VIP also returns ON. Supply the correct Order.</p>
+</section>
+{% endblock %}

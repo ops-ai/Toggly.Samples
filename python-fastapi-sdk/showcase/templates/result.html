@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<section>
+  <h2>{{ title }}</h2>
+  {% if message is defined %}<p>{{ message }}</p>{% endif %}
+  {% if states is defined %}<pre>{{ states | tojson(indent=2) }}</pre>{% endif %}
+  {% if variant is defined %}
+    {% if variant %}
+      <h3>Assigned variant</h3>
+      <pre>{{ variant | tojson(indent=2) }}</pre>
+    {% else %}
+      <p>No variant assigned. A baseline boolean flag need not define an experiment.</p>
+    {% endif %}
+  {% endif %}
+  <a href="/">Back to workshop</a>
+</section>
+{% endblock %}
