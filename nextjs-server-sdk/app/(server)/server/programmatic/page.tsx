@@ -19,6 +19,9 @@ export default async function ServerProgrammaticPage() {
   const viaGet = getServerToggly()
   const vipOrder = getOrder('ord-vip')!
 
+  // These APIs share definitions but differ in argument shape. The raw client
+  // needs identity in the fourth slot; passing it as context would change what
+  // is evaluated. The options helper makes entity and user inputs explicit.
   // Client method: (key, context?, kind?, identityOverride?)
   const hookDashboard = await viaHook.isFeatureOn(
     'new-dashboard',

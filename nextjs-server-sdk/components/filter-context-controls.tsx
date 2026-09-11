@@ -44,6 +44,9 @@ export function FilterContextControls({
   )
   const [vip, setVip] = useState(current.vip ?? true)
 
+  // Preset buttons only edit this form. Apply writes the inputs and requests a
+  // new server render; it does not change any flag definition in Toggly. Matching
+  // means matching the documented rules, not forcing every result (e.g. 50%) ON.
   function apply() {
     setCookie(TOGGLY_IDENTITY_COOKIE, identity.trim())
     setCookie(FILTER_CLAIMS_COOKIE, claimsPreset === 'none' ? '' : claimsPreset)

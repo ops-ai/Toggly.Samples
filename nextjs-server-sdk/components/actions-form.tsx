@@ -14,6 +14,9 @@ type Result = {
   allowed?: boolean
 }
 
+// These forms display what the server decided at submission time. A visible
+// button is not permission to execute an operation; each action checks its flag
+// again, and real protected mutations would still need server authorization.
 export function ActionsForm() {
   const [checkResult, setCheckResult] = useState<Result | null>(null)
   const [gateResult, setGateResult] = useState<Result | null>(null)
