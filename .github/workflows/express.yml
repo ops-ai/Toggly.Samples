@@ -1,0 +1,46 @@
+name: Express sample
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'nodejs-express-sdk/**'
+      - '.github/workflows/express.yml'
+      - 'README.md'
+      - 'docs/**'
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'nodejs-express-sdk/**'
+      - '.github/workflows/express.yml'
+      - 'README.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: express-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  nodejs-express-sdk:
+    name: nodejs-express-sdk
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nodejs-express-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: nodejs-express-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
