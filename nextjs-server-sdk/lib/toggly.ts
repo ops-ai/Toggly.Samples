@@ -24,6 +24,8 @@ export async function initSampleToggly(): Promise<TogglyClient | null> {
     return null
   }
 
+  // Reuse loaded definitions and the live connection across requests. Registering
+  // a mapper is application setup; choosing a user or Order is request data.
   const existing = getServerToggly()
   if (existing) {
     if (!orderRegistered) {
@@ -33,6 +35,10 @@ export async function initSampleToggly(): Promise<TogglyClient | null> {
     return existing
   }
 
+  // Published server SDK evaluates full definitions locally. Its defaults enable
+  // WebSocket updates and disable interval polling; await setup before checks.
+  // No featureDefaults are supplied here: unknown flags evaluate false. A failed
+  // refresh can retain previous definitions, so inspect errors as well as flags.
   const client = await initServerToggly({
     appKey,
     environment: getTogglyEnvironment(),
