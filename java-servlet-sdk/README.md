@@ -59,7 +59,7 @@ The lock covers dependencies, while plugin versions are fixed in the POM.
 
 ## Create the dedicated Toggly application
 
-1. At [app.toggly.io](https://app.toggly.io), select workspace **Toggly Samples**.
+1. At [app.toggly.io](https://app.toggly.io), use a workspace you can manage (the one from signup is enough).
 2. Create **Java Servlet SDK Sample**. Choose **Java** technology.
 3. Use environment **Production**.
 4. Set **Application URL** to **http://localhost:8086**; add that origin under
@@ -98,7 +98,7 @@ parameter; 100 means every matching identity. ContextProperty parameters are
 `Property=Vip`, `Operator=eq`, `Value=true`, `ValueType=boolean`, with
 `contextKind=Order` on the feature definition. The test fixture demonstrates
 these exact shapes. Java's picker omits **Percentage, Targeting and TimeWindow**.
-Follow the [shared setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+Follow the [shared setup guide](../docs/APP_SETUP.md)
 for visible conditions, final save controls, and the authorized single-feature
 management API fallback. The SDK app key is not management authorization.
 
