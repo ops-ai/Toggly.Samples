@@ -172,11 +172,11 @@ subscription API in this sample's packages.
 
 ## Dedicated Toggly application
 
-Use the [reviewed shared setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+Use the [reviewed shared setup guide](../docs/APP_SETUP.md)
 for actual picker labels, conditional origin settings, hidden filter management
 fallback and final Save/request/readback. Create:
 
-- Workspace **Toggly Samples**; name **Ruby Rails SDK Sample**.
+- Workspace: use one you can manage (the one from signup is enough); name **Ruby Rails SDK Sample**.
 - Technology **Ruby on Rails** (`ruby-on-rails`); environment **Production**.
 - Application URL **http://localhost:3007**. This server-only sample does not
   require enabling browser access just to reveal origin controls.
