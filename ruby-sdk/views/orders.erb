@@ -25,7 +25,8 @@
   <% end %>
 </div>
 <section class="card">
-  <h2>Map domain data through the native API</h2><pre><code>Toggly.register_context("Order") do |order|
+  <h2>Map domain data through the native API</h2>
+  <pre><code>Toggly.register_context("Order") do |order|
   Toggly::EntityContext.new(
     kind: "Order", key: order.id,
     attributes: { "Vip" =&gt; order.vip, "Total" =&gt; order.total }
@@ -33,5 +34,6 @@
 end
 
 context = user_context.with_entity(Toggly.map_entity("Order", order))
-client.enabled?("ExpressCheckout", context: context)</code></pre><p>The management catalog uses <code>Id</code> as its string key property. The SDK entity uses <code>key: order.id</code>. Bind both ExpressCheckout and filter-context-property to context kind <code>Order</code>.</p>
+client.enabled?("ExpressCheckout", context: context)</code></pre>
+  <p>The management catalog uses <code>Id</code> as its string key property. The SDK entity uses <code>key: order.id</code>. Bind both ExpressCheckout and filter-context-property to context kind <code>Order</code>.</p>
 </section>

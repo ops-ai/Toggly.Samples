@@ -5,10 +5,12 @@
     <p>The server checks <code>api-v2</code> with this request’s context. OFF returns HTTP 403; ON returns JSON with <code>allowed: true</code>.</p>
     <p>Current gate <%= state_badge(enabled?('api-v2')) %>
     </p>
-    <a class="button secondary" href="/api/v2">Call the API ↗</a><pre><code>allowed = client.enabled?(
+    <a class="button secondary" href="/api/v2">Call the API ↗</a>
+    <pre><code>allowed = client.enabled?(
   "api-v2", context: context
 )
-status = allowed ? 200 : 403</code></pre></section>
+status = allowed ? 200 : 403</code></pre>
+  </section>
   <section class="card">
     <p class="eyebrow">GET /beta</p>
     <h2>Package integration boundary</h2>
