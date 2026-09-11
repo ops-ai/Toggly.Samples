@@ -51,7 +51,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Configure your Toggly app
 
-1. In [app.toggly.io](https://app.toggly.io), use application **Next.js Server SDK Sample** (or create one).
+1. In [app.toggly.io](https://app.toggly.io), create a dedicated application named **Next.js Server SDK Sample** in a workspace you can manage (the one from signup is enough).
 2. Ensure context kind **Order** exists with properties:
    - `Id` (string, key)
    - `Vip` (boolean)
