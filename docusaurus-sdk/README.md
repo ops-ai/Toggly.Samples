@@ -96,7 +96,7 @@ Linux CI installs Chromium with `npx playwright install --with-deps chromium`. `
 
 ## Create application
 
-1. Workspace: **Toggly Samples**
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can manage (the one from signup is enough).
 2. Name: **Docusaurus SDK Sample**
 3. Technology: select **Docusaurus** in the picker.
 4. Environment: **Production** (default).
