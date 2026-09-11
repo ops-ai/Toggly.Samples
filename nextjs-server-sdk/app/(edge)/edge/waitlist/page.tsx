@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+// Keep a disabled destination reachable independently of its gate. Visiting this
+// page directly says nothing about the current flag value; retry the gated URL.
 export default function EdgeWaitlistPage() {
   return (
     <>

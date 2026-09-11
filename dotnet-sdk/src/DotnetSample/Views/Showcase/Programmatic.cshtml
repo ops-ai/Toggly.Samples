@@ -1,0 +1,11 @@
+@model ShowcaseModel
+@{ ViewData["Title"] = "Programmatic API"; }
+<h1>Ask the SDK where the decision happens.</h1><p class="lead">Use an asynchronous check for application logic. Server SDK evaluation uses cached definitions; looping over orders does not make one Toggly HTTP call per order.</p>
+<section><h2>Branch in C#</h2><pre>var enabled = await features.IsEnabledAsync("api-v2");
+return enabled ? BuildV2Response() : BuildV1Response();</pre><p>Current <code>api-v2</code>: <strong>@Model.Flags[FeatureFlags.Api]</strong>. <a href="/api/data">Execute the real API endpoint</a>.</p>
+<p><code>IFeatureManagerSnapshot</code> keeps a Boolean decision stable within a request. <code>IFeatureManager</code> supports separate per-entity evaluations; the sample uses that for Order lists rather than memoizing one order's result for another.</p></section>
+<section><h2>Enforce a gate at the endpoint</h2><pre>[FeatureGate("beta-access")]
+[HttpGet("beta")]
+public IActionResult Beta() =&gt; Ok(...);</pre><p><a href="/api/beta">Call /api/beta</a> · <a href="/api/multi">Call the All gate</a></p><p>A disabled MVC gate returns 404. Hiding the button alone would not prevent someone calling its URL.</p></section>
+<section><h2>Defaults, errors and refresh</h2><p>Missing definitions and unknown keys are OFF. Live mode verifies signed definitions. If a refresh fails, the SDK can retain previously loaded definitions; an OFF result alone does not describe network health.</p>
+<p>Definitions loaded: <strong>@Model.Loaded</strong>. Last check: @(Model.LastDefinitionsCheck?.ToString("u") ?? "none"). The SDK receives WebSocket changes and polls as a fallback; refresh a page to evaluate its latest cache. This server-rendered UI does not claim automatic browser updates.</p></section>

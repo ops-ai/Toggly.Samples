@@ -6,6 +6,9 @@ export function ApiDemoClient() {
   const [payload, setPayload] = useState<unknown>(null)
   const [error, setError] = useState<string | null>(null)
 
+  // Fetch again after a toggle: the API evaluates api-v2 on the server for this
+  // request. This component only displays the payload; it does not decide which
+  // API version to return and cannot protect the endpoint by hiding its button.
   async function load() {
     setError(null)
     try {

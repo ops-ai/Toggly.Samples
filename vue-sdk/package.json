@@ -1,0 +1,29 @@
+{
+  "name": "toggly-vue-sdk-sample",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npm run test:unit && npm run test:browser",
+    "test:unit": "vitest run",
+    "test:browser": "node tests/browser.mjs"
+  },
+  "dependencies": {
+    "@ops-ai/vue-feature-flags-toggly": "1.9.5",
+    "vue": "^3.5.41"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^28.0.0",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.0"
+  },
+  "engines": {
+    "node": ">=22.23.2"
+  }
+}

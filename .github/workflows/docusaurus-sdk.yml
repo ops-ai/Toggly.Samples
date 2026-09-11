@@ -1,0 +1,43 @@
+name: Docusaurus SDK sample
+on:
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'docusaurus-sdk/**'
+      - '.github/workflows/docusaurus-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'README.md'
+  push:
+    branches: [develop, main]
+    paths:
+      - 'docusaurus-sdk/**'
+      - '.github/workflows/docusaurus-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'README.md'
+permissions:
+  contents: read
+concurrency:
+  group: docusaurus-sdk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  docusaurus-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docusaurus-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22.23.2'
+          cache: npm
+          cache-dependency-path: docusaurus-sdk/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+      - run: npm run build
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production

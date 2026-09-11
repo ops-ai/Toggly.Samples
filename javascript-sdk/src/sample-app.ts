@@ -1,6 +1,8 @@
 import { createSnapshot, matchingPreset, nonMatchingPreset, type FlagReader } from './demo'
 
 export type EvaluationContext = { identity?: string; claims?: Record<string, string>; groups?: string[] }
+// A narrow boundary for this view and its tests, not a replacement SDK.
+// The shipped browser gate API uses numeric all=0 / any=1 requirements.
 export type SampleSdk = {
   isFeatureOn(key: string, context?: Record<string, unknown>, kind?: string): boolean
   evaluateFeatureGate(keys: string[], requirement?: 0 | 1, negate?: boolean): boolean
@@ -24,11 +26,18 @@ export function mountSample(root: Element, sdk: SampleSdk, options: Options) {
   const text = (selector: string, value: unknown) => { const node = root.querySelector(selector); if (node) node.textContent = String(value) }
   const flag = (selector: string, enabled: boolean) => { const node = root.querySelector(selector); if (node) { node.textContent = enabled ? 'ON' : 'OFF'; node.className = enabled ? 'on' : 'off' } }
 
+  // setContext changes the user used by worker evaluation and awaits a reload.
+  // It patches supplied fields, so omitted groups remain in the SDK context.
+  // Unlike the per-order argument below, this context survives page reloads and
+  // can affect other tabs on the same origin. Requested input and active SDK
+  // context are displayed separately so a preset is not mistaken for proof.
   async function applyPreset(next: Preset) {
     preset = next; pending = true; status = `Applying ${next.identity} / role=${next.claims.role}…`; render()
     await sdk.setContext({ identity: next.identity, claims: next.claims })
     pending = false; status = errorMessage() ? `Evaluation unavailable or cached: ${errorMessage()}` : `Applied ${next.identity} / role=${next.claims.role}.`; render()
   }
+  // refresh may resolve with last-known-good/cached data while recording
+  // lastError. Catch alone is insufficient to label a result as freshly fetched.
   async function refresh() {
     pending = true; status = 'Refreshing definitions…'; render()
     try { await sdk.refresh(); runtimeError = '' } catch (error) { runtimeError = error instanceof Error ? error.message : String(error) }
@@ -36,13 +45,24 @@ export function mountSample(root: Element, sdk: SampleSdk, options: Options) {
   }
 
   function render() {
+    // Keep readable all/any names in our teaching helper, adapting them to the
+    // numeric public API here. No FeatureRequirement global is exported by 1.7.4.
     const reader: FlagReader = { isFeatureOn: (key, context, kind) => sdk.isFeatureOn(key, context, kind), evaluateFeatureGate: (gate, requirement, negate) => sdk.evaluateFeatureGate(gate, requirement === 'any' ? 1 : 0, negate), getVariant: key => sdk.getVariant(key) }
     const snapshot = createSnapshot(reader)
+    // The same user can have two orders with different results. Supply Order
+    // for each evaluation so returned ContextProperty rules can read Vip locally.
+    // A rule object without its entity fails closed; treating it as a truthy
+    // boolean would incorrectly enable a feature. Plain offline booleans have
+    // no rules to evaluate and therefore do not respond to changing the order.
     const expressCheckout = sdk.isFeatureOn('ExpressCheckout', preset, 'Order')
     const entityFilter = sdk.isFeatureOn('filter-context-property', preset, 'Order')
+    // Variants are named assignments (with optional configuration), distinct
+    // from ON/OFF. Null means use the explicit default-content branch below.
     const variant = sdk.getVariant('new-dashboard')
     const actual = sdk.evaluationContext
     const resultLabel = !options.configured ? 'offline placeholder' : errorMessage() ? 'unavailable or cached' : 'live'
+    // These UI branches teach conditional presentation, not access control.
+    // A user can change browser code or claims; protect privileged work on a server.
     root.innerHTML = `<main><h1>JavaScript SDK Sample</h1><p class="lede">A vanilla TypeScript showcase for <code>@ops-ai/feature-flags-toggly</code>.</p><div id="missing-key" class="banner"><strong>Missing app key.</strong> Set <code>VITE_TOGGLY_APP_KEY</code> in <code>.env.local</code>. Current values are offline placeholders.</div><div id="evaluation-status" class="status" aria-live="polite"></div><nav>${['home','gates','api','identity-section','entity','filters','unique','configuration'].map(name => `<a href="#${name}">${name}</a>`).join('')}</nav>
     <section id="home"><h2>1. Home</h2><p>Flag checklist and <strong id="result-label"></strong> snapshot.</p><div id="flag-grid" class="grid"></div></section>
     <section id="gates"><h2>2. Declarative gates</h2><p>DOM content is conditionally rendered from SDK gate results.</p><div id="feature-content" class="card"></div><div id="negated-content" class="card"></div><div id="variant-content" class="card"></div><ul><li>All keys: <strong id="all-gate"></strong></li><li>Any key: <strong id="any-gate"></strong></li></ul></section>
@@ -53,6 +73,9 @@ export function mountSample(root: Element, sdk: SampleSdk, options: Options) {
     <section id="unique"><h2>7. Package-unique surfaces</h2><p>Browser global, supported refresh hook, WebSocket refresh, variants, offline defaults, and entity registration.</p></section><section id="configuration"><h2>8. Configuration</h2><p id="configuration-text"></p></section></main>`
     if (options.configured) root.querySelector('#missing-key')?.remove()
     text('#evaluation-status', status); text('#result-label', resultLabel)
+    // Filter rows are SDK results, not local comparisons against preset strings.
+    // Targeting/claims/percentage/time/request filters need live definitions;
+    // country, browser, language, device and OS follow the real request context.
     const grid = root.querySelector('#flag-grid')!
     for (const key of keys) { const card = document.createElement('div'); card.className = 'card'; const code = document.createElement('code'); code.textContent = key; const value = document.createElement('strong'); value.dataset.flag = key; const enabled = key === 'filter-context-property' ? entityFilter : sdk.isFeatureOn(key); value.textContent = enabled ? 'ON' : 'OFF'; value.className = enabled ? 'on' : 'off'; card.append(code, document.createElement('br'), value); grid.append(card) }
     text('#feature-content', snapshot.newDashboard ? 'New dashboard content is visible.' : 'New dashboard content is hidden.'); text('#negated-content', snapshot.dashboardNegated ? 'Classic dashboard fallback is visible.' : 'Classic dashboard fallback is hidden.')

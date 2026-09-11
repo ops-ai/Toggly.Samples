@@ -12,6 +12,9 @@ import {
 export function buildFilterEvalOptions(
   bag: FilterEvalCookieBag,
 ): FeatureCheckOptions {
+  // These are simulated request headers for local evaluation, not outgoing HTTP
+  // headers. Country uses the same cf-ipcountry name as a trusted edge proxy;
+  // here its value is deliberately user-editable so both rule branches are visible.
   const headers: Record<string, string> = {}
   if (bag.country?.trim()) {
     headers['cf-ipcountry'] = bag.country.trim().toUpperCase()
@@ -35,6 +38,8 @@ export function buildFilterEvalOptions(
   if (bag.vip !== undefined) {
     const order = getOrder(bag.vip ? 'ord-vip' : 'ord-standard')
     if (order) {
+      // Supply the domain object, not { Vip: ... }: registerOrderContext maps
+      // its lower-case fields to the exact attribute names in the Toggly rule.
       options.context = order
       options.contextKind = 'Order'
     }
