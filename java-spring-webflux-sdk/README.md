@@ -64,7 +64,7 @@ the dependency byte inventory.
 
 ## Create the dedicated Toggly application
 
-1. At [app.toggly.io](https://app.toggly.io), select workspace **Toggly Samples**.
+1. At [app.toggly.io](https://app.toggly.io), use a workspace you can manage (the one from signup is enough).
 2. Create **Java Spring WebFlux SDK Sample**. Choose **Java** technology.
 3. Use environment **Production**.
 4. Set **Application URL** to **http://localhost:8089**; add **http://localhost:8089**
@@ -111,7 +111,7 @@ Changes. Order rules use Add condition on Order (Vip equals Boolean true);
 remove the default AlwaysOn row so it cannot enable the flag independently.
 
 Review the confirmation dialog and choose **Save** or **Request** to submit.
-See the [shared setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+See the [shared setup guide](../docs/APP_SETUP.md)
 for the complete application and condition controls.
 
 ### Java picker limitation and manual fallback
