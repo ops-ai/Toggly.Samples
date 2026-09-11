@@ -24,7 +24,8 @@
     <% end %>
     <pre><code>client.disabled?(
   "new-dashboard", context: context
-)</code></pre><p>Native <code>disabled?</code> negates the enabled check and preserves its defaults.</p>
+)</code></pre>
+    <p>Native <code>disabled?</code> negates the enabled check and preserves its defaults.</p>
   </section>
 </div>
 <section class="card">
@@ -49,7 +50,8 @@
   client.enabled?(key, context: context)
 end
 checks.all?
-checks.any?</code></pre><p>Evaluate both first so native usage sees both checks. Calling <code>all?</code> with a checking block can short-circuit.</p>
+checks.any?</code></pre>
+  <p>Evaluate both first so native usage sees both checks. Calling <code>all?</code> with a checking block can short-circuit.</p>
 </section>
 <section class="card limitation">
   <p class="eyebrow">VARIANTS / NATIVE LIMIT</p>

@@ -2,8 +2,10 @@
   <section class="card">
     <p class="eyebrow">LIFETIME</p>
     <h2>One client, one process</h2>
-    <p>Puma uses workers=0 and 1–8 threads. <code>config.ru</code> constructs the client before serving; <code>at_exit</code> closes it after graceful shutdown. Do not close it after each request or preload an initialized client before worker forks.</p><pre><code>at_exit { service.close }
-# Native close stops refresh and flushes telemetry.</code></pre></section>
+    <p>Puma uses workers=0 and 1–8 threads. <code>config.ru</code> constructs the client before serving; <code>at_exit</code> closes it after graceful shutdown. Do not close it after each request or preload an initialized client before worker forks.</p>
+    <pre><code>at_exit { service.close }
+# Native close stops refresh and flushes telemetry.</code></pre>
+  </section>
   <section class="card">
     <p class="eyebrow">CURRENT DEFINITIONS</p>
     <h2>Polling and file snapshots</h2>
@@ -18,7 +20,9 @@
 <section class="card">
   <p class="eyebrow">USAGE + METRICS</p>
   <h2>Watch native batching locally</h2>
-  <p>Native checks collect usage; the submission form records usage, measurement, counter and observation events. This sample injects a local transport through the public API. No telemetry is sent to Toggly in any mode, including connected mode. With no app key, the SDK does not start telemetry and batch counts stay zero. Counts describe flushed batches, not per-user or per-request totals.</p><pre><code><%= h(JSON.pretty_generate(@service.telemetry.summary)) %></code></pre><form action="/actions/flush" method="post">
+  <p>Native checks collect usage; the submission form records usage, measurement, counter and observation events. This sample injects a local transport through the public API. No telemetry is sent to Toggly in any mode, including connected mode. With no app key, the SDK does not start telemetry and batch counts stay zero. Counts describe flushed batches, not per-user or per-request totals.</p>
+  <pre><code><%= h(JSON.pretty_generate(@service.telemetry.summary)) %></code></pre>
+  <form action="/actions/flush" method="post">
     <%= csrf_field %>
     <button type="submit">Record view &amp; flush native telemetry →</button>
   </form>

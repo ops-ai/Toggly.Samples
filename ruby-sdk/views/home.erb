@@ -7,14 +7,16 @@
     </a>
   </div>
   <div class="hero-code">
-    <span class="code-label">YOUR FIRST CHECK</span><pre><code>context = Toggly::Context.new(
+    <span class="code-label">YOUR FIRST CHECK</span>
+    <pre><code>context = Toggly::Context.new(
   identity: "alice"
 )
 
 client.enabled?(
   "new-dashboard",
   context: context
-)</code></pre><p>Current result <%= state_badge(enabled?('new-dashboard')) %>
+)</code></pre>
+    <p>Current result <%= state_badge(enabled?('new-dashboard')) %>
     </p>
   </div>
 </section>
