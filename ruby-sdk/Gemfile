@@ -1,0 +1,13 @@
+source 'https://rubygems.org'
+ruby '4.0.6'
+
+gem 'toggly', '0.5.0'
+gem 'rack', '3.2.7'
+gem 'rackup', '2.3.1'
+gem 'rack-session', '2.1.2'
+gem 'puma', '8.0.2'
+
+group :development, :test do
+  gem 'minitest', '6.0.6'
+  gem 'rake', '13.4.2'
+end

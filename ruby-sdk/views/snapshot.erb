@@ -1,0 +1,41 @@
+<section class="card" aria-labelledby="snapshot-title">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">LIVE EVALUATIONS</p>
+      <h2 id="snapshot-title">All sixteen flags</h2>
+    </div>
+    <span class="small" data-snapshot-status>Checks every 3 seconds</span>
+  </div>
+  <p class="small">This browser snapshot evaluates with your current context. Native definition polling runs every <%= @service.configuration.refresh_interval %> seconds when connected. Other sections render again on navigation or reload.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Flag checklist</th>
+          <th>Result</th>
+          <th>Native diagnostic</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @flags.each do |flag| %>
+          <tr data-flag="<%= h(flag[:key]) %>">
+            <td>
+              <code>
+                <%= h(flag[:key]) %>
+              </code>
+            </td>
+            <td data-state>
+              <%= state_badge(flag[:enabled]) %>
+            </td>
+            <td data-reason>
+              <%= h(flag[:reason]) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">SDK ready: <strong data-ready>
+      <%= h(@client.ready) %>
+    </strong>. A restored file snapshot can supply evaluated values while native readiness is false during a startup outage. Both are shown as reported.</p>
+</section>

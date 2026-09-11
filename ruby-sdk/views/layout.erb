@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      <%= h(@title) %> · Ruby SDK Sample</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/snapshot.js" defer>
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="/">
+          <span class="brand-mark">t</span> toggly <span class="brand-label">LAB</span>
+        </a>
+        <p class="eyebrow">RUBY / RACK</p>
+        <p class="sidebar-title">Feature flags,<br>one request at a time.</p>
+        <nav aria-label="Sample sections">
+          <% Catalog::SECTIONS.each_with_index do |(path, (name, _description)), index| %>
+            <a href="<%= h(path) %>" <%= 'aria-current="page"' if @path == path %>>
+              <span class="nav-number">
+                <%= format('%02d', index + 1) %>
+              </span>
+              <%= h(name) %>
+            </a>
+          <% end %>
+        </nav>
+        <div class="sidebar-note">
+          <span class="status-dot">
+          </span> Native Ruby SDK 0.5.0<br>
+          <small>Ruby 4.0.6 · Rack 3.2.7 · Puma 8.0.2</small>
+        </div>
+      </aside>
+      <main id="main">
+        <header class="topbar">
+          <span>Ruby SDK Sample</span>
+          <span class="mode">
+            <%= h(@service.configuration.mode.upcase) %> · <%= h(@service.configuration.environment) %>
+          </span>
+        </header>
+        <% if @service.configuration.mode == 'offline' %>
+          <div class="banner">
+            <strong>No app key — offline defaults.</strong> All sixteen flags default OFF. Native rule filters need definitions. <a href="/setup">Connect your app →</a>
+          </div>
+        <% elsif @service.configuration.mode == 'fixture' %>
+          <div class="banner fixture">
+            <strong>Local native fixture.</strong> Published SDK evaluates deterministic loopback definitions. This is not a live Toggly application.</div>
+        <% end %>
+        <% if @notice %>
+          <p class="notice" role="status">
+            <%= h(@notice) %>
+          </p>
+        <% end %>
+        <section class="page-heading">
+          <p class="eyebrow">THE RUBY WORKSHOP</p>
+          <h1>
+            <%= h(@title) %>
+          </h1>
+          <p>
+            <%= h(Catalog::SECTIONS.fetch(@path).last) %>
+          </p>
+        </section>
+        <div class="context-strip">
+          <span>Demo identity <strong>
+              <%= h(@context.identity.empty? ? '(anonymous)' : @context.identity) %>
+            </strong>
+          </span>
+          <span>Order <strong>
+              <%= h(@context.entity.key) %>
+            </strong>
+          </span>
+          <span>SDK ready <strong data-ready>
+              <%= h(@client.ready) %>
+            </strong>
+          </span>
+          <a href="/identity">Change context →</a>
+        </div>
+        <%= @content %>
+        <footer>Demo personas and claims are teaching inputs, not authentication. Flags do not replace application authorization.</footer>
+      </main>
+    </div>
+  </body>
+</html>

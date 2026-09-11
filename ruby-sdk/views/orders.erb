@@ -1,0 +1,37 @@
+<p class="intro">Identity answers “who?” Order answers “which purchase?” Switch the entity while keeping <strong>
+    <%= h(@context.identity) %>
+  </strong> unchanged. No feature decision is cached between Orders.</p>
+<div class="two-columns">
+  <% RequestContext::ORDERS.each do |key, order| %>
+    <% order_context = @context.with_entity(Toggly.map_entity('Order', order)) %>
+    <section class="card">
+      <p class="eyebrow">
+        <%= order.vip ? 'VIP ORDER' : 'STANDARD ORDER' %>
+      </p>
+      <h2>
+        <%= h(key) %>
+      </h2>
+      <p>Vip=<%= h(order.vip) %> · Total=<%= h(order.total) %>
+      </p>
+      <p>ExpressCheckout <%= state_badge(enabled?('ExpressCheckout', order_context)) %>
+      </p>
+      <form action="/context" method="post">
+        <%= csrf_field %>
+        <input type="hidden" name="order" value="<%= h(key) %>">
+        <input type="hidden" name="return_to" value="/orders">
+        <button class="secondary" type="submit">Use this Order →</button>
+      </form>
+    </section>
+  <% end %>
+</div>
+<section class="card">
+  <h2>Map domain data through the native API</h2><pre><code>Toggly.register_context("Order") do |order|
+  Toggly::EntityContext.new(
+    kind: "Order", key: order.id,
+    attributes: { "Vip" =&gt; order.vip, "Total" =&gt; order.total }
+  )
+end
+
+context = user_context.with_entity(Toggly.map_entity("Order", order))
+client.enabled?("ExpressCheckout", context: context)</code></pre><p>The management catalog uses <code>Id</code> as its string key property. The SDK entity uses <code>key: order.id</code>. Bind both ExpressCheckout and filter-context-property to context kind <code>Order</code>.</p>
+</section>
