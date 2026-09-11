@@ -38,12 +38,12 @@ health requirement; the latter controls recurring job registration.
 
 ## Connect your dedicated Toggly app
 
-1. Open [app.toggly.io](https://app.toggly.io), select **Toggly Samples**, and
+1. Open [app.toggly.io](https://app.toggly.io), use a workspace you can manage (the one from signup is enough), and
    create **.NET SDK Sample**. Select **C#** (the .NET SDK technology) in the technology picker.
 2. Use the **Production** environment (case-sensitive). Set **Application URL**
    to `http://localhost:5000`; add that origin under **Allowed Web Origins** only
    if the existing client-side section is present. Server-only evaluations do
-   not use browser CORS. Follow the [shared setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+   not use browser CORS. Follow the [shared setup guide](../docs/APP_SETUP.md)
    for the context, conditions, and final save controls.
 3. Create context kind **Order**: `Id` string/key, `Vip` boolean, `Total` number
    (optional). The app registers this type locally via `AddTogglyEntityContext`.
