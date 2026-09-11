@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Identity belongs to the request</h2><p>Flask-Login loads a fixed demo principal from the signed session cookie. The adapter extracts its id and roles. Persona changes do not call <code>set_identity</code>, reinitialize the shared client, or fetch definitions.</p><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button name="persona" value="alice">Use Alice</button><button name="persona" value="bob">Use Bob</button><button name="persona" value="clear">Clear session</button></form><p><a href="/native/targeted/">Try native Targeting gate</a>: Alice is allowed; Bob and anonymous receive 403 with the shared recipe.</p><section><h3>Current composed context</h3><pre>{{ demo_context | tojson(indent=2) }}</pre><p>The preset browser/country inputs are simulated. In your app use verified principal claims and trusted ingress headers.</p></section>
+{% endblock %}
