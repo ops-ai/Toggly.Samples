@@ -1,4 +1,4 @@
-# Flag + app template (Toggly Samples workspace)
+# Flag + app template
 
 Use this shared configuration with the [application setup guide](APP_SETUP.md).
 The guide covers the actual technology labels, Conditions editor, and management
@@ -7,7 +7,9 @@ supplies its exact application name, local URLs, and SDK-specific parameter form
 
 ## Create application
 
-1. Workspace: **Toggly Samples**
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can
+   manage (the one created at signup is enough). You do not need a workspace
+   named Toggly Samples.
 2. Name: **{Stack} SDK Sample** (for example, **Remix SDK Sample**)
 3. Technology: select the matching stack using the
    [picker labels](APP_SETUP.md#choose-the-application-and-technology).

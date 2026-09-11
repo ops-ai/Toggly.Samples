@@ -12,9 +12,10 @@ versions can differ from the source-defined labels below.
 
 ## Choose the application and technology
 
-1. Sign in to [the Toggly dashboard](https://app.toggly.io) with your existing
-   account and select workspace **Toggly Samples**. Use an account with permission
-   to manage applications in that workspace.
+1. Sign in to [the Toggly dashboard](https://app.toggly.io). Use a workspace you
+   can manage (the one created at signup is enough). You do not need a workspace
+   named Toggly Samples. Use an account with permission to create applications
+   in that workspace.
 2. On **Applications**, choose **Add new application**. Enter the dedicated
    **{Stack} SDK Sample** name from the sample's README, such as **Java Spring
    WebFlux SDK Sample**. Check the workspace shown by **Adding to** before saving.
