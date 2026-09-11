@@ -15,6 +15,9 @@ export type ActionResult = {
   allowed?: boolean
 }
 
+// Check at execution time: the flag may change between displaying and submitting
+// the form. These actions return demonstration data, not persisted mutations or
+// authorization decisions. Both enhanced and legacy behavior remain explicit.
 export async function submitWithCheck(formData: FormData): Promise<ActionResult> {
   await initSampleToggly()
   const identity = await getRequestIdentity()
@@ -38,6 +41,8 @@ export async function submitWithGate(formData: FormData): Promise<ActionResult> 
   await initSampleToggly()
   // Wrap per invocation so identity comes from the current request cookie.
   const identity = await getRequestIdentity()
+  // withFeature runs only one callback. onDisabled is our chosen legacy response;
+  // omitting it would use the SDK's disabled-action behavior instead.
   const gatedSubmit = withFeature(
     'enhanced-submit',
     async (data: FormData): Promise<ActionResult> => {
@@ -66,6 +71,8 @@ export async function submitWithFeatureGate(
   await initSampleToggly()
   const identity = await getRequestIdentity()
   const note = String(formData.get('note') ?? '')
+  // A multi-key gate returns { allowed, ... }, not a boolean. Requiring all means
+  // enhanced-submit alone is insufficient while api-v2 remains disabled.
   const result = await checkFeatureGate({
     featureKeys: ['enhanced-submit', 'api-v2'],
     requirement: 'all',

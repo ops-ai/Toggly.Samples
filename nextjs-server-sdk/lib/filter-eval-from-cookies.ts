@@ -27,6 +27,8 @@ export async function readFilterEvalCookieBag(): Promise<FilterEvalCookieBag> {
     }
   }
 
+  // No VIP cookie starts this demonstration with the VIP fixture. An explicit
+  // 0 remains false; missing input and a deliberate non-match are different.
   const vipRaw = raw(FILTER_VIP_COOKIE)
   return {
     identity,
