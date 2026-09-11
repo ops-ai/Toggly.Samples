@@ -1,0 +1,23 @@
+<section class="card">
+  <h2>Same identity. A different Order.</h2>
+  <p>Both evaluations below preserve <strong><%= toggly_context.identity %></strong> and all current claims and request headers.</p>
+  <div class="section-grid">
+    <% RequestContext::ORDERS.each_value do |order| %>
+      <% context = toggly_context.with_entity(order.to_toggly_entity) %>
+      <article class="outcome">
+        <h3><%= order.id %></h3>
+        <p>Vip: <strong><%= order.vip %></strong> · Total: <%= order.total %></p>
+        <p>Express Checkout <%= state_badge(feature_enabled?('ExpressCheckout', context: context)) %></p>
+      </article>
+    <% end %>
+  </div>
+  <pre><code>entity = Toggly::EntityContext.new(
+  kind: 'Order', key: order.id,
+  attributes: { 'Vip' =&gt; order.vip, 'Total' =&gt; order.total }
+)
+feature_enabled?('ExpressCheckout',
+  context: toggly_context.with_entity(entity))</code></pre>
+  <p><code>Order.Id</code> is the entity key. The shared flag rule tests <code>Order.Vip = true</code>.
+    Native context cache keys omit entity data and definition revision, so this sample never caches evaluated decisions by that key.</p>
+</section>
+<%= render 'controls' %>
