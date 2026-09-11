@@ -41,7 +41,7 @@ A nonempty App Key selects **LIVE SDK** mode. Offline switches and error simulat
 
 ### Exact dashboard setup
 
-1. Choose workspace **Toggly Samples** and create **Vue SDK Sample**.
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can manage (the one from signup is enough). Create **Vue SDK Sample**.
 2. Select **Vue** technology, use environment **Production**, and allow web origin **http://localhost:5173**.
 3. Add context kind **Order** with key property **Id** (string), **Vip** (boolean), and optional **Total** (number). The browser registers a local mapper only; create the schema in the dashboard.
 4. Add these flags:
