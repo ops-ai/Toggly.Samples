@@ -1,6 +1,6 @@
 # Docusaurus SDK workshop
 
-A Docusaurus 3 site that takes one feature flag through native MDX/React components, a programmatic action, a live filter matrix and a real core Order mapper. It uses the published **@ops-ai/toggly-docusaurus-plugin 0.8.0** and **@ops-ai/toggly-client-core 0.3.0**, with **Docusaurus 3.10.2** and **React 19.3.0** recorded in the lockfile.
+A Docusaurus 3 site that takes one feature flag through native MDX/React components, a programmatic action, a live filter matrix and a real core Order mapper. It uses the published **@ops-ai/toggly-docusaurus-plugin 0.9.0** and **@ops-ai/toggly-client-core 0.4.0**, with **Docusaurus 3.10.2** and **React 19.3.0** recorded in the lockfile.
 
 ## Run the workshop
 
@@ -98,7 +98,7 @@ Linux CI installs Chromium with `npx playwright install --with-deps chromium`. `
 
 1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can manage (the one from signup is enough).
 2. Name: **Docusaurus SDK Sample**
-3. Technology: select **Docusaurus** in the picker.
+3. Technology: select **Javascript** in the picker (there is no Docusaurus option; the Docusaurus plugin still uses the JavaScript client).
 4. Environment: **Production** (default).
 5. Allowed Web Origins: add **http://localhost:3000**.
 

@@ -4,7 +4,7 @@ Follow one feature flag from configuration to a native Angular template, a servi
 
 ## Quick start
 
-Use Node **22.23.2** (with npm **10.9.8**) or a compatible newer Angular-supported Node release. The lockfile installs Angular **22.1.6**, Angular CLI/build **22.1.7**, `@ops-ai/ngx-feature-flags-toggly` **2.8.0**, and Zone.js **0.16.3**.
+Use Node **22.23.2** (with npm **10.9.8**) or a compatible newer Angular-supported Node release. The lockfile installs Angular **22.1.6**, Angular CLI/build **22.1.8**, `@ops-ai/ngx-feature-flags-toggly` **2.8.0**, Vitest **4.1.11**, and Zone.js **0.16.3**. SDK **2.8.1** and Vitest 5 are intentionally held: the SDK's CommonJS hooks dependency fails Angular's native test runner at module import.
 
 ```sh
 cd angular-sdk

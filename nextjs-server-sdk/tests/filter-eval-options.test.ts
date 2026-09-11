@@ -2,6 +2,18 @@ import { describe, it, expect } from 'vitest'
 import { buildFilterEvalOptions } from '@/lib/filter-eval-options'
 import { claimsFromPreset } from '@/lib/filter-eval-cookies'
 
+function getHeader(
+  headers: Headers | Record<string, string | string[] | undefined> | undefined,
+  name: string,
+) {
+  if (headers instanceof Headers) {
+    return headers.get(name)
+  }
+
+  const value = headers?.[name]
+  return Array.isArray(value) ? value.join(', ') : value
+}
+
 describe('claimsFromPreset', () => {
   it('maps admin and user presets', () => {
     expect(claimsFromPreset('admin')).toEqual({ role: 'admin' })
@@ -20,7 +32,7 @@ describe('buildFilterEvalOptions', () => {
     })
     expect(opts.identity).toBe('alice')
     expect(opts.claims).toEqual({ role: 'admin' })
-    expect(opts.headers?.['cf-ipcountry']).toBe('US')
+    expect(getHeader(opts.headers, 'cf-ipcountry')).toBe('US')
     expect(opts.contextKind).toBe('Order')
     expect(opts.context).toMatchObject({ id: 'ord-vip', vip: true })
   })
@@ -43,8 +55,8 @@ describe('buildFilterEvalOptions', () => {
       acceptLanguage: 'en-US,en;q=0.9',
       country: 'ca',
     })
-    expect(opts.headers?.['user-agent']).toContain('Chrome')
-    expect(opts.headers?.['accept-language']).toContain('en')
-    expect(opts.headers?.['cf-ipcountry']).toBe('CA')
+    expect(getHeader(opts.headers, 'user-agent')).toContain('Chrome')
+    expect(getHeader(opts.headers, 'accept-language')).toContain('en')
+    expect(getHeader(opts.headers, 'cf-ipcountry')).toBe('CA')
   })
 })

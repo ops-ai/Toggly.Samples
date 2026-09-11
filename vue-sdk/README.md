@@ -15,7 +15,7 @@ npm run dev
 
 Open **http://localhost:5173**. With no App Key, the prominent **OFFLINE FIXTURES** banner explains that the sample feeds deterministic payloads through the real SDK. Nothing is sent to a real Toggly app in this mode. You do not need an account to learn the controls.
 
-Installed host/package versions: Vue **3.5.42**, Vite **8.2.2**, Toggly Vue SDK **1.9.5**. `package-lock.json` records the full dependency set. This sample uses the official Vite **JavaScript** Vue template.
+Installed host/package versions: Vue **3.5.42**, Vite **8.3.0**, Toggly Vue SDK **1.9.5**. The newer SDK 1.9.6 is held because its changed refresh/error behaviour fails this sample’s native integration tests. `package-lock.json` records the full dependency set. This sample uses the official Vite **JavaScript** Vue template.
 
 ## Your first flag, in three minutes
 
