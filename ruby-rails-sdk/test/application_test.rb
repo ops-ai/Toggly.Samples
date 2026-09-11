@@ -24,6 +24,37 @@ class ApplicationTest < ActionDispatch::IntegrationTest
     assert_select 'tr[data-filter]', 11
   end
 
+  test 'snapshot rows retain one native decision when definitions refresh between calls' do
+    client = Toggly.client
+    decisions = []
+    first_result = nil
+    # Observe real native calls without replacing the SDK or its evaluator.
+    # Refresh just after one result returns to reproduce the old two-call race.
+    trace = TracePoint.new(:call, :return) do |event|
+      next unless event.self.equal?(client)
+
+      if event.event == :call && %i[evaluate enabled?].include?(event.method_id)
+        decisions << [event.method_id, event.binding.local_variable_get(:feature_key)]
+      elsif event.event == :return && event.method_id == :evaluate && first_result.nil?
+        first_result = event.return_value
+        FIXTURE.toggle('new-dashboard', false)
+        client.refresh(force: true)
+      end
+    end
+    trace.enable { get '/api/snapshot' }
+
+    assert_response :success
+    assert_equal 'new-dashboard', first_result.feature_key
+    assert first_result.enabled, 'The returned result must precede the refresh'
+    refute client.enabled?('new-dashboard'), 'The real SDK must now see the refreshed OFF definition'
+    row = response.parsed_body.fetch('flags').find { |flag| flag['key'] == 'new-dashboard' }
+    assert_equal first_result.enabled, row.fetch('enabled')
+    assert_equal first_result.reason, row.fetch('reason')
+    assert_equal Catalog::FLAGS.map { |key| [:evaluate, key] }, decisions,
+      'Each row needs one native evaluation and no second boolean check'
+    # Other rows can observe newer definitions; this is not whole-table atomicity.
+  end
+
   test 'native helpers render enabled and disabled blocks' do
     get '/gates'
     assert_includes response.body, 'New dashboard enabled'

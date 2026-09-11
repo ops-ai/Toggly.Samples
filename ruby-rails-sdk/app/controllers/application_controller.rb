@@ -21,8 +21,10 @@ class ApplicationController < ActionController::Base
       mode: Rails.application.config.x.toggly_mode,
       ready: Toggly.client.ready,
       flags: Catalog::FLAGS.map do |key|
+        # Keep this row's value and reason from the same native decision. A
+        # second check could observe refreshed definitions between the calls.
         result = Toggly.client.evaluate(key, context: toggly_context)
-        { key: key, enabled: feature_enabled?(key), reason: result.reason }
+        { key: key, enabled: result.enabled, reason: result.reason }
       end,
       context: {
         identity: toggly_context.identity,
