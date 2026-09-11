@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Toggly.FeatureManagement" Version="3.6.6" />
+    <PackageReference Include="Toggly.FeatureManagement.Web" Version="3.6.6" />
+    <PackageReference Include="Toggly.FeatureManagement.Hangfire" Version="3.6.6" />
+    <PackageReference Include="Toggly.FeatureManagement.HealthChecks" Version="3.6.6" />
+    <PackageReference Include="Toggly.FeatureManagement.NSwag" Version="3.6.6" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
+    <PackageReference Include="Hangfire.InMemory" Version="1.0.0" />
+    <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
+  </ItemGroup>
+</Project>
