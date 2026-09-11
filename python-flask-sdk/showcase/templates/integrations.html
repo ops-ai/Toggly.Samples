@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Native Flask integration</h2>
+  <section>
+    <h3>Factory and lifecycle</h3>
+    <p><code>create_app</code> configures Flask-Login, CSRF and Order context before attaching the
+    native <code>Toggly</code> extension. Live mode uses its automatic initializer. Offline mode
+    supplies a public snapshot client and registers it once for the decorators.</p>
+    <p>One client lives for the worker lifetime. <code>close_client</code> runs at process/worker
+    shutdown, never after an individual request. Gunicorn preload is disabled so clients and
+    background threads start inside each worker.</p>
+  </section>
+  <section>
+    <h3>Try package surfaces</h3>
+    {# Each link targets an actual adapter route, so disabled gates can redirect,
+    return a fallback, or raise the configured HTTP error before view code runs. #}
+    <ul>
+      <li><a href="/beta/welcome/">FeatureFlagBlueprint</a>: beta-access gate on its registered route.</li>
+      <li><a href="/native/targeted/">feature_flag_required</a>: actual identity-aware Targeting.</li>
+      <li><a href="/native/all/">feature_gate_required All</a>, <a href="/native/any/">Any</a>, <a href="/native/negate/">negate</a>.</li>
+      <li><a href="/native/redirect/">Disabled redirect</a>: api-v2 returns here when OFF.</li>
+      <li><a href="/native/fallback/">Disabled fallback_view</a>: API v1 content when OFF.</li>
+      <li><a href="/native/switch/">feature_flag_switch</a>: native API v1 / v2 view selection.</li>
+      <li><a href="/native/variant/">feature_variant</a>: visible named-dispatch limitation.</li>
+    </ul>
+  </section>
+  <p>Read <code>showcase/__init__.py</code>, <code>context.py</code>, <code>views.py</code> and the
+  tests in that order. Native <code>toggly.flags</code> is a process-default snapshot; this
+  workshop's snapshot evaluates each key with the current request instead.</p>
+{% endblock %}

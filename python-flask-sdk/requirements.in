@@ -1,0 +1,12 @@
+# Latest published direct versions verified 2026-09-10; regenerate hash lock with uv.
+Flask==3.1.3
+toggly==0.7.0
+toggly-flask==0.3.0
+Flask-Login==0.6.3
+Flask-WTF==1.3.0
+gunicorn==26.2.0
+python-dotenv==1.2.3
+# Local ES256 test fixture and SDK signed definitions support.
+cryptography==50.0.1
+# Build the sample's distributable wheel (SDKs always come from PyPI).
+build==1.6.1

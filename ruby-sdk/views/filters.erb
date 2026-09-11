@@ -1,0 +1,51 @@
+<section class="card">
+  <p class="eyebrow">EXACT SHARED PRESETS</p>
+  <h2>Compare native behavior</h2>
+  <p>Matching uses alice / admin / US / Chrome on Mac / English / VIP Order. Non-matching uses bob / user / CA / Firefox on Windows / French / standard Order. The full inputs are editable below.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Native filter</th>
+          <th>Matching</th>
+          <th>Non-matching</th>
+          <th>Current context</th>
+          <th>Meaning / limitation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% matching = RequestContext.build(RequestContext::PRESETS.fetch('matching')) %>
+        <% other = RequestContext.build(RequestContext::PRESETS.fetch('non-matching')) %>
+        <% Catalog::FILTERS.each do |suffix, name, note| %>
+          <tr>
+            <td>
+              <strong>
+                <%= h(name) %>
+              </strong>
+              <br>
+              <code>filter-<%= h(suffix) %>
+              </code>
+            </td>
+            <td>
+              <%= state_badge(enabled?("filter-#{suffix}", matching)) %>
+            </td>
+            <td>
+              <%= state_badge(enabled?("filter-#{suffix}", other)) %>
+            </td>
+            <td>
+              <%= state_badge(enabled?("filter-#{suffix}")) %>
+            </td>
+            <td>
+              <%= h(note) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">These cells are actual current native evaluations. Offline defaults are all OFF. Connected results depend on your real definitions. Reference observations use the exact fixture with sole rules; no fallback rule changes Targeting or DeviceType behavior.</p>
+</section>
+<section class="card">
+  <h2>Apply a preset to this session</h2>
+  <%= partial('context_controls') %>
+</section>

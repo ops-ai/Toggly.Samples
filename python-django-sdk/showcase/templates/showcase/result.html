@@ -1,0 +1,4 @@
+{% extends 'showcase/base.html' %}
+{% block content %}
+<h2>{{ title }}</h2>{% if variant %}<pre>{{ variant }}</pre>{% else %}<p>No variant assignment is displayed unless the native remote response supplied one.</p>{% endif %}<p><a href="/">Return home</a> · <a href="/programmatic/">Programmatic API</a> · <a href="/gates/">Declarative gates</a></p>
+{% endblock %}

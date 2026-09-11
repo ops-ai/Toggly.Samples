@@ -1,0 +1,41 @@
+name: Python Django sample
+on:
+  push:
+    branches: [develop, main]
+    paths: ['python-django-sdk/**', '.github/workflows/python-django-sdk.yml', 'README.md', 'docs/**']
+  pull_request:
+    branches: [develop, main]
+    paths: ['python-django-sdk/**', '.github/workflows/python-django-sdk.yml', 'README.md', 'docs/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: python-django-sdk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  python-django-sdk:
+    runs-on: ubuntu-latest
+    env:
+      TOGGLY_APP_KEY: ''
+      TOGGLY_ENVIRONMENT: Production
+      DJANGO_SECRET_KEY: placeholder-only-ci-secret-with-at-least-fifty-characters-not-for-deployment
+    defaults:
+      run:
+        working-directory: python-django-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14.7'
+          cache: pip
+          cache-dependency-path: python-django-sdk/requirements.txt
+      - run: python -m pip install --require-hashes -r requirements.txt
+      - run: python -m pip check
+      - run: python scripts/verify_lock.py
+      - run: python manage.py check
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py collectstatic --noinput
+      - run: python manage.py test
+      - run: python -m compileall -q config showcase tests scripts
+      - run: python manage.py check --deploy --settings=config.production --fail-level WARNING
+      - run: python scripts/smoke.py

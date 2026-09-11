@@ -1,0 +1,48 @@
+<section class="card" aria-labelledby="snapshot-title">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">LIVE DIAGNOSTICS</p>
+      <h2 id="snapshot-title">All sixteen flags</h2>
+    </div>
+    <span class="small" data-snapshot-status>Checks every 3 seconds</span>
+  </div>
+  <p class="small">This diagnostic snapshot evaluates with your current context. Native definition polling runs every <%= @service.configuration.refresh_interval %> seconds when connected. Other sections render again on navigation or reload.</p>
+  <p class="small">
+    Each row pairs a boolean and reason from one native evaluation. Rows may observe
+    different revisions during a refresh. Diagnostics do not apply
+    <code>enabled?</code> fallbacks or record automatic usage checks. A missing
+    definition yields OFF and <code>feature_not_found</code>;
+    <a href="/gates">actual gates</a> separately apply defaults and record usage.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Flag checklist</th>
+          <th>Diagnostic result</th>
+          <th>Native reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @flags.each do |flag| %>
+          <tr data-flag="<%= h(flag[:key]) %>">
+            <td>
+              <code>
+                <%= h(flag[:key]) %>
+              </code>
+            </td>
+            <td data-state>
+              <%= state_badge(flag[:enabled]) %>
+            </td>
+            <td data-reason>
+              <%= h(flag[:reason]) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">SDK ready: <strong data-ready>
+      <%= h(@client.ready) %>
+    </strong>. A restored file snapshot can supply evaluated values while native readiness is false during a startup outage. Both are shown as reported.</p>
+</section>

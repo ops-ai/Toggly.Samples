@@ -1,0 +1,15 @@
+# Direct application, verification and wheel-build pins. Regenerate the hash lock together.
+fastapi==0.141.1
+starlette==1.6.0
+anyio==4.15.1
+toggly==0.7.0
+toggly-fastapi==0.3.0
+uvicorn==0.52.4
+jinja2==3.1.6
+itsdangerous==2.2.0
+python-multipart==0.0.32
+python-dotenv==1.2.3
+cryptography==50.0.1
+httpx==0.28.1
+build==1.6.1
+setuptools==84.0.0

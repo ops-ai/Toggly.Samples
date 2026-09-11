@@ -5,6 +5,10 @@ export type FlagReader = {
   getVariant(key: string): { name: string; configurationValue?: unknown } | null
 }
 
+// These paired inputs match the shared FLAG_TEMPLATE rules, not every possible
+// dashboard configuration. Identity/claims are applied globally, Order per check;
+// country/language/userAgent only illustrate desired input and cannot override
+// the browser request in this SDK. Offline booleans ignore all these filters.
 export const matchingPreset = {
   identity: 'alice', claims: { role: 'admin' }, country: 'US',
   acceptLanguage: 'en-US,en;q=0.9',
@@ -18,12 +22,20 @@ export const nonMatchingPreset = {
   orderId: 'ord-standard', vip: false,
 }
 
+// Real keys load definitions for one application/environment, including variants.
+// Blank/CI keys instead use deterministic local booleans with no live connection.
+// persistCache controls flags/variants, not the SDK's stored identity/claims.
 export function createTogglyConfig(appKey: string, flagDefaults: Record<string, boolean>, environment = 'Production') {
   return appKey && appKey !== 'ci-placeholder'
     ? { appKey, environment, enableVariants: true }
     : { flagDefaults, enableLiveUpdates: false, persistCache: false }
 }
 
+// A gate combines existing evaluations; it does not create a dashboard rule.
+// With dashboard=true and api-v2=false: all=false, any=true, negate(dashboard)=false.
+// Negate reverses the combined result: NOT(all) means at least one flag is off,
+// not that every flag is off. Missing keys evaluate off in this published SDK.
+// A boolean ON result does not imply an experiment variant has been assigned.
 export function createSnapshot(reader: FlagReader) {
   return {
     newDashboard: reader.isFeatureOn('new-dashboard'),
