@@ -1,0 +1,60 @@
+name: PHP Laravel sample
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - php-laravel-sdk/**
+      - .github/workflows/php-laravel-sdk.yml
+      - .github/dependabot.yml
+      - README.md
+      - docs/**
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - php-laravel-sdk/**
+      - .github/workflows/php-laravel-sdk.yml
+      - .github/dependabot.yml
+      - README.md
+      - docs/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: php-laravel-sdk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php-laravel-sdk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: php-laravel-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5.10'
+          extensions: mbstring, dom, xml, openssl
+          tools: composer:2.10.3
+          coverage: none
+      - name: Install published packages from lock
+        run: composer install --no-interaction --prefer-dist
+      - name: Validate package and runtime requirements
+        run: |
+          composer validate --strict
+          composer check-platform-reqs
+      - name: Exercise native SDK and Laravel integration offline
+        run: composer test
+      - name: Generate disposable framework key
+        run: php -r 'echo "APP_KEY=base64:" . base64_encode(random_bytes(32)) . PHP_EOL;' >> "$GITHUB_ENV"
+      - name: Optimize production configuration, routes and views
+        run: composer build
+        env:
+          APP_ENV: production
+          APP_DEBUG: 'false'
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
