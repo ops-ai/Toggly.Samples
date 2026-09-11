@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Programmatic API</h2>
+<section>
+  <h3>Three native paths to a boolean</h3>
+  <p>feature_enabled dependency: {{ dependency }} · request helper: {{ native }} ·
+    explicit core context: {{ explicit }}</p>
+  <pre>dashboard: bool = Depends(feature_enabled('new-dashboard'))
+toggly.is_enabled('new-dashboard')
+client.is_enabled('new-dashboard', context=request.state.sample_context)</pre>
+  <p>The plain dashboard flag agrees on all paths. Contextual filters can differ:
+    the explicit context also carries claims and structured HTTP segment fields.</p>
+</section>
+<section>
+  <h3>Gate the action on the server</h3>
+  <p>require_feature runs before POST /submit/ changes a reversible session counter.
+    Hiding a button alone cannot protect an endpoint. CSRF is checked separately.</p>
+  <form method="post" action="/submit/">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button>Try enhanced submit</button>
+  </form>
+  <pre>@pages.post('/submit/', dependencies=[
+    Depends(checked_form), Depends(require_feature('enhanced-submit')),
+])
+async def submit(request: Request):
+    request.session['submissions'] = request.session.get('submissions', 0) + 1</pre>
+</section>
+{% endblock %}

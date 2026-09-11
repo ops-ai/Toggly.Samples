@@ -1,0 +1,126 @@
+:root {
+  --ifm-color-primary: #21634f;
+  --ifm-font-family-base: Inter, system-ui, -apple-system, sans-serif;
+  --ifm-background-color: #f3f7f2;
+}
+.workshop {
+  width: 100%;
+  min-width: 0;
+  max-width: 1120px;
+  margin: auto;
+  padding: 3rem 2rem;
+  color: #173d3b;
+}
+.workshop h1 {
+  font-size: clamp(2.4rem, 5vw, 4.3rem);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  margin: 1rem 0 1.8rem;
+}
+.workshop h2 {
+  font-size: 1.5rem;
+}
+.workshop p {
+  line-height: 1.7;
+}
+.workshop .row {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin: 0;
+}
+.workshop nav {
+  margin: 1.4rem 0;
+}
+.workshop nav a {
+  border: 1px solid #cbdacd;
+  border-radius: 2rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+}
+.workshop .panel {
+  padding: 1.7rem;
+  border: 1px solid #d8e3dc;
+  border-radius: 14px;
+  background: white;
+  margin: 1.5rem 0;
+  scroll-margin-top: 5rem;
+}
+.workshop button {
+  cursor: pointer;
+  font: inherit;
+  border: 1px solid #b7ccc3;
+  background: #fff;
+  color: #173d3b;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  max-width: 100%;
+  white-space: normal;
+}
+.workshop button:hover:not(:disabled) {
+  background: #e7f3e9;
+  border-color: #31846a;
+}
+.workshop button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.workshop button:focus-visible,
+.workshop a:focus-visible {
+  outline: 3px solid #cd6b35;
+  outline-offset: 3px;
+}
+.workshop .snapshot {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.6rem;
+}
+.workshop .muted {
+  color: #536d61;
+}
+.workshop .notice {
+  padding: 1rem;
+  border-left: 3px solid #bf9235;
+  background: #fff6dc;
+}
+.workshop table {
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+  margin-top: 1rem;
+}
+.workshop th {
+  text-align: left;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+/* Long flag keys and JSON stay readable without forcing mobile overflow. */
+.workshop th,
+.workshop td,
+.workshop code,
+.workshop pre {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.workshop pre {
+  white-space: pre-wrap;
+  background: #f0f5ee;
+  border: 1px solid #e0e8dc;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+@media (max-width: 500px) {
+  .workshop {
+    padding: 1.5rem 1rem;
+  }
+  .workshop .panel {
+    padding: 1rem;
+  }
+  .workshop table {
+    font-size: 0.75rem;
+  }
+  .workshop th,
+  .workshop td {
+    padding: 0.45rem;
+  }
+}

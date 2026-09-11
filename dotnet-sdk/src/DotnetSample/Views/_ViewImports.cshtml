@@ -1,0 +1,7 @@
+@using DotnetSample.Models
+@using DotnetSample.Features
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Toggly.FeatureManagement.Web
+@* Register just the Toggly feature helper: Microsoft's same-named helper does
+   not accept an entity context and can suppress otherwise eligible content. *@
+@removeTagHelper Microsoft.FeatureManagement.Mvc.TagHelpers.FeatureTagHelper, Microsoft.FeatureManagement.AspNetCore

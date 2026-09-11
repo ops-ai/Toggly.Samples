@@ -1,0 +1,21 @@
+@model ShowcaseModel
+@{ ViewData["Title"] = "Declarative gates"; }
+<h1>Declare when content belongs on the page.</h1><p class="lead">The native Razor tag helper evaluates the flag on the server. Disabled content is absent from the HTML, not merely hidden by CSS.</p>
+<section><h2>Feature + negate</h2><pre>&lt;feature name="new-dashboard"&gt;…&lt;/feature&gt;
+&lt;feature name="new-dashboard" negate="true"&gt;…&lt;/feature&gt;</pre>
+@* Negate is the fallback branch of the same flag, not a second flag to maintain. *@
+<feature name="new-dashboard"><div class="result" id="dashboard-on">New dashboard is available.</div></feature>
+<feature name="new-dashboard" negate="true"><div class="result" id="dashboard-off">Classic dashboard fallback.</div></feature></section>
+<section><h2>Combine keys</h2><pre>&lt;feature names="new-dashboard,api-v2" requirement="All"&gt;…</pre>
+<feature names="new-dashboard,api-v2" requirement="All"><p id="all-gate">All: the dashboard AND API v2 are on.</p></feature>
+<feature names="new-dashboard,api-v2" requirement="Any"><p id="any-gate">Any: at least one of the two flags is on.</p></feature>
+<p>All is useful when UI depends on a second feature. Any lets either capability unlock shared content.</p></section>
+<section><h2>Named variant</h2><p>The Toggly tag helper has no variant attribute. <code>IVariantFeatureManager.GetVariantAsync</code> is the native selection API; an ordinary Razor conditional renders its result.</p>
+<pre>var variant = await variants.GetVariantAsync("new-dashboard", persona.Targeting);</pre>
+@* This is sample composition around the real native variant selection. *@
+@if (Model.Variant == "preview") { <div class="result" id="variant-preview">Preview variant · @Model.VariantTitle</div> }
+else { <div class="result" id="variant-classic">Classic / unallocated variant · @Model.VariantTitle</div> }
+<p>Selected: <strong>@(Model.Variant ?? "none configured")</strong>. <a href="/gates?preset=matching">Alice</a> / <a href="/gates?preset=nonmatching">Bob</a>. Allocation and Boolean enablement are separate decisions; a disabled flag can have a default variant.</p></section>
+<section><h2>Entity gate</h2><pre>&lt;feature name="ExpressCheckout" context="@@Model.Persona.Order"&gt;…</pre>
+<feature name="ExpressCheckout" context="@Model.Persona.Order"><p id="entity-gate">Express checkout for @Model.Persona.Order.Id.</p></feature>
+<a href="/orders">Compare VIP and standard orders →</a></section>

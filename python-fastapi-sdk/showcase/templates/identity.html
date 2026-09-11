@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Request identity</h2>
+<p>Choose a fixed local persona. The signed session selects request.state.user;
+  the native middleware reads its id and roles. It never mutates shared SDK identity.</p>
+<form method="post" action="/identity/">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button name="persona" value="alice">Alice</button>
+  <button name="persona" value="bob">Bob</button>
+  <button name="persona" value="clear">Clear session</button>
+</form>
+<section>
+  <h3>Native ContextDep snapshot</h3>
+  <pre>{{ native_context | tojson(indent=2) }}</pre>
+  <p><a href="/native/targeted/">Try native Targeting route</a>:
+    Alice is allowed; Bob and anonymous receive 403 under the shared recipe.</p>
+  <p>Changing the session redirects to a new request, so context exists before its
+    first evaluation. Local decisions need no extra definitions API call.</p>
+</section>
+{% endblock %}

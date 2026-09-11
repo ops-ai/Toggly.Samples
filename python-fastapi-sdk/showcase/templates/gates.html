@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Declarative gates</h2>
+<p>Jinja uses ordinary if/else blocks around native request-helper calls.
+  FastAPI has no special Toggly template tag library.</p>
+<section>
+  <h3>Single feature</h3>
+  {# Native helper checks are synchronous local evaluations, not HTTP requests. #}
+  {% if toggly.is_enabled('new-dashboard') %}
+    <p class="on">New dashboard panel</p>
+  {% else %}
+    <p class="off">Classic dashboard fallback</p>
+  {% endif %}
+  <pre>{% raw %}{% if toggly.is_enabled('new-dashboard') %}
+  New dashboard
+{% else %}
+  Classic dashboard
+{% endif %}{% endraw %}</pre>
+</section>
+<section>
+  <h3>Negate, Any and All</h3>
+  <p>Any: <strong>{{ toggly.evaluate_gate(['new-dashboard', 'api-v2'], 'any') }}</strong></p>
+  <p>All: <strong>{{ toggly.evaluate_gate(['new-dashboard', 'api-v2'], 'all') }}</strong></p>
+  <p>Negated All: <strong>{{ toggly.evaluate_gate(['new-dashboard', 'api-v2'], negate=True) }}</strong></p>
+  {% if toggly.is_disabled('api-v2') %}
+    <p>The disabled helper shows this API v1 fallback.</p>
+  {% endif %}
+  <p>Negating All means “at least one key is off,” not “every key is off.”</p>
+  <pre>toggly.evaluate_gate(['new-dashboard', 'api-v2'], 'any')
+toggly.evaluate_gate(['new-dashboard', 'api-v2'], 'all')
+toggly.evaluate_gate(['new-dashboard', 'api-v2'], negate=True)</pre>
+</section>
+<section>
+  <h3>Variant name and configuration</h3>
+  <p>A boolean answers whether a feature is enabled. An experiment can also assign
+    a named variant and configuration. Baseline flags need not have an assignment.</p>
+  <p>This explicit action creates an isolated async client with known user context
+    before initialization, reads get_variant, then closes it. Ordinary pages share
+    the worker client. The FastAPI helper itself has no variant API.</p>
+  <form method="post" action="/variant/">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button>Fetch this session's remote assignment</button>
+  </form>
+  <pre>config = TogglyConfig(
+    app_key=app_key, environment='Production',
+    enable_variants=True, identity=context.identity,
+    variant_groups=context.groups, variant_claims=context.claims,
+    disable_background_refresh=True,
+)
+client = AsyncTogglyClient(config)
+try:
+    await client.init()
+    assigned = await client.get_variant('new-dashboard')
+finally:
+    with anyio.CancelScope(shield=True):
+        await client.close()</pre>
+</section>
+{% endblock %}

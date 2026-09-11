@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "toggly-flask-showcase"
+version = "0.1.0"
+description = "Full-depth native Flask feature flag workshop"
+requires-python = ">=3.14"
+dependencies = ["Flask==3.1.3", "toggly==0.7.0", "toggly-flask==0.3.0", "Flask-Login==0.6.3", "Flask-WTF==1.3.0", "gunicorn==26.2.0", "python-dotenv==1.2.3", "cryptography==50.0.1"]
+
+[tool.setuptools]
+packages = ["showcase"]
+include-package-data = false
+py-modules = ["wsgi"]
+
+[tool.setuptools.package-data]
+showcase = ["templates/*.html", "static/*.css"]
