@@ -16,9 +16,7 @@ Open <http://localhost:5173>. With no key, or with the CI placeholder, the app c
 
 ## Configure the Toggly app
 
-Provisioning is pending because <https://app.toggly.io> currently redirects this work session to sign-in. To complete it manually:
-
-1. Sign in and select workspace **Toggly Samples**.
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can manage (the one from signup is enough).
 2. Create application **JavaScript SDK Sample**, choose JavaScript as the technology and **Production** as the environment.
 3. Add allowed web origin `http://localhost:5173`.
 4. Create context kind **Order** with `Id` (string, key), `Vip` (boolean), and optional `Total` (number).
