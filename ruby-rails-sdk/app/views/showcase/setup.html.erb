@@ -1,0 +1,22 @@
+<section class="card">
+  <h2>Connect the dedicated app</h2>
+  <ol>
+    <li>Create <strong>Ruby Rails SDK Sample</strong> in the <strong>Toggly Samples</strong> workspace.</li>
+    <li>Select <strong>Ruby on Rails</strong> technology and <strong>Production</strong>. Use <code>http://localhost:3007</code> for Application URL.</li>
+    <li>Follow the reviewed shared setup guide linked in the README for all sixteen flags and the Order context catalog.</li>
+    <li>Set the server-only <code>TOGGLY_APP_KEY</code>, restart, and check native readiness and current values.</li>
+  </ol>
+  <p>Browser-origin controls are conditional. This server-only app does not require enabling browser access just to reveal those controls.</p>
+  <pre><code>TOGGLY_APP_KEY=
+TOGGLY_ENVIRONMENT=Production
+TOGGLY_REFRESH_INTERVAL=10</code></pre>
+  <p>A missing key keeps the app usable with explicit OFF defaults and a visible banner. A configured key does not prove a successful fetch; check readiness and server logs.</p>
+</section>
+<section class="card">
+  <h2>Run without a live service</h2>
+  <pre><code>bundle install
+bundle exec ruby script/demo.rb</code></pre>
+  <p>The local fixture demo runs ordinary Rails/Puma against loopback definitions, displays a fixture banner, and stops its owned processes on Ctrl-C.
+    It uses the exact shared filter recipes. No app is provisioned and no external Toggly request is needed.</p>
+  <p>For a missing-key demonstration use <code>bundle exec puma -C config/puma.rb</code>. See the README for production assets and secret configuration.</p>
+</section>

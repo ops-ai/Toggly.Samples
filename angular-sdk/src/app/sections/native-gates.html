@@ -1,0 +1,58 @@
+<section class="panel" id="gates">
+  <h2>02 · Let the template follow the flag</h2>
+  <p>
+    The native component renders its featureTemplate. The structural directive
+    removes its own template when denied.
+  </p>
+  <feature featureKey="new-dashboard"
+    ><ng-template featureTemplate
+      ><p data-testid="native-component">
+        Native component: new dashboard
+      </p></ng-template
+    ></feature
+  >
+  <p *featureFlag="'new-dashboard'" data-testid="native-directive">
+    Native directive: new dashboard
+  </p>
+  <p *featureFlag="'new-dashboard'; negate: true" data-testid="old-ui">
+    Existing dashboard visible
+  </p>
+  <p
+    *featureFlag="['new-dashboard','api-v2']; requirement: 'all'"
+    data-testid="all"
+  >
+    Native ALL admitted
+  </p>
+  <p
+    *featureFlag="['new-dashboard','api-v2']; requirement: 'any'"
+    data-testid="any"
+  >
+    Native ANY admitted
+  </p>
+  <button
+    *featureGateBuilder="'enhanced-submit'; let enabled"
+    [disabled]="!enabled"
+    data-testid="builder"
+  >
+    Builder keeps me mounted: {{enabled ? 'enabled' : 'disabled'}}
+  </button>
+  <p>
+    The builder exposes a boolean without removing the button. A disabled button
+    is different from a removed component.
+  </p>
+</section>
+<section class="panel" id="actions">
+  <h2>03 · Check at the action boundary</h2>
+  <p>
+    Await the service Promise before branching. The Observable below is a
+    one-shot RxJS from(Promise) composition. The checklist uses a refresh
+    subscription when ongoing updates are needed.
+  </p>
+  <button (click)="check()">Check submit</button>
+  <p data-testid="action-result">{{result()}}</p>
+  <button (click)="observe()">Observe submit once</button>
+  <p data-testid="observable-result">
+    RxJS result: {{observable() ? ((observable() | async) ? 'ON' : 'OFF') : 'Not
+    requested'}}
+  </p>
+</section>

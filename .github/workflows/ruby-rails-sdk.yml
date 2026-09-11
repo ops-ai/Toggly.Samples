@@ -1,0 +1,54 @@
+name: Ruby Rails SDK Sample
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'ruby-rails-sdk/**'
+      - '.github/workflows/ruby-rails-sdk.yml'
+      - '.github/dependabot.yml'
+      - 'README.md'
+      - 'docs/**'
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'ruby-rails-sdk/**'
+      - '.github/workflows/ruby-rails-sdk.yml'
+      - '.github/dependabot.yml'
+      - 'README.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ruby-rails-sdk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ruby-rails-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ruby-rails-sdk
+    env:
+      RAILS_ENV: test
+      TOGGLY_APP_KEY: ''
+      TOGGLY_ENVIRONMENT: Production
+      BUNDLE_FROZEN: 'true'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.6'
+          bundler: '4.0.16'
+          bundler-cache: true
+          working-directory: ruby-rails-sdk
+      - run: bundle check
+      - run: bundle exec rails test
+      - run: bundle exec rails zeitwerk:check
+      - run: bundle exec rails assets:precompile
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE_DUMMY: '1'
+      - run: bundle exec ruby script/production_smoke.rb
