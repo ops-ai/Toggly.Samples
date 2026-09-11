@@ -5,6 +5,42 @@ require 'tmpdir'
 require_relative '../app'
 require_relative 'support/fixture_server'
 
+# This fixture changes HTTP input only; native definition parsing/evaluation stays real.
+class MissingDashboardFixture < FixtureServer
+  def call(env)
+    status, headers, body = super
+    return [status, headers, body] unless status == 200
+
+    definitions = JSON.parse(body.join)
+    definitions.reject! { |item| item['featureKey'] == 'new-dashboard' }
+    [status, headers, [JSON.generate(definitions)]]
+  end
+end
+
+# Capture public transport payloads so tests distinguish definition-cache telemetry
+# from actual feature checks; batch counts alone cannot prove that distinction.
+class SnapshotUsageCapture < RubyShowcase::LocalTelemetry
+  attr_reader :usage_payloads
+
+  def initialize
+    super
+    @usage_payloads = []
+  end
+
+  def send_stats(payload)
+    @usage_payloads << JSON.parse(JSON.generate(payload))
+    super
+  end
+
+  def feature_check_count
+    @usage_payloads.sum do |payload|
+      payload.fetch('stats').sum do |feature|
+        feature.fetch('variantStats').values.sum { |variant| variant.fetch('checkCount') }
+      end
+    end
+  end
+end
+
 class NativeSdkTest < Minitest::Test
   def setup
     @fixture = FixtureServer.new
@@ -123,4 +159,75 @@ class NativeSdkTest < Minitest::Test
     @client.flush_telemetry
     assert_operator @service.telemetry.summary[:metric_batches], :>=, 1
   end
+  def test_snapshot_pairs_one_native_result_when_refresh_interleaves
+    @service.close
+    @config.options[:disable_background_refresh] = true
+    @service = RubyShowcase::FeatureService.new(@config)
+    @client = @service.client
+
+    [false, true].each do |next_value|
+      refreshed = false
+      # Schedule a real refresh immediately before native details read definitions.
+      # The previous two-call implementation has already captured the old boolean.
+      trace = TracePoint.new(:call) do |event|
+        next unless event.self.equal?(@client) && event.method_id == :evaluate
+
+        trace.disable
+        @fixture.toggle('new-dashboard', next_value)
+        refreshed = @client.refresh(force: true)
+      end
+      begin
+        row = trace.enable do
+          @service.snapshot(@alice).find { |item| item[:key] == 'new-dashboard' }
+        end
+        assert refreshed, 'The controlled native refresh must run'
+        assert_equal next_value, row.fetch(:enabled)
+        assert_equal(next_value ? 'rule_matched' : 'globally_disabled', row.fetch(:reason))
+      ensure
+        trace.disable
+      end
+    end
+  end
+
+  def test_diagnostic_snapshot_keeps_defaults_and_usage_in_actual_gate_checks
+    @service.close
+    @fixture.close
+    @fixture = MissingDashboardFixture.new
+    @config.options[:definitions_url] = @fixture.url
+    @config.options[:disable_background_refresh] = true
+    @config.options[:defaults] = @config.options[:defaults].merge('new-dashboard' => true)
+    capture = SnapshotUsageCapture.new
+    @service = RubyShowcase::FeatureService.new(@config, telemetry: capture)
+    @client = @service.client
+
+    snapshot = @service.snapshot(@alice)
+    assert_equal RubyShowcase::Catalog::FLAGS, snapshot.map { |row| row.fetch(:key) }
+    row = snapshot.find { |item| item[:key] == 'new-dashboard' }
+    assert_equal({ key: 'new-dashboard', enabled: false, reason: 'feature_not_found' }, row)
+    @client.flush_telemetry
+    assert_equal 0, capture.feature_check_count, 'Diagnostics must not manufacture automatic feature checks'
+
+    assert @client.enabled?('new-dashboard', context: @alice), 'An actual gate still honors its configured default'
+    browser = Rack::MockRequest.new(RubyShowcase::Application.build(service: @service, secret: 's' * 64))
+    assert_equal 200, browser.get('/api/v2').status
+    @client.flush_telemetry
+    assert_equal 2, capture.feature_check_count, 'The fallback check and actual API gate each record native usage'
+  end
+
+  def test_offline_snapshot_keeps_all_sixteen_native_default_definitions
+    offline = RubyShowcase::FeatureService.new(RubyShowcase::Configuration.new({}))
+    begin
+      rows = offline.snapshot(@alice)
+      assert_equal RubyShowcase::Catalog::FLAGS, rows.map { |row| row.fetch(:key) }
+      assert rows.none? { |row| row.fetch(:enabled) }
+      rows.each do |row|
+        native = offline.client.evaluate(row.fetch(:key), context: @alice)
+        assert_equal native.enabled, row.fetch(:enabled)
+        assert_equal native.reason, row.fetch(:reason)
+      end
+    ensure
+      offline.close
+    end
+  end
+
 end

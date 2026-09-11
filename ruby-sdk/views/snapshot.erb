@@ -1,19 +1,26 @@
 <section class="card" aria-labelledby="snapshot-title">
   <div class="section-title">
     <div>
-      <p class="eyebrow">LIVE EVALUATIONS</p>
+      <p class="eyebrow">LIVE DIAGNOSTICS</p>
       <h2 id="snapshot-title">All sixteen flags</h2>
     </div>
     <span class="small" data-snapshot-status>Checks every 3 seconds</span>
   </div>
-  <p class="small">This browser snapshot evaluates with your current context. Native definition polling runs every <%= @service.configuration.refresh_interval %> seconds when connected. Other sections render again on navigation or reload.</p>
+  <p class="small">This diagnostic snapshot evaluates with your current context. Native definition polling runs every <%= @service.configuration.refresh_interval %> seconds when connected. Other sections render again on navigation or reload.</p>
+  <p class="small">
+    Each row pairs a boolean and reason from one native evaluation. Rows may observe
+    different revisions during a refresh. Diagnostics do not apply
+    <code>enabled?</code> fallbacks or record automatic usage checks. A missing
+    definition yields OFF and <code>feature_not_found</code>;
+    <a href="/gates">actual gates</a> separately apply defaults and record usage.
+  </p>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
           <th>Flag checklist</th>
-          <th>Result</th>
-          <th>Native diagnostic</th>
+          <th>Diagnostic result</th>
+          <th>Native reason</th>
         </tr>
       </thead>
       <tbody>

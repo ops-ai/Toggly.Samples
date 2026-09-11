@@ -23,11 +23,12 @@ module RubyShowcase
 
     def snapshot(context)
       Catalog::FLAGS.map do |key|
-        # enabled? supplies real default behavior and native usage checks.
-        # evaluate supplies diagnostics; it is not a variant allocation method.
-        enabled = @client.enabled?(key, context: context)
+        # Pair fields from one native result so refresh cannot mix revisions
+        # within a row. Separate rows may still observe different revisions.
+        # Actual gates use enabled? for defaults and automatic usage checks;
+        # this diagnostic view does neither and does not allocate variants.
         result = @client.evaluate(key, context: context)
-        { key: key, enabled: enabled, reason: result.reason }
+        { key: key, enabled: result.enabled, reason: result.reason }
       end
     end
 
