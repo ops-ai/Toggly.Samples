@@ -178,12 +178,12 @@ Optional WebSocket support also is not installed here; this sample uses polling.
 
 ## Manual Toggly application setup
 
-Use the [shared setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+Use the [shared setup guide](../docs/APP_SETUP.md)
 with these exact values:
 
 | Setting | Value |
 |---|---|
-| Workspace | Toggly Samples |
+| Workspace | One you can manage (signup workspace is enough) |
 | Application | Ruby SDK Sample |
 | Technology label / key | Ruby on Rails / `ruby-on-rails` |
 | Environment | Production |
