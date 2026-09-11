@@ -1,0 +1,40 @@
+<div class="section-grid">
+  <section class="card">
+    <h2>Feature & negate</h2>
+    <%= when_feature_enabled('new-dashboard') do %>
+      <div class="outcome positive">New dashboard enabled</div>
+    <% end %>
+    <%= when_feature_disabled('new-dashboard') do %>
+      <div class="outcome">Classic dashboard fallback</div>
+    <% end %>
+    <pre><code>when_feature_enabled('new-dashboard') do
+  # Rails captures this view block.
+end
+when_feature_disabled('new-dashboard') do
+  # Negate the same decision.
+end</code></pre>
+  </section>
+  <section class="card">
+    <h2>One value, two labels</h2>
+    <p class="outcome"><%= feature_switch('api-v2', enabled: 'API v2 selected', disabled: 'Classic API selected') %></p>
+    <pre><code>feature_switch('api-v2',
+  enabled: 'API v2 selected',
+  disabled: 'Classic API selected')</code></pre>
+  </section>
+  <section class="card">
+    <h2>Any / All composition</h2>
+    <% keys = %w[new-dashboard api-v2] %>
+    <p>Any enabled: <%= state_badge(keys.any? { |key| feature_enabled?(key) }) %></p>
+    <p>All enabled: <%= state_badge(keys.all? { |key| feature_enabled?(key) }) %></p>
+    <pre><code>keys.any? { |key| feature_enabled?(key) }
+keys.all? { |key| feature_enabled?(key) }</code></pre>
+    <p>This is explicit Ruby composition of native booleans; the adapter does not expose a multi-key gate helper.</p>
+  </section>
+  <section class="card">
+    <h2>Variants & unknown keys</h2>
+    <p><strong>No native variant allocation API.</strong> This package exposes boolean decisions. No fabricated variant is assigned here.</p>
+    <p>Unknown key: <%= state_badge(feature_enabled?('missing-demo-flag')) %></p>
+    <p>Negated unknown: <%= state_badge(feature_disabled?('missing-demo-flag')) %></p>
+    <p>The sample leaves <code>enable_undefined_in_dev</code> false in every environment.</p>
+  </section>
+</div>

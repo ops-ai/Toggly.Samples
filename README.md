@@ -34,6 +34,9 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, client hooks, Order context, filters and edge middleware; read its published edge limitation before per-user gating |
 | JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, boolean branches, browser-wide identity, entity context and refresh with `@ops-ai/feature-flags-toggly` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order context and filter matrix with `@ops-ai/toggly-fastify` |
+| Angular SDK Workshop | Angular 22 standalone | [`angular-sdk/`](angular-sdk/) | Native templates, directives, variants, route guard, local gates and Order context |
+| Ruby Rails SDK Sample | Rails 8.1 / Ruby 4 | [`ruby-rails-sdk/`](ruby-rails-sdk/) | Native Railtie and view/controller gates, request contexts, Orders, filter matrix and cache snapshots |
+| PHP Laravel SDK Sample | PHP 8.5 + Laravel 13 | [`php-laravel-sdk/`](php-laravel-sdk/) | Native Blade, middleware, attributes, request identity, variants, filter matrix and explicit Order support limits |
 
 New to feature flags? Start with a sample's **first-toggle exercise**, then its
 source-reading map. Follow configuration → initialization → one flag check →
@@ -63,7 +66,9 @@ are universally unusable with older supported versions. Blocked samples are not
 linked to nonexistent folders. Linear detail links may require authentication.
 
 All new samples follow the [Sample Contract](docs/SAMPLE_CONTRACT.md) and the
-shared [flag and app template](docs/FLAG_TEMPLATE.md).
+shared [flag and app template](docs/FLAG_TEMPLATE.md). Follow the
+[application setup guide](docs/APP_SETUP.md) for dashboard controls and the
+management API procedure when a filter type is missing from the picker.
 
 ## Related
 

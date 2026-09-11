@@ -1,0 +1,30 @@
+<div class="section-grid">
+  <section class="card">
+    <h2>Gate a controller action</h2>
+    <p><%= link_to 'Open the native API v2 route →', '/api/v2' %></p>
+    <p>Current decision: <%= state_badge(feature_enabled?('api-v2')) %></p>
+    <pre><code>before_action -&gt; { require_feature!('api-v2') },
+  only: :version_two</code></pre>
+    <p>The native adapter returns 404 when disabled. A view hiding a link is not sufficient protection; the server repeats the check.</p>
+  </section>
+  <section class="card">
+    <h2>Protect a session action</h2>
+    <p><code>enhanced-submit</code>: <%= state_badge(feature_enabled?('enhanced-submit')) %></p>
+    <%= form_with url: '/actions/submit', method: :post do |form| %>
+      <%= form.label :title, 'Demo submission title' %>
+      <%= form.text_field :title, maxlength: 80, required: true, placeholder: 'Try the new workflow' %>
+      <%= form.submit 'Submit demo', class: 'button' %>
+    <% end %>
+    <p>Last accepted title: <strong><%= session[:last_submission].presence || 'None yet' %></strong></p>
+    <p>Native Rails CSRF protection runs before the action. The feature gate returns 404 when disabled; invalid title input returns 422. Only this encrypted demo session changes.</p>
+  </section>
+</div>
+<section class="card">
+  <h2>Inspect a native evaluation</h2>
+  <% result = Toggly.client.evaluate('new-dashboard', context: toggly_context) %>
+  <p>Current reason: <code><%= result.reason %></code></p>
+  <pre><code>feature_enabled?('new-dashboard')
+Toggly.client.evaluate('new-dashboard', context: toggly_context)
+Toggly.client.feature_keys</code></pre>
+  <p>The controller helper uses the request context automatically. Core calls require the explicit context when the result depends on identity, headers or an Order.</p>
+</section>
