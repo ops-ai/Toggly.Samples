@@ -145,7 +145,15 @@ that actual status. SIGKILL/crash cleanup and clustered deployment are not claim
 - `enabled?(key, context:)` supplies default handling and automatic native usage
   checks. `disabled?` negates it. Undefined flags default false in every mode.
 - `evaluate(key, context:)` supplies diagnostics. It does not apply the enabled
-  fallback or record the same automatic usage check.
+  fallback or record the same automatic usage check. Each row in the Home/Native
+  surfaces snapshot pairs the boolean and reason from one returned native result.
+  This keeps a row consistent if definitions refresh; different rows can still
+  observe different revisions, so the table is not a single atomic snapshot.
+  Missing definitions show OFF with `feature_not_found`, even if an actual gate
+  would use a configured true default. Offline mode creates native definitions
+  from this sample's sixteen OFF defaults, which remain visible in the table.
+  Diagnostic polling does not create automatic feature checks; actual gates and
+  HTTP/action routes continue to use `enabled?` for defaults and native usage.
 - ERB conditions, Any/All, HTTP gates and CSRF are sample composition. Core Ruby
   has no Rack middleware or template tag API. All multi-key checks are evaluated
   before combining them, avoiding short-circuited usage reporting.
