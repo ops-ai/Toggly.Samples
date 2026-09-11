@@ -1,0 +1,34 @@
+<div class="section-grid">
+  <section class="card">
+    <h2>Railtie & middleware</h2>
+    <p>The published Railtie installs controller/view helpers and <code>Toggly::Rails::Middleware</code> automatically.</p>
+    <p>The middleware clears <code>toggly.context</code> and <code>toggly.current_user</code> on entry and in ensure, including errors.
+      The controller constructs the fresh immutable context.</p>
+    <p><%= link_to 'Try the native beta-access HTML gate →', '/beta' %></p>
+    <p>The real <code>public/404.html</code> is retained for denied HTML requests.</p>
+  </section>
+  <section class="card">
+    <h2>Polling & persisted snapshots</h2>
+    <p>Native ready: <strong><%= Toggly.client.ready %></strong> · Loaded keys: <strong><%= Toggly.client.feature_keys.length %></strong></p>
+    <p>The SDK fetches during construction, then polls every <%= Toggly::Rails.configuration.refresh_interval %> seconds.
+      Native CacheSnapshotProvider uses Rails FileStore to persist definitions across restarts in an app/environment namespace.</p>
+    <p>A restored snapshot can evaluate flags while native <code>ready</code> remains false during an outage. Readiness and values are shown separately.</p>
+    <%= button_to 'Attempt native refresh', '/actions/refresh', class: 'button secondary' %>
+  </section>
+  <section class="card">
+    <h2>Lifecycle & telemetry boundaries</h2>
+    <p>One Puma process with 1–4 threads shares one startup client. The native Railtie closes it at process exit.
+      Do not close from a Puma signal-trap callback or fork an initialized client.</p>
+    <p>Core usage and metric methods exist, but this adapter configuration does not expose their transport options.
+      Its current configure path leaves telemetry disabled; this sample makes no telemetry-delivery claim.</p>
+    <p>Definition polling is exercised. This sample does not install the optional WebSocket dependency or promise browser push events.</p>
+  </section>
+  <section class="card">
+    <h2>Native command-line surfaces</h2>
+    <pre><code>bundle exec rake toggly:list
+bundle exec rake 'toggly:check[new-dashboard]'
+bundle exec rake toggly:refresh</code></pre>
+    <p>These tasks initialize their own process client. CLI checks have no browser session context; use the UI when comparing Orders or demo claims.</p>
+    <p>The native install generator exists, but this showcase already includes an explicit initializer. Do not generate a duplicate configuration.</p>
+  </section>
+</div>
