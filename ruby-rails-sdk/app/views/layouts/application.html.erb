@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= section_title %> · Ruby Rails SDK Sample</title>
+    <%= csrf_meta_tags %>
+    <%= stylesheet_link_tag 'application' %>
+    <%= javascript_include_tag 'snapshot', defer: true %>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="/">toggly<span>SDK EXPLORER</span></a>
+        <p class="stack-label">Ruby on Rails</p>
+        <nav aria-label="Showcase sections">
+          <% Catalog::SECTIONS.each_with_index do |(path, (title, _description)), index| %>
+            <%= link_to path, class: request.path == path ? 'active' : nil, aria: { current: request.path == path ? 'page' : nil } do %>
+              <span class="nav-number"><%= '%02d' % (index + 1) %></span>
+              <%= title %>
+            <% end %>
+          <% end %>
+        </nav>
+        <div class="sidebar-note">
+          <strong>One client. Your context.</strong>
+          <p>Every evaluation uses this request’s identity and Order.</p>
+        </div>
+      </aside>
+      <main id="main">
+        <header class="page-header">
+          <p class="eyebrow">RUBY RAILS SDK SAMPLE</p>
+          <h1><%= section_title %></h1>
+          <p><%= Catalog::SECTIONS.fetch(request.path, ['', '']).last %></p>
+          <div class="context-strip">
+            <span>Demo identity <strong><%= demo_state['identity'].presence || 'anonymous' %></strong></span>
+            <span>Order <strong><%= demo_state['order'] %></strong></span>
+            <span>SDK ready <strong><%= Toggly.client.ready %></strong></span>
+          </div>
+        </header>
+        <% if Rails.application.config.x.toggly_mode == 'offline' %>
+          <div class="notice warning" role="status">
+            <strong>No app key — offline defaults</strong>
+            <p>All sixteen sample flags default to OFF. The pages and context controls still work.
+              <%= link_to 'Configure a server key or run the local fixture demo.', '/setup' %></p>
+          </div>
+        <% elsif Rails.application.config.x.toggly_mode == 'fixture' %>
+          <div class="notice" role="status">
+            <strong>Local fixture demo</strong>
+            <p>Published SDK evaluation uses deterministic loopback definitions. This is not a live Toggly connection.</p>
+          </div>
+        <% elsif !Toggly.client.ready %>
+          <div class="notice warning" role="status">
+            <strong>SDK is not ready</strong>
+            <p>Inspect the server logs for configuration or fetch errors. Restored snapshots may still produce valid evaluations.</p>
+          </div>
+        <% end %>
+        <% if flash[:notice] %>
+          <p class="notice" role="status"><%= flash[:notice] %></p>
+        <% end %>
+        <%= yield %>
+        <footer>Rails 8.1 · toggly-rails 0.2.1 · toggly 0.5.0 · server-side evaluation</footer>
+      </main>
+    </div>
+  </body>
+</html>
