@@ -110,13 +110,13 @@ sources. Never treat a feature flag as the sole access-control boundary.
 
 ## Exact application and flag recipe
 
-Use the reviewed [shared application setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+Use the reviewed [shared application setup guide](../docs/APP_SETUP.md)
 for picker names, context registration, single-feature management API fallback
 when the catalog omits a filter, and the required **final save, definitions
 request and saved readback** checks. This is a manual recipe; no live creation,
 flag readback or service acceptance has been performed for this sample.
 
-- Workspace: **Toggly Samples**.
+- Workspace: use one you can manage (the one from signup is enough).
 - Application: **Rust Rocket SDK Sample**.
 - Technology: **Rust**.
 - Environment: **Production**.
