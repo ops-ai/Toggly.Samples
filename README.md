@@ -42,6 +42,7 @@ Remix (`remix-sdk/`), Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
 Hono (`nodejs-hono-sdk/`), and Koa
 | JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, variants, session identity, entity context, and live refresh with `@ops-ai/feature-flags-toggly` |
 | Node Express SDK Sample | Express 5 | [`nodejs-express-sdk/`](nodejs-express-sdk/) | Request middleware, HTTP gates, identities, Order context and filter matrix |
+| Node Hono SDK Showcase | Hono 4 / Node 22 | [`nodejs-hono-sdk/`](nodejs-hono-sdk/) | Request context, middleware gates, eleven filters and Order entities with `@ops-ai/toggly-hono` |
 
 **Planned (Wave 1):** React (`react-sdk/`), Remix (`remix-sdk/`),
 Nuxt (`nuxt-sdk/`), Express (`nodejs-express-sdk/`),
