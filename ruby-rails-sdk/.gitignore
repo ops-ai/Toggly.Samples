@@ -1,0 +1,7 @@
+.bundle/
+vendor/
+.env
+log/
+tmp/
+public/assets/
+config/master.key
