@@ -158,7 +158,7 @@ skip network initialization; `runserver` and `test` initialize the native path.
 Provisioning has **not** been performed or verified against a live account.
 These are human-run steps for the shared [flag template](../docs/FLAG_TEMPLATE.md).
 
-1. In [app.toggly.io](https://app.toggly.io), choose workspace **Toggly Samples**.
+1. In [app.toggly.io](https://app.toggly.io), use a workspace you can manage (the one from signup is enough).
    Create **Python Django SDK Sample**, technology **Python**, environment
    **Production**. Set **Application URL** to `http://localhost:8000`; add that
    origin and `http://127.0.0.1:8000` under **Allowed Web Origins** only if the
@@ -180,7 +180,7 @@ These are human-run steps for the shared [flag template](../docs/FLAG_TEMPLATE.m
    Set every segment Percentage explicitly to **100**. Save conditions, then
    **Save Changes** or **Request Changes** to open the confirmation dialog.
    Review it and choose **Save** or **Request** to submit; finish any approval
-   process. See the [shared setup guide](https://github.com/ops-ai/Toggly.Samples/blob/07c4c663ba95b6bb7f1c17e9e04d0fc95323b779/docs/APP_SETUP.md)
+   process. See the [shared setup guide](../docs/APP_SETUP.md)
    for the complete application and condition controls.
 6. Python's source-defined picker omits **Percentage, Targeting and TimeWindow**.
    Use the ordinary single-feature management API fallback below for these rules
