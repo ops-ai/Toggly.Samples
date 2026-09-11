@@ -1,0 +1,13 @@
+<section class="card">
+  <h2>A browser session is not a global identity</h2>
+  <p>This browser uses <strong><%= demo_state['identity'].presence || 'anonymous' %></strong> with demo claim
+    <code>role=<%= demo_state['role'] %></code>. These editable values are teaching data, not authentication or authorization.</p>
+  <pre><code>prepend_before_action :prepare_demo_state
+# Railtie's later callback builds toggly_context.
+config.context_builder = -&gt;(request, state) {
+  RequestContext.build(state, request)
+}</code></pre>
+  <p>The immutable context belongs to one request. The SDK client stores shared definitions; request code never changes its global identity.</p>
+  <p>Open another browser profile to compare independent sessions. The HTTP smoke suite also checks 24 concurrent sessions.</p>
+</section>
+<%= render 'controls' %>
