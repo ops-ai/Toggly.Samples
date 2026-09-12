@@ -79,9 +79,11 @@ All claims are client-supplied rollout input. A feature gate cannot authenticate
 
 ## Offline cache and lifecycle
 
-The client verifies exact signed bytes and JWK fingerprints before accepting a response. It caches the mixed definition map in memory. File snapshots use context-specific names and retain signed envelopes; the SDK revalidates them when loading.
+The client verifies exact signed bytes and JWK fingerprints before accepting a response. It caches the mixed definition map in memory. File snapshots use context-specific names and retain the signed envelope and exact public keys that verified it; a fresh client revalidates them before network access.
 
-For cold offline file restoration, a host must configure out-of-band trusted `TrustedJwks`; the sample does not bundle a signing key set. Without trusted keys and connectivity, cold startup uses defaults even if a file exists. Once running, verified in-memory state survives errors. This prevents an untrusted disk cache from choosing its own verification key.
+For restart testing, set `TOGGLY_SNAPSHOT_DIRECTORY` to a persistent directory owned by the current OS user, start once online with a real frontend App Key, then restart the same application/context with networking disabled. Previously accepted flags remain available if the saved envelope verifies and satisfies the current maximum signature age. The sample does not bundle signing keys or fabricated responses.
+
+Protect the cache directory: an attacker able to replace both the envelope and cached public keys is outside this local-cache trust model. A host can configure independent `TrustedJwks` or `AllowedKeyIds` to enforce stronger trust; explicit keys cannot be overridden by network or cached keys. Historical context snapshots may remain usable within their age limit in a fresh process unless those current pins exclude the old signing key. Offline persistence does not promise immediate revocation. Once running, verified memory state survives refresh errors.
 
 WebSocket JSON notifications and plaintext `update`/`flags-updated` trigger debounced full-context HTTP fetches. These fetches bypass conditional headers and use `rev` when the notification provides it. Routine refreshes can use the last HTTP-confirmed revision; polling remains a fallback. Superseded refreshes are cancelled and drained. **Refresh** explicitly invokes `RefreshAsync`. Console Ctrl+C cancels work; desktop close cancels initialization and awaits disposal. `HttpClient` is disposed after the SDK. Desktop notifications are posted onto the UI thread.
 
