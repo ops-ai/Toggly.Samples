@@ -7,4 +7,4 @@ gem "propshaft"
 
 # Rails 8.1 JSON decoding passes positional options; JSON 3 requires keywords.
 # Keep the latest stable Rails/SDK while resolving its compatible JSON API.
-gem "json", ">= 2", "< 3"
+gem "json", ">= 2", "< 4"
