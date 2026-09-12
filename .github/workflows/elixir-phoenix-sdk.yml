@@ -1,0 +1,31 @@
+name: Elixir Phoenix SDK showcase
+on:
+  pull_request:
+    paths: ['elixir-phoenix-sdk/**', '.github/workflows/elixir-phoenix-sdk.yml']
+  push:
+    branches: [develop, main]
+    paths: ['elixir-phoenix-sdk/**', '.github/workflows/elixir-phoenix-sdk.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  showcase:
+    runs-on: ubuntu-latest
+    env:
+      TOGGLY_APP_KEY: ''
+      TOGGLY_ENVIRONMENT: Production
+    defaults:
+      run:
+        working-directory: elixir-phoenix-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '29'
+          elixir-version: '1.20.4'
+      - run: mix deps.get
+      - run: mix hex.audit
+      - run: mix format --check-formatted
+      - run: mix compile --warnings-as-errors
+      - run: mix assets.build
+      - run: mix test

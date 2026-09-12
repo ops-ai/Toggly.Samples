@@ -185,3 +185,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+
+  - package-ecosystem: mix
+    directory: /elixir-phoenix-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
