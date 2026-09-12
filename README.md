@@ -43,6 +43,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Node Hono SDK Showcase | Hono 4 / Node 22 | [`nodejs-hono-sdk/`](nodejs-hono-sdk/) | Request context, middleware gates, eleven filters and Order entities with `@ops-ai/toggly-hono` |
 | Docusaurus SDK Workshop | Docusaurus 3 + React | [`docusaurus-sdk/`](docusaurus-sdk/) | Native MDX/React flags, core Order mapping, live snapshots and build/browser boundaries |
 | .NET SDK Workshop | ASP.NET Core 10 MVC / Razor | [`dotnet-sdk/`](dotnet-sdk/) | Native gates, variants, request targeting, Order, filters, Hangfire, HealthChecks and NSwag |
+| .NET Client SDK Showcase | .NET 8 console / Avalonia desktop | [`dotnet-client-sdk/`](dotnet-client-sdk/) | Signed frontend delivery, session identity, Order context, local gates, offline defaults and UI-safe lifecycle |
 | Java Servlet SDK Sample | Java 26 / Tomcat 11 / Servlet 6.1 | [`java-servlet-sdk/`](java-servlet-sdk/) | Native context and gate filters, signed definitions, session identity, Order context and eleven-filter matrix |
 | Java Spring MVC SDK Sample | Spring MVC 7 + Tomcat 11 + FreeMarker | [`java-spring-mvc-sdk/`](java-spring-mvc-sdk/) | Native context/gate interceptors, Boolean argument injection, model-driven templates, Order and eleven-filter matrix |
 | Java Spring WebFlux SDK Sample | Spring WebFlux 7 + Reactor Netty + Java 26 | [`java-spring-webflux-sdk/`](java-spring-webflux-sdk/) | Native reactive filters/client, isolated async users and Orders, eleven filters, signed refresh and cancellation |
@@ -90,5 +91,3 @@ management API procedure when a filter type is missing from the picker.
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
-- [.NET client console and Avalonia](dotnet-client-sdk/) — signed frontend delivery, user/entity context, offline defaults and UI-safe lifecycle.
