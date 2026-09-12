@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "format": "npm exec --yes --package=prettier@3.6.2 -- prettier --no-error-on-unmatched-pattern --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx,mjs,json,css,html}\" \"*.{ts,mjs,json,md,html}\"",
+    "format:check": "npm exec --yes --package=prettier@3.6.2 -- prettier --no-error-on-unmatched-pattern --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx,mjs,json,css,html}\" \"*.{ts,mjs,json,md,html}\"",
+    "prebuild": "npm run format:check"
   },
   "dependencies": {
     "@ops-ai/solid-feature-flags-toggly": "0.2.0",

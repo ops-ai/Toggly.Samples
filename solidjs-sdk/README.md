@@ -31,20 +31,20 @@ Put the browser app key in `.env` as `VITE_TOGGLY_APP_KEY`. `VITE_TOGGLY_ENVIRON
 3. Enable `api-v2`; disable Device ready for API v2. The local prerequisite holds API v2 even though its remote definition is on.
 4. Remove the app key and restart. The configuration banner appears; defaults make new-dashboard and api-v2 true. Remote targeting and Order predicates are **not simulated** in offline mode.
 
-A key identifies a feature. Definitions belong to an app/environment. Initialization fetches evaluated signed definitions; reads resolve a boolean or an entity gate. Missing definitions are false. Defaults provide initial/failure values; later same-session failures preserve last-known data and expose an error. Changing identity resets previous results before fetching. This sample uses memory only; it does not persist cache or identity in browser storage. Live updates invalidate definitions automatically and Refresh explicitly retrieves a current snapshot.
+A key identifies a feature. Definitions belong to an app/environment. Initialization fetches evaluated signed definitions; reads resolve a boolean or an entity gate. Missing definitions are false. Defaults provide initial/failure values; later same-session failures preserve last-known data and expose an error. Changing identity resets previous results before fetching. This sample opts into localStorage for exact signed envelopes and their verified public key. The cache key includes targeting identity/groups/claims. After an online refresh, a fresh client with the same targeting can restore verified definitions with all service requests offline. Page assets still need an application-owned offline shell or a reachable local server; this sample does not install a service worker. Current key pins, expiry and age policy still apply. Live updates invalidate definitions automatically and Refresh explicitly retrieves a current snapshot.
 
 ## Sections
 
-| Section | Source and exercise |
-| --- | --- |
-| Home | App.tsx: map, complete flag checklist, live definitions snapshot and first toggle |
+| Section           | Source and exercise                                                                                                              |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Home              | App.tsx: map, complete flag checklist, live definitions snapshot and first toggle                                                |
 | Declarative gates | Feature, fallback/loading, negate, all and any; boolean alternative explicitly distinguished from unsupported variant assignment |
-| Programmatic API | Synchronous evaluate and an enhanced-submit guard; local demonstration only |
-| Identity | Provider-scoped identity, groups and claims; Matching/Non-matching and explicit reset |
-| Entity context | Order mapper in catalog.ts carries key and Vip attributes per read |
-| Filters matrix | Every shared filter flag, matching/non-matching presets and honest input-source limits |
-| Solid ownership | Signal/accessor updates, resource/Suspense, lazy branches and device-local gate |
-| Configuration | Visible missing-key banner and environment/refresh/cache explanations |
+| Programmatic API  | Synchronous evaluate and an enhanced-submit guard; local demonstration only                                                      |
+| Identity          | Provider-scoped identity, groups and claims; Matching/Non-matching and explicit reset                                            |
+| Entity context    | Order mapper in catalog.ts carries key and Vip attributes per read                                                               |
+| Filters matrix    | Every shared filter flag, matching/non-matching presets and honest input-source limits                                           |
+| Solid ownership   | Signal/accessor updates, resource/Suspense, lazy branches and device-local gate                                                  |
+| Configuration     | Visible missing-key banner and environment/refresh/cache explanations                                                            |
 
 ## Filters and expected results
 
@@ -70,3 +70,7 @@ Start at `src/index.tsx` (browser mount), then `src/App.tsx` (provider configura
 - Unmount the provider and verify its socket/timers/fetches stop.
 
 Offline tests and builds do not prove live dashboard provisioning, service connectivity or real rollout results.
+
+### Verify signed restart recovery
+
+Configure a real frontend app key, load the page online and refresh definitions. Keep the page host available, block all requests to the definitions service (including `/.well-known/jwks`), then reload with the same targeting. Previously verified flags remain available and the failed refresh is visible. A different identity must not inherit those cached flags. Clear the sample origin's localStorage when finished because its keys contain targeting data. The SDK regression suite additionally verifies a new client with every network request rejected.

@@ -18,14 +18,14 @@ Follow [app setup](../docs/APP_SETUP.md) and the shared [flag template](../docs/
 
 Define the **Order** context with **Id** as its key and boolean **Vip**. Bind ExpressCheckout and filter-context-property to Order and add `Vip = true`. Configure targeting with alice / staff and UserClaims with role=admin. The sample passes context per request/evaluation; it does not register entity schemas automatically.
 
-| Variable | Scope and effect |
-| --- | --- |
-| `TOGGLY_BACKEND_APP_KEY` | Private server runtime backend key; empty uses backend defaults |
-| `TOGGLY_ENVIRONMENT` | Backend environment, defaults to Production |
-| `TOGGLY_BASE_URL` | Backend definitions/JWKS endpoint |
-| `VITE_TOGGLY_APP_KEY` | Public frontend key, used for server snapshots and browser refresh |
-| `VITE_TOGGLY_ENVIRONMENT` | Public frontend environment, defaults to Production |
-| `VITE_TOGGLY_BASE_URL` | Public frontend evaluated-signed/JWKS endpoint |
+| Variable                  | Scope and effect                                                   |
+| ------------------------- | ------------------------------------------------------------------ |
+| `TOGGLY_BACKEND_APP_KEY`  | Private server runtime backend key; empty uses backend defaults    |
+| `TOGGLY_ENVIRONMENT`      | Backend environment, defaults to Production                        |
+| `TOGGLY_BASE_URL`         | Backend definitions/JWKS endpoint                                  |
+| `VITE_TOGGLY_APP_KEY`     | Public frontend key, used for server snapshots and browser refresh |
+| `VITE_TOGGLY_ENVIRONMENT` | Public frontend environment, defaults to Production                |
+| `VITE_TOGGLY_BASE_URL`    | Public frontend evaluated-signed/JWKS endpoint                     |
 
 Vite substitutes `VITE_` values into browser JavaScript at build time. Rebuild after changing them, and supply the same values to server runtime for consistent snapshot targeting. Never put the backend key, private session claims, or a management credential in a `VITE_` variable. The adapter rejects identical frontend/backend keys but cannot identify an arbitrary key's application type.
 
@@ -37,20 +37,20 @@ Vite substitutes `VITE_` values into browser JavaScript at build time. Rebuild a
 4. Toggle Device ready. It can narrow the frontend enhanced-submit decision, but does not change the backend result.
 5. Remove the keys and restart. Both banners appear. new-dashboard/api-v2/AlwaysOn defaults are true; enhanced-submit defaults false and the server action returns 404. Remote targeting is not simulated offline.
 
-Keys identify decisions; definitions belong to an application/environment. The backend initializes a shared signed definition cache and evaluates request context locally. The server fetches a separately signed frontend snapshot and exposes only the catalog keys. SolidStart serializes that result; the browser provider initializes from it and starts transport on mount. Missing flags are false. Initial failures use explicit defaults; later same-context browser failures preserve verified state and expose an error. There is no browser persistent storage in this sample. A cold restart without service access uses defaults, not a promised disk cache.
+Keys identify decisions; definitions belong to an application/environment. The backend initializes a shared signed definition cache and evaluates request context locally. The server fetches a separately signed frontend snapshot and exposes only the catalog keys. SolidStart serializes that result; the browser provider initializes from it and starts transport on mount. Missing flags are false. Initial failures use explicit defaults; later same-context browser failures preserve verified state and expose an error. The mounted browser opts into localStorage for signed envelopes and their verified public keys, partitioned by app/environment/targeting. A fresh browser client can restore the matching signed definitions without network access, subject to key pins, expiry and signature age. Storage retains identity-bearing keys. The server query still needs its host and returns allowlisted defaults when the definitions service is unavailable; the sample does not supply a service worker or promise offline HTML/assets/server actions. Clear this origin's storage after using the demo.
 
 ## Sections
 
-| Section | What to inspect |
-| --- | --- |
-| Home | Section map, complete catalog/defaults, live public snapshot and first-toggle exercise |
-| Declarative gates | Feature fallback/loading, negate, all/any, and a lazy panel behind beta-access |
-| Programmatic API | Reactive accessor, synchronous browser evaluate/refresh, and real guarded POST |
-| Identity | Matching and Non-matching links trigger server queries with separate contexts |
-| Entity context | VIP checkbox feeds an explicit Order context to each ExpressCheckout evaluation |
-| Filters matrix | All shared filter keys show current results and explain input constraints |
-| SolidStart boundaries | Server-only imports, signed snapshot projection, local gates and disposal navigation |
-| Configuration | Separate missing frontend/backend banners and environment explanations |
+| Section               | What to inspect                                                                        |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| Home                  | Section map, complete catalog/defaults, live public snapshot and first-toggle exercise |
+| Declarative gates     | Feature fallback/loading, negate, all/any, and a lazy panel behind beta-access         |
+| Programmatic API      | Reactive accessor, synchronous browser evaluate/refresh, and real guarded POST         |
+| Identity              | Matching and Non-matching links trigger server queries with separate contexts          |
+| Entity context        | VIP checkbox feeds an explicit Order context to each ExpressCheckout evaluation        |
+| Filters matrix        | All shared filter keys show current results and explain input constraints              |
+| SolidStart boundaries | Server-only imports, signed snapshot projection, local gates and disposal navigation   |
+| Configuration         | Separate missing frontend/backend banners and environment explanations                 |
 
 Matching uses alice, staff and role=admin; Non-matching uses bob, no groups and role=user. These are UI-selected teaching presets, **not authentication**. Replace them with a trusted session lookup before protecting real operations. Request handlers never mutate a shared client's identity. Browser query caching uses the preset argument; a real login/logout flow must invalidate principal-dependent query results.
 

@@ -1,1 +1,102 @@
-:root{font-family:system-ui,sans-serif;color:#183134;background:#f0f5f3;line-height:1.55}body{margin:0}main{max-width:1050px;margin:auto;padding:2rem}header{padding:2rem 0}h1{font-size:clamp(2rem,5vw,3.7rem);line-height:1.1}.eyebrow{color:#147366;font-weight:700}nav{display:flex;flex-wrap:wrap;gap:.75rem}nav a{color:#145c53}section{margin:1.5rem 0;padding:1.5rem;background:white;border:1px solid #d2e0db;border-radius:12px}aside{padding:1rem;background:#fff1cb;border:1px solid #be901b;border-radius:8px}button{background:#146e61;color:white;padding:.65rem 1rem;border:0;border-radius:6px;margin:.35rem;cursor:pointer}button:disabled{background:#7c9490;cursor:default}input{padding:.5rem;margin:.3rem}pre{background:#102c30;color:#d7f3e7;padding:1rem;border-radius:8px;overflow:auto;max-height:22rem}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:.65rem;border-bottom:1px solid #d2e0db}output{display:block;padding:.7rem}code{overflow-wrap:anywhere}section{scroll-margin:1rem}@media(max-width:600px){main{padding:1rem}section{padding:1rem}table{font-size:.8rem}}
+:root {
+  font-family: system-ui, sans-serif;
+  color: #183134;
+  background: #f0f5f3;
+  line-height: 1.55;
+}
+body {
+  margin: 0;
+}
+main {
+  max-width: 1050px;
+  margin: auto;
+  padding: 2rem;
+}
+header {
+  padding: 2rem 0;
+}
+h1 {
+  font-size: clamp(2rem, 5vw, 3.7rem);
+  line-height: 1.1;
+}
+.eyebrow {
+  color: #147366;
+  font-weight: 700;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+nav a {
+  color: #145c53;
+}
+section {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #d2e0db;
+  border-radius: 12px;
+}
+aside {
+  padding: 1rem;
+  background: #fff1cb;
+  border: 1px solid #be901b;
+  border-radius: 8px;
+}
+button {
+  background: #146e61;
+  color: white;
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-radius: 6px;
+  margin: 0.35rem;
+  cursor: pointer;
+}
+button:disabled {
+  background: #7c9490;
+  cursor: default;
+}
+input {
+  padding: 0.5rem;
+  margin: 0.3rem;
+}
+pre {
+  background: #102c30;
+  color: #d7f3e7;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow: auto;
+  max-height: 22rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+td,
+th {
+  text-align: left;
+  padding: 0.65rem;
+  border-bottom: 1px solid #d2e0db;
+}
+output {
+  display: block;
+  padding: 0.7rem;
+}
+code {
+  overflow-wrap: anywhere;
+}
+section {
+  scroll-margin: 1rem;
+}
+@media (max-width: 600px) {
+  main {
+    padding: 1rem;
+  }
+  section {
+    padding: 1rem;
+  }
+  table {
+    font-size: 0.8rem;
+  }
+}

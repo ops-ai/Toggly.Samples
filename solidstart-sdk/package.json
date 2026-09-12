@@ -8,7 +8,10 @@
     "start": "node .output/server/index.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
-    "test:browser": "node tests/browser.mjs"
+    "test:browser": "node tests/browser.mjs",
+    "format": "npm exec --yes --package=prettier@3.6.2 -- prettier --no-error-on-unmatched-pattern --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx,mjs,json,css,html}\" \"*.{ts,mjs,json,md,html}\"",
+    "format:check": "npm exec --yes --package=prettier@3.6.2 -- prettier --no-error-on-unmatched-pattern --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx,mjs,json,css,html}\" \"*.{ts,mjs,json,md,html}\"",
+    "prebuild": "npm run format:check"
   },
   "dependencies": {
     "@solidjs/start": "2.0.5",
