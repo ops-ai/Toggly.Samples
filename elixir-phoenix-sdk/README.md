@@ -37,6 +37,7 @@ mix phx.server
 | --- | --- |
 | `TOGGLY_APP_KEY` | Server-only backend SDK key. Empty selects local fixtures. Never exposed to browser JavaScript. |
 | `TOGGLY_ENVIRONMENT` | Exact environment name, defaults to Production. Read at process startup; restart after changes. |
+| `TOGGLY_MAX_SIGNATURE_AGE_SECONDS` | Optional whole-second signed-envelope age limit. Empty, 0 or negative disables it; invalid text fails startup. Read at runtime startup; restart after changes. |
 | `PORT` | Loopback HTTP port, defaults to 4000. Update application URL if changed. |
 | `SECRET_KEY_BASE` | Phoenix session/LiveView signing secret. Required for production; development/test generate an ephemeral value, so old sessions expire on restart. |
 
@@ -90,6 +91,8 @@ Expect targeting, claims, country, browser, language, device, OS and context row
 `Showcase.Application` supervises one fixed `Showcase.Flags` client. Its GenServer owns definitions, timers and protected ETS state; each evaluation reads the local snapshot. Connected mode starts with explicit false defaults for the four baseline keys. An unavailable first fetch leaves defaults in place; later errors preserve last-known-good definitions. Unknown keys default false. Refresh failure does not force existing active flags off.
 
 Online definitions use ES256 signatures by default. This sample does not configure a persistent online snapshot file. The SDK supports an optional file snapshot and configured trusted JWKS for signed offline restarts; see [Elixir SDK docs](https://docs.toggly.io/sdks/elixir). WebSockets invalidate definitions; polling provides a fallback. Stop/restart is owned by the application supervisor.
+
+Set `TOGGLY_MAX_SIGNATURE_AGE_SECONDS=86400`, for example, to reject newly received signed envelopes older than one day (the exact boundary is allowed). Rejected refreshes preserve active verified flags and their ETag; this is not a timer that turns active flags off. A cold start with no fresh response retains defaults. If you later configure a trusted signed snapshot, an older-than-limit file is also rejected on offline startup, so choose the limit with your expected outage duration in mind. Future-skew and rollback checks still apply even when age checking is disabled. This sample's explicit unsigned offline fixture mode is unaffected. CI sets 60 seconds to test runtime parsing/forwarding while using no app key.
 
 Each socket's `toggly_context` map contains identity, groups, claims, request attributes and its Order entity. A preset click changes only that socket. `Order.key` identifies the record; `attributes.Vip` is the condition input. An Order condition must pass in addition to any user condition. HTTP Plug assigns do not automatically become a LiveView session: real applications populate trusted socket/session context from authentication before the Toggly mount hook.
 

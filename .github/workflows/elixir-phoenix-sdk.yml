@@ -14,6 +14,8 @@ jobs:
     env:
       TOGGLY_APP_KEY: ''
       TOGGLY_ENVIRONMENT: Production
+      # Exercise positive runtime-option forwarding while retaining offline fixtures.
+      TOGGLY_MAX_SIGNATURE_AGE_SECONDS: '60'
     defaults:
       run:
         working-directory: elixir-phoenix-sdk

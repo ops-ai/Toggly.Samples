@@ -16,6 +16,10 @@ defmodule Showcase.Application do
         "beta-access" => false
       },
       signed: not offline,
+      # Applies to every signed activation. A stale first response leaves safe
+      # defaults active; already verified active definitions survive rejection.
+      max_signature_age_seconds:
+        Application.fetch_env!(:toggly_showcase, :max_signature_age_seconds),
       websocket: not offline,
       refresh_interval: if(offline, do: 0, else: 60_000)
     ]
