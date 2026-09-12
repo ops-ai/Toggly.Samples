@@ -83,7 +83,7 @@ The client verifies exact signed bytes and JWK fingerprints before accepting a r
 
 For cold offline file restoration, a host must configure out-of-band trusted `TrustedJwks`; the sample does not bundle a signing key set. Without trusted keys and connectivity, cold startup uses defaults even if a file exists. Once running, verified in-memory state survives errors. This prevents an untrusted disk cache from choosing its own verification key.
 
-WebSocket messages trigger debounced full-context HTTP fetches, with conditional revisions and polling fallback. **Refresh** explicitly invokes `RefreshAsync`. Console Ctrl+C cancels work; desktop close cancels initialization and awaits disposal. `HttpClient` is disposed after the SDK. Desktop notifications are posted onto the UI thread.
+WebSocket JSON notifications and plaintext `update`/`flags-updated` trigger debounced full-context HTTP fetches. These fetches bypass conditional headers and use `rev` when the notification provides it. Routine refreshes can use the last HTTP-confirmed revision; polling remains a fallback. Superseded refreshes are cancelled and drained. **Refresh** explicitly invokes `RefreshAsync`. Console Ctrl+C cancels work; desktop close cancels initialization and awaits disposal. `HttpClient` is disposed after the SDK. Desktop notifications are posted onto the UI thread.
 
 ## Checks
 
