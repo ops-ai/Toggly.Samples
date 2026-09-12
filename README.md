@@ -90,3 +90,5 @@ management API procedure when a filter type is missing from the picker.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+- [.NET client console and Avalonia](dotnet-client-sdk/) — signed frontend delivery, user/entity context, offline defaults and UI-safe lifecycle.
