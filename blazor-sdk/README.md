@@ -67,6 +67,10 @@ The environment is case-sensitive; the fallback is Production.
    network polling/push.
 4. Open `/gates` for negate and all/any branches, and `/api` for imperative results.
 
+Complementary UI uses two `Feature` components with identical inputs. The ON
+block uses ordinary child content, the OFF block sets `Negate="true"`, and only
+one block owns `Loading` while evaluation is pending.
+
 A key identifies a feature. Definitions belong to an app/environment; evaluation
 combines them with context. Initialization gets definitions, defaults cover missing
 configuration/startup, and refresh/cache policy controls later changes. Signed
@@ -78,7 +82,7 @@ The trusted server SDK retains its own signed-definition/cache and usage policy.
 | Path after render mode | Requirement and teaching surface | Source |
 | --- | --- | --- |
 | `home` | Map, flag checklist, live snapshot, first toggle | `BlazorSample.Client/Workshop.razor` home branch |
-| `gates` | Enabled/disabled/loading, negate, all/any; variants distinction | Same file, gates branch |
+| `gates` | Paired child/negated content, loading, all/any; variants distinction | Same file, gates branch |
 | `api` | Programmatic evaluate/refresh | Same file, API branch and `Evaluate` |
 | `identity` | Matching alice/vip/admin and non-matching bob/standard/user | Same file, `SetPreset` |
 | `entity` | `ord-vip` vs `ord-standard`, Order.Vip | Same file, entity branch |
@@ -95,7 +99,7 @@ The trusted server SDK retains its own signed-definition/cache and usage policy.
 - `BlazorSample.Client/Pages/*Page.razor`: actual render modes, FeatureProvider and
   public boolean hydration allowlist. The server project references the client;
   the client never references the server SDK.
-- `BlazorSample.Client/Workshop.razor`: actual gates, per-evaluation Order mapping,
+- `BlazorSample.Client/Workshop.razor`: paired child/negated gates, per-evaluation Order mapping,
   programmatic checks and renderer-dispatched change/error subscriptions.
 - `BlazorSample/Features/OfflineTransport.cs`: offline data in the published server
   schema, not a replacement evaluation engine. Fixtures include baseline flags,

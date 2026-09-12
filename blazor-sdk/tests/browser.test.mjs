@@ -48,6 +48,12 @@ test("all four actual render modes, seven pages and separate circuit contexts", 
       await page.getByRole("heading", { level: 1 }).waitFor();
       assert.match(await page.locator("body").innerText(), /Missing app key/);
     }
+  for (const mode of ["ssr", "server", "wasm", "auto"]) {
+    await page.goto(`${origin}/${mode}/home`);
+    await page.getByTestId("dashboard").waitFor();
+    assert.equal(await page.getByTestId("dashboard").count(), 1);
+    assert.match(await page.getByTestId("dashboard").innerText(), /enabled/);
+  }
   const second = await context.newPage();
   await ready(page, "server");
   await ready(second, "server");
@@ -156,6 +162,7 @@ test("real WebAssembly verifies canonical signed fixtures, refreshes on push and
   assert.match(await page.getByTestId("standard").innerText(), /OFF$/);
   await page.getByRole("link", { name: "Home", exact: true }).click();
   await page.getByTestId("dashboard").filter({ hasText: "enabled" }).waitFor();
+  assert.equal(await page.getByTestId("dashboard").count(), 1);
   assert.ok(
     requested.some((url) => url.includes("Toggly.FeatureManagement.Client")),
   );
@@ -170,6 +177,7 @@ test("real WebAssembly verifies canonical signed fixtures, refreshes on push and
       JSON.stringify({ type: "flags-updated", etag: String(revision) }),
     );
   await page.getByTestId("dashboard").filter({ hasText: "Classic" }).waitFor();
+  assert.equal(await page.getByTestId("dashboard").count(), 1);
   await page
     .getByRole("link", { name: "Framework lifecycle", exact: true })
     .click();
