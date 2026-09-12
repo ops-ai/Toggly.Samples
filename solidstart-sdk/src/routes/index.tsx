@@ -81,20 +81,16 @@ function Workshop(props: {
         <p>
           First toggle: enable <code>new-dashboard</code> in the frontend application's selected
           environment; the enabled dashboard below appears after the live notification or Refresh.
-          Disable it to restore the fallback.
+          Disable it to show the negated Feature block.
         </p>
       </section>
       <section id="section-1">
         <h2>Declarative gates</h2>
-        <Feature
-          feature="new-dashboard"
-          fallback={<p>Classic dashboard</p>}
-          loading={<p>Loading dashboard flags…</p>}
-        >
+        <Feature feature="new-dashboard" loading={<p>Loading dashboard flags…</p>}>
           <p>New dashboard</p>
         </Feature>
         <Feature feature="new-dashboard" negate>
-          <p>Negated branch: classic experience.</p>
+          <p>Classic dashboard</p>
         </Feature>
         <Feature feature={['new-dashboard', 'api-v2']} requirement="all">
           <p>All: new dashboard with API v2</p>
@@ -102,10 +98,13 @@ function Workshop(props: {
         <Feature feature={['new-dashboard', 'api-v2']} requirement="any">
           <p>Any: at least one rollout is enabled</p>
         </Feature>
-        <Feature feature="beta-access" fallback={<p>Lazy beta panel is gated.</p>}>
+        <Feature feature="beta-access">
           <Suspense fallback={<p>Loading panel…</p>}>
             <Panel />
           </Suspense>
+        </Feature>
+        <Feature feature="beta-access" negate>
+          <p>Lazy beta panel is gated.</p>
         </Feature>
         <p>These boolean branches are not experiment variant assignment.</p>
       </section>
@@ -145,12 +144,11 @@ function Workshop(props: {
           />{' '}
           Order.Vip
         </label>
-        <Feature
-          feature="ExpressCheckout"
-          entity={order(vip())}
-          fallback={<p>Standard checkout</p>}
-        >
+        <Feature feature="ExpressCheckout" entity={order(vip())}>
           <p>Express checkout for this VIP order</p>
+        </Feature>
+        <Feature feature="ExpressCheckout" entity={order(vip())} negate>
+          <p>Standard checkout</p>
         </Feature>
         <p>
           Register an Order context with a boolean Vip property. Each entity evaluation receives
@@ -206,8 +204,11 @@ function Workshop(props: {
           />{' '}
           Device ready (browser-local enhanced-submit gate)
         </label>
-        <Feature feature="enhanced-submit" fallback={<p>Local or remote submit gate is closed.</p>}>
+        <Feature feature="enhanced-submit">
           <p>Browser submit presentation is available.</p>
+        </Feature>
+        <Feature feature="enhanced-submit" negate>
+          <p>Local or remote submit gate is closed.</p>
         </Feature>
         <A href="/about">Leave workshop to dispose provider</A>
         <p>

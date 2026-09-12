@@ -75,22 +75,17 @@ function Workshop(props: { configured: boolean }) {
       </section>
       <section id="section-1">
         <h2>2. Declarative gates</h2>
-        <Feature
-          feature="new-dashboard"
-          loading={<p>Loading dashboard…</p>}
-          fallback={<p>Classic dashboard</p>}
-        >
+        <Feature feature="new-dashboard" loading={<p>Loading dashboard…</p>}>
           <p>New dashboard</p>
         </Feature>
         <Feature feature="new-dashboard" negate>
-          <p>The negated gate is visible.</p>
+          <p>Classic dashboard</p>
         </Feature>
-        <Feature
-          feature={['new-dashboard', 'api-v2']}
-          requirement="all"
-          fallback={<p>The all gate is closed.</p>}
-        >
+        <Feature feature={['new-dashboard', 'api-v2']} requirement="all">
           <p>Both dashboard and API v2 are enabled.</p>
+        </Feature>
+        <Feature feature={['new-dashboard', 'api-v2']} requirement="all" negate>
+          <p>The all gate is closed.</p>
         </Feature>
         <Feature feature={['new-dashboard', 'beta-access']} requirement="any">
           <p>At least one feature is enabled.</p>
@@ -159,12 +154,11 @@ function Workshop(props: { configured: boolean }) {
         </label>
         <pre>{JSON.stringify(order(vip()), null, 2)}</pre>
         <p>ExpressCheckout: {String(checkout())}</p>
-        <Feature
-          feature="ExpressCheckout"
-          entity={order(vip())}
-          fallback={<p>Standard checkout</p>}
-        >
+        <Feature feature="ExpressCheckout" entity={order(vip())}>
           <p>Express checkout for this VIP order</p>
+        </Feature>
+        <Feature feature="ExpressCheckout" entity={order(vip())} negate>
+          <p>Standard checkout</p>
         </Feature>
         <p>
           Bind ExpressCheckout to Order and configure Vip = true. Missing entity definitions fail
@@ -225,8 +219,11 @@ function Workshop(props: { configured: boolean }) {
           />
           Device ready for API v2
         </label>
-        <Feature feature="api-v2" fallback={<p>API v2 held by remote or local gate.</p>}>
+        <Feature feature="api-v2">
           <p>API v2 ready.</p>
+        </Feature>
+        <Feature feature="api-v2" negate>
+          <p>API v2 held by remote or local gate.</p>
         </Feature>
         <Suspense fallback={<p>Initial resource loading…</p>}>
           <ResourceView />

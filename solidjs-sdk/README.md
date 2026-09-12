@@ -27,7 +27,7 @@ Put the browser app key in `.env` as `VITE_TOGGLY_APP_KEY`. `VITE_TOGGLY_ENVIRON
 ## First-toggle exercise
 
 1. With a configured key, enable `new-dashboard` in Production and select Refresh definitions. Expect **New dashboard**.
-2. Disable the flag and refresh. Expect **Classic dashboard**, the negated gate, and `false` from Evaluate dashboard.
+2. Disable the flag and refresh. Expect **Classic dashboard** in the negated block and `false` from Evaluate dashboard.
 3. Enable `api-v2`; disable Device ready for API v2. The local prerequisite holds API v2 even though its remote definition is on.
 4. Remove the app key and restart. The configuration banner appears; defaults make new-dashboard and api-v2 true. Remote targeting and Order predicates are **not simulated** in offline mode.
 
@@ -35,16 +35,16 @@ A key identifies a feature. Definitions belong to an app/environment. Initializa
 
 ## Sections
 
-| Section           | Source and exercise                                                                                                              |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Home              | App.tsx: map, complete flag checklist, live definitions snapshot and first toggle                                                |
-| Declarative gates | Feature, fallback/loading, negate, all and any; boolean alternative explicitly distinguished from unsupported variant assignment |
-| Programmatic API  | Synchronous evaluate and an enhanced-submit guard; local demonstration only                                                      |
-| Identity          | Provider-scoped identity, groups and claims; Matching/Non-matching and explicit reset                                            |
-| Entity context    | Order mapper in catalog.ts carries key and Vip attributes per read                                                               |
-| Filters matrix    | Every shared filter flag, matching/non-matching presets and honest input-source limits                                           |
-| Solid ownership   | Signal/accessor updates, resource/Suspense, lazy branches and device-local gate                                                  |
-| Configuration     | Visible missing-key banner and environment/refresh/cache explanations                                                            |
+| Section           | Source and exercise                                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Home              | App.tsx: map, complete flag checklist, live definitions snapshot and first toggle                                                    |
+| Declarative gates | Paired Feature/negate blocks, loading, all and any; boolean alternative explicitly distinguished from unsupported variant assignment |
+| Programmatic API  | Synchronous evaluate and an enhanced-submit guard; local demonstration only                                                          |
+| Identity          | Provider-scoped identity, groups and claims; Matching/Non-matching and explicit reset                                                |
+| Entity context    | Order mapper in catalog.ts carries key and Vip attributes per read                                                                   |
+| Filters matrix    | Every shared filter flag, matching/non-matching presets and honest input-source limits                                               |
+| Solid ownership   | Signal/accessor updates, resource/Suspense, lazy branches and device-local gate                                                      |
+| Configuration     | Visible missing-key banner and environment/refresh/cache explanations                                                                |
 
 ## Filters and expected results
 

@@ -32,7 +32,7 @@ Vite substitutes `VITE_` values into browser JavaScript at build time. Rebuild a
 ## First-toggle exercise
 
 1. Enable `new-dashboard` in the frontend Production environment. Refresh the page or use Refresh. Expect **New dashboard**, an enabled accessor and the matching snapshot value.
-2. Disable it. Expect **Classic dashboard** and the negated branch after live invalidation or Refresh.
+2. Disable it. Expect **Classic dashboard** in the negated block after live invalidation or Refresh.
 3. Enable `enhanced-submit` in the backend application. Run server action should report that the server branch ran. Disable it and repeat: expect **404** even if frontend presentation is enabled.
 4. Toggle Device ready. It can narrow the frontend enhanced-submit decision, but does not change the backend result.
 5. Remove the keys and restart. Both banners appear. new-dashboard/api-v2/AlwaysOn defaults are true; enhanced-submit defaults false and the server action returns 404. Remote targeting is not simulated offline.
@@ -44,7 +44,7 @@ Keys identify decisions; definitions belong to an application/environment. The b
 | Section               | What to inspect                                                                        |
 | --------------------- | -------------------------------------------------------------------------------------- |
 | Home                  | Section map, complete catalog/defaults, live public snapshot and first-toggle exercise |
-| Declarative gates     | Feature fallback/loading, negate, all/any, and a lazy panel behind beta-access         |
+| Declarative gates     | Paired Feature/negate blocks, loading, all/any, and a lazy panel behind beta-access    |
 | Programmatic API      | Reactive accessor, synchronous browser evaluate/refresh, and real guarded POST         |
 | Identity              | Matching and Non-matching links trigger server queries with separate contexts          |
 | Entity context        | VIP checkbox feeds an explicit Order context to each ExpressCheckout evaluation        |
