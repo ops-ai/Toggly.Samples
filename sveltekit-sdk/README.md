@@ -34,16 +34,16 @@ Definitions describe flag rules, and evaluation applies the current identity/req
 
 ## Sections
 
-| Section | What to inspect |
-| --- | --- |
-| Home | First toggle, source map and current allowlisted frontend snapshot |
-| Declarative | Feature/fallback, negate and multi-key any; explicit variant support boundary |
-| Programmatic | Synchronous single/all/any/default checks on a layout-owned store |
-| Identity | Matching alice/admin and Non-matching bob/user; request isolation and navigation |
-| Entity | ord-vip and ord-standard, server results and browser EntityGate results |
-| Filters | Eleven server-evaluated filters with both shared presets |
-| Framework | Hook/load/hydration lifecycle and guarded enhanced-submit action |
-| Missing-key banner | Visible on every section when either required key is absent |
+| Section            | What to inspect                                                                  |
+| ------------------ | -------------------------------------------------------------------------------- |
+| Home               | First toggle, source map and current allowlisted frontend snapshot               |
+| Declarative        | Feature/fallback, negate and multi-key any; explicit variant support boundary    |
+| Programmatic       | Synchronous single/all/any/default checks on a layout-owned store                |
+| Identity           | Matching alice/admin and Non-matching bob/user; request isolation and navigation |
+| Entity             | ord-vip and ord-standard, server results and browser EntityGate results          |
+| Filters            | Eleven server-evaluated filters with both shared presets                         |
+| Framework          | Hook/load/hydration lifecycle and guarded enhanced-submit action                 |
+| Missing-key banner | Visible on every section when either required key is absent                      |
 
 These are boolean branches. This SDK does not assign experiment variants; do not invent A/B assignments from on/off state. Browser local prerequisites are available through the SDK's `localGates` option and AND with remote values.
 
@@ -51,21 +51,21 @@ The filter presets use the exact Chrome/macOS and Firefox/Windows strings from F
 
 ## Source-reading map
 
-| File | Why it matters |
-| --- | --- |
-| `.env.example` | Public versus private keys, environment and offline fallback |
-| `src/lib/catalog.ts` | Exact flags, native filter parameter names, identity presets, mapped Order entities |
-| `src/hooks.server.ts` | Initializes Node core, supplies one context per request, projects public targeting and closes at shutdown |
-| `src/routes/+layout.server.ts` | Uses loadToggly, computes request-bound server results and tracks preset navigation |
-| `src/routes/+layout.svelte` | Synchronous hydration, layout context ownership, browser mount and disposal |
-| `src/routes/[[section]]/+page.svelte` | Actual Feature, negate, all/any/default and entity callsites |
-| `src/routes/[[section]]/+page.server.ts` | Rechecks enhanced-submit before an action |
-| `tests/catalog.test.ts` | Runs every matching/nonmatching filter through the actual Node evaluator |
-| `tests/browser/showcase.spec.ts` | Adapter-node SSR, hydration, context navigation, concurrency and action smoke |
+| File                                     | Why it matters                                                                                            |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `.env.example`                           | Public versus private keys, environment and offline fallback                                              |
+| `src/lib/catalog.ts`                     | Exact flags, native filter parameter names, identity presets, mapped Order entities                       |
+| `src/hooks.server.ts`                    | Initializes Node core, supplies one context per request, projects public targeting and closes at shutdown |
+| `src/routes/+layout.server.ts`           | Uses loadToggly, computes request-bound server results and tracks preset navigation                       |
+| `src/routes/+layout.svelte`              | Synchronous hydration, layout context ownership, browser mount and disposal                               |
+| `src/routes/[[section]]/+page.svelte`    | Actual Feature, negate, all/any/default and entity callsites                                              |
+| `src/routes/[[section]]/+page.server.ts` | Rechecks enhanced-submit before an action                                                                 |
+| `tests/catalog.test.ts`                  | Runs every matching/nonmatching filter through the actual Node evaluator                                  |
+| `tests/browser/showcase.spec.ts`         | Adapter-node SSR, hydration, context navigation, concurrency and action smoke                             |
 
 ## Failure and security boundaries
 
-No App Key means explicit offline defaults. Server filter fixtures are used only with no backend key. Frontend defaults omit ExpressCheckout; until a live entity gate arrives, its browser result is false. A missing entity fails closed. A server request that cannot fetch a verified frontend snapshot uses exposed defaults. A browser failed refresh preserves its matching SSR or last verified in-memory snapshot. Parsed persistent browser caches are never trusted. The browser polls every three minutes and receives WebSocket updates; layout destruction disposes its resources.
+No App Key means explicit offline defaults. Server filter fixtures are used only with no backend key. Frontend defaults omit ExpressCheckout; until a live entity gate arrives, its browser result is false. A missing entity fails closed. A server request that cannot fetch a verified frontend snapshot uses exposed defaults. A browser failed refresh preserves its matching SSR or last verified in-memory snapshot. The sample opts into localStorage for exact signed envelopes and their verified public key. Fresh fallback snapshots may restore matching definitions without a service/JWKS request; authoritative SSR/live state always wins over older storage. Parsed-flag caches are never trusted. Targeting appears in cache keys; clear sample storage when finished. The browser polls every three minutes and receives WebSocket updates; layout destruction disposes its resources.
 
 `createTogglyHandle` copies context once and passes it to Node evaluation. It never mutates the shared client's user identity. Demo claims are not authentication. Production context should come from your authenticated session, and only explicitly public targeting attributes should go through `clientContext`. Frontend gates do not replace server authentication/authorization; actions enforce their feature gate again.
 
@@ -81,6 +81,6 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-Manual checklist: visit every section; switch both identity/filter presets; compare VIP/standard orders; verify both dashboard branches with real keys; turn enhanced-submit off and confirm the action returns404; navigate repeatedly and inspect socket cleanup; stop network access after a verified refresh and observe the matching in-memory fallback; clear keys and confirm the banner. These checks do not provision or validate your real dashboard setup.
+Manual checklist: visit every section; switch both identity/filter presets; compare VIP/standard orders; verify both dashboard branches with real keys; turn enhanced-submit off and confirm the action returns404; navigate repeatedly and inspect socket cleanup; after a verified refresh, block all definitions-service requests including JWKS and reload with the same targeting while keeping the page host available; confirm the verified persisted fallback. A full offline page launch requires its own asset shell; this sample installs no service worker; clear keys and confirm the banner. These checks do not provision or validate your real dashboard setup.
 
 See the [SvelteKit guide](https://docs.toggly.io/sdks/javascript/sveltekit) for the full API and [Node SDK](https://docs.toggly.io/sdks/nodejs) for backend telemetry/cache configuration.
