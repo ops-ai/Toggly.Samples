@@ -39,21 +39,21 @@ Create **NestJS SDK Sample**, environment **Production**, URL **http://localhost
 
 Create **Order** with `Id` string/key, `Vip` boolean, `Total` number. Bind ExpressCheckout and filter-context-property to Order in their Context field. Configure Vip equals true and remove extra AlwaysOn conditions.
 
-| Key | Rule |
-| --- | --- |
-| `new-dashboard`, `api-v2`, `enhanced-submit`, `beta-access` | Baseline toggle: enabled AlwaysOn; disabled no rules |
-| `ExpressCheckout` | ContextProperty Order.Vip equals true |
-| `filter-always-on` | AlwaysOn |
-| `filter-percentage` | Percentage Value 50 |
-| `filter-targeting` | Targeting user alice; no default/group rollout |
-| `filter-user-claims` | UserClaims role = admin, Percentage 100 |
-| `filter-time-window` | TimeWindow 2020-01-01T00:00:00Z through 2099-12-31T23:59:59Z |
-| `filter-country` | Country US, Percentage 100 |
-| `filter-browser-family` | BrowserFamily Chrome, Percentage 100 |
-| `filter-browser-language` | BrowserLanguage en, Percentage 100 |
-| `filter-device-type` | DeviceType Macintosh, Percentage 100 |
-| `filter-os` | OperatingSystem Mac, Percentage 100 |
-| `filter-context-property` | ContextProperty Order.Vip equals true |
+| Key                                                         | Rule                                                         |
+| ----------------------------------------------------------- | ------------------------------------------------------------ |
+| `new-dashboard`, `api-v2`, `enhanced-submit`, `beta-access` | Baseline toggle: enabled AlwaysOn; disabled no rules         |
+| `ExpressCheckout`                                           | ContextProperty Order.Vip equals true                        |
+| `filter-always-on`                                          | AlwaysOn                                                     |
+| `filter-percentage`                                         | Percentage Value 50                                          |
+| `filter-targeting`                                          | Targeting user alice; no default/group rollout               |
+| `filter-user-claims`                                        | UserClaims role = admin, Percentage 100                      |
+| `filter-time-window`                                        | TimeWindow 2020-01-01T00:00:00Z through 2099-12-31T23:59:59Z |
+| `filter-country`                                            | Country US, Percentage 100                                   |
+| `filter-browser-family`                                     | BrowserFamily Chrome, Percentage 100                         |
+| `filter-browser-language`                                   | BrowserLanguage en, Percentage 100                           |
+| `filter-device-type`                                        | DeviceType Macintosh, Percentage 100                         |
+| `filter-os`                                                 | OperatingSystem Mac, Percentage 100                          |
+| `filter-context-property`                                   | ContextProperty Order.Vip equals true                        |
 
 Native parameters are executable in [`src/fixture.js`](src/fixture.js): `Audience.Users:0`, segment arrays such as `Country:0`, and ContextProperty `{ Property: 'Vip', Operator: 'eq', Value: 'true', ValueType: 'boolean' }`. These are real rule documents, not precomputed answers. Tests exercise all eleven filters through the installed evaluator.
 
@@ -61,16 +61,16 @@ Matching: alice, groups staff, role admin, US, English, Chrome 120/macOS, ord-vi
 
 ## Eight sections and source map
 
-| Section | Exercise | Source |
-| --- | --- | --- |
-| Home | Flag checklist and request-evaluated snapshot | app.ts evaluate/index; view.js home |
-| Declarative | Feature, negate, all/any, boolean content variant | app.ts gate handlers |
-| Programmatic | JSON evaluation and alice override | app.ts evaluated/override |
-| Identity | Presets and custom identity/role | catalog.js inputs; app.ts contextFactory |
-| Entity | ord-vip / ord-standard checkout | catalog.js orders; app.ts evaluate |
-| Filters | Matching/Non-matching matrix | fixture.js; view.js filters |
-| Unique | FeatureEnabled parameter, readiness, shared snapshot | app.ts parameter/health/features |
-| Configuration | Visible missing-key banner | view.js; .env.example |
+| Section       | Exercise                                             | Source                                   |
+| ------------- | ---------------------------------------------------- | ---------------------------------------- |
+| Home          | Flag checklist and request-evaluated snapshot        | app.ts evaluate/index; view.js home      |
+| Declarative   | Feature, negate, all/any, boolean content variant    | app.ts gate handlers                     |
+| Programmatic  | JSON evaluation and alice override                   | app.ts evaluated/override                |
+| Identity      | Presets and custom identity/role                     | catalog.js inputs; app.ts contextFactory |
+| Entity        | ord-vip / ord-standard checkout                      | catalog.js orders; app.ts evaluate       |
+| Filters       | Matching/Non-matching matrix                         | fixture.js; view.js filters              |
+| Unique        | FeatureEnabled parameter, readiness, shared snapshot | app.ts parameter/health/features         |
+| Configuration | Visible missing-key banner                           | view.js; .env.example                    |
 
 Read catalog.js for keys/context, app.ts for configuration and evaluation, then view.js for escaped HTML. main.ts owns the host. fixture.js owns only offline transport; test/app.test.ts exercises HTTP against the installed SDK.
 
@@ -84,7 +84,7 @@ FeatureEnabled injects an async evaluated boolean through a request-scoped pipe.
 
 ## Reliability and lifecycle
 
-Live mode verifies signed definitions, enables streaming, and polls every three minutes. The sample caches definitions in memory only. Failed refresh retains last-known-good rules (Cached banner); failed first startup uses defaults (Unavailable). FileCacheProvider/custom durable snapshots are SDK options, not enabled here. Health returns initialized and degraded separately; it is an explanatory endpoint, not a Terminus indicator.
+Live mode verifies signed definitions, enables streaming, and polls every three minutes. The sample caches definitions in memory only. Failed refresh retains last-known-good rules (Cached banner); failed first startup uses defaults (Unavailable). FileCacheProvider/custom durable snapshots are SDK options, not enabled here. Those server caches contain trusted parsed definition models: startup does not reverify an original signed envelope from cache. Keep durable storage under application control; downloaded-signature verification does not authenticate writable local model arrays. This backend adapter evaluates raw server rules locally and does not use browser evaluated-signed definitions. Health returns initialized and degraded separately; it is an explanatory endpoint, not a Terminus indicator.
 
 The singleton provider awaits initialization and closes core with the app, flushing telemetry and releasing timers/socket. Live usage/metrics follow core defaults; fixtures disable both. Application metrics use provider.client.measure/incrementCounter/observe; request usage uses TogglyService.recordUsage/recordView. The sample sends no business metrics from GET routes. GraphQL, WebSocket gateways, jobs, response interceptors and Terminus integrations are outside this HTTP sample.
 
