@@ -17,7 +17,7 @@ import { Workshop } from "../sample/workshop";
 import { togglyOptions } from "../sample/config";
 @Component({
   selector: "app-variants",
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgxFeatureFlagsTogglyModule, JsonPipe],
   providers: [
     {
@@ -73,7 +73,10 @@ export class Variants implements OnDestroy {
     .subscribe((context) => {
       ++this.revision;
       this.variant.set(null);
-      void this.sdk.setContext(context);
+      // The root client owns the visible recovery state. This independently
+      // scoped variants client must not leave an expected transport failure
+      // unhandled while that state is being refreshed.
+      void this.sdk.setContext(context).catch(() => undefined);
     });
   constructor() {
     void this.read();
