@@ -91,7 +91,7 @@ The trusted server SDK retains its own signed-definition/cache and usage policy.
 - `BlazorSample/Program.cs`: trusted key boundary, real .NET SDK registration,
   scoped Blazor server integration, explicit public settings response.
 - `BlazorSample.Client/Program.cs`: browser registration and deliberate defaults;
-  the browser-safe SDK owns lazy WebCrypto/sessionStorage and portable refresh.
+  the browser-safe SDK owns lazy WebCrypto/localStorage and portable refresh.
 - `BlazorSample.Client/Pages/*Page.razor`: actual render modes, FeatureProvider and
   public boolean hydration allowlist. The server project references the client;
   the client never references the server SDK.
@@ -132,9 +132,9 @@ assign named variants or record a new experiment API.
   definitions exist. Never mark offline defaults as proof of live provisioning.
 - On `/framework`, Refresh re-evaluates and increments observed updates. With a
   configured live browser key, go Offline in DevTools and Refresh: observe Error
-  while the verified cache/default result remains. A fully offline reload uses defaults unless out-of-band TrustedJwks is configured;
+  while the verified cache/default result remains. A fresh browser runtime restores a valid localStorage snapshot and its previously accepted public keys without contacting the definitions service;
   the sample does not persist or implicitly trust signing keys. With keys available,
-  the signed sessionStorage envelope is reverified. Bad signatures never replace accepted definitions.
+  the signed localStorage snapshot is reverified against its context, age and configured key restrictions. Local cached key material is application state, not an independent trust anchor; use AllowedKeyIds or authoritative TrustedJwks to pin keys. WebAssembly assets need separate offline delivery; server circuits require the server. Bad signatures never replace accepted definitions.
 - Inspect the browser bundle/public settings/prerender payload: only allowlisted
   public boolean hydration is transferred; no backend/management key or claims.
 - Sign out with your host's real AuthenticationStateProvider and verify gates change.
