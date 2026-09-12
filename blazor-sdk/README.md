@@ -132,9 +132,14 @@ assign named variants or record a new experiment API.
   definitions exist. Never mark offline defaults as proof of live provisioning.
 - On `/framework`, Refresh re-evaluates and increments observed updates. With a
   configured live browser key, go Offline in DevTools and Refresh: observe Error
-  while the verified cache/default result remains. A fresh browser runtime restores a valid localStorage snapshot and its previously accepted public keys without contacting the definitions service;
-  the sample does not persist or implicitly trust signing keys. With keys available,
-  the signed localStorage snapshot is reverified against its context, age and configured key restrictions. Local cached key material is application state, not an independent trust anchor; use AllowedKeyIds or authoritative TrustedJwks to pin keys. WebAssembly assets need separate offline delivery; server circuits require the server. Bad signatures never replace accepted definitions.
+  while the verified cache/default result remains. The localStorage snapshot
+  persists the signed envelope and previously accepted public signing keys as local
+  application state. A fresh browser runtime restores and reverifies it against
+  its context, age and current configured key restrictions without contacting the
+  definitions service. Keys stored beside the signed envelope are not an
+  independent trust anchor; use AllowedKeyIds or authoritative TrustedJwks to pin
+  keys. WebAssembly assets need separate offline delivery; server circuits require
+  the server. Bad signatures never replace accepted definitions.
 - Inspect the browser bundle/public settings/prerender payload: only allowlisted
   public boolean hydration is transferred; no backend/management key or claims.
 - Sign out with your host's real AuthenticationStateProvider and verify gates change.
