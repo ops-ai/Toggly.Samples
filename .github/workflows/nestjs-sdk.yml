@@ -1,0 +1,44 @@
+name: NestJS sample
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'nestjs-sdk/**'
+      - '.github/workflows/nestjs-sdk.yml'
+      - 'README.md'
+      - 'docs/**'
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'nestjs-sdk/**'
+      - '.github/workflows/nestjs-sdk.yml'
+      - 'README.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nestjs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  nestjs-sdk:
+    name: nestjs-sdk
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nestjs-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: npm run build
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production

@@ -1,0 +1,28 @@
+{
+  "name": "nestjs-sdk-sample",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node --env-file-if-exists=.env --env-file-if-exists=.env.local dist/src/main.js",
+    "offline": "npm run build && node dist/src/main.js --offline",
+    "dev": "npm run build && npm start",
+    "test": "npm run build && node --test dist/test/*.test.js"
+  },
+  "dependencies": {
+    "@ops-ai/toggly-nestjs": "0.1.0",
+    "@nestjs/common": "11.2.3",
+    "@nestjs/core": "11.2.3",
+    "@nestjs/platform-express": "11.2.3",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "@types/node": "22.20.2"
+  }
+}
