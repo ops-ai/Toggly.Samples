@@ -10,6 +10,11 @@ defmodule ShowcaseTest do
         do: assert(html =~ ~s(id="#{id}"))
 
     assert has_element?(view, "#new-dashboard")
+    refute has_element?(view, "#classic-dashboard")
+    assert has_element?(view, "#all-enabled")
+    refute has_element?(view, "#all-disabled")
+    assert has_element?(view, "#any-enabled")
+    refute has_element?(view, "#any-disabled")
     assert render_click(view, "submit") =~ "Enhanced submission accepted"
     assert render_click(view, "refresh") =~ "missing_app_key"
     assert get(build_conn(), "/protected").status == 200
@@ -30,5 +35,12 @@ defmodule ShowcaseTest do
 
     assert has_element?(alice, "#express-result", "ExpressCheckout available")
     assert has_element?(bob, "#express-result", "Standard checkout")
+    refute has_element?(alice, "#express-result", "Standard checkout")
+    refute has_element?(bob, "#express-result", "ExpressCheckout available")
+
+    render_click(bob, "preset", %{"mode" => "matching"})
+    assert has_element?(bob, "#express-result", "ExpressCheckout available")
+    refute has_element?(bob, "#express-result", "Standard checkout")
+    assert has_element?(alice, "#current-identity", "alice")
   end
 end

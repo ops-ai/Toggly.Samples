@@ -46,7 +46,9 @@ These are runtime server variables. There are no browser-prefixed variables or b
 
 ## Your first toggle
 
-In connected mode, enable `new-dashboard` with **Always On** and save. Within the WebSocket update or the next 60-second poll, the snapshot row shows ON and the declarative card says **New dashboard enabled**. Disable it (empty condition list), save, and expect **Classic dashboard fallback** and the negated-gate text. The all-key example requires both `new-dashboard` and `api-v2`; the any-key example needs one.
+In connected mode, enable `new-dashboard` with **Always On** and save. Within the WebSocket update or the next 60-second poll, the snapshot row shows ON and the declarative card says **New dashboard enabled**. Disable it (empty condition list), save, and expect **Classic dashboard** and the negated-gate text. The all-key example requires both `new-dashboard` and `api-v2`; the any-key example needs one.
+
+Each enabled/disabled pair uses two feature blocks with the same flags, keys, requirement and default. The disabled block sets `negate={true}`; negation reverses the combined all/any result. Both blocks use ordinary child content.
 
 A **key** is the exact name used in code. A **definition** contains that key's conditions for an **environment**. **Evaluation** combines those conditions with the current context into a boolean. These branches are not multivariate experiment assignments; this package family does not expose a variant-assignment API.
 
@@ -57,7 +59,7 @@ With the key still empty, changing the dashboard cannot affect the sample. To pr
 | Contract section | Where | What to try |
 | --- | --- | --- |
 | Home | `#home` | Navigation, all sixteen keys, evaluated snapshot |
-| Declarative gates | `#declarative` | Feature/fallback, negate, all and any; variant limitation explained |
+| Declarative gates | `#declarative` | Paired Feature/negate blocks, all and any; variant limitation explained |
 | Programmatic API | `#api` | Server-side enhanced-submit handler; records usage when work runs |
 | Identity | `#identity` | Open two tabs, select Alice and Bob independently |
 | Entity context | `#entity` | VIP order versus standard order for ExpressCheckout |

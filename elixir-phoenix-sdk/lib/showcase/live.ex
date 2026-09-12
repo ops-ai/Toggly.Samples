@@ -89,22 +89,35 @@ defmodule Showcase.Live do
       </section>
       <section id="declarative">
         <p class="eyebrow">02 / DECLARATIVE GATES</p><h2>Choose what the view renders.</h2>
-        <%!-- The component consumes socket-local booleans, keeping identities out of a shared client. --%>
+        <%!-- Both blocks use the same socket-local flags and gate options. Negate reverses the combined result to render disabled content. --%>
         <.feature flags={@toggly_flags} feature="new-dashboard">
-          <div class="panel" id="new-dashboard">New dashboard enabled</div><:fallback>
-            <div class="panel">Classic dashboard fallback</div>
-          </:fallback>
+          <div class="panel" id="new-dashboard">New dashboard enabled</div>
         </.feature>
-        <.feature flags={@toggly_flags} feature="new-dashboard" negate>
+        <.feature flags={@toggly_flags} feature="new-dashboard" negate={true}>
+          <div class="panel" id="classic-dashboard">Classic dashboard</div>
           <p>Negated gate: the classic dashboard is active.</p>
         </.feature>
         <.feature flags={@toggly_flags} feature={["new-dashboard", "api-v2"]} requirement={:all}>
-          <p>All gate: dashboard and API v2 enabled.</p><:fallback>
-            <p>All gate: at least one flag is off.</p>
-          </:fallback>
+          <p id="all-enabled">All gate: dashboard and API v2 enabled.</p>
+        </.feature>
+        <.feature
+          flags={@toggly_flags}
+          feature={["new-dashboard", "api-v2"]}
+          requirement={:all}
+          negate={true}
+        >
+          <p id="all-disabled">All gate: at least one flag is off.</p>
         </.feature>
         <.feature flags={@toggly_flags} feature={["new-dashboard", "api-v2"]} requirement={:any}>
-          <p>Any gate: at least one feature is enabled.</p>
+          <p id="any-enabled">Any gate: at least one feature is enabled.</p>
+        </.feature>
+        <.feature
+          flags={@toggly_flags}
+          feature={["new-dashboard", "api-v2"]}
+          requirement={:any}
+          negate={true}
+        >
+          <p id="any-disabled">Any gate: both features are off.</p>
         </.feature>
         <p class="muted">
           Variant surface: boolean enabled/disabled branches only. This SDK does not assign multivariate experiments.
@@ -131,9 +144,10 @@ defmodule Showcase.Live do
         <p class="eyebrow">05 / ENTITY CONTEXT</p><h2>Express checkout belongs to an Order.</h2><p>
           Context kind <code>Order</code>, key <code>{@toggly_context["entity"]["key"]}</code>, attribute <code>Vip={to_string(@toggly_context["entity"]["attributes"]["Vip"])}</code>.
         </p><.feature flags={@toggly_flags} feature="ExpressCheckout">
-          <div class="panel" id="express-result">ExpressCheckout available for this VIP order.</div><:fallback>
-            <div class="panel" id="express-result">Standard checkout for this order.</div>
-          </:fallback>
+          <div class="panel" id="express-result">ExpressCheckout available for this VIP order.</div>
+        </.feature>
+        <.feature flags={@toggly_flags} feature="ExpressCheckout" negate={true}>
+          <div class="panel" id="express-result">Standard checkout for this order.</div>
         </.feature><p>The entity condition is mandatory even if a user condition also passes.</p>
       </section>
       <section id="filters">
