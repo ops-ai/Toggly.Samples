@@ -1,0 +1,43 @@
+name: SolidStart SDK sample
+on:
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'solidstart-sdk/**'
+      - '.github/workflows/solidstart-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'README.md'
+  push:
+    branches: [develop, main]
+    paths:
+      - 'solidstart-sdk/**'
+      - '.github/workflows/solidstart-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'README.md'
+permissions:
+  contents: read
+concurrency:
+  group: solidstart-sdk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  solidstart-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: solidstart-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: solidstart-sdk/package.json
+      - run: npm install -g npm@11
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
