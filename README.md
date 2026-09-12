@@ -42,6 +42,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Node Express SDK Sample | Express 5 | [`nodejs-express-sdk/`](nodejs-express-sdk/) | Request middleware, HTTP gates, identities, Order context and filter matrix |
 | Node Hono SDK Showcase | Hono 4 / Node 22 | [`nodejs-hono-sdk/`](nodejs-hono-sdk/) | Request context, middleware gates, eleven filters and Order entities with `@ops-ai/toggly-hono` |
 | Docusaurus SDK Workshop | Docusaurus 3 + React | [`docusaurus-sdk/`](docusaurus-sdk/) | Native MDX/React flags, core Order mapping, live snapshots and build/browser boundaries |
+| Blazor SDK Workshop | .NET 8 SSR / Server / WebAssembly / Auto | [`blazor-sdk/`](blazor-sdk/) | Native gates, scoped identity, Order, filters, hydration and lifecycle |
 | .NET SDK Workshop | ASP.NET Core 10 MVC / Razor | [`dotnet-sdk/`](dotnet-sdk/) | Native gates, variants, request targeting, Order, filters, Hangfire, HealthChecks and NSwag |
 | Java Servlet SDK Sample | Java 26 / Tomcat 11 / Servlet 6.1 | [`java-servlet-sdk/`](java-servlet-sdk/) | Native context and gate filters, signed definitions, session identity, Order context and eleven-filter matrix |
 | Java Spring MVC SDK Sample | Spring MVC 7 + Tomcat 11 + FreeMarker | [`java-spring-mvc-sdk/`](java-spring-mvc-sdk/) | Native context/gate interceptors, Boolean argument injection, model-driven templates, Order and eleven-filter matrix |

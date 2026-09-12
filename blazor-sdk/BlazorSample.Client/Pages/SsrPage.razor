@@ -1,0 +1,8 @@
+@page "/ssr"
+@page "/ssr/{Section}"
+<FeatureProvider>
+    <FeatureHydration PublicKeys="@(new[] { "new-dashboard", "api-v2", "beta-access" })" RenderMode="@(new InteractiveAutoRenderMode())">
+        <Workshop Mode="ssr" Section="@Section" />
+    </FeatureHydration>
+</FeatureProvider>
+@code { [Parameter] public string Section { get; set; } = "home"; }
