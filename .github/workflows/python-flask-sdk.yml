@@ -33,7 +33,7 @@ jobs:
       SAMPLE_HTTPS: '0'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version-file: python-flask-sdk/.python-version
           cache: pip
