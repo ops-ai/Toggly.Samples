@@ -1,18 +1,36 @@
 <script lang="ts">
- import {onMount,onDestroy,setContext} from 'svelte';
- import {createToggly} from '@ops-ai/toggly-sveltekit';
- import {sections} from '$lib/catalog';
- import type {LayoutData} from './$types';
- export let data:LayoutData;
- // Synchronous SSR seed avoids a disabled branch flashing before hydration; each layout owns its store.
- let deviceReady=true;
- const toggly=createToggly(data.toggly,{appKey:data.publicKey,environment:data.environment,localGates:[{id:'device',flagKeys:['new-dashboard'],isEnabled:()=>deviceReady}]});
- // A device prerequisite can only disable a remotely enabled flag; it is owned by this layout.
- setContext('localGate',{isEnabled:()=>deviceReady,toggle:()=>{deviceReady=!deviceReady;toggly.notifyLocalGatesChanged();}});
- setContext('toggly',toggly);
- $: toggly.update(data.toggly);
- onMount(()=>{void toggly.start();});
- onDestroy(()=>toggly.dispose());
+  import { onMount, onDestroy, setContext } from "svelte";
+  import { createToggly } from "@ops-ai/toggly-sveltekit";
+  import { sections } from "$lib/catalog";
+  import type { LayoutData } from "./$types";
+  export let data: LayoutData;
+  // Synchronous SSR seed avoids a disabled branch flashing before hydration; each layout owns its store.
+  let deviceReady = true;
+  const toggly = createToggly(data.toggly, {
+    appKey: data.publicKey,
+    environment: data.environment,
+    localGates: [
+      {
+        id: "device",
+        flagKeys: ["new-dashboard"],
+        isEnabled: () => deviceReady,
+      },
+    ],
+  });
+  // A device prerequisite can only disable a remotely enabled flag; it is owned by this layout.
+  setContext("localGate", {
+    isEnabled: () => deviceReady,
+    toggle: () => {
+      deviceReady = !deviceReady;
+      toggly.notifyLocalGatesChanged();
+    },
+  });
+  setContext("toggly", toggly);
+  $: toggly.update(data.toggly);
+  onMount(() => {
+    void toggly.start();
+  });
+  onDestroy(() => toggly.dispose());
 </script>
 <svelte:head><title>Toggly · SvelteKit feature flags</title><meta name="description" content="Explore request-scoped feature flags, server actions, hydration and entity contexts with Toggly."/></svelte:head>
 <div class="shell"><aside><a class="brand" href="/">toggly<span> / SvelteKit</span></a><p class="eyebrow">FEATURE FLAGS IN PRACTICE</p><nav>{#each sections as section}<a href="/{section==='home'?'':section}?preset={data.matching?'matching':'non-matching'}">{section[0].toUpperCase()+section.slice(1)}</a>{/each}</nav><p class="footnote">Node adapter · Svelte 5<br/>Request → snapshot → browser</p></aside><main>{#if data.offline}<div class="banner" role="status">Offline demonstration · Set TOGGLY_APP_KEY and PUBLIC_TOGGLY_APP_KEY to connect your application. Fixtures are not live dashboard state.</div>{/if}<slot/></main></div>
