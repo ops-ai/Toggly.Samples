@@ -4,17 +4,27 @@ test('renders SSR gates, hydrates, navigates context and executes guarded server
   request,
 }) => {
   const response = await request.get('/declarative');
-  expect(await response.text()).toContain('dashboard-on');
+  const html = await response.text();
+  expect(html).toContain('data-testid="dashboard-on"');
+  expect(html).not.toContain('data-testid="dashboard-off"');
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/declarative');
   await expect(page.getByTestId('dashboard-on')).toBeVisible();
+  await expect(page.getByTestId('dashboard-off')).toHaveCount(0);
   await expect(page.getByRole('status')).toContainText('Offline demonstration');
   await page.getByRole('link', { name: 'Programmatic', exact: true }).click();
   await page.getByRole('button', { name: 'Toggle device prerequisite' }).click();
   await expect(page.getByText('Device ready: false')).toBeVisible();
+  await page.getByRole('link', { name: 'Declarative', exact: true }).click();
+  await expect(page.getByTestId('dashboard-off')).toBeVisible();
+  await expect(page.getByTestId('dashboard-on')).toHaveCount(0);
+  await page.getByRole('link', { name: 'Programmatic', exact: true }).click();
   await page.getByRole('button', { name: 'Toggle device prerequisite' }).click();
   await expect(page.getByText('Device ready: true')).toBeVisible();
+  await page.getByRole('link', { name: 'Declarative', exact: true }).click();
+  await expect(page.getByTestId('dashboard-on')).toBeVisible();
+  await expect(page.getByTestId('dashboard-off')).toHaveCount(0);
   await page.getByRole('link', { name: 'Identity', exact: true }).click();
   await page.getByRole('button', { name: 'Non-matching · bob' }).click();
   await expect(page.locator('pre')).toContainText('bob');

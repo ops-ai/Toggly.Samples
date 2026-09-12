@@ -35,8 +35,8 @@
     <h2>Start with your first toggle</h2>
     <p>
       Configure <code>new-dashboard</code> as Available to Client SDK. Switch it ON in Production and
-      watch the enabled card appear in Declarative. Switch it OFF and the fallback replaces it. With
-      empty keys, this sample uses the labelled offline fixture instead.
+      watch the enabled card appear in Declarative. Switch it OFF and the negated Feature block appears.
+      With empty keys, this sample uses the labelled offline fixture instead.
     </p>
   </div>
   <div class="card">
@@ -58,15 +58,17 @@
   <p>
     Feature gates select visible content. These boolean branches are not experiment assignments.
   </p>
-  <!-- The fallback belongs to the same gate, so SSR and hydration choose one
-      branch from the same snapshot rather than waiting for a browser fetch. -->
+  <!-- Matching Feature blocks use the same snapshot; negate selects disabled
+      content immediately during SSR and hydration, without waiting for a fetch. -->
   <Feature {toggly} feature="new-dashboard"
     ><div class="card" data-testid="dashboard-on">
       <h2>New dashboard enabled</h2>
       <p>The server and first browser render use the same snapshot.</p>
     </div>
-    <div slot="fallback" class="card" data-testid="dashboard-off">
-      Classic dashboard — the fallback branch.
+  </Feature>
+  <Feature {toggly} feature="new-dashboard" options={{ negate: true }}>
+    <div class="card" data-testid="dashboard-off">
+      Classic dashboard — the negated Feature block.
     </div></Feature
   >
   <!-- Negate reverses this boolean gate; it does not create an experiment variant. -->

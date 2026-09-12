@@ -26,7 +26,7 @@ The backend local evaluator's parameter shape is explicit in `src/lib/catalog.ts
 
 1. Configure both keys and restart the development server. Visit **Declarative**.
 2. Enable `new-dashboard` in Production and make it Available to Client SDK. After the signed refresh, expect **New dashboard enabled**.
-3. Disable it. Expect **Classic dashboard — the fallback branch**; the programmatic result also becomes false.
+3. Disable it. Expect **Classic dashboard — the negated Feature block**; the programmatic result also becomes false.
 4. Compare Home's frontend snapshot. The allowlist includes only the intended browser keys. Refresh the page to observe SSR and hydration selecting the same branch.
 5. Empty keys keep the offline default for new-dashboard=true; dashboard changes cannot affect offline fixtures.
 
@@ -34,16 +34,16 @@ Definitions describe flag rules, and evaluation applies the current identity/req
 
 ## Sections
 
-| Section            | What to inspect                                                                  |
-| ------------------ | -------------------------------------------------------------------------------- |
-| Home               | First toggle, source map and current allowlisted frontend snapshot               |
-| Declarative        | Feature/fallback, negate and multi-key any; explicit variant support boundary    |
-| Programmatic       | Synchronous single/all/any/default checks on a layout-owned store                |
-| Identity           | Matching alice/admin and Non-matching bob/user; request isolation and navigation |
-| Entity             | ord-vip and ord-standard, server results and browser EntityGate results          |
-| Filters            | Eleven server-evaluated filters with both shared presets                         |
-| Framework          | Hook/load/hydration lifecycle and guarded enhanced-submit action                 |
-| Missing-key banner | Visible on every section when either required key is absent                      |
+| Section            | What to inspect                                                                   |
+| ------------------ | --------------------------------------------------------------------------------- |
+| Home               | First toggle, source map and current allowlisted frontend snapshot                |
+| Declarative        | Paired Feature/negate blocks and multi-key any; explicit variant support boundary |
+| Programmatic       | Synchronous single/all/any/default checks on a layout-owned store                 |
+| Identity           | Matching alice/admin and Non-matching bob/user; request isolation and navigation  |
+| Entity             | ord-vip and ord-standard, server results and browser EntityGate results           |
+| Filters            | Eleven server-evaluated filters with both shared presets                          |
+| Framework          | Hook/load/hydration lifecycle and guarded enhanced-submit action                  |
+| Missing-key banner | Visible on every section when either required key is absent                       |
 
 These are boolean branches. This SDK does not assign experiment variants; do not invent A/B assignments from on/off state. Browser local prerequisites are available through the SDK's `localGates` option and AND with remote values.
 
