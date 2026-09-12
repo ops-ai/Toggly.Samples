@@ -90,3 +90,7 @@ management API procedure when a filter type is missing from the picker.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## SolidJS
+
+[SolidJS SDK](solidjs-sdk/) — native browser flags, signals, signed definitions, targeting and gates.
