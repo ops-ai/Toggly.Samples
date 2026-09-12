@@ -1,6 +1,6 @@
 # NestJS SDK Sample
 
-Eight pages show the same feature decisions through NestJS HTTP guards, request-scoped services, JSON and HTML. Requirements: Node **22+**; npm. Packages: `@ops-ai/toggly-nestjs` **0.1.0**, NestJS **11.2.3**, reflect-metadata **0.2.2**, RxJS **7.8.2**. The adapter consumes published Node core **^0.9.0**. Direct dependencies are pinned registry references. No SDK source imports, copies or file dependencies are used; npm generates a local lockfile on installation.
+Eight pages show the same feature decisions through NestJS HTTP guards, request-scoped services, JSON and HTML. Requirements: Node **22+**; npm. Packages: `@ops-ai/toggly-nestjs` **0.1.0**, NestJS **11.2.3**, reflect-metadata **0.2.2**, RxJS **7.8.2**. The adapter requires Node core **^0.9.1**. Direct dependencies are pinned registry references. No SDK source imports, copies or file dependencies are used; npm generates a local lockfile on installation.
 
 ## Quick start
 
