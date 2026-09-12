@@ -74,3 +74,5 @@ Start with `src/lib/flags.server.ts`: backend ownership, per-request context, ex
 - Inspect production browser bundles for backend keys or Node imports.
 
 Offline tests and local fixture builds do not prove live dashboard provisioning, public registry installation or hosted connectivity. See the [SolidStart guide](https://docs.toggly.io/sdks/javascript/solidstart) and [SolidJS API](https://docs.toggly.io/sdks/javascript/solid).
+
+Signed SSR and later hydrated snapshots remain authoritative during offline refresh. Matching cached definitions restore only when the current context has defaults; navigating to a different context clears the previous user's state first.
