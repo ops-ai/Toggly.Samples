@@ -1,6 +1,10 @@
 # SolidJS SDK sample
 
-An interactive browser workshop for `@ops-ai/solid-feature-flags-toggly` **0.1.0** and SolidJS 1.9. It demonstrates the native provider, accessors, gates, resource, targeting and cleanup. This sample uses client rendering; it does not demonstrate SolidStart SSR.
+An interactive browser workshop for `@ops-ai/solid-feature-flags-toggly` **0.2.0** and SolidJS 1.9. It demonstrates the native provider, accessors, gates, resource, targeting and cleanup. This sample uses client rendering; it does not demonstrate SolidStart SSR.
+
+## Installation verification checkpoint
+
+The manifest targets 0.2.0, while the retained lockfile still references 0.1.0. Public installation is blocked until the selected SDK and shared dependency versions are published and the lockfile is regenerated from the public registry. Keep `npm ci` and its CI controls intact; after regeneration, rerun `npm ci`, the tests and the production build. Local artifact verification does not establish public installation or CI success.
 
 ## Quick start
 
