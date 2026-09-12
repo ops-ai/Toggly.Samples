@@ -130,3 +130,11 @@ mix hex.audit
 - Stop the host: the OTP tree, WebSocket and subscriptions shut down.
 
 Offline tests and candidate artifact installation do not prove dashboard provisioning, key permissions or live connectivity. CI runs without a real key. SDK packages are consumed through Hex version references; package publication order is core, Phoenix, then LiveView.
+
+## Offline restart with live definitions
+
+Set `TOGGLY_SNAPSHOT_PATH` to a writable file in a durable application-owned directory when using `TOGGLY_APP_KEY`. After a successful signed refresh, the SDK stores the original signed envelope and accepted public signing keys. A fresh supervised client restores and verifies that file before network refresh. Use a separate file per application/environment; endpoint and scope changes reject the stored entry. `TOGGLY_MAX_SIGNATURE_AGE_SECONDS` and key expiry still limit offline restoration.
+
+The file is trusted local application state. Protect its directory with OS permissions. Independently configure `jwks` or `allowed_kids` in your application's client options to constrain key substitution; replacing the entire unpinned file with another valid key/envelope cannot be detected using that same file. This is not an external rollback ledger.
+
+Without `TOGGLY_APP_KEY`, the sample uses its explicit unsigned demonstration fixture. That mode demonstrates local evaluation and does not prove a live signed cache.

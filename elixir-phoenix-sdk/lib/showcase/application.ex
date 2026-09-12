@@ -16,6 +16,9 @@ defmodule Showcase.Application do
         "beta-access" => false
       },
       signed: not offline,
+      # A host-owned durable directory keeps verified definitions and public
+      # signing keys across restarts. Each application/environment needs a file.
+      snapshot_path: Application.get_env(:toggly_showcase, :snapshot_path),
       # Applies to every signed activation. A stale first response leaves safe
       # defaults active; already verified active definitions survive rejection.
       max_signature_age_seconds:

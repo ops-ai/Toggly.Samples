@@ -27,6 +27,22 @@ defmodule Showcase.ConfigTest do
              configured
   end
 
+  test "snapshot path environment enables host-owned persistence" do
+    original = System.get_env("TOGGLY_SNAPSHOT_PATH")
+    System.put_env("TOGGLY_SNAPSHOT_PATH", "/tmp/toggly-offline.json")
+
+    try do
+      config = Config.Reader.read!("config/runtime.exs", env: :test)
+      assert config[:toggly_showcase][:snapshot_path] == "/tmp/toggly-offline.json"
+    after
+      if original do
+        System.put_env("TOGGLY_SNAPSHOT_PATH", original)
+      else
+        System.delete_env("TOGGLY_SNAPSHOT_PATH")
+      end
+    end
+  end
+
   defp with_age(value, callback) do
     original = System.get_env("TOGGLY_MAX_SIGNATURE_AGE_SECONDS")
     put_age(value)

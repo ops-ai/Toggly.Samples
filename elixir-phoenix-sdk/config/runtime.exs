@@ -33,4 +33,5 @@ config :toggly_showcase,
   app_key: key,
   environment: System.get_env("TOGGLY_ENVIRONMENT", "Production"),
   offline: key in [nil, ""],
+  snapshot_path: System.get_env("TOGGLY_SNAPSHOT_PATH"),
   max_signature_age_seconds: max_signature_age

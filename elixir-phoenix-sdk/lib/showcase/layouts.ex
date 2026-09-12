@@ -11,7 +11,8 @@ defmodule Showcase.Layouts do
         <meta name="csrf-token" content={Plug.CSRFProtection.get_csrf_token()} />
         <title>Toggly · Phoenix field guide</title>
         <link rel="stylesheet" href="/assets/app.css" />
-        <script type="module" src="/assets/app.js"></script>
+        <script type="module" src="/assets/app.js">
+        </script>
       </head>
       <body>{@inner_content}</body>
     </html>
