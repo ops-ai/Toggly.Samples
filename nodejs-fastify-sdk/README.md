@@ -2,7 +2,10 @@
 
 Standalone server-rendered HTML and HTTP API using published **Fastify 5.12.4**, **@ops-ai/toggly-fastify 0.3.0**, and **@ops-ai/toggly-node-core 0.7.0** (npm versions verified 2026-09-12). Node 22+.
 
-This is a Fastify 5 host: Fastify 5 requires Node 20+, while the adapter also supports retained Fastify 4 hosts on Node 18+. The committed lockfile uses only published packages; no local tarball or path is part of this sample.
+This is a Fastify 5 host: Fastify 5 requires Node 20.19.6+, while the adapter
+also supports retained Fastify 4 hosts on Node 18.20.8+. The committed
+lockfile uses only published packages; no local tarball or path is part of
+this sample.
 
 A **feature flag** is a named decision in your application: `new-dashboard` ON renders the new dashboard and OFF renders the classic one. Its key must match the definition exactly. The **app key** selects your Toggly application; the **environment** selects that app's rules (for example, Production). An **evaluation context** supplies who/what this request represents, so one rule can return different results for different people or orders.
 
