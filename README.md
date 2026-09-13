@@ -35,6 +35,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | SolidJS SDK Workshop | SolidJS 1.9 + Vite | [`solidjs-sdk/`](solidjs-sdk/) | Native browser signals, signed definitions, provider-scoped targeting, Order context and local gates |
 | SolidStart SDK Workshop | SolidStart 2 + Node 24 | [`solidstart-sdk/`](solidstart-sdk/) | Request-scoped backend guards, signed public SSR hydration, navigation, entity and local gates |
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
+| Remix SDK Sample | Remix 2.17 | [`remix-sdk/`](remix-sdk/) | Loaders/actions, request-scoped identity, browser gates, Order context and filter matrix with `@ops-ai/remix-toggly-*` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
 | Rust Rocket SDK Workshop | Rust 1.98.1 + Rocket 0.5.1 | [`rust-rocket-sdk/`](rust-rocket-sdk/) | Native Feature guard, request context, signed fixtures, gates, Order and eleven-filter matrix |
 | Angular SDK Workshop | Angular 22 standalone | [`angular-sdk/`](angular-sdk/) | Native templates, directives, variants, route guard, local gates and Order context |
@@ -71,7 +72,6 @@ separate status; previews and blocked checkpoints are not merged runnable entrie
 |--------|--------|---------|
 | React | [Blocked: OPS-1083](https://linear.app/opsai/issue/OPS-1083) | SDK 1.11.0 bundles a private React 18.3.1; provider/hooks fail with the required latest-stable host React 19.2.8. |
 | Koa | [Blocked: OPS-1087](https://linear.app/opsai/issue/OPS-1087) | Adapter 0.3.0 declares Koa ^2, excluding required latest-stable Koa 3.2.1; dependency resolution fails. |
-| Remix | [Blocked: OPS-1088](https://linear.app/opsai/issue/OPS-1088) | Client 1.3.0 requires React/ReactDOM ^18 and @remix-run/react ^2, incompatible with the sample's current React Router 8.3.1 / React 19.2.8 target. |
 | Nuxt | [Blocked: OPS-1089](https://linear.app/opsai/issue/OPS-1089) | Module 1.1.1 declares Nuxt ^3, excluding required latest-stable Nuxt 4.5.2; dependency resolution fails. |
 
 Compatibility status was checked on September 8, 2026. These blockers concern
