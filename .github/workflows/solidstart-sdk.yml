@@ -33,9 +33,9 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: solidstart-sdk/package.json
+          cache-dependency-path: solidstart-sdk/package-lock.json
       - run: npm install -g npm@11
-      - run: npm install
+      - run: npm ci
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
