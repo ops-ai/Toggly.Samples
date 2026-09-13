@@ -1,0 +1,31 @@
+name: Remix SDK sample
+on:
+  push:
+    branches: [develop, main]
+    paths: ['remix-sdk/**', '.github/workflows/remix-sdk.yml', 'README.md', 'docs/**']
+  pull_request:
+    branches: [develop, main]
+    paths: ['remix-sdk/**', '.github/workflows/remix-sdk.yml', 'README.md', 'docs/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  remix-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: remix-sdk
+    env:
+      TOGGLY_APP_KEY: ci-placeholder
+      REMIX_PUBLIC_TOGGLY_APP_KEY: ci-placeholder
+      TOGGLY_ENVIRONMENT: Production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: remix-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
