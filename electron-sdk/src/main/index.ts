@@ -15,7 +15,7 @@ loadEnvironment({ path: ['.env.local', '.env'], quiet: true })
 
 const appKey = process.env.TOGGLY_APP_KEY?.trim() ?? ''
 const environment = process.env.TOGGLY_ENVIRONMENT?.trim() || 'Production'
-const configured = Boolean(appKey)
+const configured = Boolean(appKey && appKey !== 'ci-placeholder')
 let disposeIpc: (() => void) | undefined
 
 async function setupToggly(): Promise<void> {

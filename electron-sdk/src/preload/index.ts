@@ -9,6 +9,6 @@ exposeToggly()
 // A boolean status helps the teaching UI explain missing setup without leaking
 // credentials. Do not add the key itself or a general IPC send/invoke method.
 contextBridge.exposeInMainWorld('sampleConfiguration', {
-  hasAppKey: Boolean(process.env.TOGGLY_APP_KEY?.trim()),
+  hasAppKey: Boolean(process.env.TOGGLY_APP_KEY?.trim() && process.env.TOGGLY_APP_KEY !== 'ci-placeholder'),
   environment: process.env.TOGGLY_ENVIRONMENT?.trim() || 'Production',
 })
