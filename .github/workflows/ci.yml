@@ -143,7 +143,9 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
-      - run: npm install
+          cache: npm
+          cache-dependency-path: sveltekit-sdk/package-lock.json
+      - run: npm ci
       - run: npm run check
       - run: npm test
       - run: npm run build

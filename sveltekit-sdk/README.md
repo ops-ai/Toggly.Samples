@@ -1,18 +1,18 @@
 # SvelteKit SDK Sample
 
-A complete feature flag walkthrough using `@ops-ai/toggly-sveltekit` 0.1.x, Svelte5, SvelteKit2 and adapter-node on Node22.12+. The server uses Node core for request evaluation; the browser hydrates an explicitly exposed frontend snapshot and receives signed updates.
+A complete feature flag walkthrough using `@ops-ai/toggly-sveltekit` 0.1.x, Svelte5, SvelteKit2 and adapter-node on Node22.12+. The server uses Node core for request evaluation; the browser hydrates an explicitly exposed frontend snapshot and receives signed updates. The committed lockfile installs published registry packages, including adapter **0.1.0** and Node core **0.9.1**.
 
 ## Quick start
 
 ```sh
-npm install
+npm ci
 cp .env.example .env
 npm run dev
 ```
 
 Open http://127.0.0.1:5173. With empty keys the missing-key banner stays visible and the server exercises explicitly labelled offline definitions. This is a local teaching mode, not evidence of live provisioning or connectivity. Configure both keys to use your Toggly application.
 
-`TOGGLY_APP_KEY` is a backend App Key read only by `hooks.server.ts`. `PUBLIC_TOGGLY_APP_KEY` is a Front-end App Key intentionally delivered to the browser through SvelteKit's public environment system. Both environment variables default to Production. This adapter-node sample uses dynamic environment imports at runtime. No keys are required for the offline tests/build. Never put a backend key in a `PUBLIC_` variable.
+`TOGGLY_APP_KEY` is a backend App Key read only by `hooks.server.ts`. `PUBLIC_TOGGLY_APP_KEY` is a Front-end App Key intentionally delivered to the browser through SvelteKit's public environment system. `TOGGLY_ENVIRONMENT` and `PUBLIC_TOGGLY_ENVIRONMENT` default to Production. This adapter-node sample uses dynamic environment imports at runtime. No keys are required for the offline tests/build. Never put a backend key in a `PUBLIC_` variable.
 
 ## Configure Toggly
 
