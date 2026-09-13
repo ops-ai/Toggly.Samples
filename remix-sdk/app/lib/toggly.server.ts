@@ -16,7 +16,7 @@ export const IDENTITY_COOKIE = 'toggly-identity'
  */
 export function requestContext(request: Request): IdentityContext {
   const cookie = request.headers.get('cookie') || ''
-  const encodedIdentity = cookie.match(/(?:^|;\\s*)toggly-identity=([^;]+)/)?.[1]
+  const encodedIdentity = cookie.match(/(?:^|;\s*)toggly-identity=([^;]+)/)?.[1]
   const country = request.headers.get('cf-ipcountry') || undefined
   return {
     // A malformed browser cookie must not turn an otherwise valid request into

@@ -6,12 +6,13 @@ import { fileURLToPath } from 'node:url'
 
 const port = '4317'
 const serveCli = fileURLToPath(new URL('../node_modules/@remix-run/serve/dist/cli.js', import.meta.url))
+const serverOnlyKey = 'ci-server-only-placeholder'
 const server = spawn(process.execPath, [serveCli, './build/server/index.js'], {
   env: {
     ...process.env,
     PORT: port,
-    TOGGLY_APP_KEY: 'ci-placeholder',
-    REMIX_PUBLIC_TOGGLY_APP_KEY: 'ci-placeholder',
+    TOGGLY_APP_KEY: serverOnlyKey,
+    REMIX_PUBLIC_TOGGLY_APP_KEY: 'ci-public-placeholder',
     TOGGLY_ENVIRONMENT: 'Production',
   },
   stdio: ['ignore', 'pipe', 'pipe'],
@@ -36,7 +37,20 @@ try {
 
   assert.ok(response, `Configured server did not respond.\n${output}`)
   assert.equal(response.status, 200, `Configured key must not yield a 500.\n${output}`)
-  assert.match(await response.text(), /Remix SDK Sample/)
+  const home = await response.text()
+  assert.match(home, /Remix SDK Sample/)
+  assert.doesNotMatch(home, new RegExp(serverOnlyKey))
+
+  const validIdentity = await fetch(`http://127.0.0.1:${port}/identity`, {
+    headers: { cookie: 'session=a; toggly-identity=alice' },
+  })
+  assert.equal(validIdentity.status, 200, `Valid multi-cookie identity must not return 500.\n${output}`)
+  assert.match(await validIdentity.text(), /"identity":\s*"alice"/)
+
+  const malformedIdentity = await fetch(`http://127.0.0.1:${port}/identity`, {
+    headers: { cookie: 'session=a; toggly-identity=%' },
+  })
+  assert.equal(malformedIdentity.status, 200, `Malformed identity cookie must not return 500.\n${output}`)
 } finally {
   if (!server.killed) server.kill('SIGTERM')
   await serverExit
