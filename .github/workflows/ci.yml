@@ -20,6 +20,7 @@ jobs:
     outputs:
       nextjs-server-sdk: ${{ steps.filter.outputs.nextjs-server-sdk }}
       javascript-sdk: ${{ steps.filter.outputs.javascript-sdk }}
+      electron-sdk: ${{ steps.filter.outputs.electron-sdk }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -33,6 +34,11 @@ jobs:
               - 'docs/**'
             javascript-sdk:
               - 'javascript-sdk/**'
+              - '.github/workflows/ci.yml'
+              - 'README.md'
+              - 'docs/**'
+            electron-sdk:
+              - 'electron-sdk/**'
               - '.github/workflows/ci.yml'
               - 'README.md'
               - 'docs/**'
@@ -81,6 +87,28 @@ jobs:
         env:
           VITE_TOGGLY_APP_KEY: ci-placeholder
           VITE_TOGGLY_ENVIRONMENT: Production
+
+  electron-sdk:
+    name: electron-sdk
+    needs: changes
+    if: needs.changes.outputs.electron-sdk == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: electron-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: electron-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
 
   # Template for Node samples (copy when the sample folder lands):
   # <sample-id>:

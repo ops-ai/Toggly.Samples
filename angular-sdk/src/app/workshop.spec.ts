@@ -1,6 +1,5 @@
-import "zone.js";
 import { TestBed } from "@angular/core/testing";
-import { provideZoneChangeDetection, ChangeDetectorRef } from "@angular/core";
+import { provideZonelessChangeDetection, ChangeDetectorRef } from "@angular/core";
 import { provideRouter } from "@angular/router";
 import {
   provideToggly,
@@ -25,7 +24,7 @@ beforeEach(() => {
   TestBed.configureTestingModule({
     imports: [Home],
     providers: [
-      provideZoneChangeDetection(),
+      provideZonelessChangeDetection(),
       provideRouter(routes),
       provideToggly(togglyOptions()),
     ],
@@ -36,9 +35,8 @@ afterEach(() => {
   restore();
   vi.restoreAllMocks();
 });
-// Unit JIT links this older SDK component as OnPush. Explicitly mark that
-// child view in the harness; production browser tests prove actual AOT updates
-// without test code marking SDK views or changing its metadata.
+// The JIT harness explicitly marks linked SDK views while production browser
+// tests prove actual AOT updates without test code changing SDK metadata.
 function detect(fixture: ReturnType<typeof TestBed.createComponent<Home>>) {
   fixture.debugElement
     .queryAll(By.directive(FeatureComponent))
@@ -150,10 +148,12 @@ it("native external refresh updates component and copied snapshot, then cleanup 
   const fixture = await mount(),
     sdk = TestBed.inject(TogglyService),
     w = TestBed.inject(Workshop);
-  vi.spyOn(globalThis, "fetch").mockResolvedValue(
-    new Response(
-      JSON.stringify({ "new-dashboard": false, "filter-always-on": false }),
-      { status: 200 },
+  vi.spyOn(globalThis, "fetch").mockImplementation(() =>
+    Promise.resolve(
+      new Response(
+        JSON.stringify({ "new-dashboard": false, "filter-always-on": false }),
+        { status: 200 },
+      ),
     ),
   );
   // Public service refresh emits the same notification consumed after WebSocket
