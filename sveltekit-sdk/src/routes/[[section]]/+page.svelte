@@ -16,7 +16,8 @@
   }>('localGate');
   $: localReady = $toggly && localGate.isEnabled();
   $: section = $page.params.section ?? 'home';
-  // Read the instance store so programmatic values update after navigation and signed refresh.
+  // Store methods have stable identities. Read $toggly alongside every rendered
+  // evaluation so local prerequisites, navigation and signed refresh update the UI.
   $: dashboard = $toggly && toggly.isEnabled('new-dashboard');
 </script>
 
@@ -100,10 +101,9 @@
       {dashboard ? 'Enabled' : 'Disabled'}
     </p>
     <p>
-      All: {toggly.gate(['new-dashboard', 'api-v2'])}; any: {toggly.gate(
-        ['new-dashboard', 'api-v2'],
-        { requirement: 'any' },
-      )}; missing default: {toggly.isEnabled('missing', { defaultValue: true })}
+      All: {$toggly && toggly.gate(['new-dashboard', 'api-v2'])}; any: {$toggly &&
+        toggly.gate(['new-dashboard', 'api-v2'], { requirement: 'any' })}; missing default: {$toggly &&
+        toggly.isEnabled('missing', { defaultValue: true })}
     </p>
   </div>
 {:else if section === 'identity'}
@@ -137,7 +137,8 @@
         >{#each [vip, standard] as order}<tr
             ><td>{order.key}</td><td>{String(order.attributes.Vip)}</td><td
               >{String(order === vip ? data.vipEnabled : data.standardEnabled)}</td
-            ><td>{String(toggly.isEnabled('ExpressCheckout', { entity: order }))}</td></tr
+            ><td>{String($toggly && toggly.isEnabled('ExpressCheckout', { entity: order }))}</td
+            ></tr
           >{/each}</tbody
       >
     </table>
