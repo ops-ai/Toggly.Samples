@@ -4,7 +4,7 @@ Follow one feature flag from configuration to a native Angular template, a servi
 
 ## Quick start
 
-Use Node **22.23.2** (with npm **10.9.8**) or a compatible newer Angular-supported Node release. The lockfile installs Angular **22.1.6**, Angular CLI/build **22.1.7**, `@ops-ai/ngx-feature-flags-toggly` **2.8.0**, and Zone.js **0.16.3**.
+Use Node **22.23.2** (with npm **10.9.8**) or a compatible newer Angular-supported Node release. The lockfile installs Angular **22.1.6**, Angular CLI/build **22.1.7**, `@ops-ai/ngx-feature-flags-toggly` **2.8.1**, and `@ops-ai/toggly-hooks-types` **1.4.5** for the SDK's peer API.
 
 ```sh
 cd angular-sdk
@@ -28,7 +28,7 @@ Restart after changing configuration. Angular has no automatic public environmen
 
 The official application builder is configured with `externalDependencies: ["crypto"]` in [angular.json](angular.json). The SDK's browser verifier uses WebCrypto; its guarded Node import should not be bundled for the browser. This setting does not replace crypto or disable signatures. Use HTTPS or localhost, and do not add a shim that identifies the browser as Node.
 
-[main.ts](src/main.ts) imports Zone.js before bootstrap. [app.config.ts](src/app/app.config.ts) opts into `provideZoneChangeDetection()`, and host components containing native SDK views use `ChangeDetectionStrategy.Eager`. These settings allow the SDK's asynchronous component fields to render on Angular 22. Sample-owned asynchronous display values use signals or the async pipe.
+[app.config.ts](src/app/app.config.ts) opts into `provideZonelessChangeDetection()`, and host components containing native SDK views use `ChangeDetectionStrategy.OnPush`. The sample does not import Zone.js. This exercises the Angular 22 zoneless path while signals and the async pipe update sample-owned asynchronous display values. The SDK notifies Angular after its asynchronous remote-refresh and local-gate updates.
 
 `provideToggly` supplies the standalone application's service. `NgxFeatureFlagsTogglyModule` imports the native component, template and structural directives into each section. No SDK code or component metadata is modified.
 
@@ -94,7 +94,7 @@ The expandable HTTP presets show US/CA, English/French, and Chrome-on-Mac/Firefo
 
 ## Defaults, recovery and security
 
-The loading state is visible until native checks settle. Live mode verifies signed definitions and uses OFF defaults on an initial failure. `persistCache: false` keeps workshop sessions independent. The SDK's `lastError` retains its most recent diagnostic even after a later successful request, so the alert is labelled historical and the checklist shows current results. The offline failure/recovery controls demonstrate both states.
+The loading state is visible until native checks settle. Live mode verifies signed definitions and uses OFF defaults on an initial failure; a later context-refresh failure retains the last successfully evaluated snapshot and records its diagnostic. `persistCache: false` keeps workshop sessions independent. The SDK's `lastError` retains its most recent diagnostic even after a later successful request, so the alert is labelled historical and the checklist shows current results. The offline failure/recovery controls demonstrate both states.
 
 Feature flags choose presentation; they do not authorize payments, API calls or access to protected data. Claims supplied by a browser are untrusted. The Beta route guard is an interface example, not a server permission boundary. A real backend must independently authenticate and authorize actions.
 

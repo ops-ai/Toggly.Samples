@@ -69,6 +69,11 @@ const root = path.resolve(__dirname, "..");
     const errors = [];
     page.on("pageerror", (e) => errors.push(String(e)));
     await page.goto(url);
+    assert.equal(
+      await page.evaluate(() => typeof window.Zone),
+      "undefined",
+      "the Angular 22 sample must execute without Zone.js",
+    );
     await expect(page.getByTestId("toggle-new-dashboard")).toHaveText(
       "new-dashboard: ON",
     );
@@ -144,7 +149,7 @@ const root = path.resolve(__dirname, "..");
       })
       .click();
     await page.getByRole("alert").waitFor();
-    await expect(page.getByTestId("toggle-new-dashboard")).toContainText("OFF");
+    await expect(page.getByTestId("toggle-new-dashboard")).toContainText("ON");
     await page
       .getByRole("button", { name: "Recover fixture transport", exact: true })
       .click();
