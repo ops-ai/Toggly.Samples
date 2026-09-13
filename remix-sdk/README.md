@@ -87,7 +87,7 @@ assets after changing it. `TOGGLY_ENVIRONMENT` defaults to `Production`.
 
 - `@remix-run/dev`, `@remix-run/node`, `@remix-run/react`, `@remix-run/serve` `2.17.5`
 - `react`, `react-dom` `18.3.1` (required by the published client peer range)
-- `@ops-ai/remix-toggly-core` `1.9.0`
+- `@ops-ai/remix-toggly-core` `1.9.1`
 - `@ops-ai/remix-toggly-server` `1.10.0`
 - `@ops-ai/remix-toggly-client` `1.4.0`
 

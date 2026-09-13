@@ -8,7 +8,7 @@ import './styles.css'
 export async function loader({ request }: LoaderFunctionArgs) {
   // Hydration is optional. A missing key is not an exception: learners can read
   // every page and see safe OFF defaults before configuring a real application.
-  const serverContext = hasServerKey() ? await (await sampleLoader()).load({ request, params: {}, context: {} }) : undefined
+  const serverContext = hasServerKey() ? await sampleLoader().load({ request, params: {}, context: {} }) : undefined
   return json({ serverContext, publicKey: process.env.REMIX_PUBLIC_TOGGLY_APP_KEY, serverKey: APP_KEY, environment: ENVIRONMENT })
 }
 

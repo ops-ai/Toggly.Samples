@@ -1,27 +1,9 @@
-import { fileURLToPath } from 'node:url'
 import type { IdentityContext } from '@ops-ai/remix-toggly-core'
-
-type ServerPackage = {
-  createTogglyLoader: (options: Record<string, unknown>) => any
-  createTogglyAction: (options: Record<string, unknown>) => any
-}
-let serverPackage: Promise<ServerPackage> | undefined
-
-async function publishedServer(): Promise<ServerPackage> {
-  if (!serverPackage) {
-    serverPackage = (async () => {
-      // remix-toggly-core 1.9.0's telemetry ESM entry falls back to
-      // __filename. Node ESM has no binding, so scope the published module's
-      // own path only while it initializes; this does not affect user context.
-      const moduleGlobal = globalThis as typeof globalThis & { __filename?: string }
-      const previous = moduleGlobal.__filename
-      moduleGlobal.__filename = fileURLToPath(import.meta.resolve('@ops-ai/remix-toggly-core/telemetry/grpc'))
-      try { return await import('@ops-ai/remix-toggly-server') as ServerPackage }
-      finally { if (previous === undefined) Reflect.deleteProperty(moduleGlobal, '__filename'); else moduleGlobal.__filename = previous }
-    })()
-  }
-  return serverPackage
-}
+import {
+  createTogglyAction,
+  createTogglyLoader,
+  type TogglyLoaderOptions,
+} from '@ops-ai/remix-toggly-server'
 
 export const APP_KEY = process.env.TOGGLY_APP_KEY
 export const ENVIRONMENT = process.env.TOGGLY_ENVIRONMENT || 'Production'
@@ -34,10 +16,12 @@ export const IDENTITY_COOKIE = 'toggly-identity'
  */
 export function requestContext(request: Request): IdentityContext {
   const cookie = request.headers.get('cookie') || ''
-  const identity = cookie.match(/(?:^|;\\s*)toggly-identity=([^;]+)/)?.[1]
+  const encodedIdentity = cookie.match(/(?:^|;\\s*)toggly-identity=([^;]+)/)?.[1]
   const country = request.headers.get('cf-ipcountry') || undefined
   return {
-    identity: identity ? decodeURIComponent(identity) : undefined,
+    // A malformed browser cookie must not turn an otherwise valid request into
+    // a 500 response. Treat it as an absent demo identity and continue.
+    identity: decodeIdentityCookie(encodedIdentity),
     claims: { role: request.headers.get('x-demo-role') || 'user' },
     request: {
       country,
@@ -47,16 +31,25 @@ export function requestContext(request: Request): IdentityContext {
   }
 }
 
+function decodeIdentityCookie(value: string | undefined): string | undefined {
+  if (!value) return undefined
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return undefined
+  }
+}
+
 /** The documented Remix server surface, configured for local rule evaluation. */
-export async function sampleLoader() {
-  return (await publishedServer()).createTogglyLoader(sampleOptions())
+export function sampleLoader() {
+  return createTogglyLoader(sampleOptions())
 }
 
-export async function sampleAction() {
-  return (await publishedServer()).createTogglyAction(sampleOptions())
+export function sampleAction() {
+  return createTogglyAction(sampleOptions())
 }
 
-function sampleOptions() {
+function sampleOptions(): TogglyLoaderOptions {
   return {
     appKey: APP_KEY,
     environment: ENVIRONMENT,
