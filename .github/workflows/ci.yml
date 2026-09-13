@@ -111,6 +111,7 @@ jobs:
           repository: ops-ai/Toggly.FeatureManagement
           ref: 56515563e5a9f37913a4eebc8e48003dd608e2b7
           path: .candidate-sdk
+      - run: mkdir -p "$RUNNER_TEMP/toggly-electron-sdk"
       - run: npm ci && npm run build && npm pack --pack-destination "$RUNNER_TEMP/toggly-electron-sdk"
         working-directory: .candidate-sdk/Toggly.FeatureManagement.Electron
       - run: sudo apt-get update && sudo apt-get install --yes xvfb
