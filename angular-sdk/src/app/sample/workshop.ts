@@ -86,6 +86,11 @@ export class Workshop implements OnDestroy {
       this.contextChanges.next(users[this.preset]);
       await this.sdk.setContext(users[this.preset]);
       await this.snapshot();
+    } catch {
+      // A later failed refresh restores the last good SDK snapshot and records
+      // lastError. Keep this workshop recovery control interactive and publish
+      // that state through the same snapshot used by the OnPush views.
+      await this.snapshot();
     } finally {
       this.busy = false;
     }

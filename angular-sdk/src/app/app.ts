@@ -3,7 +3,7 @@ import { RouterOutlet, RouterLink } from "@angular/router";
 import { Workshop } from "./sample/workshop";
 @Component({
   selector: "app-root",
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, RouterLink],
   template: `<header>
       <a routerLink="/">Toggly / Angular workshop</a>
@@ -18,6 +18,7 @@ import { Workshop } from "./sample/workshop";
 })
 export class App {
   // Eager hosts let the legacy native child components render their async
-  // Promise assignments under Zone.js. No SDK component metadata is changed.
+  // Signals and async pipes update this zoneless host. No SDK component
+  // metadata is changed.
   readonly workshop = inject(Workshop);
 }
