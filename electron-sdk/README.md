@@ -136,13 +136,22 @@ cd electron-sdk
 npm ci
 npm test
 npm run build
+
+# Maintainer native contract; the tarball is an uncommitted packed 1.0.2 SDK.
+TOGGLY_ELECTRON_SDK_TARBALL=/absolute/path/to/ops-ai-electron-feature-flags-toggly-1.0.2.tgz npm run test:packed-hosts
 npm run dev
 ```
 
-CI executes those checks with `TOGGLY_APP_KEY=ci-placeholder` and
-`TOGGLY_ENVIRONMENT=Production`. The placeholder deliberately tests the
-missing-key/default branch; it does not prove live dashboard setup,
-connectivity, signatures or cache behavior.
+`test:packed-hosts` installs the supplied packed candidate into disposable
+Electron 28.3.3 and 44.3.0 hosts. It runs the built main, custom compiled
+preload, context-isolated renderer IPC bridge, and React hooks/components in
+an actual hidden Electron window. On Linux it requires a display server such
+as Xvfb. The candidate tarball is neither committed nor substituted with an
+SDK source path or an unpublished registry version.
+
+CI runs without an App Key, proving the missing-key/default branch without
+fabricating a credential. It does not prove live dashboard setup, connectivity,
+signatures, or cache behavior.
 
 ## Manual checklist
 

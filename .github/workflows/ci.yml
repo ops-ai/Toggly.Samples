@@ -106,9 +106,17 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - uses: actions/checkout@v7
+        with:
+          repository: ops-ai/Toggly.FeatureManagement
+          ref: 56515563e5a9f37913a4eebc8e48003dd608e2b7
+          path: .candidate-sdk
+      - run: npm ci && npm run build && npm pack --pack-destination "$RUNNER_TEMP/toggly-electron-sdk"
+        working-directory: .candidate-sdk/Toggly.FeatureManagement.Electron
+      - run: sudo apt-get update && sudo apt-get install --yes xvfb
+      - run: xvfb-run -a npm run test:packed-hosts
         env:
-          TOGGLY_APP_KEY: ci-placeholder
-          TOGGLY_ENVIRONMENT: Production
+          TOGGLY_ELECTRON_SDK_TARBALL: ${{ runner.temp }}/toggly-electron-sdk/ops-ai-electron-feature-flags-toggly-1.0.2.tgz
 
   # Template for Node samples (copy when the sample folder lands):
   # <sample-id>:
