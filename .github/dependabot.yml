@@ -2,6 +2,13 @@ version: 2
 
 updates:
   - package-ecosystem: npm
+    directory: /sveltekit-sdk
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+
+  - package-ecosystem: npm
     directory: /remix-sdk
     schedule:
       interval: weekly

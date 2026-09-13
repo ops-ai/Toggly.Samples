@@ -31,6 +31,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 
 | Sample | Stack | Path | What it demos |
 |--------|-------|------|---------------|
+| SvelteKit SDK Showcase | Svelte5 + SvelteKit2 / Node | [`sveltekit-sdk/`](sveltekit-sdk/) | Request hooks, signed hydration, native gates, actions, entities, filter presets and lifecycle |
 | Vue SDK Workshop | Vue 3 + Vite | [`vue-sdk/`](vue-sdk/) | Native Feature/composables, user and Order context, variants, local gates, signed responses and offline exercises |
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
 | Remix SDK Sample | Remix 2.17 | [`remix-sdk/`](remix-sdk/) | Loaders/actions, request-scoped identity, browser gates, Order context and filter matrix with `@ops-ai/remix-toggly-*` |

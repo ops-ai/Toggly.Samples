@@ -131,3 +131,26 @@ jobs:
   #         TOGGLY_APP_KEY: ci-placeholder
   #         NEXT_PUBLIC_TOGGLY_APP_KEY: ci-placeholder # Or the stack-specific public key.
   #         TOGGLY_ENVIRONMENT: Production
+
+  sveltekit-sdk:
+    name: sveltekit-sdk
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sveltekit-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: sveltekit-sdk/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+        env:
+          TOGGLY_APP_KEY: ''
+          PUBLIC_TOGGLY_APP_KEY: ''
