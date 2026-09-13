@@ -1,6 +1,5 @@
-// This SDK's asynchronous native components use zone-driven change detection.
-// Angular22 supports opting in; crypto externalization keeps WebCrypto intact.
-import "zone.js";
+// The SDK notifies zoneless OnPush hosts after asynchronous updates.
+// Angular 22 supports this path; crypto externalization keeps WebCrypto intact.
 import { bootstrapApplication } from "@angular/platform-browser";
 import { App } from "./app/app";
 import { appConfig } from "./app/app.config";

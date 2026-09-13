@@ -4,7 +4,7 @@ import { NgxFeatureFlagsTogglyModule } from "@ops-ai/ngx-feature-flags-toggly";
 import { Workshop } from "../sample/workshop";
 @Component({
   selector: "app-order-panel",
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgxFeatureFlagsTogglyModule, JsonPipe],
   template: ` <section class="panel" id="order">
     <h2>05 · Same user. Different Order.</h2>

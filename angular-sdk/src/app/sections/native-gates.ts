@@ -12,7 +12,7 @@ import {
 } from "@ops-ai/ngx-feature-flags-toggly";
 @Component({
   selector: "app-native-gates",
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgxFeatureFlagsTogglyModule, AsyncPipe],
   templateUrl: "./native-gates.html",
 })

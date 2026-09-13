@@ -9,7 +9,7 @@ import { FilterMatrix } from "./sections/filter-matrix";
 import { Variants } from "./sections/variants";
 @Component({
   selector: "app-home",
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AsyncPipe,
     JsonPipe,
