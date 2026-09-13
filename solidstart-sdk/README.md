@@ -5,7 +5,7 @@ A complete SolidStart 2 application using `@ops-ai/solid-feature-flags-toggly` *
 ## Quick start
 
 ```sh
-npm install
+npm ci
 cp .env.example .env
 npm run dev
 ```
