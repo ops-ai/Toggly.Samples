@@ -72,20 +72,6 @@ server and browser execution; Fastify shows request evaluation without a UI SDK.
 Sample fixtures and placeholder-key checks are not evidence of live Toggly app
 provisioning. Use each README's configuration recipe for your own application.
 
-## Wave 1 availability
-
-The catalog above links samples present on `develop`. The following work has a
-separate status; previews and blocked checkpoints are not merged runnable entries.
-
-| Sample | Status | Details |
-|--------|--------|---------|
-| Nuxt | [Blocked: OPS-1089](https://linear.app/opsai/issue/OPS-1089) | Module 1.1.1 declares Nuxt ^3, excluding required latest-stable Nuxt 4.5.2; dependency resolution fails. |
-
-Compatibility status was checked on September 8, 2026. These blockers concern
-the programme's latest-stable framework constraint; they do not imply the SDKs
-are universally unusable with older supported versions. Blocked samples are not
-linked to nonexistent folders. Linear detail links may require authentication.
-
 All new samples follow the [Sample Contract](docs/SAMPLE_CONTRACT.md) and the
 shared [flag and app template](docs/FLAG_TEMPLATE.md). Follow the
 [application setup guide](docs/APP_SETUP.md) for dashboard controls and the
