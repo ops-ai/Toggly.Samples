@@ -33,6 +33,8 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 |--------|-------|------|---------------|
 | SvelteKit SDK Showcase | Svelte5 + SvelteKit2 / Node | [`sveltekit-sdk/`](sveltekit-sdk/) | Request hooks, signed hydration, native gates, actions, entities, filter presets and lifecycle |
 | Vue SDK Workshop | Vue 3 + Vite | [`vue-sdk/`](vue-sdk/) | Native Feature/composables, user and Order context, variants, local gates, signed responses and offline exercises |
+| SolidJS SDK Workshop | SolidJS 1.9 + Vite | [`solidjs-sdk/`](solidjs-sdk/) | Native browser signals, signed definitions, provider-scoped targeting, Order context and local gates |
+| SolidStart SDK Workshop | SolidStart 2 + Node 24 | [`solidstart-sdk/`](solidstart-sdk/) | Request-scoped backend guards, signed public SSR hydration, navigation, entity and local gates |
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
 | Remix SDK Sample | Remix 2.17 | [`remix-sdk/`](remix-sdk/) | Loaders/actions, request-scoped identity, browser gates, Order context and filter matrix with `@ops-ai/remix-toggly-*` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
