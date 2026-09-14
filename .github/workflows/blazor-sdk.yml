@@ -35,7 +35,8 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: blazor-sdk/package-lock.json
-      - run: dotnet publish BlazorSample -c Release -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -o ./published
+      - run: dotnet restore BlazorSample.sln --locked-mode --source https://api.nuget.org/v3/index.json -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }}
+      - run: dotnet publish BlazorSample --no-restore -c Release -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -o ./published
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Exercise real render modes and signed browser fixtures

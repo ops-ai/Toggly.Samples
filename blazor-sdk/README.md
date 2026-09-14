@@ -2,8 +2,8 @@
 
 An actual .NET 8 Blazor Web App with separately compiled WebAssembly client code.
 Explore static SSR, Interactive Server, WebAssembly and Interactive Auto using
-`Toggly.FeatureManagement.Blazor` **0.1.0**, `.Blazor.Server` **0.1.0**, portable
-Client **0.1.0** and trusted `.NET` **3.6.6**. Presentation gates are not backend
+`Toggly.FeatureManagement.Blazor` **3.7.0**, `.Blazor.Server` **3.7.0**, portable
+Client **3.7.0** and trusted `.NET` **3.7.0**. Presentation gates are not backend
 authorization; demo personas do not authenticate a user.
 
 ## Quick start
@@ -11,15 +11,23 @@ authorization; demo personas do not authenticate a user.
 Install the .NET 8 SDK and run:
 
 ```sh
-dotnet restore BlazorSample.sln
-dotnet run --project BlazorSample --no-launch-profile --urls http://localhost:5280
+dotnet restore BlazorSample.sln --locked-mode
+dotnet run --project BlazorSample --no-restore --no-launch-profile --urls http://localhost:5280
 ```
 
 To build a native .NET 10 host/client with .NET 10 installed, use
-`dotnet publish BlazorSample -c Release -p:SampleFramework=net10.0 -p:AspNetCoreVersion=10.0.11 -o published`
+`dotnet restore BlazorSample.sln --locked-mode -p:SampleFramework=net10.0 -p:AspNetCoreVersion=10.0.11`,
+then `dotnet publish BlazorSample --no-restore -c Release -p:SampleFramework=net10.0 -p:AspNetCoreVersion=10.0.11 -o published`
 then `cd published` and run `dotnet BlazorSample.dll --urls http://localhost:5280`.
 Rebuild with the matching framework; do not merely roll an already published
 .NET 8 application's runtime forward because framework static-asset routing changes.
+
+Each project retains separate `packages.net8.0.lock.json` and
+`packages.net10.0.lock.json` files generated from public NuGet packages. Restore
+with the same framework and ASP.NET Core version used for the build; locked mode
+rejects a dependency mismatch instead of silently changing the selected versions.
+The projects disable implicit SDK package caches so the locks use the public
+NuGet package contents consistently across development machines and CI.
 
 Open [localhost:5280](http://localhost:5280). The four host routes are `/ssr/home`,
 `/server/home`, `/wasm/home`, and `/auto/home`. Auto may start on the server and
@@ -151,7 +159,8 @@ assign named variants or record a new experiment API.
 ## Automated checks
 
 ```sh
-dotnet build BlazorSample.sln -c Release
+dotnet restore BlazorSample.sln --locked-mode
+dotnet build BlazorSample.sln --no-restore -c Release
 npm ci
 npx playwright install --with-deps chromium
 # With the host listening at http://127.0.0.1:5280:

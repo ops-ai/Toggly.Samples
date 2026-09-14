@@ -2,6 +2,10 @@
   <PropertyGroup>
     <SampleFramework Condition="'$(SampleFramework)' == ''">net8.0</SampleFramework>
     <TargetFramework>$(SampleFramework)</TargetFramework>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <DisableImplicitLibraryPacksFolder>true</DisableImplicitLibraryPacksFolder>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <NuGetLockFilePath>packages.$(TargetFramework).lock.json</NuGetLockFilePath>
     <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == ''">8.0.31</AspNetCoreVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -9,7 +13,8 @@
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Toggly.FeatureManagement.Blazor" Version="0.1.0" />
+    <Content Remove="packages.*.lock.json" />
+    <PackageReference Include="Toggly.FeatureManagement.Blazor" Version="3.7.0" />
     <PackageReference
       Include="Microsoft.AspNetCore.Components.WebAssembly"
       Version="$(AspNetCoreVersion)"
