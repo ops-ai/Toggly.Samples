@@ -86,12 +86,28 @@ export function OrderContextPanel() {
   </section>
 }
 
-function FilterStatusRow({ flag }: { flag: string }) { const current = useProgrammaticFlag(flag); return <State enabled={current.enabled} loading={current.loading} /> }
+function FilterStatusRow({
+  flag,
+  entity,
+  contextKind,
+}: {
+  flag: string
+  entity?: Order
+  contextKind?: string
+}) {
+  const current = useProgrammaticFlag(flag, entity, contextKind)
+  return <State enabled={current.enabled} loading={current.loading} />
+}
 
 export function FiltersMatrix() {
   const toggly = useTogglyService()
   const [preset, setPreset] = useState<'matching' | 'non-matching'>('matching')
   const [message, setMessage] = useState('Apply a preset after configuring the matching dashboard rules.')
+  // This entity belongs only to filter-context-property. It deliberately is
+  // not sent through setContext: an Order condition must not replace identity.
+  const contextPropertyOrder: Order = preset === 'matching'
+    ? { id: 'ord-vip', vip: true, total: 149.95 }
+    : { id: 'ord-standard', vip: false, total: 42 }
   async function applyPreset(next: 'matching' | 'non-matching') {
     setPreset(next); const matching = next === 'matching'
     if (toggly) {
@@ -105,7 +121,7 @@ export function FiltersMatrix() {
     <p>The dashboard owns rule configuration; this sample sends only the browser SDK context the published package supports. Start with the shared flag recipe, then compare matching and non-matching results.</p>
     <div className="filter-presets"><button type="button" aria-pressed={preset === 'matching'} onClick={() => void applyPreset('matching')}>Apply matching preset</button><button type="button" aria-pressed={preset === 'non-matching'} onClick={() => void applyPreset('non-matching')}>Apply non-matching preset</button></div>
     <p className="muted">{message}</p>
-    <div className="table-wrap"><table><thead><tr><th>Flag</th><th>Input</th><th>Matching</th><th>Non-matching</th><th>Current</th></tr></thead><tbody>{filterRows.map((row) => <tr key={row.key}><td><code>{row.key}</code>{row.limitation && <small>{row.limitation}</small>}</td><td>{row.input}</td><td>{row.matching}</td><td>{row.nonMatching}</td><td><FilterStatusRow flag={row.key} /></td></tr>)}</tbody></table></div>
+    <div className="table-wrap"><table><thead><tr><th>Flag</th><th>Input</th><th>Matching</th><th>Non-matching</th><th>Current</th></tr></thead><tbody>{filterRows.map((row) => <tr key={row.key}><td><code>{row.key}</code>{row.limitation && <small>{row.limitation}</small>}</td><td>{row.input}</td><td>{row.matching}</td><td>{row.nonMatching}</td><td><FilterStatusRow flag={row.key} entity={row.key === 'filter-context-property' ? contextPropertyOrder : undefined} contextKind={row.key === 'filter-context-property' ? 'Order' : undefined} /></td></tr>)}</tbody></table></div>
   </section>
 }
 

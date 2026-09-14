@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -24,6 +24,7 @@ vi.mock('@ops-ai/react-feature-flags-toggly', () => ({
 }))
 
 import App from './App'
+import { FiltersMatrix } from './DemoPanels'
 
 describe('React SDK showcase', () => {
   it('keeps the full sample contract discoverable when no key is configured', () => {
@@ -38,5 +39,27 @@ describe('React SDK showcase', () => {
     expect(screen.getByText('Filters matrix')).toBeVisible()
     expect(screen.getByText('React SDK surfaces')).toBeVisible()
     expect(screen.getByText('Live flag snapshot')).toBeVisible()
+  })
+
+  it('evaluates the context-property filter with the Order entity for both presets', async () => {
+    const { container } = render(<FiltersMatrix />)
+
+    await waitFor(() => {
+      expect(toggly.isFeatureOn).toHaveBeenCalledWith(
+        'filter-context-property',
+        { id: 'ord-vip', vip: true, total: 149.95 },
+        'Order',
+      )
+    })
+
+    fireEvent.click(within(container).getByRole('button', { name: 'Apply non-matching preset' }))
+
+    await waitFor(() => {
+      expect(toggly.isFeatureOn).toHaveBeenCalledWith(
+        'filter-context-property',
+        { id: 'ord-standard', vip: false, total: 42 },
+        'Order',
+      )
+    })
   })
 })
