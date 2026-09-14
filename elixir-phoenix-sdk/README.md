@@ -1,6 +1,6 @@
 # Elixir / Phoenix SDK showcase
 
-A working Phoenix 1.8 / LiveView 1.2 application using `toggly`, `toggly_phoenix` and `toggly_live_view` **0.1.0**. It teaches feature flags through local OTP evaluation, server route gates and independent LiveView contexts.
+A working Phoenix 1.8 / LiveView 1.2 application using `toggly` **0.1.1** with `toggly_phoenix` and `toggly_live_view` **0.1.0**. It teaches feature flags through local OTP evaluation, server route gates and independent LiveView contexts.
 
 ## Quick start
 
