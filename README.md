@@ -31,7 +31,10 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 
 | Sample | Stack | Path | What it demos |
 |--------|-------|------|---------------|
+| SvelteKit SDK Showcase | Svelte5 + SvelteKit2 / Node | [`sveltekit-sdk/`](sveltekit-sdk/) | Request hooks, signed hydration, native gates, actions, entities, filter presets and lifecycle |
 | Vue SDK Workshop | Vue 3 + Vite | [`vue-sdk/`](vue-sdk/) | Native Feature/composables, user and Order context, variants, local gates, signed responses and offline exercises |
+| SolidJS SDK Workshop | SolidJS 1.9 + Vite | [`solidjs-sdk/`](solidjs-sdk/) | Native browser signals, signed definitions, provider-scoped targeting, Order context and local gates |
+| SolidStart SDK Workshop | SolidStart 2 + Node 24 | [`solidstart-sdk/`](solidstart-sdk/) | Request-scoped backend guards, signed public SSR hydration, navigation, entity and local gates |
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
 | Remix SDK Sample | Remix 2.17 | [`remix-sdk/`](remix-sdk/) | Loaders/actions, request-scoped identity, browser gates, Order context and filter matrix with `@ops-ai/remix-toggly-*` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
@@ -43,6 +46,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Electron SDK Sample | Electron 44 + React 19 | [`electron-sdk/`](electron-sdk/) | Secure main/preload/renderer feature gates, desktop session context, Order context, cache and signed definition updates with `@ops-ai/electron-feature-flags-toggly` |
 | Node Express SDK Sample | Express 5 | [`nodejs-express-sdk/`](nodejs-express-sdk/) | Request middleware, HTTP gates, identities, Order context and filter matrix |
 | Node Koa SDK Sample | Koa 3 | [`nodejs-koa-sdk/`](nodejs-koa-sdk/) | Request-scoped middleware, native gates, identities, Order context and all eleven filters with `@ops-ai/toggly-koa` |
+| NestJS SDK Sample | NestJS 11 HTTP | [`nestjs-sdk/`](nestjs-sdk/) | Request-scoped DI, decorators, guards, entity context and filters |
 | Node Hono SDK Showcase | Hono 4 / Node 22 | [`nodejs-hono-sdk/`](nodejs-hono-sdk/) | Request context, middleware gates, eleven filters and Order entities with `@ops-ai/toggly-hono` |
 | Docusaurus SDK Workshop | Docusaurus 3 + React | [`docusaurus-sdk/`](docusaurus-sdk/) | Native MDX/React flags, core Order mapping, live snapshots and build/browser boundaries |
 | .NET SDK Workshop | ASP.NET Core 10 MVC / Razor | [`dotnet-sdk/`](dotnet-sdk/) | Native gates, variants, request targeting, Order, filters, Hangfire, HealthChecks and NSwag |

@@ -112,9 +112,18 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - uses: actions/checkout@v7
+        with:
+          repository: ops-ai/Toggly.FeatureManagement
+          ref: 56515563e5a9f37913a4eebc8e48003dd608e2b7
+          path: .candidate-sdk
+      - run: mkdir -p "$RUNNER_TEMP/toggly-electron-sdk"
+      - run: npm ci && npm run build && npm pack --pack-destination "$RUNNER_TEMP/toggly-electron-sdk"
+        working-directory: .candidate-sdk/Toggly.FeatureManagement.Electron
+      - run: sudo apt-get update && sudo apt-get install --yes xvfb
+      - run: xvfb-run -a npm run test:packed-hosts
         env:
-          TOGGLY_APP_KEY: ci-placeholder
-          TOGGLY_ENVIRONMENT: Production
+          TOGGLY_ELECTRON_SDK_TARBALL: ${{ runner.temp }}/toggly-electron-sdk/ops-ai-electron-feature-flags-toggly-1.0.2.tgz
 
   nodejs-koa-sdk:
     name: nodejs-koa-sdk
@@ -162,3 +171,26 @@ jobs:
   #         TOGGLY_APP_KEY: ci-placeholder
   #         NEXT_PUBLIC_TOGGLY_APP_KEY: ci-placeholder # Or the stack-specific public key.
   #         TOGGLY_ENVIRONMENT: Production
+
+  sveltekit-sdk:
+    name: sveltekit-sdk
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sveltekit-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: sveltekit-sdk/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+        env:
+          TOGGLY_APP_KEY: ''
+          PUBLIC_TOGGLY_APP_KEY: ''

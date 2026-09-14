@@ -2,6 +2,13 @@ version: 2
 
 updates:
   - package-ecosystem: npm
+    directory: /sveltekit-sdk
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+
+  - package-ecosystem: npm
     directory: /remix-sdk
     schedule:
       interval: weekly
@@ -68,13 +75,6 @@ updates:
         update-types:
           - minor
           - patch
-    ignore:
-      - dependency-name: next
-        update-types: ["version-update:semver-major"]
-      - dependency-name: react
-        update-types: ["version-update:semver-major"]
-      - dependency-name: react-dom
-        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
@@ -223,3 +223,15 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+
+  - package-ecosystem: npm
+    directory: /solidjs-sdk
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /solidstart-sdk
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

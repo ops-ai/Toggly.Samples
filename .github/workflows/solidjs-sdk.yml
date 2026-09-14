@@ -1,0 +1,43 @@
+name: SolidJS SDK sample
+on:
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'solidjs-sdk/**'
+      - '.github/workflows/solidjs-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'README.md'
+  push:
+    branches: [develop, main]
+    paths:
+      - 'solidjs-sdk/**'
+      - '.github/workflows/solidjs-sdk.yml'
+      - 'docs/SAMPLE_CONTRACT.md'
+      - 'docs/FLAG_TEMPLATE.md'
+      - 'README.md'
+permissions:
+  contents: read
+concurrency:
+  group: solidjs-sdk-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  solidjs-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: solidjs-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22.23.2'
+          cache: npm
+          cache-dependency-path: solidjs-sdk/package-lock.json
+      - run: npm install -g npm@11
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          VITE_TOGGLY_APP_KEY: ci-placeholder
+          VITE_TOGGLY_ENVIRONMENT: Production
