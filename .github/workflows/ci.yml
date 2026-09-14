@@ -20,6 +20,8 @@ jobs:
     outputs:
       nextjs-server-sdk: ${{ steps.filter.outputs.nextjs-server-sdk }}
       javascript-sdk: ${{ steps.filter.outputs.javascript-sdk }}
+      electron-sdk: ${{ steps.filter.outputs.electron-sdk }}
+      nodejs-koa-sdk: ${{ steps.filter.outputs.nodejs-koa-sdk }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -33,6 +35,16 @@ jobs:
               - 'docs/**'
             javascript-sdk:
               - 'javascript-sdk/**'
+              - '.github/workflows/ci.yml'
+              - 'README.md'
+              - 'docs/**'
+            electron-sdk:
+              - 'electron-sdk/**'
+              - '.github/workflows/ci.yml'
+              - 'README.md'
+              - 'docs/**'
+            nodejs-koa-sdk:
+              - 'nodejs-koa-sdk/**'
               - '.github/workflows/ci.yml'
               - 'README.md'
               - 'docs/**'
@@ -82,6 +94,62 @@ jobs:
           VITE_TOGGLY_APP_KEY: ci-placeholder
           VITE_TOGGLY_ENVIRONMENT: Production
 
+  electron-sdk:
+    name: electron-sdk
+    needs: changes
+    if: needs.changes.outputs.electron-sdk == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: electron-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: electron-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - uses: actions/checkout@v7
+        with:
+          repository: ops-ai/Toggly.FeatureManagement
+          ref: 56515563e5a9f37913a4eebc8e48003dd608e2b7
+          path: .candidate-sdk
+      - run: mkdir -p "$RUNNER_TEMP/toggly-electron-sdk"
+      - run: npm ci && npm run build && npm pack --pack-destination "$RUNNER_TEMP/toggly-electron-sdk"
+        working-directory: .candidate-sdk/Toggly.FeatureManagement.Electron
+      - run: sudo apt-get update && sudo apt-get install --yes xvfb
+      - run: xvfb-run -a npm run test:packed-hosts
+        env:
+          TOGGLY_ELECTRON_SDK_TARBALL: ${{ runner.temp }}/toggly-electron-sdk/ops-ai-electron-feature-flags-toggly-1.0.2.tgz
+
+  nodejs-koa-sdk:
+    name: nodejs-koa-sdk
+    needs: changes
+    if: needs.changes.outputs.nodejs-koa-sdk == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nodejs-koa-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: nodejs-koa-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
+      - run: npm run build
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
+
   # Template for Node samples (copy when the sample folder lands):
   # <sample-id>:
   #   name: <sample-id>
@@ -103,3 +171,26 @@ jobs:
   #         TOGGLY_APP_KEY: ci-placeholder
   #         NEXT_PUBLIC_TOGGLY_APP_KEY: ci-placeholder # Or the stack-specific public key.
   #         TOGGLY_ENVIRONMENT: Production
+
+  sveltekit-sdk:
+    name: sveltekit-sdk
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sveltekit-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: sveltekit-sdk/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+        env:
+          TOGGLY_APP_KEY: ''
+          PUBLIC_TOGGLY_APP_KEY: ''

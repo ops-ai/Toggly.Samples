@@ -1,6 +1,6 @@
 # Node Express SDK Sample
 
-Eight navigable sections backed by the actual published Express adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-08: Express **5.2.1**, `@ops-ai/toggly-express` **0.2.0**, `@ops-ai/toggly-node-core` **0.7.0** (exact pins + lockfile).
+Eight navigable sections backed by the actual published Express adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-08: Express **5.2.1**, `@ops-ai/toggly-express` **0.2.0**, `@ops-ai/toggly-node-core` **0.9.0** (exact pins + lockfile).
 
 ```sh
 npm ci
@@ -114,7 +114,7 @@ curl -i 'http://localhost:3000/gates/all'
 
 ## Published capability boundaries
 
-Express 0.2.0 binds ambient context to `req.toggly.isFeatureOn`, `isFeatureOff`, and `evaluateFeatureGate`; their installed signatures **do not accept per-call overrides or entities**. This sample calls `req.toggly.client.isFeatureOn(key, context, entity)` from core 0.7.0 for those operations, preserving ambient context with an explicit spread for overrides. No request changes global identity. The adapter owns a process singleton: run one configured app per process, and call `closeExpressToggly()` on shutdown; tests close between app instances.
+Express 0.2.0 binds ambient context to `req.toggly.isFeatureOn`, `isFeatureOff`, and `evaluateFeatureGate`; their installed signatures **do not accept per-call overrides or entities**. This sample calls `req.toggly.client.isFeatureOn(key, context, entity)` from core 0.9.0 for those operations, preserving ambient context with an explicit spread for overrides. No request changes global identity. The adapter owns a process singleton: run one configured app per process, and call `closeExpressToggly()` on shutdown; tests close between app instances.
 
 `featuresHandler()` returns a global SDK boolean snapshot alongside the **request identity**; that snapshot does not represent request claims/entities. Use `/api/evaluate` for request-evaluated results and provenance. Boolean content branches demonstrate variants; these packages expose no experiment-assignment API. All eleven template filters are supported by the installed core evaluator. AlwaysOn/open TimeWindow remain on in both presets; Percentage is identity-sticky and has no prescribed matching outcome.
 

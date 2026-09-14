@@ -1,6 +1,43 @@
 version: 2
 
 updates:
+  - package-ecosystem: npm
+    directory: /sveltekit-sdk
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+
+  - package-ecosystem: npm
+    directory: /remix-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    groups:
+      npm-patch-and-minor:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: npm
+    directory: /electron-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    groups:
+      npm-patch-and-minor:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
   - package-ecosystem: composer
     directory: /php-laravel-sdk
     schedule:
@@ -38,13 +75,6 @@ updates:
         update-types:
           - minor
           - patch
-    ignore:
-      - dependency-name: next
-        update-types: ["version-update:semver-major"]
-      - dependency-name: react
-        update-types: ["version-update:semver-major"]
-      - dependency-name: react-dom
-        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
@@ -91,6 +121,14 @@ updates:
       - dependencies
   - package-ecosystem: npm
     directory: /nodejs-hono-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: npm
+    directory: /nodejs-koa-sdk
     schedule:
       interval: weekly
       day: monday
@@ -191,4 +229,16 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /solidjs-sdk
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /solidstart-sdk
+    schedule:
+      interval: weekly
     open-pull-requests-limit: 5

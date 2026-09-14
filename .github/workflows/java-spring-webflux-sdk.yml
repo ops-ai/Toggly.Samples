@@ -32,7 +32,7 @@ jobs:
       TOGGLY_APP_KEY: ''
       TOGGLY_ENVIRONMENT: Production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # Use the official OpenJDK patch also used by the local native compatibility check.
       - name: Install OpenJDK 26.0.2.1
         run: |

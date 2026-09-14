@@ -31,6 +31,12 @@ versions can differ from the source-defined labels below.
    | PHP WordPress | WordPress | `wordpress` |
    | Ruby and Ruby on Rails | Ruby on Rails | `ruby-on-rails` |
    | Rust Actix, Axum, Rocket | Rust | `rust` |
+   | Angular | Angular | `angular` |
+   | Vue | VueJS | `vuejs` |
+   | JavaScript | Javascript | `javascript` |
+   | Next.js | Next.js | `nextjs` |
+   | Docusaurus | Javascript (picker has no Docusaurus option) | `javascript` |
+   | Express, Fastify, Hono | NodeJS | `nodejs` |
 
    For other sample families, use the matching option specified by their README.
    Keep separate dedicated applications for separate samples, even when they use
