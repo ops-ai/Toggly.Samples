@@ -45,6 +45,8 @@ if (!string.IsNullOrWhiteSpace(snapshotDirectory))
     );
 }
 var definitionsUrl = builder.Configuration["TOGGLY_DEFINITIONS_URL"];
+if (string.IsNullOrWhiteSpace(definitionsUrl))
+    definitionsUrl = null;
 if (!string.IsNullOrWhiteSpace(definitionsUrl) &&
     (!Uri.TryCreate(definitionsUrl, UriKind.Absolute, out var uri) ||
      (uri.Scheme != "https" && !(uri.Scheme == "http" && uri.IsLoopback)) ||

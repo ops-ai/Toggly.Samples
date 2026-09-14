@@ -52,6 +52,7 @@ async function launch(
   key = appKey,
   env = environment,
   offline = true,
+  definitionsUrl = source,
 ) {
   const port = await availablePort();
   const origin = `http://127.0.0.1:${port}`;
@@ -66,7 +67,7 @@ async function launch(
       TOGGLY_FRONTEND_APP_KEY: "",
       TOGGLY_ENVIRONMENT: env,
       TOGGLY_SNAPSHOT_DIRECTORY: directory,
-      TOGGLY_DEFINITIONS_URL: source,
+      TOGGLY_DEFINITIONS_URL: definitionsUrl,
       TOGGLY_NETWORK_MODE: offline ? "offline" : "online",
       // Local proxy rejects any accidental non-local request, including baseline
       // code that does not yet understand the Sample configuration variables.
@@ -440,6 +441,69 @@ test(
       } finally {
         await stop(child);
       }
+    }
+  },
+);
+
+test(
+  "blank optional definitions URL retains the SDK SaaS default",
+  { timeout: 30000 },
+  async () => {
+    const directory = await mkdtemp(
+      join(await realpath(tmpdir()), "toggly-default-origin-"),
+    );
+    let observe;
+    const proxy = createServer((_request, response) => {
+      response.writeHead(503);
+      response.end();
+    });
+    proxy.on("connect", (request, socket) => {
+      // Observe only the authority of the CONNECT request, then deny it before
+      // TLS or any application credential can leave this local fixture proxy.
+      if (request.url === "definitions.toggly.io:443") observe?.();
+      socket.destroy();
+    });
+    proxy.listen(0, "127.0.0.1");
+    await once(proxy, "listening");
+    const source = `http://127.0.0.1:${proxy.address().port}/`;
+    try {
+      for (const blank of ["", "   "]) {
+        let received = false;
+        observe = () => {
+          received = true;
+        };
+        const host = await launch(
+          directory,
+          source,
+          appKey,
+          environment,
+          false,
+          blank,
+        );
+        const abort = new AbortController();
+        const request = fetch(`${host.origin}/ssr/home`, {
+          signal: abort.signal,
+        }).catch(() => null);
+        try {
+          for (let attempt = 0; attempt < 50 && !received; attempt++)
+            await sleep(100);
+          assert.equal(
+            received,
+            true,
+            "blank optional origin must use the SDK default before the local proxy denies transport",
+          );
+        } finally {
+          abort.abort();
+          await request;
+          await stop(host.child);
+        }
+      }
+    } finally {
+      await new Promise((resolve) => {
+        proxy.close(resolve);
+        proxy.closeAllConnections();
+      });
+      await rm(directory, { recursive: true, force: true });
     }
   },
 );
