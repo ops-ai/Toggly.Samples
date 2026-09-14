@@ -1,6 +1,6 @@
 # .NET client SDK showcase
 
-A console and Avalonia desktop application using `Toggly.FeatureManagement.Client.Desktop` **0.1.0**, its portable client dependency **0.1.0**, and Avalonia **11.3.6**. Requires .NET SDK/runtime **8+**. The desktop host runs on macOS, Linux and Windows using Avalonia's native platform requirements; it needs a graphical desktop session.
+A console and Avalonia desktop application using `Toggly.FeatureManagement.Client.Desktop` **3.7.0**, its portable client dependency **3.7.0**, and Avalonia **11.3.6**. Requires .NET SDK/runtime **8+**. The desktop host runs on macOS, Linux and Windows using Avalonia's native platform requirements; it needs a graphical desktop session.
 
 The two hosts share the same seven-section showcase and real SDK calls. They require no ASP.NET Core app or Generic Host. Feature rollout in an end-user application does not replace backend authorization.
 
@@ -8,9 +8,11 @@ The two hosts share the same seven-section showcase and real SDK calls. They req
 
 ```sh
 cd dotnet-client-sdk
-dotnet run --project Console
+dotnet restore Console --locked-mode
+dotnet run --project Console --no-restore
 # A graphical desktop session is needed for the following host:
-dotnet run --project Desktop
+dotnet restore Desktop --locked-mode
+dotnet run --project Desktop --no-restore
 ```
 
 With no App Key, both hosts show a visible **OFFLINE** banner and explicit defaults. `new-dashboard` and `enhanced-submit` are on, `api-v2` and unknown keys are off. This mode makes no network requests. It does not prove dashboard setup, connectivity, signatures or targeting.
@@ -90,15 +92,18 @@ WebSocket JSON notifications and plaintext `update`/`flags-updated` trigger debo
 ## Checks
 
 ```sh
-dotnet build Console -c Release
-dotnet build Desktop -c Release
-dotnet run --project tests/Smoke -c Release
-dotnet run --project Console -c Release -- --smoke
+dotnet restore Console --locked-mode
+dotnet restore Desktop --locked-mode
+dotnet restore tests/Smoke --locked-mode
+dotnet build Console -c Release --no-restore
+dotnet build Desktop -c Release --no-restore
+dotnet run --project tests/Smoke -c Release --no-restore
+dotnet run --project Console -c Release --no-build -- --smoke
 # In a graphical desktop session: initialize, render, change context and close.
-dotnet run --project Desktop -c Release -- --smoke
+dotnet run --project Desktop -c Release --no-build -- --smoke
 ```
 
-The smoke executable forces the App Key empty and exercises offline startup, preset changes, local entity fixture, all seven sections and local prerequisites. It does not claim live connectivity. All committed dependencies are NuGet package references; no workspace project references or local feeds are required by these instructions.
+The smoke executable forces the App Key empty and exercises offline startup, preset changes, local entity fixture, all seven sections and local prerequisites. It does not claim live connectivity. All dependencies are published NuGet package references. The sample's NuGet configuration uses only nuget.org; committed lock files record the resolved package versions and content hashes, and CI restores in locked mode.
 
 Manual checklist:
 
