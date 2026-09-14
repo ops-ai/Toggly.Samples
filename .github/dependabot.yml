@@ -128,6 +128,14 @@ updates:
     labels:
       - dependencies
   - package-ecosystem: npm
+    directory: /nodejs-koa-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: npm
     directory: /vue-sdk
     schedule:
       interval: weekly
@@ -215,6 +223,43 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+  - package-ecosystem: nuget
+    directory: /blazor-sdk/BlazorSample
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: nuget
+    directory: /blazor-sdk/BlazorSample.Client
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: npm
+    directory: /blazor-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+
+  - package-ecosystem: nuget
+    directory: /dotnet-client-sdk
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: mix
+    directory: /elixir-phoenix-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
 
   - package-ecosystem: npm
     directory: /solidjs-sdk

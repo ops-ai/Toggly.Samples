@@ -21,6 +21,7 @@ jobs:
       nextjs-server-sdk: ${{ steps.filter.outputs.nextjs-server-sdk }}
       javascript-sdk: ${{ steps.filter.outputs.javascript-sdk }}
       electron-sdk: ${{ steps.filter.outputs.electron-sdk }}
+      nodejs-koa-sdk: ${{ steps.filter.outputs.nodejs-koa-sdk }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -39,6 +40,11 @@ jobs:
               - 'docs/**'
             electron-sdk:
               - 'electron-sdk/**'
+              - '.github/workflows/ci.yml'
+              - 'README.md'
+              - 'docs/**'
+            nodejs-koa-sdk:
+              - 'nodejs-koa-sdk/**'
               - '.github/workflows/ci.yml'
               - 'README.md'
               - 'docs/**'
@@ -118,6 +124,31 @@ jobs:
       - run: xvfb-run -a npm run test:packed-hosts
         env:
           TOGGLY_ELECTRON_SDK_TARBALL: ${{ runner.temp }}/toggly-electron-sdk/ops-ai-electron-feature-flags-toggly-1.0.2.tgz
+
+  nodejs-koa-sdk:
+    name: nodejs-koa-sdk
+    needs: changes
+    if: needs.changes.outputs.nodejs-koa-sdk == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nodejs-koa-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: nodejs-koa-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
+      - run: npm run build
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
 
   # Template for Node samples (copy when the sample folder lands):
   # <sample-id>:

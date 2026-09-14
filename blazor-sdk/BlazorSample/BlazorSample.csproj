@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <SampleFramework Condition="'$(SampleFramework)' == ''">net8.0</SampleFramework>
+    <TargetFramework>$(SampleFramework)</TargetFramework>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <DisableImplicitLibraryPacksFolder>true</DisableImplicitLibraryPacksFolder>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <NuGetLockFilePath>packages.$(TargetFramework).lock.json</NuGetLockFilePath>
+    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == ''">8.0.31</AspNetCoreVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="packages.*.lock.json" />
+    <PackageReference Include="Toggly.FeatureManagement.Blazor.Server" Version="3.7.0" />
+    <ProjectReference Include="..\BlazorSample.Client\BlazorSample.Client.csproj" />
+    <PackageReference
+      Include="Microsoft.AspNetCore.Components.WebAssembly.Server"
+      Version="$(AspNetCoreVersion)"
+    />
+  </ItemGroup>
+</Project>
