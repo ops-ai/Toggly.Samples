@@ -1,0 +1,36 @@
+{
+  "name": "remix-sdk-showcase",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Remix SDK showcase for the published Toggly Remix packages",
+  "scripts": {
+    "dev": "remix vite:dev",
+    "build": "remix vite:build",
+    "start": "remix-serve ./build/server/index.js",
+    "test": "node --test tests/*.test.mjs",
+    "smoke": "node scripts/configured-runtime-smoke.mjs"
+  },
+  "dependencies": {
+    "@ops-ai/remix-toggly-client": "1.4.0",
+    "@ops-ai/remix-toggly-core": "1.9.1",
+    "@ops-ai/remix-toggly-server": "1.10.0",
+    "@remix-run/node": "2.17.5",
+    "@remix-run/react": "2.17.5",
+    "@remix-run/serve": "2.17.5",
+    "isbot": "4.4.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "2.17.5",
+    "@types/node": "22.18.11",
+    "@types/react": "18.3.27",
+    "@types/react-dom": "18.3.7",
+    "typescript": "5.9.3",
+    "vite": "6.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

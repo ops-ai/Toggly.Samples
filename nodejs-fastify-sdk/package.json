@@ -14,8 +14,8 @@
     "build": "node --check src/app.js && node --check src/catalog.js && node --check src/fixture.js && node --check src/view.js && node --check src/server.js"
   },
   "dependencies": {
-    "fastify": "5.12.3",
+    "fastify": "5.12.4",
     "@ops-ai/toggly-fastify": "0.3.0",
-    "@ops-ai/toggly-node-core": "0.7.0"
+    "@ops-ai/toggly-node-core": "0.9.0"
   }
 }
