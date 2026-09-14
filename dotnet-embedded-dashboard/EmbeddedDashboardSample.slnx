@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/EmbeddedDashboardSample/EmbeddedDashboardSample.csproj" />
+  <Project Path="tests/EmbeddedDashboardSample.Tests/EmbeddedDashboardSample.Tests.csproj" />
+</Solution>

@@ -1,0 +1,8 @@
+@model WorkshopModel
+@{ ViewData["Title"] = "Programmatic API"; }
+<h1>Use the same decision in code.</h1><p class="lead">Inject the published SDK's feature manager. No dashboard HTTP call or custom evaluator is needed.</p>
+<section class="card"><h2>Boolean branch</h2><pre>await features.IsEnabledAsync("api-v2")</pre><p id="api-result" class="result">Selected API behavior: <strong>@(Model.Flags[FeatureFlags.Api] ? "Version 2" : "Version 1 fallback")</strong></p><p>This page uses <code>IFeatureManager</code> to evaluate different entity contexts. <code>IFeatureManagerSnapshot</code> is useful when one answer per key should remain fixed within a request. Refresh after a dashboard edit.</p></section>
+<section class="card"><h2>Gate an endpoint</h2><pre>[HttpGet("/api/beta")]
+[FeatureGate("beta-access")]
+public IActionResult Beta() =&gt; Ok(...);</pre><p><a href="/api/beta">Call /api/beta</a>: HTTP 200 when enabled, HTTP 404 when disabled or absent. The feature gate controls reachability; sensitive operations still need host authorization.</p></section>
+<section class="card"><h2>Inspect actual results</h2><p><a href="/api/snapshot?preset=@Model.Persona.Preset">GET /api/snapshot</a> returns the evaluated checklist, request persona and local storage state. It is a teaching endpoint, not a public definitions service.</p><p><code>enhanced-submit</code>: <strong>@(Model.Flags[FeatureFlags.Submit] ? "Use the enhanced submission branch" : "Use the existing submission branch")</strong>. The sample does not perform a purchase or mutation.</p></section>

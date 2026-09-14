@@ -1,0 +1,52 @@
+name: .NET embedded dashboard sample
+on:
+  push:
+    branches: [develop]
+    paths: ['dotnet-embedded-dashboard/**', '.github/workflows/dotnet-embedded-dashboard.yml', 'docs/SAMPLE_CONTRACT.md', 'docs/FLAG_TEMPLATE.md']
+  pull_request:
+    paths: ['dotnet-embedded-dashboard/**', '.github/workflows/dotnet-embedded-dashboard.yml', 'docs/SAMPLE_CONTRACT.md', 'docs/FLAG_TEMPLATE.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  embedded-dashboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        framework: [net8.0, net10.0]
+    defaults:
+      run:
+        working-directory: dotnet-embedded-dashboard
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+          cache: true
+          cache-dependency-path: dotnet-embedded-dashboard/**/packages.lock.json
+      - run: dotnet restore --locked-mode
+      - run: dotnet build -c Release -f ${{ matrix.framework }} --no-restore
+      - run: dotnet test -c Release -f ${{ matrix.framework }} --no-build --no-restore
+      - run: dotnet publish src/EmbeddedDashboardSample -c Release -f ${{ matrix.framework }} --no-restore -o artifacts/publish
+      - name: Smoke the published app and bundled dashboard
+        run: |
+          cd artifacts/publish
+          ASPNETCORE_URLS=http://127.0.0.1:5080 dotnet EmbeddedDashboardSample.dll > /tmp/embedded-dashboard.log 2>&1 &
+          sample_pid=$!
+          trap 'kill "$sample_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:5080/ > /tmp/embedded-home.html; then break; fi
+            sleep 1
+          done
+          grep -q 'No account or app key' /tmp/embedded-home.html
+          curl --fail --silent http://127.0.0.1:5080/api/snapshot > /tmp/embedded-snapshot.json
+          python3 -c 'import json; d=json.load(open("/tmp/embedded-snapshot.json")); assert d["storageState"] == "Uninitialized"; assert not any(d["flags"].values())'
+          curl --fail --silent http://127.0.0.1:5080/internal/features > /tmp/embedded-dashboard.html
+          grep -q 'Features' /tmp/embedded-dashboard.html
+          curl --fail --silent http://127.0.0.1:5080/internal/features/assets/dashboard.css > /dev/null
+          test "$(curl --silent -o /dev/null -w '%{http_code}' -H 'X-Forwarded-For: 203.0.113.1' http://127.0.0.1:5080/internal/features)" = 403

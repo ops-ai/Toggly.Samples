@@ -52,6 +52,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Docusaurus SDK Workshop | Docusaurus 3 + React | [`docusaurus-sdk/`](docusaurus-sdk/) | Native MDX/React flags, core Order mapping, live snapshots and build/browser boundaries |
 | Blazor SDK Workshop | .NET 8 SSR / Server / WebAssembly / Auto | [`blazor-sdk/`](blazor-sdk/) | Native gates, scoped identity, Order, filters, hydration and lifecycle |
 | .NET SDK Workshop | ASP.NET Core 10 MVC / Razor | [`dotnet-sdk/`](dotnet-sdk/) | Native gates, variants, request targeting, Order, filters, Hangfire, HealthChecks and NSwag |
+| .NET Embedded Dashboard | ASP.NET Core 8 / 10 Razor + SQLite | [`dotnet-embedded-dashboard/`](dotnet-embedded-dashboard/) | Packaged local dashboard, manual catalog import, targeting, entity context and persistent offline evaluation |
 | .NET Client SDK Showcase | .NET 8 console / Avalonia desktop | [`dotnet-client-sdk/`](dotnet-client-sdk/) | Signed frontend delivery, session identity, Order context, local gates, offline defaults and UI-safe lifecycle |
 | Java Servlet SDK Sample | Java 26 / Tomcat 11 / Servlet 6.1 | [`java-servlet-sdk/`](java-servlet-sdk/) | Native context and gate filters, signed definitions, session identity, Order context and eleven-filter matrix |
 | Java Spring MVC SDK Sample | Spring MVC 7 + Tomcat 11 + FreeMarker | [`java-spring-mvc-sdk/`](java-spring-mvc-sdk/) | Native context/gate interceptors, Boolean argument injection, model-driven templates, Order and eleven-filter matrix |
