@@ -44,6 +44,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Ruby Rails SDK Sample | Rails 8.1 / Ruby 4 | [`ruby-rails-sdk/`](ruby-rails-sdk/) | Native Railtie and view/controller gates, request contexts, Orders, filter matrix and cache snapshots |
 | PHP Laravel SDK Sample | PHP 8.5 + Laravel 13 | [`php-laravel-sdk/`](php-laravel-sdk/) | Native Blade, middleware, attributes, request identity, variants, filter matrix and explicit Order support limits |
 | JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, variants, session identity, entity context, and live refresh with `@ops-ai/feature-flags-toggly` |
+| React SDK Showcase | React 19 + Vite | [`react-sdk/`](react-sdk/) | Provider, declarative and programmatic gates, session identity, Order context, eleven-filter matrix, variants, and safe no-key defaults with `@ops-ai/react-feature-flags-toggly` |
 | Electron SDK Sample | Electron 44 + React 19 | [`electron-sdk/`](electron-sdk/) | Secure main/preload/renderer feature gates, desktop session context, Order context, cache and signed definition updates with `@ops-ai/electron-feature-flags-toggly` |
 | Node Express SDK Sample | Express 5 | [`nodejs-express-sdk/`](nodejs-express-sdk/) | Request middleware, HTTP gates, identities, Order context and filter matrix |
 | Node Koa SDK Sample | Koa 3 | [`nodejs-koa-sdk/`](nodejs-koa-sdk/) | Request-scoped middleware, native gates, identities, Order context and all eleven filters with `@ops-ai/toggly-koa` |
@@ -77,7 +78,6 @@ separate status; previews and blocked checkpoints are not merged runnable entrie
 
 | Sample | Status | Details |
 |--------|--------|---------|
-| React | [Blocked: OPS-1083](https://linear.app/opsai/issue/OPS-1083) | SDK 1.11.0 bundles a private React 18.3.1; provider/hooks fail with the required latest-stable host React 19.2.8. |
 | Nuxt | [Blocked: OPS-1089](https://linear.app/opsai/issue/OPS-1089) | Module 1.1.1 declares Nuxt ^3, excluding required latest-stable Nuxt 4.5.2; dependency resolution fails. |
 
 Compatibility status was checked on September 8, 2026. These blockers concern
