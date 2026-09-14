@@ -30,4 +30,11 @@ jobs:
       - run: mix format --check-formatted
       - run: mix compile --warnings-as-errors
       - run: mix assets.build
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
       - run: mix test
+      # Live service provisioning is external; this gate checks the browser runner
+      # without credentials, launching browsers, or replacing network responses.
+      - run: node --check scripts/live-browser.mjs
+      - run: PLAYWRIGHT_MODULE_PATH=/tmp/unused-playwright.mjs node scripts/live-browser.mjs --check

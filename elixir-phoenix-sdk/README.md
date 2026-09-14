@@ -142,3 +142,99 @@ Set `TOGGLY_SNAPSHOT_PATH` to a writable file in a durable application-owned dir
 The file is trusted local application state. Protect its directory with OS permissions. Independently configure `jwks` or `allowed_kids` in your application's client options to constrain key substitution; replacing the entire unpinned file with another valid key/envelope cannot be detected using that same file. This is not an external rollback ledger.
 
 Without `TOGGLY_APP_KEY`, the sample uses its explicit unsigned demonstration fixture. That mode demonstrates local evaluation and does not prove a live signed cache.
+
+## Bounded live acceptance runners
+
+These optional runners observe an already provisioned application using the public
+Hex packages in `mix.lock`. They never create flags, supply replacement HTTP
+responses, or rotate signing keys. Local fixture tests establish harness behavior;
+only an actual connected run establishes live acceptance.
+
+Provide the backend key through the existing process environment, without putting
+it in a command argument or a committed file. Set `TOGGLY_ENVIRONMENT` and an
+absolute `TOGGLY_SNAPSHOT_PATH` in a durable application-owned directory. Start with
+`new-dashboard` enabled, the shared flag template configured, and the Order bindings
+from the setup section. From this sample directory:
+
+```sh
+mix deps.get --check-locked
+mix assets.build
+mix run --no-start scripts/live_acceptance.exs --acceptance serve
+```
+
+The dedicated server uses signed definitions at `https://definitions.toggly.io`,
+WebSocket invalidation, zero polling, and no usage upload. It preserves the
+optional `TOGGLY_MAX_SIGNATURE_AGE_SECONDS` policy; use the same value for cold restore. The ordinary sample's
+60-second polling configuration does not apply to this runner. Wait for its JSON
+`ready` event before opening the browser runner. Do not use the sample's explicit
+Refresh button during this check. Enter `stop` in the server terminal to dispose
+its supervised client and endpoint. EOF, invalid input, or the bounded timeout
+exits unsuccessfully. `TOGGLY_ACCEPTANCE_TIMEOUT_MS` defaults to 300000 (five
+minutes), with an allowed range of 1000–3600000.
+
+Install the optional public browser tool separately from application dependencies:
+
+```sh
+npm install --prefix /tmp/toggly-live-browser --no-save playwright@1.62.1
+/tmp/toggly-live-browser/node_modules/.bin/playwright install chromium
+PLAYWRIGHT_MODULE_PATH=/tmp/toggly-live-browser/node_modules/playwright/index.mjs \
+  node scripts/live-browser.mjs
+```
+
+`SAMPLE_URL` defaults to `http://localhost:4000` and accepts loopback HTTP only.
+The browser runner owns a Playwright browser server and its process handle.
+Cleanup allows one second for graceful disconnect/shutdown, then at most one
+second for termination of that owned process. Cleanup errors emit only the static
+`browser_cleanup_failed` event and exit nonzero; any earlier failure event is
+preserved. No existing user browser is attached or terminated.
+
+The browser runner requires real connected LiveView sockets, two isolated Alice
+and Bob contexts, the expected Targeting and Order decisions, and dashboard ON.
+After `browser_ready_toggle_dashboard_off`, an authorized operator disables
+`new-dashboard` and saves the dashboard change. After `dashboard_off_toggle_on`,
+re-enable it and save. `dashboard_on_observed` means both existing pages observed
+the ON→OFF→ON sequence while preserving their distinct contexts. There is no page
+reload, refresh request, fixture interception, or network polling in this runner.
+The server separately emits verified update metadata; correlate those events with
+the authorized dashboard operations. An absent missing-key banner alone is not
+proof of remote activation.
+
+Server events contain only allowlisted evaluated booleans, source, timestamp, and
+SHA-256 hashes of revision, persisted snapshot, and accepted public key ID. They
+exclude raw definitions, SDK keys, request URLs and response bodies. SDK/Phoenix
+logs are disabled in this dedicated diagnostic process because exception messages
+can contain credential-bearing URLs; failed acceptance checks still exit nonzero
+with a sanitized failure event. Retain the JSON events, not raw process state.
+
+After entering `stop`, use the timestamp and `snapshot_sha256` from the **last**
+server event as `TOGGLY_ACCEPTANCE_EXPECTED_TIMESTAMP` and
+`TOGGLY_ACCEPTANCE_EXPECTED_SNAPSHOT_SHA256` environment inputs. Keep the same
+backend key, environment and snapshot path. Start a fresh OS process:
+
+```sh
+mix run --no-start scripts/live_acceptance.exs --acceptance cold
+```
+
+`cold_verified` requires the exact expected saved bytes and signed timestamp,
+source `snapshot`, no transport call during startup, and unchanged evaluations
+after an explicit refresh is rejected by a deny-all transport. WebSocket and
+polling are disabled in this phase. This proves SDK transport-denied cold restore;
+it does not claim an operating-system network outage. A missing, corrupted,
+wrong-application or wrong-environment snapshot fails. Never delete the accepted
+snapshot merely to make a check pass.
+
+A signing-key rotation requires separate authorization because the signing service
+is shared. These runners do not perform rotation. During a separately authorized
+rotation, a changed `kid_sha256` on a verified update can be correlated with the
+operation; restart the cold phase using the new saved metadata. A backend SDK-key
+replacement is a different operation and changes the snapshot's application
+partition. Keep rotation and rejected-signature evidence separate from this
+initial toggle/cold-restore check.
+
+Credential-free checks: `mix test` generates a local P-256 fixture, persists it
+through the installed public SDK, and starts fresh deny-transport child processes
+for valid, wrong-partition and corrupted snapshots. It also runs local driver regressions
+for rejected and stalled browser cleanup, checking sanitized output and actual
+owned-child termination. `node --check
+scripts/live-browser.mjs` checks JavaScript syntax; its `--check` mode validates
+configuration only and never launches a browser or claims live acceptance.
