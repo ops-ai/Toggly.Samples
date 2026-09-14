@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useFeatureFlag, useFeatureGate, useFeatureOff, useToggly } from '@ops-ai/nuxt-toggly-client'
-import { orderForPreset, type DemoPreset } from '../../lib/demo'
+import { defaultIdentityForPreset, orderForPreset, type DemoPreset } from '../../lib/demo'
 
 const props = defineProps<{ preset: DemoPreset }>()
 
@@ -13,20 +13,31 @@ const { isEnabled: allEnabled } = useFeatureGate(['new-dashboard', 'api-v2'], 'a
 const { isEnabled: anyEnabled } = useFeatureGate(['new-dashboard', 'api-v2'], 'any')
 const toggly = useToggly()
 
-const identityCookie = useCookie<string>('demo-identity', { default: () => 'alice' })
-const identityInput = ref(identityCookie.value)
+// Do not eagerly create a cookie. With no browser session, each preset keeps
+// its documented default identity (alice for matching, bob for non-matching).
+const identityCookie = useCookie<string | null>('demo-identity', { default: () => null })
+const identityInput = ref(identityCookie.value ?? defaultIdentityForPreset(props.preset))
 const programmaticResult = ref<boolean | null>(null)
 const entityResult = ref<boolean | null>(null)
 const actionMessage = ref('')
 
 const order = computed(() => orderForPreset(props.preset))
 
+watch(
+  () => props.preset,
+  (nextPreset) => {
+    if (!identityCookie.value) {
+      identityInput.value = defaultIdentityForPreset(nextPreset)
+    }
+  },
+)
+
 async function applyBrowserIdentity() {
   // The cookie gives server requests a per-browser demo session. setIdentity
   // updates this browser SDK only; it deliberately does not carry roles/claims.
   identityCookie.value = identityInput.value
   await toggly.setIdentity(identityInput.value)
-  actionMessage.value = `Browser identity is now ${identityInput.value}. Reload the server snapshot to observe its cookie-scoped value.`
+  actionMessage.value = `Browser identity is now ${identityInput.value}. Both presets will use this cookie on the next server request.`
 }
 
 async function checkProgrammatically() {

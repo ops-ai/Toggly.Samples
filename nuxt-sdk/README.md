@@ -14,14 +14,15 @@ tarball, or substitute evaluator. Node 22.19+ is required by this sample.
 
 ```sh
 npm ci
-cp .env.example .env.local
+cp .env.example .env
 npm run dev
 # open http://localhost:3000
 ```
 
 With the blank example key, the page deliberately displays a **Missing Toggly
 application key** banner and all safe defaults are off. It does not crash or
-make a definition request. Put your own key in ignored `.env.local`, restart,
+make a definition request. Nuxt CLI loads the project-root `.env` file for
+`npm run dev` and `npm run build`; put your own key in ignored `.env`, restart,
 and use the same local URL. This is a Nuxt application, so the environment
 variable is `TOGGLY_APP_KEY` — not a Vite-prefixed variable.
 
@@ -32,7 +33,7 @@ A feature flag is a named runtime decision. A definition for
 with the current request or browser context, then the application chooses the
 new or established branch. A flag is not authentication or authorization.
 
-1. Complete the Toggly app recipe below, then put its application key in `.env.local`.
+1. Complete the Toggly app recipe below, then put its application key in `.env`.
 2. Start the app and open the **Home** section. Its snapshot says `live` once
    the SDK has a configured key; it says `defaults` with no key.
 3. Turn `new-dashboard` on in your app's Production environment and refresh.
@@ -49,12 +50,13 @@ new or established branch. A flag is not authentication or authorization.
 | File | What it teaches |
 |---|---|
 | [`nuxt.config.ts`](nuxt.config.ts) | The module configuration, app-key environment variable, safe defaults, SSR and cache choice |
+| [`lib/toggly-options.ts`](lib/toggly-options.ts) | The explicit hand-off from Nuxt-loaded `.env` values to module initialization options |
 | [`lib/demo.ts`](lib/demo.ts) | Shared flag names, all eleven filter rows, and canonical `Order` entity shape |
 | [`server/plugins/toggly-context.ts`](server/plugins/toggly-context.ts) | Per-H3-event identity/claims/request extraction without a global user identity |
 | [`server/api/snapshot.get.ts`](server/api/snapshot.get.ts) | Server evaluation, multi-key gate, and Order-aware ContextProperty checks |
 | [`app/components/ClientGates.vue`](app/components/ClientGates.vue) | Vue declarative gates, composables, browser-session identity and entity checks |
 | [`server/api/beta.get.ts`](server/api/beta.get.ts) | Nuxt `defineFeatureHandler` wrapping a Nitro API route |
-| [`tests/demo.test.ts`](tests/demo.test.ts) | Executable checks for the common flag/filter/entity contract |
+| [`tests/demo.test.ts`](tests/demo.test.ts) | Executable checks for the common flag/filter/entity contract, configured key forwarding, and H3 cookie identity isolation |
 
 The Nuxt module initializes the browser SDK from public module configuration so
 the browser can fetch public definitions. The Toggly application key identifies
@@ -76,15 +78,16 @@ so this app needs to be created manually:
 4. Add the five baseline flags and the eleven filter flags from the shared
    [flag template](../docs/FLAG_TEMPLATE.md). Use the specified 100% segment
    rollout for restrictive filters and 50% only for `filter-percentage`.
-5. Copy `.env.example` to ignored `.env.local`, set your `TOGGLY_APP_KEY`, keep
+5. Copy `.env.example` to ignored `.env`, set your `TOGGLY_APP_KEY`, keep
    `TOGGLY_ENVIRONMENT=Production`, and restart `npm run dev`. Do not commit the key.
 
-The Matching preset is alice, role=admin, country=US, English, Chrome on macOS,
-and `ord-vip` / `Vip=true`. Non-matching is bob, role=user, country=CA, French,
-Firefox on Windows, and `ord-standard` / `Vip=false`. The demo supplies these
-values through a preset query and cookie solely to make the learning exercise
-repeatable. Replace them with trusted session data and request data in a real
-application. Do not trust a user-controlled role, country, or query parameter.
+With no `demo-identity` browser cookie, Matching defaults to alice and
+Non-matching defaults to bob. Both presets retain their own role, country,
+language, browser, OS, and Order values, but both derive **identity** from that
+cookie once the browser session sets it. The demo supplies these values solely
+to make the learning exercise repeatable. Replace them with trusted session
+data and request data in a real application. Do not trust a user-controlled
+role, country, or query parameter.
 
 ## Section map
 
@@ -137,11 +140,11 @@ percentage result.
 
 ## Manual live checklist
 
-- [ ] Create the app, Order schema, flags, and allowed origin above; add a real key only to `.env.local`.
+- [ ] Create the app, Order schema, flags, and allowed origin above; add a real key only to `.env`.
 - [ ] Toggle `new-dashboard`; confirm both `<Feature>` and `<Feature negate>` branches switch after refresh.
 - [ ] Toggle `api-v2`; compare the multi-key `all` and `any` gate results.
 - [ ] Toggle `enhanced-submit`; use the programmatic button and observe its boolean result.
-- [ ] Change the browser identity; reload and confirm the Nitro snapshot receives only the cookie-scoped session identity.
+- [ ] Change the browser identity; reload Matching and Non-matching and confirm both Nitro snapshots receive that cookie-scoped session identity while their other preset fields stay distinct.
 - [ ] Compare `ord-vip` and `ord-standard`; confirm `ExpressCheckout` and `filter-context-property` follow `Vip`.
 - [ ] Compare Matching and Non-matching filter presets. Confirm AlwaysOn and the open TimeWindow remain on; record rather than assume the percentage outcome.
 - [ ] Toggle `beta-access`; open `/api/beta` and confirm `defineFeatureHandler` allows or denies the handler.

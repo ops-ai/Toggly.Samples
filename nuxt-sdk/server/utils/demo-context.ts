@@ -1,5 +1,5 @@
 import { getCookie, getHeader, getQuery, type H3Event } from 'h3'
-import { isDemoPreset, orderForPreset, type DemoPreset } from '../../lib/demo'
+import { defaultIdentityForPreset, isDemoPreset, orderForPreset, type DemoPreset } from '../../lib/demo'
 
 /**
  * The controls in this sample intentionally use a cookie and query preset.
@@ -18,9 +18,13 @@ export function getDemoOrder(event: H3Event) {
 
 export function getDemoEvalContext(event: H3Event) {
   const preset = getDemoPreset(event)
+  // A browser session identity wins for either preset. The preset still owns
+  // the demonstration defaults and all non-identity filter inputs.
+  const identity = getCookie(event, 'demo-identity') || defaultIdentityForPreset(preset)
+
   if (preset === 'matching') {
     return {
-      identity: 'alice',
+      identity,
       groups: ['beta'],
       claims: { role: 'admin' },
       request: {
@@ -33,7 +37,7 @@ export function getDemoEvalContext(event: H3Event) {
   }
 
   return {
-    identity: getCookie(event, 'demo-identity') || 'bob',
+    identity,
     groups: ['users'],
     claims: { role: 'user' },
     request: {

@@ -41,7 +41,7 @@ function choosePreset(next: DemoPreset) {
       <h2>Missing Toggly application key</h2>
       <p>
         The app is intentionally still running with safe, off defaults. Copy
-        <code>.env.example</code> to ignored <code>.env.local</code>, add your
+        <code>.env.example</code> to ignored <code>.env</code>, add your
         own <code>TOGGLY_APP_KEY</code>, then restart <code>npm run dev</code>.
         This Nuxt sample uses <code>TOGGLY_APP_KEY</code>; there is no Vite-prefixed variable.
       </p>

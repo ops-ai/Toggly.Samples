@@ -48,6 +48,11 @@ export function orderForPreset(preset: DemoPreset): OrderContext {
     : { kind: 'Order', key: 'ord-standard', attributes: { Vip: false, Total: 40 } }
 }
 
+/** The session-free identity used by each reproducible filter preset. */
+export function defaultIdentityForPreset(preset: DemoPreset) {
+  return preset === 'matching' ? 'alice' : 'bob'
+}
+
 export const filterDescriptions: Record<(typeof filterFlags)[number], string> = {
   'filter-always-on': 'AlwaysOn has no request input and stays enabled.',
   'filter-percentage': '50% rollout uses a stable identity bucket; a preset does not promise ON.',
