@@ -1,0 +1,39 @@
+name: .NET client console and desktop samples
+on:
+  push:
+    branches: [develop]
+    paths: ['dotnet-client-sdk/**', '.github/workflows/dotnet-client-sdk.yml']
+  pull_request:
+    paths: ['dotnet-client-sdk/**', '.github/workflows/dotnet-client-sdk.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sample:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      TOGGLY_APP_KEY: ''
+      TOGGLY_ENVIRONMENT: Production
+    defaults:
+      run:
+        working-directory: dotnet-client-sdk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - run: dotnet restore Console --locked-mode
+      - run: dotnet restore Desktop --locked-mode
+      - run: dotnet restore tests/Smoke --locked-mode
+      - run: dotnet build Console -c Release --no-restore
+      - run: dotnet build Desktop -c Release --no-restore
+      - run: dotnet run --project tests/Smoke -c Release --no-restore
+      - run: dotnet run --project Console -c Release --no-build -- --smoke
+      - name: Verify interactive terminal cancellation
+        if: runner.os != 'Windows'
+        run: |
+          python3 -m unittest discover -s tests -p test_console_terminal.py -v
+          python3 tests/console_terminal.py
