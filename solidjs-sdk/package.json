@@ -18,7 +18,7 @@
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.10",
     "jsdom": "^26.1.0",
-    "typescript": "^5.9.0",
+    "typescript": "^7.0.2",
     "vite": "^6.3.0",
     "vite-plugin-solid": "^2.11.0",
     "vitest": "^4.1.11"
