@@ -28,6 +28,12 @@ jobs:
       - run: dotnet restore Console --locked-mode
       - run: dotnet restore Desktop --locked-mode
       - run: dotnet restore tests/Smoke --locked-mode
+      - run: dotnet restore tests/LiveAcceptance --locked-mode
+      - run: dotnet restore tests/LivePolicy --locked-mode
+      - run: dotnet build tests/LiveAcceptance -c Release --no-restore
+      - run: dotnet run --project tests/LivePolicy -c Release --no-restore
+      - name: Verify live runner refuses missing configuration
+        run: python tests/live-guards.py dotnet tests/LiveAcceptance/bin/Release/net8.0/LiveAcceptance.dll
       - run: dotnet build Console -c Release --no-restore
       - run: dotnet build Desktop -c Release --no-restore
       - run: dotnet run --project tests/Smoke -c Release --no-restore
