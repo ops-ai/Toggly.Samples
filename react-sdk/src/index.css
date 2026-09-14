@@ -1,0 +1,7 @@
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #172033; background: #f5f7fb; line-height: 1.5; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1, h2, h3 { color: #111827; line-height: 1.2; }
+h1 { font-size: clamp(2rem, 5vw, 3.25rem); margin: 0.35rem 0 0.75rem; }
+h2 { margin-top: 0; }
+a { color: #1d4ed8; }
