@@ -12,7 +12,7 @@
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
     <PackageReference Include="Toggly.FeatureManagement.Dashboard" Version="3.7.0" />
     <PackageReference Include="Toggly.FeatureManagement.Storage.EntityFramework" Version="3.7.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.31" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.20" Condition="'$(TargetFramework)' == 'net8.0'" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" Condition="'$(TargetFramework)' == 'net10.0'" />
   </ItemGroup>
 </Project>
