@@ -64,6 +64,7 @@ public partial class Workshop
         "ord-standard",
         new Dictionary<string, object?> { { "Vip", false }, { "Total", 25 } }
     );
+    private EntityContext CurrentOrder = VipOrder;
     private Dictionary<string, bool> Values = [];
     private string Identity = "anonymous";
     private int Updates;
@@ -92,6 +93,7 @@ public partial class Workshop
     private async Task SetPreset(bool matching)
     {
         Identity = matching ? "alice" : "bob";
+        CurrentOrder = matching ? VipOrder : StandardOrder;
         await Features.SetContextAsync(
             new(
                 Identity,
@@ -111,7 +113,7 @@ public partial class Workshop
         )
             Values[key] = await Features.EvaluateAsync(
                 [key],
-                entity: key is "ExpressCheckout" or "filter-context-property" ? VipOrder : null
+                entity: key is "ExpressCheckout" or "filter-context-property" ? CurrentOrder : null
             );
     }
 

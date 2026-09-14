@@ -28,6 +28,52 @@ async function preset(page, name, identity) {
   await page.getByRole("button", { name, exact: true }).click();
   await page.getByTestId("identity").filter({ hasText: identity }).waitFor();
 }
+async function matrixResult(page, key, expected) {
+  const result = page
+    .getByRole("row")
+    .filter({ has: page.getByRole("cell", { name: key, exact: true }) })
+    .getByRole("cell")
+    .nth(1);
+  await result
+    .filter({ hasText: new RegExp(`^${expected}$`) })
+    .waitFor({ timeout: 5000 });
+  assert.equal(await result.innerText(), expected);
+}
+
+test("matching and non-matching presets select their Order in SSR and interactive filter matrices", async () => {
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    for (const [name, expected] of [
+      ["matching", "ON"],
+      ["nonmatching", "OFF"],
+      ["matching", "ON"],
+    ]) {
+      await page.goto(`${origin}/ssr/filters?preset=${name}`);
+      await matrixResult(page, "filter-targeting", expected);
+      await matrixResult(page, "filter-context-property", expected);
+    }
+    await ready(page, "server");
+    await page.getByRole("link", { name: "Filters matrix", exact: true }).click();
+    for (const [name, expected] of [
+      ["Matching", "ON"],
+      ["Non-matching", "OFF"],
+      ["Matching", "ON"],
+    ]) {
+      await page.getByRole("button", { name, exact: true }).click();
+      await matrixResult(page, "filter-targeting", expected);
+      await matrixResult(page, "filter-context-property", expected);
+    }
+    await page.getByRole("button", { name: "Non-matching", exact: true }).click();
+    await matrixResult(page, "filter-context-property", "OFF");
+    await page.getByRole("link", { name: "Entity context", exact: true }).click();
+    await page.getByTestId("vip").filter({ hasText: "ON" }).waitFor();
+    assert.match(await page.getByTestId("standard").innerText(), /OFF$/);
+  } finally {
+    await context.close();
+  }
+});
+
 test("all four actual render modes, seven pages and separate circuit contexts", async () => {
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -132,6 +178,10 @@ test("real WebAssembly verifies canonical signed fixtures, refreshes on push and
         requirement: "all",
         rules: [{ property: "Vip", op: "eq", value: "true" }],
       },
+      "filter-context-property": {
+        requirement: "all",
+        rules: [{ property: "Vip", op: "eq", value: "true" }],
+      },
     });
     const timestamp = Math.floor(Date.now() / 1000);
     const digest = await webcrypto.subtle.digest(
@@ -157,6 +207,18 @@ test("real WebAssembly verifies canonical signed fixtures, refreshes on push and
   await ready(page, "wasm");
   await preset(page, "Matching", "alice");
   await page.getByTestId("targeting").filter({ hasText: "ON" }).waitFor();
+  await page.getByRole("link", { name: "Filters matrix", exact: true }).click();
+  for (const [name, expected] of [
+    ["Matching", "ON"],
+    ["Non-matching", "OFF"],
+    ["Matching", "ON"],
+  ]) {
+    await page.getByRole("button", { name, exact: true }).click();
+    await matrixResult(page, "filter-targeting", expected);
+    await matrixResult(page, "filter-context-property", expected);
+  }
+  await page.getByRole("button", { name: "Non-matching", exact: true }).click();
+  await matrixResult(page, "filter-context-property", "OFF");
   await page.getByRole("link", { name: "Entity context", exact: true }).click();
   await page.getByTestId("vip").filter({ hasText: "ON" }).waitFor();
   assert.match(await page.getByTestId("standard").innerText(), /OFF$/);
