@@ -45,6 +45,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, variants, session identity, entity context, and live refresh with `@ops-ai/feature-flags-toggly` |
 | Electron SDK Sample | Electron 44 + React 19 | [`electron-sdk/`](electron-sdk/) | Secure main/preload/renderer feature gates, desktop session context, Order context, cache and signed definition updates with `@ops-ai/electron-feature-flags-toggly` |
 | Node Express SDK Sample | Express 5 | [`nodejs-express-sdk/`](nodejs-express-sdk/) | Request middleware, HTTP gates, identities, Order context and filter matrix |
+| Node Koa SDK Sample | Koa 3 | [`nodejs-koa-sdk/`](nodejs-koa-sdk/) | Request-scoped middleware, native gates, identities, Order context and all eleven filters with `@ops-ai/toggly-koa` |
 | NestJS SDK Sample | NestJS 11 HTTP | [`nestjs-sdk/`](nestjs-sdk/) | Request-scoped DI, decorators, guards, entity context and filters |
 | Node Hono SDK Showcase | Hono 4 / Node 22 | [`nodejs-hono-sdk/`](nodejs-hono-sdk/) | Request context, middleware gates, eleven filters and Order entities with `@ops-ai/toggly-hono` |
 | Docusaurus SDK Workshop | Docusaurus 3 + React | [`docusaurus-sdk/`](docusaurus-sdk/) | Native MDX/React flags, core Order mapping, live snapshots and build/browser boundaries |
@@ -73,7 +74,6 @@ separate status; previews and blocked checkpoints are not merged runnable entrie
 | Sample | Status | Details |
 |--------|--------|---------|
 | React | [Blocked: OPS-1083](https://linear.app/opsai/issue/OPS-1083) | SDK 1.11.0 bundles a private React 18.3.1; provider/hooks fail with the required latest-stable host React 19.2.8. |
-| Koa | [Blocked: OPS-1087](https://linear.app/opsai/issue/OPS-1087) | Adapter 0.3.0 declares Koa ^2, excluding required latest-stable Koa 3.2.1; dependency resolution fails. |
 | Nuxt | [Blocked: OPS-1089](https://linear.app/opsai/issue/OPS-1089) | Module 1.1.1 declares Nuxt ^3, excluding required latest-stable Nuxt 4.5.2; dependency resolution fails. |
 
 Compatibility status was checked on September 8, 2026. These blockers concern
