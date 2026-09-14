@@ -114,21 +114,24 @@ needs **no SaaS app setup** and has one logical environment, `Production`.
 ## Persistence, configuration and security
 
 `Program.cs` explicitly calls `EnsureCreatedAsync()` for the sample's **dedicated**
-SQLite database before serving requests. This creates schema only; it never seeds,
-overwrites or resets a catalog. Do not copy this schema setup into an arbitrary
-existing application database. Use the provider's catalog-only schema script or
-host migrations there.
+SQLite database before serving requests. It creates a missing database and its
+schema, but never seeds or overwrites a catalog. A schema setup failure aborts
+startup. Do not copy this setup into an arbitrary existing application database;
+use the provider's catalog-only schema script or host migrations there.
 
 The catalog name is explicitly fixed to `EmbeddedDashboardSample`. Keep a stable
 name across hosts sharing storage. Save and restart with the same database path
 to retain your flags. Back up with dashboard Export; import backups explicitly.
-Do not delete the database as a routine startup or recovery step.
+Do not delete the database as a routine startup or recovery step. If the database
+file is lost, restore its backup before restarting: this sample's schema setup
+would otherwise create an empty database.
 
 A successful dashboard write publishes to this host immediately. The default
-five-second polling interval lets other hosts observe changes. An initial storage
-failure leaves flags false; a later failure retains the last valid snapshot and
-reports stale/unavailable state. Missing/corrupt storage is not silently recreated.
-The dashboard Storage page reports the active revision and last successful refresh.
+five-second polling interval lets other hosts observe changes. After schema setup
+succeeds, an initial runtime catalog-read failure leaves flags false. Later refresh
+failures retain the last valid snapshot and report stale/unavailable state; the
+runtime does not reset a missing or invalid catalog. The dashboard Storage page
+reports the active revision and last successful refresh.
 
 [`.env.example`](.env.example) documents optional **process environment variables**;
 ASP.NET Core does not load that file automatically. There are no browser-exposed
