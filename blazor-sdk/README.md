@@ -45,7 +45,7 @@ Blank keys work intentionally: the missing-key banner stays visible. The server
 feeds offline definition fixtures through the actual trusted SDK parser/filters;
 browser defaults turn the baseline flags ON and restrictive/entity flags OFF.
 Browser defaults do not simulate a signed Order rule. No fake app key is sent to
-a service. SDK HTTP traffic in server offline mode is intercepted locally,
+a service. SDK HTTP traffic in the blank-key demonstration is intercepted locally,
 including telemetry; its independent WebSocket is limited to unused loopback.
 
 ## Configure Toggly
@@ -70,6 +70,83 @@ environment and a backend-configured boolean. Backend and management credentials
 never belong in `BlazorSample.Client`, that response, or persistent component state.
 The environment is case-sensitive; the fallback is Production.
 
+## Persist trusted Server definitions across restarts
+
+Set `TOGGLY_SNAPSHOT_DIRECTORY` to an absolute, private directory **outside the
+application content root and source checkout**. Supply the Backend App Key and
+case-sensitive environment through the server process environment as above.
+Persistence is opt-in; leaving the directory unset keeps the existing behavior.
+Do not put this directory in `wwwroot`, a browser profile, or version control.
+
+The Sample-owned `FileFeatureSnapshotProvider` implements the trusted .NET SDK's
+`IFeatureSnapshotProvider`; it is not the portable Client's `FileSnapshotStore`.
+No additional package or database is needed. A hash of the app-key/environment
+pair namespaces records without storing the key. Each definitions or public JWKS
+record is limited to 4 MiB and replaced atomically using a temporary file in the
+same directory. Unix directories/files are owner-only (0700/0600). On Windows,
+place the directory under a service-account-only ACL before starting the host.
+Symbolic links, empty entries (including stable Unix FIFOs), malformed/oversize
+records and mismatched namespaces are rejected. Entry checks assume a stable,
+trusted directory; they do not defend against a hostile service-account process
+racing to replace paths.
+Use one application host/service account per directory; this is not a distributed
+cache or a multi-writer deployment design.
+
+The directory remains **trusted local application state**, including the public
+JWKS. SDK 3.7.0 re-verifies the exact saved signed definitions and rejects a typed
+copy that differs from those bytes. This does not authenticate simultaneous
+replacement of both definitions and their saved public signing keys by an attacker
+who controls the directory. The adapter preserves the SDK's timestamp fields;
+SDK 3.7.0 does not enforce the persisted JWKS expiry timestamp or a maximum offline
+definitions age. Offline operation cannot learn about a revoked signing key or
+new flag value. Protect the service account and storage, and reconnect to obtain
+current definitions. Do not treat this cache as a new independent trust anchor.
+
+To exercise a real restart after configuring the flags, first publish the host
+and start it online with the same environment-provided credentials you normally
+use. For example, choose `/private/var/lib/blazor-toggly` on a Unix host where your
+service account owns that directory (use your own absolute private path):
+
+```sh
+# Run from the published directory; credentials are already in this process environment.
+TOGGLY_SNAPSHOT_DIRECTORY=/private/var/lib/blazor-toggly \
+  dotnet BlazorSample.dll --urls http://localhost:5280
+```
+
+Visit `/server/home` and turn `new-dashboard` ON. Wait for **New dashboard enabled**
+and for `definitions.json` and `jwks.json` to exist beneath the snapshot directory.
+Stop that host completely. Start a **new process**, retaining the same Backend
+App Key, environment and snapshot directory, with explicit offline mode:
+
+```sh
+TOGGLY_SNAPSHOT_DIRECTORY=/private/var/lib/blazor-toggly \
+TOGGLY_NETWORK_MODE=offline \
+  dotnet BlazorSample.dll --urls http://localhost:5280
+```
+
+Offline mode requires both the backend key and snapshot directory. It supplies
+no fixture definitions. SDK HTTP/gRPC calls are denied before transport and
+retries are removed; the SDK's separate direct WebSocket is confined to the
+unused loopback port `127.0.0.1:1`. That connection may be attempted but cannot
+reach the definitions service. Local Blazor SignalR remains available. Ensure
+nothing listens on that port. Use an OS egress policy as well when your deployment
+requires prohibition of every external socket independently of application settings.
+
+Open a fresh `/server/home` circuit: ON must survive the restart. With missing,
+corrupt, or wrong-app/environment storage, an unknown `new-dashboard` instead
+resolves OFF (**Classic dashboard**); the trusted SDK's missing-definition startup
+waits still apply. Check `/server/identity` and `/server/entity` against your saved
+rules too. Server **Refresh** re-evaluates cached definitions in this mode; it
+cannot fetch a newer flag value. Return `TOGGLY_NETWORK_MODE` to `online` and
+restart to resume service updates. This setting applies to the trusted server;
+WASM and Auto browser execution retain their own network/cache configuration.
+
+`TOGGLY_DEFINITIONS_URL` is a server-only override of the SDK's trusted definitions
+origin, chiefly useful for the local signed integration test. It accepts absolute
+HTTPS or loopback HTTP without credentials, query or fragment. Leave it unset for
+Toggly SaaS; an arbitrary untrusted origin would also supply signing keys. Explicit
+offline mode takes precedence. It is never included in public browser settings.
+
 ## First-toggle exercise
 
 1. Open `/server/home` or `/wasm/home` with the appropriate real key configured.
@@ -92,16 +169,16 @@ The trusted server SDK retains its own signed-definition/cache and usage policy.
 
 ## Section map
 
-| Path after render mode | Requirement and teaching surface | Source |
-| --- | --- | --- |
-| `home` | Map, flag checklist, live snapshot, first toggle | `BlazorSample.Client/Workshop.razor` home branch |
-| `gates` | Paired child/negated content, loading, all/any; variants distinction | Same file, gates branch |
-| `api` | Programmatic evaluate/refresh | Same file, API branch and `Evaluate` |
-| `identity` | Matching alice/vip/admin and non-matching bob/standard/user | Same file, `SetPreset` |
-| `entity` | `ord-vip` vs `ord-standard`, Order.Vip | Same file, entity branch |
-| `filters` | Full shared filter matrix, explicit unsupported rows | Same file, filters branch |
-| `framework` | Runtime lifecycle, refresh, failures, subscription cleanup | Same file, framework branch and `Dispose` |
-| Every page | Missing-key banner without crashing | Same file, header |
+| Path after render mode | Requirement and teaching surface                                     | Source                                           |
+| ---------------------- | -------------------------------------------------------------------- | ------------------------------------------------ |
+| `home`                 | Map, flag checklist, live snapshot, first toggle                     | `BlazorSample.Client/Workshop.razor` home branch |
+| `gates`                | Paired child/negated content, loading, all/any; variants distinction | Same file, gates branch                          |
+| `api`                  | Programmatic evaluate/refresh                                        | Same file, API branch and `Evaluate`             |
+| `identity`             | Matching alice/vip/admin and non-matching bob/standard/user          | Same file, `SetPreset`                           |
+| `entity`               | `ord-vip` vs `ord-standard`, Order.Vip                               | Same file, entity branch                         |
+| `filters`              | Full shared filter matrix, explicit unsupported rows                 | Same file, filters branch                        |
+| `framework`            | Runtime lifecycle, refresh, failures, subscription cleanup           | Same file, framework branch and `Dispose`        |
+| Every page             | Missing-key banner without crashing                                  | Same file, header                                |
 
 ## Source-reading map
 
@@ -171,6 +248,24 @@ npx playwright install --with-deps chromium
 # With the host listening at http://127.0.0.1:5280:
 npm test
 ```
+
+The persistence checks use the same public package locks. After publishing the
+host to `published`, run:
+
+```sh
+dotnet restore tests/SnapshotChecks/SnapshotChecks.csproj --locked-mode
+dotnet run --project tests/SnapshotChecks/SnapshotChecks.csproj --no-restore -c Release -- /absolute/private/test-directory
+node --test tests/persistence.test.mjs
+```
+
+Use the same `SampleFramework`/`AspNetCoreVersion` properties for .NET 10 as above.
+The C# checks exercise atomic replacement, file permissions, cancellation, bounds,
+namespace isolation and symlink rejection. The browser test owns local signed
+HTTP fixtures and fresh host processes; it verifies actual Server circuit recovery
+and invalid-storage OFF decisions. These are credential-free fixture checks,
+not a claim of live-service persistence acceptance. The existing CI runs both native
+toolchains. `PUBLISHED_DIRECTORY` and `DOTNET_HOST_PATH` can select an alternate
+published output and its matching host executable.
 
 The browser suite exercises real SSR/Server/WASM/Auto hosts, isolated contexts,
 entity behavior, signed client HTTP fixtures, live invalidation, corrupt-signature
