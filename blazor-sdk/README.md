@@ -8,17 +8,22 @@ authorization; demo personas do not authenticate a user.
 
 ## Quick start
 
-Install the .NET 8 SDK and run:
+Install .NET SDK **8.0.425** and run from this directory. `global.json` selects
+that exact SDK; a missing version fails instead of silently selecting a newer SDK:
 
 ```sh
 dotnet restore BlazorSample.sln --locked-mode
 dotnet run --project BlazorSample --no-restore --no-launch-profile --urls http://localhost:5280
 ```
 
-To build a native .NET 10 host/client with .NET 10 installed, use
+To build a native .NET 10 host/client, install SDK **10.0.400**, change
+`sdk.version` in this directory's `global.json` to `10.0.400`, and use
 `dotnet restore BlazorSample.sln --locked-mode -p:SampleFramework=net10.0 -p:AspNetCoreVersion=10.0.11`,
 then `dotnet publish BlazorSample --no-restore -c Release -p:SampleFramework=net10.0 -p:AspNetCoreVersion=10.0.11 -o published`
 then `cd published` and run `dotnet BlazorSample.dll --urls http://localhost:5280`.
+Set `sdk.version` back to `8.0.425` for the .NET 8 commands. Keep `rollForward`
+set to `disable`. SDK patch releases can change implicit build-tool packages, so
+selecting the matching SDK is required as well as selecting the target framework.
 Rebuild with the matching framework; do not merely roll an already published
 .NET 8 application's runtime forward because framework static-asset routing changes.
 
