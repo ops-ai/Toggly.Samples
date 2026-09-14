@@ -1,0 +1,24 @@
+{
+  "name": "nuxt-sdk",
+  "private": true,
+  "type": "module",
+  "description": "Nuxt 4 feature flag showcase using the published Toggly Nuxt SDK",
+  "engines": { "node": ">=22.19.0" },
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "start": "node .output/server/index.mjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ops-ai/nuxt-toggly": "1.2.0",
+    "@ops-ai/nuxt-toggly-client": "1.2.2",
+    "@ops-ai/nuxt-toggly-core": "1.12.0",
+    "@ops-ai/nuxt-toggly-server": "1.7.0",
+    "nuxt": "4.5.2"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  }
+}

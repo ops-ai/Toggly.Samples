@@ -37,6 +37,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | SolidStart SDK Workshop | SolidStart 2 + Node 24 | [`solidstart-sdk/`](solidstart-sdk/) | Request-scoped backend guards, signed public SSR hydration, navigation, entity and local gates |
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
 | Elixir Phoenix SDK Showcase | Phoenix 1.8 / LiveView 1.2 / OTP 29 | [`elixir-phoenix-sdk/`](elixir-phoenix-sdk/) | Local evaluation, signed definitions, Plug routes and isolated LiveView contexts |
+| Nuxt SDK Showcase | Nuxt 4 / Node 22 | [`nuxt-sdk/`](nuxt-sdk/) | Vue gates, Nitro request context, Order entities, eleven filters and protected handlers with `@ops-ai/nuxt-toggly` |
 | Remix SDK Sample | Remix 2.17 | [`remix-sdk/`](remix-sdk/) | Loaders/actions, request-scoped identity, browser gates, Order context and filter matrix with `@ops-ai/remix-toggly-*` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
 | Rust Rocket SDK Workshop | Rust 1.98.1 + Rocket 0.5.1 | [`rust-rocket-sdk/`](rust-rocket-sdk/) | Native Feature guard, request context, signed fixtures, gates, Order and eleven-filter matrix |
@@ -78,7 +79,6 @@ separate status; previews and blocked checkpoints are not merged runnable entrie
 | Sample | Status | Details |
 |--------|--------|---------|
 | React | [Blocked: OPS-1083](https://linear.app/opsai/issue/OPS-1083) | SDK 1.11.0 bundles a private React 18.3.1; provider/hooks fail with the required latest-stable host React 19.2.8. |
-| Nuxt | [Blocked: OPS-1089](https://linear.app/opsai/issue/OPS-1089) | Module 1.1.1 declares Nuxt ^3, excluding required latest-stable Nuxt 4.5.2; dependency resolution fails. |
 
 Compatibility status was checked on September 8, 2026. These blockers concern
 the programme's latest-stable framework constraint; they do not imply the SDKs

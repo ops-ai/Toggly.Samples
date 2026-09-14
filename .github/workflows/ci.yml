@@ -22,6 +22,7 @@ jobs:
       javascript-sdk: ${{ steps.filter.outputs.javascript-sdk }}
       electron-sdk: ${{ steps.filter.outputs.electron-sdk }}
       nodejs-koa-sdk: ${{ steps.filter.outputs.nodejs-koa-sdk }}
+      nuxt-sdk: ${{ steps.filter.outputs.nuxt-sdk }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -45,6 +46,11 @@ jobs:
               - 'docs/**'
             nodejs-koa-sdk:
               - 'nodejs-koa-sdk/**'
+              - '.github/workflows/ci.yml'
+              - 'README.md'
+              - 'docs/**'
+            nuxt-sdk:
+              - 'nuxt-sdk/**'
               - '.github/workflows/ci.yml'
               - 'README.md'
               - 'docs/**'
@@ -140,6 +146,31 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: nodejs-koa-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
+      - run: npm run build
+        env:
+          TOGGLY_APP_KEY: ci-placeholder
+          TOGGLY_ENVIRONMENT: Production
+
+  nuxt-sdk:
+    name: nuxt-sdk
+    needs: changes
+    if: needs.changes.outputs.nuxt-sdk == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nuxt-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: nuxt-sdk/package-lock.json
       - run: npm ci
       - run: npm test
         env:
