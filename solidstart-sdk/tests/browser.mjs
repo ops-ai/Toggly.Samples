@@ -2,7 +2,23 @@ import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { runWithCleanup, stopOwnedProcess } from './browser-lifecycle.mjs';
-const server = spawn(process.execPath, ['.output/server/index.mjs'], {
+
+assert.ok(process.argv.length === 2 || (process.argv.length === 3 && process.argv[2] === '--dev'));
+const development = process.argv.includes('--dev');
+
+// Cold dependency optimization makes the lazy development toolbar regression reproducible.
+const serverArguments = development
+  ? [
+      'node_modules/vite/bin/vite.js',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      '5198',
+      '--strictPort',
+      '--force',
+    ]
+  : ['.output/server/index.mjs'];
+const server = spawn(process.execPath, serverArguments, {
   env: {
     ...process.env,
     PORT: '5198',
@@ -42,6 +58,20 @@ await runWithCleanup(
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto('http://127.0.0.1:5198');
+    if (development) {
+      // Await the real lazy toolbar graph: rendered SSR headings alone cannot
+      // prove that its browser-only CommonJS dependency imported successfully.
+      assert.equal(
+        await page.evaluate(async () => {
+          const viewer = await import(
+            '/node_modules/@solidjs/start/dist/shared/dev-toolbar/error-viewer/index.jsx'
+          );
+          return typeof viewer.default;
+        }),
+        'function',
+      );
+      await page.locator('[tc-toolbar]').waitFor();
+    }
     for (const name of [
       'Home',
       'Declarative gates',

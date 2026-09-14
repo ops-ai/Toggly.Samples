@@ -41,3 +41,5 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
+      - name: Verify development toolbar and browser interactions
+        run: node tests/browser.mjs --dev
