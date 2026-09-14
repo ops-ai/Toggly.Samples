@@ -76,3 +76,18 @@ export async function runWithCleanup(run, cleanup) {
   }
   if (failed) throw failure;
 }
+
+// This import is evaluated inside the browser and is not governed by Playwright's
+// locator timeout. Its caller must reach owned cleanup if the module stalls.
+export async function importDevelopmentToolbar(page, timeoutMs = 15_000) {
+  return await within(
+    page.evaluate(async () => {
+      const viewer = await import(
+        '/node_modules/@solidjs/start/dist/shared/dev-toolbar/error-viewer/index.jsx'
+      );
+      return typeof viewer.default;
+    }),
+    timeoutMs,
+    'Development toolbar import',
+  );
+}

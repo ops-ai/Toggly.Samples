@@ -37,7 +37,9 @@ jobs:
       - run: npm install -g npm@11
       - run: npm ci
       - run: npm run typecheck
+      - run: npx playwright install --with-deps chromium
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
+      - name: Verify development toolbar and browser interactions
+        run: node tests/browser.mjs --dev
