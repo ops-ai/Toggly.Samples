@@ -182,6 +182,12 @@ PLAYWRIGHT_MODULE_PATH=/tmp/toggly-live-browser/node_modules/playwright/index.mj
 ```
 
 `SAMPLE_URL` defaults to `http://localhost:4000` and accepts loopback HTTP only.
+The browser runner owns a Playwright browser server and its process handle.
+Cleanup allows one second for graceful disconnect/shutdown, then at most one
+second for termination of that owned process. Cleanup errors emit only the static
+`browser_cleanup_failed` event and exit nonzero; any earlier failure event is
+preserved. No existing user browser is attached or terminated.
+
 The browser runner requires real connected LiveView sockets, two isolated Alice
 and Bob contexts, the expected Targeting and Order decisions, and dashboard ON.
 After `browser_ready_toggle_dashboard_off`, an authorized operator disables
@@ -227,6 +233,8 @@ initial toggle/cold-restore check.
 
 Credential-free checks: `mix test` generates a local P-256 fixture, persists it
 through the installed public SDK, and starts fresh deny-transport child processes
-for valid, wrong-partition and corrupted snapshots. `node --check
+for valid, wrong-partition and corrupted snapshots. It also runs local driver regressions
+for rejected and stalled browser cleanup, checking sanitized output and actual
+owned-child termination. `node --check
 scripts/live-browser.mjs` checks JavaScript syntax; its `--check` mode validates
 configuration only and never launches a browser or claims live acceptance.

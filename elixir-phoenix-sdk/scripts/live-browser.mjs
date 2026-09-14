@@ -18,7 +18,41 @@ function emit(stage, check) {
   process.stdout.write(`${JSON.stringify({ stage, ...(check ? { check } : {}) })}\n`);
 }
 
+async function deadline(work, milliseconds) {
+  let timer;
+  try {
+    return await Promise.race([
+      work,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error('Owned cleanup deadline')), milliseconds);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+const exited = (child) => child.exitCode !== null || child.signalCode !== null;
+
+async function terminateOwned(child) {
+  if (!child || exited(child)) return;
+  let finished;
+  const exit = new Promise((resolve) => {
+    finished = resolve;
+    child.once('exit', finished);
+  });
+  try {
+    // The handle comes from this invocation's BrowserServer, never a PID search.
+    child.kill('SIGKILL');
+    await deadline(exit, 1000);
+  } finally {
+    child.off('exit', finished);
+  }
+}
+
 let browser;
+let server;
+let ownedProcess;
 let check = 'configuration';
 try {
   const config = configuration(process.env);
@@ -28,7 +62,9 @@ try {
     assert.equal(process.argv.length, 2);
     check = 'browser_launch';
     const { chromium } = await import(pathToFileURL(config.module).href);
-    browser = await chromium.launch({ headless: true });
+    server = await chromium.launchServer({ headless: true, host: '127.0.0.1' });
+    ownedProcess = server.process();
+    browser = await chromium.connect(server.wsEndpoint());
     const alice = await (await browser.newContext()).newPage();
     const bob = await (await browser.newContext()).newPage();
     for (const page of [alice, bob]) {
@@ -42,7 +78,9 @@ try {
       await page.locator('#new-dashboard').waitFor();
     }
     await bob.locator('[phx-click="preset"][phx-value-mode="nonmatching"]').click();
-    await bob.waitForFunction(() => document.querySelector('#current-identity')?.textContent.trim() === 'bob');
+    await bob.waitForFunction(
+      () => document.querySelector('#current-identity')?.textContent.trim() === 'bob',
+    );
     const contexts = async () => {
       assert.equal((await alice.locator('#current-identity').innerText()).trim(), 'alice');
       assert.equal((await bob.locator('#current-identity').innerText()).trim(), 'bob');
@@ -64,7 +102,9 @@ try {
       ['#new-dashboard', 'dashboard_on_observed'],
     ]) {
       check = stage;
-      await Promise.all([alice, bob].map(page => page.locator(selector).waitFor({ timeout: config.timeout })));
+      await Promise.all(
+        [alice, bob].map((page) => page.locator(selector).waitFor({ timeout: config.timeout })),
+      );
       await contexts();
       emit(stage);
     }
@@ -73,5 +113,25 @@ try {
   emit('browser_failed', check);
   process.exitCode = 1;
 } finally {
-  await browser?.close();
+  try {
+    // Bound both the client disconnect and server shutdown. A rejected close
+    // must not bypass sanitization or replace an already emitted primary failure.
+    const results = await deadline(
+      Promise.allSettled([
+        Promise.resolve().then(() => browser?.close()),
+        Promise.resolve().then(() => server?.close()),
+      ]),
+      1000,
+    );
+    assert(results.every((result) => result.status === 'fulfilled'));
+    assert(!ownedProcess || exited(ownedProcess));
+  } catch {
+    try {
+      await terminateOwned(ownedProcess);
+    } catch {
+      // OS-level termination failure is still a failed, bounded invocation.
+    }
+    emit('browser_cleanup_failed', check);
+    process.exit(1);
+  }
 }

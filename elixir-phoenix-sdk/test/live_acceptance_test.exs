@@ -103,6 +103,15 @@ defmodule Showcase.LiveAcceptanceTest do
     end
   end
 
+  test "browser cleanup rejects and stalls stay private, bounded and terminate the owned child" do
+    {output, status} =
+      System.cmd(System.find_executable("node"), ["--test", "test/live_browser_cleanup_test.mjs"],
+        stderr_to_stdout: true
+      )
+
+    assert status == 0, output
+  end
+
   defp cold_process(env) do
     System.cmd(
       System.find_executable("mix"),
