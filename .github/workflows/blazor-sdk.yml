@@ -42,6 +42,7 @@ jobs:
       - run: dotnet restore BlazorSample.sln --locked-mode --source https://api.nuget.org/v3/index.json -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }}
       - run: dotnet publish BlazorSample --no-restore -c Release -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -o ./published
       - run: npm ci
+      - run: node --test tests/live-policy.test.mjs
       - run: npx playwright install --with-deps chromium
       - name: Exercise real render modes and signed browser fixtures
         run: |
