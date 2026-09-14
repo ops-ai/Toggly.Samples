@@ -36,6 +36,8 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | SolidJS SDK Workshop | SolidJS 1.9 + Vite | [`solidjs-sdk/`](solidjs-sdk/) | Native browser signals, signed definitions, provider-scoped targeting, Order context and local gates |
 | SolidStart SDK Workshop | SolidStart 2 + Node 24 | [`solidstart-sdk/`](solidstart-sdk/) | Request-scoped backend guards, signed public SSR hydration, navigation, entity and local gates |
 | Next.js SDK Showcase | Next.js 15 (App Router) | [`nextjs-server-sdk/`](nextjs-server-sdk/) | Server Components, Client hooks, and Edge middleware with `@ops-ai/nextjs-toggly-*` |
+| Elixir Phoenix SDK Showcase | Phoenix 1.8 / LiveView 1.2 / OTP 29 | [`elixir-phoenix-sdk/`](elixir-phoenix-sdk/) | Local evaluation, signed definitions, Plug routes and isolated LiveView contexts |
+| Nuxt SDK Showcase | Nuxt 4 / Node 22 | [`nuxt-sdk/`](nuxt-sdk/) | Vue gates, Nitro request context, Order entities, eleven filters and protected handlers with `@ops-ai/nuxt-toggly` |
 | Remix SDK Sample | Remix 2.17 | [`remix-sdk/`](remix-sdk/) | Loaders/actions, request-scoped identity, browser gates, Order context and filter matrix with `@ops-ai/remix-toggly-*` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
 | Rust Rocket SDK Workshop | Rust 1.98.1 + Rocket 0.5.1 | [`rust-rocket-sdk/`](rust-rocket-sdk/) | Native Feature guard, request context, signed fixtures, gates, Order and eleven-filter matrix |
@@ -43,12 +45,17 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Ruby Rails SDK Sample | Rails 8.1 / Ruby 4 | [`ruby-rails-sdk/`](ruby-rails-sdk/) | Native Railtie and view/controller gates, request contexts, Orders, filter matrix and cache snapshots |
 | PHP Laravel SDK Sample | PHP 8.5 + Laravel 13 | [`php-laravel-sdk/`](php-laravel-sdk/) | Native Blade, middleware, attributes, request identity, variants, filter matrix and explicit Order support limits |
 | JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, variants, session identity, entity context, and live refresh with `@ops-ai/feature-flags-toggly` |
+| React SDK Showcase | React 19 + Vite | [`react-sdk/`](react-sdk/) | Provider, declarative and programmatic gates, session identity, Order context, eleven-filter matrix, variants, and safe no-key defaults with `@ops-ai/react-feature-flags-toggly` |
 | Electron SDK Sample | Electron 44 + React 19 | [`electron-sdk/`](electron-sdk/) | Secure main/preload/renderer feature gates, desktop session context, Order context, cache and signed definition updates with `@ops-ai/electron-feature-flags-toggly` |
 | Node Express SDK Sample | Express 5 | [`nodejs-express-sdk/`](nodejs-express-sdk/) | Request middleware, HTTP gates, identities, Order context and filter matrix |
+| Node Koa SDK Sample | Koa 3 | [`nodejs-koa-sdk/`](nodejs-koa-sdk/) | Request-scoped middleware, native gates, identities, Order context and all eleven filters with `@ops-ai/toggly-koa` |
 | NestJS SDK Sample | NestJS 11 HTTP | [`nestjs-sdk/`](nestjs-sdk/) | Request-scoped DI, decorators, guards, entity context and filters |
 | Node Hono SDK Showcase | Hono 4 / Node 22 | [`nodejs-hono-sdk/`](nodejs-hono-sdk/) | Request context, middleware gates, eleven filters and Order entities with `@ops-ai/toggly-hono` |
 | Docusaurus SDK Workshop | Docusaurus 3 + React | [`docusaurus-sdk/`](docusaurus-sdk/) | Native MDX/React flags, core Order mapping, live snapshots and build/browser boundaries |
+| Blazor SDK Workshop | .NET 8 SSR / Server / WebAssembly / Auto | [`blazor-sdk/`](blazor-sdk/) | Native gates, scoped identity, Order, filters, hydration and lifecycle |
 | .NET SDK Workshop | ASP.NET Core 10 MVC / Razor | [`dotnet-sdk/`](dotnet-sdk/) | Native gates, variants, request targeting, Order, filters, Hangfire, HealthChecks and NSwag |
+| .NET Embedded Dashboard | ASP.NET Core 8 / 10 Razor + SQLite | [`dotnet-embedded-dashboard/`](dotnet-embedded-dashboard/) | Packaged local dashboard, manual catalog import, targeting, entity context and persistent offline evaluation |
+| .NET Client SDK Showcase | .NET 8 console / Avalonia desktop | [`dotnet-client-sdk/`](dotnet-client-sdk/) | Signed frontend delivery, session identity, Order context, local gates, offline defaults and UI-safe lifecycle |
 | Java Servlet SDK Sample | Java 26 / Tomcat 11 / Servlet 6.1 | [`java-servlet-sdk/`](java-servlet-sdk/) | Native context and gate filters, signed definitions, session identity, Order context and eleven-filter matrix |
 | Java Spring MVC SDK Sample | Spring MVC 7 + Tomcat 11 + FreeMarker | [`java-spring-mvc-sdk/`](java-spring-mvc-sdk/) | Native context/gate interceptors, Boolean argument injection, model-driven templates, Order and eleven-filter matrix |
 | Java Spring WebFlux SDK Sample | Spring WebFlux 7 + Reactor Netty + Java 26 | [`java-spring-webflux-sdk/`](java-spring-webflux-sdk/) | Native reactive filters/client, isolated async users and Orders, eleven filters, signed refresh and cancellation |
@@ -64,22 +71,6 @@ The JavaScript sample gives a browser-focused introduction; Next.js compares
 server and browser execution; Fastify shows request evaluation without a UI SDK.
 Sample fixtures and placeholder-key checks are not evidence of live Toggly app
 provisioning. Use each README's configuration recipe for your own application.
-
-## Wave 1 availability
-
-The catalog above links samples present on `develop`. The following work has a
-separate status; previews and blocked checkpoints are not merged runnable entries.
-
-| Sample | Status | Details |
-|--------|--------|---------|
-| React | [Blocked: OPS-1083](https://linear.app/opsai/issue/OPS-1083) | SDK 1.11.0 bundles a private React 18.3.1; provider/hooks fail with the required latest-stable host React 19.2.8. |
-| Koa | [Blocked: OPS-1087](https://linear.app/opsai/issue/OPS-1087) | Adapter 0.3.0 declares Koa ^2, excluding required latest-stable Koa 3.2.1; dependency resolution fails. |
-| Nuxt | [Blocked: OPS-1089](https://linear.app/opsai/issue/OPS-1089) | Module 1.1.1 declares Nuxt ^3, excluding required latest-stable Nuxt 4.5.2; dependency resolution fails. |
-
-Compatibility status was checked on September 8, 2026. These blockers concern
-the programme's latest-stable framework constraint; they do not imply the SDKs
-are universally unusable with older supported versions. Blocked samples are not
-linked to nonexistent folders. Linear detail links may require authentication.
 
 All new samples follow the [Sample Contract](docs/SAMPLE_CONTRACT.md) and the
 shared [flag and app template](docs/FLAG_TEMPLATE.md). Follow the

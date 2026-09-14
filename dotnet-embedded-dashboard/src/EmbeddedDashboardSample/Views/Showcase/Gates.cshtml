@@ -1,0 +1,13 @@
+@model WorkshopModel
+@{ ViewData["Title"] = "Declarative gates"; }
+<h1>Render the eligible branch.</h1><p class="lead">The published Toggly Razor tag helper evaluates on the server. Disabled content is absent from the response HTML.</p>
+<section class="card"><h2>One key, two branches</h2><pre>&lt;feature name="new-dashboard"&gt;New dashboard&lt;/feature&gt;
+&lt;feature name="new-dashboard" negate="true"&gt;Classic fallback&lt;/feature&gt;</pre>
+@* Negate renders the fallback from the same decision rather than introducing an inverse flag. *@
+<feature name="new-dashboard"><p class="result on" id="dashboard-on">New dashboard is available.</p></feature>
+<feature name="new-dashboard" negate="true"><p class="result off" id="dashboard-off">Classic dashboard fallback.</p></feature></section>
+<section class="card"><h2>Combine keys</h2><pre>&lt;feature names="new-dashboard,api-v2" requirement="All"&gt;…&lt;/feature&gt;</pre>
+<feature names="new-dashboard,api-v2" requirement="All"><p id="all-gate" class="result on">All: dashboard AND API v2 are enabled.</p></feature>
+<feature names="new-dashboard,api-v2" requirement="Any"><p id="any-gate" class="result on">Any: at least one is enabled.</p></feature>
+<p>Disable <code>api-v2</code> while keeping <code>new-dashboard</code> on: the All result disappears and Any remains.</p></section>
+<section class="card"><h2>Pass an entity</h2><pre>&lt;feature name="ExpressCheckout" context="@@Model.Persona.Order"&gt;…&lt;/feature&gt;</pre><feature name="ExpressCheckout" context="@Model.Persona.Order"><p id="entity-gate" class="result on">Express checkout for @Model.Persona.Order.Id.</p></feature><p><a href="/orders">Compare VIP and standard orders</a>. Presentation gates are not authentication or authorization.</p></section>

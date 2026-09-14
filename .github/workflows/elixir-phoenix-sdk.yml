@@ -1,0 +1,40 @@
+name: Elixir Phoenix SDK showcase
+on:
+  pull_request:
+    paths: ['elixir-phoenix-sdk/**', '.github/workflows/elixir-phoenix-sdk.yml']
+  push:
+    branches: [develop, main]
+    paths: ['elixir-phoenix-sdk/**', '.github/workflows/elixir-phoenix-sdk.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  showcase:
+    runs-on: ubuntu-latest
+    env:
+      TOGGLY_APP_KEY: ''
+      TOGGLY_ENVIRONMENT: Production
+      # Exercise positive runtime-option forwarding while retaining offline fixtures.
+      TOGGLY_MAX_SIGNATURE_AGE_SECONDS: '60'
+    defaults:
+      run:
+        working-directory: elixir-phoenix-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '29'
+          elixir-version: '1.20.4'
+      - run: mix deps.get --check-locked
+      - run: mix hex.audit
+      - run: mix format --check-formatted
+      - run: mix compile --warnings-as-errors
+      - run: mix assets.build
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: mix test
+      # Live service provisioning is external; this gate checks the browser runner
+      # without credentials, launching browsers, or replacing network responses.
+      - run: node --check scripts/live-browser.mjs
+      - run: PLAYWRIGHT_MODULE_PATH=/tmp/unused-playwright.mjs node scripts/live-browser.mjs --check

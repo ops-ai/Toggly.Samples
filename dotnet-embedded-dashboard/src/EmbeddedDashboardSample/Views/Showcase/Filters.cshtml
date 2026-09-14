@@ -1,0 +1,9 @@
+@model WorkshopModel
+@{ ViewData["Title"] = "Filters matrix"; }
+<h1>One catalog. Different requests.</h1><p class="lead">Import the example catalog first, then compare the same rules against two request presets.</p>
+<div class="actions"><a class="button" href="/filters?preset=matching">Matching preset</a><a class="button secondary" href="/filters?preset=nonmatching">Non-matching preset</a></div>
+<section class="card"><p><strong>@Model.Persona.Name</strong> · role @Model.Persona.Role · country @Model.Persona.Country · @Model.Persona.Language · @Model.Persona.Order.Id</p><details><summary>Simulated User-Agent</summary><code>@Model.Persona.Agent</code></details></section>
+<section class="card table-wrap"><table><thead><tr><th scope="col">Feature key</th><th scope="col">Current result</th></tr></thead><tbody>@foreach (var key in FeatureFlags.Filters) { <tr><th scope="row"><code>@key</code></th><td class="@(Model.Flags[key] ? "on" : "off")">@(Model.Flags[key] ? "ON" : "OFF")</td></tr> }</tbody></table></section>
+<p>After import, restrictive targeting, claims, country, browser, language, device, OS and entity rules match Alice's preset and reject Bob's. Always-on and the 2020–2099 schedule match both; percentage is sticky, not prescribed by the preset.</p><p>Country uses the request's <code>CF-IPCountry</code> value; the SDK performs no GeoIP lookup. This workshop synthesizes headers for teaching. A real application must validate its proxy boundary.</p>
+
+<p>The published .NET UAParser reports device family <code>Mac</code> for this preset. The example uses <code>DeviceType:0 = Mac</code>, adapting the shared template's <code>Macintosh</code> value to the actual SDK value.</p>

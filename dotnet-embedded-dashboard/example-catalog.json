@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "environment": "Production",
+  "features": [
+    {
+      "key": "new-dashboard",
+      "name": "New dashboard",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Workshop"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": []
+    },
+    {
+      "key": "api-v2",
+      "name": "API version 2",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Workshop"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": []
+    },
+    {
+      "key": "enhanced-submit",
+      "name": "Enhanced submission",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Workshop"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": []
+    },
+    {
+      "key": "beta-access",
+      "name": "Beta access",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Workshop"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": []
+    },
+    {
+      "key": "ExpressCheckout",
+      "name": "Express checkout",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Workshop"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": "Order",
+      "contextRequirementType": "Any",
+      "rules": [
+        {
+          "name": "ContextProperty",
+          "parameters": {
+            "ContextKind": "Order",
+            "Property": "Vip",
+            "Operator": "eq",
+            "Value": "true",
+            "ValueType": "boolean"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-always-on",
+      "name": "Always on",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": []
+    },
+    {
+      "key": "filter-percentage",
+      "name": "50% sticky rollout",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": [
+        {
+          "name": "Percentage",
+          "parameters": {
+            "Value": "50"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-targeting",
+      "name": "Alice targeting",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": [
+        {
+          "name": "Targeting",
+          "parameters": {
+            "Audience.Users:0": "alice",
+            "Audience.DefaultRolloutPercentage": "0",
+            "IgnoreCase": "true"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-user-claims",
+      "name": "Admin claim",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": [
+        {
+          "name": "UserClaims",
+          "parameters": {
+            "Claim": "role",
+            "Value": "admin",
+            "Percentage": "100"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-time-window",
+      "name": "Open schedule",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": [
+        {
+          "name": "TimeWindow",
+          "parameters": {
+            "Start": "2020-01-01T00:00:00Z",
+            "End": "2099-12-31T23:59:59Z"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-country",
+      "name": "Country",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": [
+        {
+          "name": "CountryFamily",
+          "parameters": {
+            "Country:0": "US",
+            "Percentage": "100"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-browser-family",
+      "name": "Browser Family",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": [
+        {
+          "name": "BrowserFamily",
+          "parameters": {
+            "BrowserFamily:0": "Chrome",
+            "Percentage": "100"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-browser-language",
+      "name": "Browser Language",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": [
+        {
+          "name": "BrowserLanguage",
+          "parameters": {
+            "BrowserLanguage:0": "en",
+            "Percentage": "100"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-device-type",
+      "name": "Device Type",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": [
+        {
+          "name": "DeviceType",
+          "parameters": {
+            "DeviceType:0": "Mac",
+            "Percentage": "100"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-os",
+      "name": "Os",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": null,
+      "contextRequirementType": null,
+      "rules": [
+        {
+          "name": "OS",
+          "parameters": {
+            "OperatingSystem:0": "Mac",
+            "Percentage": "100"
+          }
+        }
+      ]
+    },
+    {
+      "key": "filter-context-property",
+      "name": "VIP context property",
+      "description": "Workshop example. Edit this feature in the embedded dashboard.",
+      "tags": [
+        "Filters"
+      ],
+      "enabled": true,
+      "requirementType": "Any",
+      "contextKind": "Order",
+      "contextRequirementType": "Any",
+      "rules": [
+        {
+          "name": "ContextProperty",
+          "parameters": {
+            "ContextKind": "Order",
+            "Property": "Vip",
+            "Operator": "eq",
+            "Value": "true",
+            "ValueType": "boolean"
+          }
+        }
+      ]
+    }
+  ],
+  "contexts": [
+    {
+      "kind": "Order",
+      "keyPropertyName": "Id",
+      "properties": [
+        {
+          "name": "Id",
+          "type": "string"
+        },
+        {
+          "name": "Vip",
+          "type": "boolean"
+        },
+        {
+          "name": "Total",
+          "type": "number"
+        }
+      ]
+    }
+  ]
+}
