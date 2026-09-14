@@ -1,7 +1,11 @@
 import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { runWithCleanup, stopOwnedProcess } from './browser-lifecycle.mjs';
+import {
+  importDevelopmentToolbar,
+  runWithCleanup,
+  stopOwnedProcess,
+} from './browser-lifecycle.mjs';
 
 assert.ok(process.argv.length === 2 || (process.argv.length === 3 && process.argv[2] === '--dev'));
 const development = process.argv.includes('--dev');
@@ -61,15 +65,7 @@ await runWithCleanup(
     if (development) {
       // Await the real lazy toolbar graph: rendered SSR headings alone cannot
       // prove that its browser-only CommonJS dependency imported successfully.
-      assert.equal(
-        await page.evaluate(async () => {
-          const viewer = await import(
-            '/node_modules/@solidjs/start/dist/shared/dev-toolbar/error-viewer/index.jsx'
-          );
-          return typeof viewer.default;
-        }),
-        'function',
-      );
+      assert.equal(await importDevelopmentToolbar(page), 'function');
       await page.locator('[tc-toolbar]').waitFor();
     }
     for (const name of [
