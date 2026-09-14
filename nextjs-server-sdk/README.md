@@ -27,7 +27,7 @@ applying those rules to inputs such as a user identity or an Order.
    settings first, then `/api/toggly-debug`. A successful build or fixture test
    does not establish a connection to your dashboard.
 
-**Edge limitation in the published package:** this sample uses edge `1.2.3`,
+**Edge limitation in the published package:** this sample uses edge `1.5.0`,
 whose middleware reads `x-toggly-identity` or `toggly-identity` from requests,
 assigns it to a shared client, and can reuse a cached boolean snapshot across
 identities. The sample's identity switcher writes that same cookie, so visiting
@@ -111,10 +111,10 @@ Legacy paths (`/dashboard`, `/actions`, `/api-demo`, `/orders`) redirect under `
 
 Published npm packages:
 
-- `@ops-ai/nextjs-toggly-core` `^1.8.1`
-- `@ops-ai/nextjs-toggly-server` `^1.5.0`
-- `@ops-ai/nextjs-toggly-client` `^1.4.0`
-- `@ops-ai/nextjs-toggly-edge` `^1.2.3`
+- `@ops-ai/nextjs-toggly-core` `^1.10.0`
+- `@ops-ai/nextjs-toggly-server` `^1.7.0`
+- `@ops-ai/nextjs-toggly-client` `^1.4.1`
+- `@ops-ai/nextjs-toggly-edge` `^1.5.0`
 
 `next.config.ts` sets `serverExternalPackages: ['ws']` so Turbopack does not
 rewrite the WebSocket client. Do **not** externalize `@ops-ai/nextjs-toggly-server`

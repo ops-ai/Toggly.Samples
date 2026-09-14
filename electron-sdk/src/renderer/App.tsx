@@ -86,7 +86,7 @@ export function App() {
     <section id="home">
       <h2>1. Home: follow one decision</h2>
       <ol><li>The dashboard stores a rule for a flag key such as <code>new-dashboard</code>.</li><li>Main initializes Toggly before it creates this window.</li><li>Preload exposes a narrow bridge; React reads only decisions, never the App Key.</li><li>UI renders the ON or OFF branch below.</li></ol>
-      <div className="panel"><h3>First toggle: new-dashboard</h3><p>{dashboard.isEnabled ? 'Dashboard v2 is enabled for this evaluated context.' : 'Classic dashboard is shown because new-dashboard is OFF or uses its safe default.'}</p><Feature featureKey="new-dashboard" loading={<p>Checking the main-process bridge…</p>}><strong className="success">New dashboard content</strong></Feature></div>
+      <div className="panel"><h3>First toggle: new-dashboard</h3><p>{dashboard.isEnabled ? 'Dashboard v2 is enabled for this evaluated context.' : 'Classic dashboard is shown because new-dashboard is OFF or uses its safe default.'}</p><Feature featureKey="new-dashboard" loading={<p>Checking the main-process bridge…</p>}><strong className="success" data-testid="offline-feature">New dashboard content</strong></Feature><Feature featureKey="new-dashboard" negate><strong data-testid="offline-negated-feature">Classic dashboard content</strong></Feature><span data-testid="offline-hook" hidden>{String(dashboard.isEnabled)}</span></div>
       <h3>Live snapshot</h3><div className="pills">{[...coreFlags, ...filterFlags].map(key => <FlagPill key={key} name={key} value={flags[key]} />)}</div>
     </section>
 
