@@ -1,0 +1,178 @@
+@implements IDisposable
+@inject IFeatureSession Features
+@inject PublicSettings Settings
+@inject NavigationManager Navigation
+
+<header>
+    <a href="/">Toggly / Blazor workshop</a>
+    <span class="pill">@Mode · @(OperatingSystem.IsBrowser() ? "browser runtime" : "server runtime")</span>
+</header>
+<h1>@Title</h1>
+<p class="lead">One set of feature gates, four Blazor render modes. Follow a flag from configuration to a visible branch.</p>
+@if (!Settings.BackendConfigured || string.IsNullOrWhiteSpace(Settings.FrontendAppKey))
+{
+    <aside role="status">
+        <strong>Missing app key — offline fixtures/defaults.</strong> Server hosts use offline schema fixtures when TOGGLY_APP_KEY is also empty. Browser entity and targeting flags stay OFF until signed live definitions arrive.</aside>
+}
+<nav aria-label="Workshop sections">
+    @foreach (var entry in Sections)
+    {
+        <a class="@(Section == entry.Key ? "selected" : "")" href="/@Mode/@entry.Key">@entry.Value</a>
+    }
+</nav>
+<nav aria-label="Render modes">
+    @foreach (var mode in new[] {"ssr","server","wasm","auto"})
+    {
+        <a href="/@mode/@Section">@mode</a>
+    }
+</nav>
+@if (Mode == "ssr")
+{
+    <p>Static SSR has no event handlers. Use these request-scoped preset links: <a data-enhance-nav="false" href="/@Mode/@Section?preset=matching">Matching</a> · <a data-enhance-nav="false" href="/@Mode/@Section?preset=nonmatching">Non-matching</a>. Interactive buttons are disabled in this mode.</p>
+}
+<section class="panel">
+    @if (Section == "home")
+    {
+        <h2>Start with one flag</h2>
+        <p>A key names a feature. Its environment definitions decide whether evaluation is true. Initialization loads definitions; defaults keep the app predictable before or without a network response.</p>
+        <ol>
+            <li>Configure <code>new-dashboard</code> in Production.</li>
+            <li>Turn it ON: the green preview appears below.</li>
+            <li>Turn it OFF: the classic branch appears after a definitions update.</li>
+            <li>Use Refresh to re-evaluate cached server definitions or fetch browser definitions.</li>
+        </ol>
+        <Feature Key="new-dashboard">
+            <ChildContent>
+                <div class="enabled" data-testid="dashboard">New dashboard enabled</div>
+            </ChildContent>
+            <Loading>
+                <p>Loading definitions…</p>
+            </Loading>
+        </Feature>
+        <Feature Key="new-dashboard" Negate="true">
+            <div data-testid="dashboard">Classic dashboard</div>
+        </Feature>
+        <h3>Flag checklist and live snapshot</h3>
+        <ul>
+            @foreach (var flag in Flags)
+            {
+                <li>
+                    <code>@flag</code> — @(Values.GetValueOrDefault(flag) ? "ON" : "OFF")</li>
+            }
+        </ul>
+    }
+    else if (Section == "gates")
+    {
+        <h2>Declarative gates</h2>
+        @* Presentation chooses content; it does not authorize a protected operation. *@
+        <Feature Key="new-dashboard">
+            <ChildContent>
+                <p>Dashboard preview</p>
+            </ChildContent>
+            <Loading>
+                <p>Loading…</p>
+            </Loading>
+        </Feature>
+        <Feature Key="new-dashboard" Negate="true">
+            <p>Classic dashboard</p>
+        </Feature>
+        <Feature Key="missing-feature" Negate="true">
+            <p>Negated unknown flag: negated branch visible.</p>
+        </Feature>
+        <Feature Keys="@(new[] {"new-dashboard","api-v2"})" Requirement="Requirement.All">
+            <p>All required flags are enabled.</p>
+        </Feature>
+        <Feature Keys="@(new[] {"missing-feature","api-v2"})" Requirement="Requirement.Any">
+            <p>At least one flag is enabled.</p>
+        </Feature>
+        <p>A boolean branch is not experiment assignment. This adapter does not expose named variants; use the trusted .NET variant API separately on the server when you need experiment allocation.</p>
+    }
+    else if (Section == "api")
+    {
+        <h2>Programmatic API</h2>
+        <button disabled="@(!Interactive)" @onclick="Evaluate">Evaluate now</button>
+        <p data-testid="api-result">api-v2: @(Values.GetValueOrDefault("api-v2") ? "ON" : "OFF")</p>
+        <pre>await Features.EvaluateAsync(["api-v2"]);</pre>
+        <p>Await the same scoped session you use for components. Unknown keys default OFF; an empty key list evaluates true, then negation applies.</p>
+    }
+    else if (Section == "identity")
+    {
+        <h2>Identity and claims</h2>
+        <p>Demo identity: <strong data-testid="identity">@Identity</strong>. These controls simulate targeting input, not sign-in.</p>
+        <button disabled="@(!Interactive)" @onclick="()=>SetPreset(true)">Matching</button>
+        <button disabled="@(!Interactive)" @onclick="()=>SetPreset(false)">Non-matching</button>
+        <p>Matching: alice, group vip, role=admin. Non-matching: bob, group standard, role=user.</p>
+        <Feature Key="filter-targeting">
+            <p data-testid="targeting">Targeting ON</p>
+        </Feature>
+        <Feature Key="filter-targeting" Negate="true">
+            <p data-testid="targeting">Targeting OFF</p>
+        </Feature>
+        <p>Production hosts map AuthenticationStateProvider through FeatureProvider. A request/circuit owns this state; other users keep theirs. Browser claims are supplied to the public evaluation endpoint and are not trusted authorization evidence.</p>
+    }
+    else if (Section == "entity")
+    {
+        <h2>Order entity context</h2>
+        <p>The kind is Order, the key is Id, and Vip is boolean. Configure ExpressCheckout with ContextProperty Vip equals true.</p>
+        @* Entity data belongs to this evaluation, never global user state. *@
+        <Feature Key="ExpressCheckout" Entity="VipOrder">
+            <p data-testid="vip">VIP express checkout ON</p>
+        </Feature>
+        <Feature Key="ExpressCheckout" Entity="VipOrder" Negate="true">
+            <p data-testid="vip">VIP express checkout OFF</p>
+        </Feature>
+        <Feature Key="ExpressCheckout" Entity="StandardOrder">
+            <p data-testid="standard">Standard express checkout ON</p>
+        </Feature>
+        <Feature Key="ExpressCheckout" Entity="StandardOrder" Negate="true">
+            <p data-testid="standard">Standard express checkout OFF</p>
+        </Feature>
+        <p>Browser offline defaults deliberately deny both orders. Server offline fixtures and live signed browser definitions evaluate the actual entity rule.</p>
+    }
+    else if (Section == "filters")
+    {
+        <h2>Filter matrix</h2>
+        <button disabled="@(!Interactive)" @onclick="()=>SetPreset(true)">Matching</button>
+        <button disabled="@(!Interactive)" @onclick="()=>SetPreset(false)">Non-matching</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Filter key</th>
+                    <th>Result</th>
+                    <th>Support</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var flag in Filters)
+                {
+                    <tr>
+                        <td>@flag</td>
+                        <td>@(!OperatingSystem.IsBrowser() && UnsupportedServer.Contains(flag) ? "Unsupported" : Values.GetValueOrDefault(flag) ? "ON" : "OFF")</td>
+                        <td>@Support(flag)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <p>Percentage is sticky for identity, not guaranteed ON for a matching preset. TimeWindow depends on UTC time. HTTP segment filters are not reconstructed from a stale circuit HttpContext.</p>
+    }
+    else if (Section == "framework")
+    {
+        <h2>Render lifecycle, refresh and failure</h2>
+        <p>SSR finishes during the HTTP request. Server retains a circuit; reconnect re-evaluates its cached context. WebAssembly waits for the first browser render before using JS. Auto may use either runtime on separate visits.</p>
+        <button disabled="@(!Interactive)" @onclick="Refresh">Refresh</button>
+        <p data-testid="updates">Observed updates: @Updates</p>
+        <p data-testid="error">@(Error ?? "No observed refresh error")</p>
+        <Feature Key="unknown-fail-closed">
+            <p>Unexpected flag enabled</p>
+        </Feature>
+        <Feature Key="unknown-fail-closed" Negate="true">
+            <p>Unknown flag safely OFF</p>
+        </Feature>
+        <p>For failure practice, configure a valid Front-end App Key, let definitions load, then use DevTools Offline and Refresh. Observe the error while the verified last-known state remains. A new browser runtime can restore previously verified localStorage snapshots without a definitions-service connection; expired, corrupt or invalid snapshots use defaults. WebAssembly assets require the host’s own offline delivery, and server circuits still need the server; no backend keys or definitions are serialized in prerender state.</p>
+    }
+    else
+    {
+        <p>Choose a section above.</p>
+    }
+</section>
+<footer>Use the README source map and flag template. Feature gates complement server authorization.</footer>

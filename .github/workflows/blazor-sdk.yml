@@ -1,0 +1,64 @@
+name: Blazor SDK sample
+on:
+  pull_request:
+    branches: [develop, main]
+    paths: ['blazor-sdk/**', '.github/workflows/blazor-sdk.yml']
+  push:
+    branches: [develop, main]
+    paths: ['blazor-sdk/**', '.github/workflows/blazor-sdk.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        include:
+          - sdk: '8.0.425'
+            framework: net8.0
+            aspnet: '8.0.31'
+          - sdk: '10.0.400'
+            framework: net10.0
+            aspnet: '10.0.11'
+    defaults:
+      run:
+        working-directory: blazor-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '${{ matrix.sdk }}'
+      - name: Select exact matrix SDK
+        run: |
+          printf '{"sdk":{"version":"%s","rollForward":"disable","allowPrerelease":false}}\n' '${{ matrix.sdk }}' > global.json
+          test "$(dotnet --version)" = '${{ matrix.sdk }}'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: blazor-sdk/package-lock.json
+      - run: dotnet restore BlazorSample.sln --locked-mode --source https://api.nuget.org/v3/index.json -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }}
+      - run: dotnet publish BlazorSample --no-restore -c Release -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -o ./published
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Exercise real render modes and signed browser fixtures
+        run: |
+          (cd published && dotnet BlazorSample.dll --urls http://127.0.0.1:5280) > /tmp/blazor-host.log 2>&1 &
+          SAMPLE_PID=$!
+          trap 'kill "$SAMPLE_PID" || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5280/ > /dev/null; then break; fi
+            sleep 1
+          done
+          npm test
+        env:
+          TOGGLY_APP_KEY: ''
+          TOGGLY_FRONTEND_APP_KEY: ''
+          TOGGLY_ENVIRONMENT: Production
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: blazor-host-log-${{ matrix.framework }}
+          path: /tmp/blazor-host.log

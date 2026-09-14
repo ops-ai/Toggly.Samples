@@ -1,0 +1,13 @@
+@page "/wasm"
+@page "/wasm/{Section}"
+@rendermode InteractiveWebAssembly
+<FeatureProvider>
+    <FeatureHydration PublicKeys="@(new[] { "new-dashboard", "api-v2", "beta-access" })" RenderMode="@(new InteractiveAutoRenderMode())">
+        <Workshop Mode="wasm" Section="@Section" />
+    </FeatureHydration>
+</FeatureProvider>
+@code
+{
+    [Parameter]
+    public string Section { get; set; } = "home";
+}
