@@ -1,0 +1,7 @@
+node_modules/
+.nuxt/
+.output/
+coverage/
+.env
+.env.*
+!.env.example
