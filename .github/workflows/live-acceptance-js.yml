@@ -1,0 +1,33 @@
+name: JavaScript live acceptance harness mechanics
+on:
+  pull_request:
+    branches: [develop, main]
+    paths: ['live-acceptance-js/**', '.github/workflows/live-acceptance-js.yml']
+  push:
+    branches: [develop, main]
+    paths: ['live-acceptance-js/**', '.github/workflows/live-acceptance-js.yml']
+permissions:
+  contents: read
+concurrency:
+  group: live-acceptance-js-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  local-mechanics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: live-acceptance-js
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: live-acceptance-js/package-lock.json
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      # Only loopback signed fixtures. No secrets or live credential environment.
+      - run: npm test

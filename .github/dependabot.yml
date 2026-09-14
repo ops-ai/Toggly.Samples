@@ -283,3 +283,9 @@ updates:
     groups:
       toggly-packages:
         patterns: ['Toggly.*']
+
+  - package-ecosystem: npm
+    directory: /live-acceptance-js
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
