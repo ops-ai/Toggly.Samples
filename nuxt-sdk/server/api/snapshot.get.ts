@@ -4,6 +4,7 @@ import {
 } from '@ops-ai/nuxt-toggly-server'
 import { allFlagKeys, filterDescriptions } from '../../lib/demo'
 import { getDemoEvalContext, getDemoOrder, getDemoPreset } from '../utils/demo-context'
+import { ensureServerToggly } from '../utils/toggly-server'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig().public.toggly as { appKey?: string }
@@ -25,6 +26,9 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // This awaits the published SDK initializer if Nuxt dev has not finished the
+  // module plugin yet. It is idempotent and does not touch request identity.
+  await ensureServerToggly(config)
   const toggly = useEventToggly(event)
   const flags = Object.fromEntries(
     await Promise.all(

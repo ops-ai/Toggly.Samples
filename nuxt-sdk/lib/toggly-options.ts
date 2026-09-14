@@ -22,5 +22,9 @@ export function createTogglyModuleOptions(
     ssr: true,
     persistFeatures: false,
     enableLiveUpdates: true,
+    // The sample teaches evaluation only. Opt out of optional server telemetry
+    // so its local dev path has no gRPC/proto dependency or side effect.
+    enableUsageTracking: false,
+    enableMetrics: false,
   }
 }

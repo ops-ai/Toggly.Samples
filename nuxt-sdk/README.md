@@ -53,16 +53,19 @@ new or established branch. A flag is not authentication or authorization.
 | [`lib/toggly-options.ts`](lib/toggly-options.ts) | The explicit hand-off from Nuxt-loaded `.env` values to module initialization options |
 | [`lib/demo.ts`](lib/demo.ts) | Shared flag names, all eleven filter rows, and canonical `Order` entity shape |
 | [`server/plugins/toggly-context.ts`](server/plugins/toggly-context.ts) | Per-H3-event identity/claims/request extraction without a global user identity |
+| [`server/utils/toggly-server.ts`](server/utils/toggly-server.ts) | Idempotent Nuxt 4 dev-safe server initialization before the first request helper |
 | [`server/api/snapshot.get.ts`](server/api/snapshot.get.ts) | Server evaluation, multi-key gate, and Order-aware ContextProperty checks |
 | [`app/components/ClientGates.vue`](app/components/ClientGates.vue) | Vue declarative gates, composables, browser-session identity and entity checks |
 | [`server/api/beta.get.ts`](server/api/beta.get.ts) | Nuxt `defineFeatureHandler` wrapping a Nitro API route |
-| [`tests/demo.test.ts`](tests/demo.test.ts) | Executable checks for the common flag/filter/entity contract, configured key forwarding, and H3 cookie identity isolation |
+| [`tests/`](tests/) | Executable contract checks plus a disposable `.env` `nuxt dev` startup and `/api/snapshot` regression test |
 
 The Nuxt module initializes the browser SDK from public module configuration so
 the browser can fetch public definitions. The Toggly application key identifies
 the app; it is not an end-user secret. Keep it local so the sample does not
 publish an app association. Never put a user token or another private credential
-in Nuxt public runtime configuration.
+in Nuxt public runtime configuration. The local tutorial disables optional
+server usage/metrics telemetry; configure your production observability policy
+explicitly when adapting it.
 
 ## Create the Toggly application
 
