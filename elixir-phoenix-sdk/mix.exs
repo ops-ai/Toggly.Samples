@@ -18,7 +18,7 @@ defmodule TogglyShowcase.MixProject do
         {:lazy_html, ">= 0.1.0", only: :test}
       ],
       aliases: [
-        setup: ["deps.get", "assets.build"],
+        setup: ["deps.get --check-locked", "assets.build"],
         "assets.build": ["run --no-start scripts/build_assets.exs"]
       ]
     ]

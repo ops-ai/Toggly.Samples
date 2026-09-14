@@ -23,7 +23,7 @@ set +a
 mix phx.server
 ```
 
-`mix setup` downloads Hex dependencies and copies the resolved Phoenix/LiveView browser clients into generated assets. No npm build is required. Generated assets and `.env` are ignored by Git; there is no committed local SDK dependency or vendored SDK source.
+`mix setup` installs the versions in the committed Hex lock and copies the resolved Phoenix/LiveView browser clients into generated assets. No npm build is required. Generated assets and `.env` are ignored by Git; there is no committed local SDK dependency or vendored SDK source.
 
 ## Connect your Toggly application
 
@@ -117,6 +117,7 @@ The demo's selectable claims are not authentication. Gates do not replace author
 ## Verification checklist
 
 ```sh
+mix deps.get --check-locked
 mix format --check-formatted
 mix compile --warnings-as-errors
 mix assets.build
@@ -132,7 +133,7 @@ mix hex.audit
 - Temporarily interrupt network access: existing verified definitions remain active; restore it and verify refresh recovery.
 - Stop the host: the OTP tree, WebSocket and subscriptions shut down.
 
-Offline tests and candidate artifact installation do not prove dashboard provisioning, key permissions or live connectivity. CI runs without a real key. SDK packages are consumed through Hex version references; package publication order is core, Phoenix, then LiveView.
+Offline tests do not prove dashboard provisioning, key permissions or live connectivity. CI runs without a real key. SDK packages are installed from Hex using the committed `mix.lock`; setup and CI reject dependency changes that have not been recorded in that lock.
 
 ## Offline restart with live definitions
 

@@ -25,7 +25,7 @@ jobs:
         with:
           otp-version: '29'
           elixir-version: '1.20.4'
-      - run: mix deps.get
+      - run: mix deps.get --check-locked
       - run: mix hex.audit
       - run: mix format --check-formatted
       - run: mix compile --warnings-as-errors
