@@ -7,10 +7,12 @@ from pathlib import Path
 import pty
 import select
 import signal
+import termios
 import time
 
 
 MENU = b"r Refresh | q Quit"
+INPUT_READY_TIMEOUT = 5
 
 
 def terminal_case(dotnet, name, inputs):
@@ -38,6 +40,16 @@ def terminal_case(dotnet, name, inputs):
             assert time.monotonic() < deadline, f"{name}: menu did not appear: {output!r}"
         for command, expected in inputs:
             output.clear()
+            if command == b"\x04":
+                # Menu output precedes the background Console.ReadLine call.
+                # Wait until .NET owns raw input before sending VEOF; otherwise
+                # the canonical line discipline can consume it before the read.
+                deadline = time.monotonic() + INPUT_READY_TIMEOUT
+                while termios.tcgetattr(master)[3] & termios.ICANON:
+                    assert time.monotonic() < deadline, (
+                        f"{name}: terminal input mode not ready: {output!r}"
+                    )
+                    read_available(0.01)
             os.write(master, command)
             if expected:
                 deadline = time.monotonic() + 5

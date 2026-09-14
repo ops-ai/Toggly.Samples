@@ -34,4 +34,6 @@ jobs:
       - run: dotnet run --project Console -c Release --no-build -- --smoke
       - name: Verify interactive terminal cancellation
         if: runner.os != 'Windows'
-        run: python3 tests/console_terminal.py
+        run: |
+          python3 -m unittest discover -s tests -p test_console_terminal.py -v
+          python3 tests/console_terminal.py
