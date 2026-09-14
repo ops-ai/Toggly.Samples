@@ -79,7 +79,7 @@ separate status; previews and blocked checkpoints are not merged runnable entrie
 
 | Sample | Status | Details |
 |--------|--------|---------|
-| React | [Blocked: OPS-1083](https://linear.app/opsai/issue/OPS-1083) | SDK 1.11.0 bundles a private React 18.3.1; provider/hooks fail with the required latest-stable host React 19.2.8. |
+| Nuxt | [Blocked: OPS-1089](https://linear.app/opsai/issue/OPS-1089) | Module 1.1.1 declares Nuxt ^3, excluding required latest-stable Nuxt 4.5.2; dependency resolution fails. |
 
 Compatibility status was checked on September 8, 2026. These blockers concern
 the programme's latest-stable framework constraint; they do not imply the SDKs
