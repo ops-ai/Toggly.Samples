@@ -85,7 +85,10 @@ pair namespaces records without storing the key. Each definitions or public JWKS
 record is limited to 4 MiB and replaced atomically using a temporary file in the
 same directory. Unix directories/files are owner-only (0700/0600). On Windows,
 place the directory under a service-account-only ACL before starting the host.
-Symbolic links, malformed/oversize records and mismatched namespaces are rejected.
+Symbolic links, empty entries (including stable Unix FIFOs), malformed/oversize
+records and mismatched namespaces are rejected. Entry checks assume a stable,
+trusted directory; they do not defend against a hostile service-account process
+racing to replace paths.
 Use one application host/service account per directory; this is not a distributed
 cache or a multi-writer deployment design.
 

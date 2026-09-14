@@ -1,7 +1,23 @@
+using System.Diagnostics;
+using System.Reflection;
 using BlazorSample.Features;
 using Microsoft.Extensions.Logging.Abstractions;
 using Toggly.FeatureManagement;
 using Toggly.FeatureManagement.Data;
+
+// Run the malformed FIFO read in an owned child: a regressing synchronous open
+// cannot trap the parent before cancellation is observed.
+if (args[0] == "--fifo-read")
+{
+    var reader = new FileFeatureSnapshotProvider(
+        args[1], "fixture-secret-must-not-be-persisted", "Production",
+        NullLogger<FileFeatureSnapshotProvider>.Instance);
+    using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+    if (await reader.GetFeaturesSnapshotAsync(deadline.Token) != null)
+        throw new InvalidOperationException("FIFO must be a cache miss.");
+    Console.WriteLine("fifo-cache-miss");
+    return;
+}
 
 var root = Path.Combine(Path.GetFullPath(args[0]), $"snapshot-checks-{Guid.NewGuid():N}");
 Directory.CreateDirectory(root);
@@ -62,6 +78,42 @@ try
         Check(await store.GetFeaturesSnapshotAsync() == null, "symbolic link read is rejected");
         await store.SaveSnapshotAsync(snapshot);
         Check(File.ReadAllText(target) == "sentinel", "symbolic link write cannot alter its target");
+        File.Delete(file);
+        using (var create = Process.Start(new ProcessStartInfo("mkfifo")
+        {
+            ArgumentList = { file }, UseShellExecute = false,
+            RedirectStandardOutput = true, RedirectStandardError = true,
+        })!)
+        {
+            await create.WaitForExitAsync();
+            Check(create.ExitCode == 0, "real FIFO fixture created without a writer");
+        }
+        File.SetUnixFileMode(file, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        var start = new ProcessStartInfo(Environment.ProcessPath!)
+        {
+            UseShellExecute = false, RedirectStandardOutput = true,
+            RedirectStandardError = true,
+        };
+        if (Path.GetFileNameWithoutExtension(Environment.ProcessPath) == "dotnet")
+            start.ArgumentList.Add(Assembly.GetExecutingAssembly().Location);
+        start.ArgumentList.Add("--fifo-read");
+        start.ArgumentList.Add(root);
+        using var child = Process.Start(start)!;
+        var output = child.StandardOutput.ReadToEndAsync();
+        var errors = child.StandardError.ReadToEndAsync();
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        try
+        {
+            await child.WaitForExitAsync(timeout.Token);
+            Check(child.ExitCode == 0 && (await output).Trim() == "fifo-cache-miss" &&
+                (await errors).Length == 0, "FIFO read returns a bounded cache miss");
+        }
+        catch (OperationCanceledException)
+        {
+            child.Kill(entireProcessTree: true);
+            await child.WaitForExitAsync();
+            throw new InvalidOperationException("FIFO open blocked before cancellation; owned child stopped.");
+        }
     }
     using var handler = new DenyTogglyTransport();
     using var client = new HttpClient(handler);

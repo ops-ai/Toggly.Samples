@@ -70,8 +70,13 @@ public sealed class FileFeatureSnapshotProvider : IFeatureSnapshotProvider
         try
         {
             var path = Path.Combine(directory, name);
+            ct.ThrowIfCancellationRequested();
             CheckLinks(path);
-            if (!File.Exists(path))
+            // Serialized records are nonempty. Check metadata before opening:
+            // a stable Unix FIFO has length zero and its open can block before
+            // async I/O or cancellation runs. The directory remains trusted.
+            var entry = new FileInfo(path);
+            if (!entry.Exists || entry.Length <= 0 || entry.Length > MaximumBytes)
                 return null;
             await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 4096, true);
             if (stream.Length > MaximumBytes)
