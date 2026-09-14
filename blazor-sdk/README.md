@@ -13,7 +13,7 @@ that exact SDK; a missing version fails instead of silently selecting a newer SD
 
 ```sh
 dotnet restore BlazorSample.sln --locked-mode
-dotnet run --project BlazorSample --no-restore --no-launch-profile --urls http://localhost:5280
+ASPNETCORE_ENVIRONMENT=Development dotnet run --project BlazorSample --no-restore --no-launch-profile --urls http://localhost:5280
 ```
 
 To build a native .NET 10 host/client, install SDK **10.0.400**, change
@@ -177,3 +177,47 @@ entity behavior, signed client HTTP fixtures, live invalidation, corrupt-signatu
 and network failure. Its fixture routes intercept all definition HTTP/WebSockets;
 test configuration never contacts a live service. This is local consumer evidence,
 not proof that the dashboard app or keys have been provisioned.
+
+## Live signed-service acceptance
+
+`tests/live.browser.mjs` exercises the actual WASM Sample against the live
+service. Configure the host and runner with the same environment-provided
+`TOGGLY_FRONTEND_APP_KEY` and exact `TOGGLY_ENVIRONMENT`. Use an isolated Sample
+application, allow the exact localhost origin, set `new-dashboard` initially
+**disabled**, and configure `filter-targeting` for Alice/vip but not Bob/standard.
+Start the source-tree host in Development mode using the quick start above,
+or run a published host as the existing CI workflow does. The runner verifies public settings
+match its environment without printing keys.
+
+```sh
+npm ci
+npx playwright install chromium
+TOGGLY_LIVE_ACCEPTANCE=1 SAMPLE_URL=http://localhost:5280 node tests/live.browser.mjs
+```
+
+When prompted, an operator turns `new-dashboard` **on**, then **off**, within
+two 45-second windows. The runner stays on the mounted WASM page and requires
+actual WebSocket invalidations followed by changed signed HTTP responses,
+matching durable snapshots and complementary dashboard rendering. Its complete
+three-minute budget is shorter than the SDK's five-minute polling interval.
+It never invokes Refresh or fulfills a synthetic network response.
+
+The runner closes Chromium and launches a new process using the same temporary
+profile. All external HTTP and WebSocket traffic is denied; localhost assets
+and public settings remain reachable. Alice's verified disabled dashboard must
+survive restart, and Alice/Bob targeting must remain isolated. Browser storage
+is checked against the hash of the actual live response. Temporary browser
+storage is removed afterward; remote flags are never changed by the runner.
+If a run fails between prompts, restore the original disabled flag manually.
+
+This proves cold **SDK** recovery during a definitions-service outage. It does
+not claim a completely offline application shell, persistent Blazor Server
+snapshots, production signing-key rotation, or Auto-mode browser execution.
+The separate fixture suite remains available through `npm test`.
+
+Credential-free harness regression checks:
+
+```sh
+node --test tests/live-policy.test.mjs
+node tests/live.browser.mjs # exits 2 with configuration-required without opt-in
+```

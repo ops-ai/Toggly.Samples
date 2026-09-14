@@ -118,3 +118,44 @@ Manual checklist:
 - Restore connectivity, refresh, and close the host while a request is running.
 
 MIT license. See the [client SDK guide](https://docs.toggly.io/sdks/dotnet-client).
+
+## Live signed-service acceptance
+
+`tests/LiveAcceptance` is a separate public-package consumer. Supply the same
+frontend `TOGGLY_APP_KEY` and exact `TOGGLY_ENVIRONMENT` through your environment;
+the runner refuses missing configuration and never prints keys or request URLs.
+Use an isolated Sample application with `new-dashboard` initially **disabled**.
+An operator must be available to toggle only that flag when prompted.
+
+```sh
+dotnet restore tests/LiveAcceptance --locked-mode
+dotnet build tests/LiveAcceptance -c Release --no-restore
+TOGGLY_LIVE_ACCEPTANCE=1 dotnet run --project tests/LiveAcceptance -c Release --no-build
+```
+
+The runner requires a real signed baseline, then requests `new-dashboard` **on**
+and **off** in two 60-second windows. Each change must follow a real WebSocket
+invalidation, signed HTTP refresh and durable save with a new revision. Polling
+is configured beyond the entire three-minute run; no manual refresh is invoked.
+The final disabled value differs from the runner's enabled default.
+
+After disposing the online client, it launches fresh OS processes against its
+own temporary `FileSnapshotStore`, with every SDK HTTP request denied and live
+updates disabled. The first child must verify and restore the disabled value.
+Additional children must reject cross-context reuse and a modified cached
+envelope. The test-owned cache is deleted afterward. The runner does not alter
+remote flags or rotate keys. If it fails between prompts, restore the isolated
+flag's original disabled state manually.
+
+These checks prove the portable client, native verifier and desktop file store.
+Run the normal Console and Avalonia hosts above for UI/lifecycle acceptance;
+this executable does not claim native UI coverage. Signing-key rotation and
+revocation require separate operational acceptance.
+
+Local, credential-free harness checks:
+
+```sh
+dotnet restore tests/LivePolicy --locked-mode
+dotnet run --project tests/LivePolicy -c Release --no-restore
+python3 tests/live-guards.py dotnet tests/LiveAcceptance/bin/Release/net8.0/LiveAcceptance.dll
+```
