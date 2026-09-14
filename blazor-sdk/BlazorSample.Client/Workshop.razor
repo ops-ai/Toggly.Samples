@@ -90,7 +90,7 @@
     else if (Section == "api")
     {
         <h2>Programmatic API</h2>
-        <button disabled="@(Mode == "ssr")" @onclick="Evaluate">Evaluate now</button>
+        <button disabled="@(!Interactive)" @onclick="Evaluate">Evaluate now</button>
         <p data-testid="api-result">api-v2: @(Values.GetValueOrDefault("api-v2") ? "ON" : "OFF")</p>
         <pre>await Features.EvaluateAsync(["api-v2"]);</pre>
         <p>Await the same scoped session you use for components. Unknown keys default OFF; an empty key list evaluates true, then negation applies.</p>
@@ -99,8 +99,8 @@
     {
         <h2>Identity and claims</h2>
         <p>Demo identity: <strong data-testid="identity">@Identity</strong>. These controls simulate targeting input, not sign-in.</p>
-        <button disabled="@(Mode == "ssr")" @onclick="()=>SetPreset(true)">Matching</button>
-        <button disabled="@(Mode == "ssr")" @onclick="()=>SetPreset(false)">Non-matching</button>
+        <button disabled="@(!Interactive)" @onclick="()=>SetPreset(true)">Matching</button>
+        <button disabled="@(!Interactive)" @onclick="()=>SetPreset(false)">Non-matching</button>
         <p>Matching: alice, group vip, role=admin. Non-matching: bob, group standard, role=user.</p>
         <Feature Key="filter-targeting">
             <p data-testid="targeting">Targeting ON</p>
@@ -132,8 +132,8 @@
     else if (Section == "filters")
     {
         <h2>Filter matrix</h2>
-        <button disabled="@(Mode == "ssr")" @onclick="()=>SetPreset(true)">Matching</button>
-        <button disabled="@(Mode == "ssr")" @onclick="()=>SetPreset(false)">Non-matching</button>
+        <button disabled="@(!Interactive)" @onclick="()=>SetPreset(true)">Matching</button>
+        <button disabled="@(!Interactive)" @onclick="()=>SetPreset(false)">Non-matching</button>
         <table>
             <thead>
                 <tr>
@@ -159,7 +159,7 @@
     {
         <h2>Render lifecycle, refresh and failure</h2>
         <p>SSR finishes during the HTTP request. Server retains a circuit; reconnect re-evaluates its cached context. WebAssembly waits for the first browser render before using JS. Auto may use either runtime on separate visits.</p>
-        <button disabled="@(Mode == "ssr")" @onclick="Refresh">Refresh</button>
+        <button disabled="@(!Interactive)" @onclick="Refresh">Refresh</button>
         <p data-testid="updates">Observed updates: @Updates</p>
         <p data-testid="error">@(Error ?? "No observed refresh error")</p>
         <Feature Key="unknown-fail-closed">

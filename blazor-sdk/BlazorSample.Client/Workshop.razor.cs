@@ -70,11 +70,22 @@ public partial class Workshop
     private int Updates;
     private string? Error;
     private bool disposed;
+    private bool Interactive;
 
     protected override void OnInitialized()
     {
         Features.Changed += Changed;
         Features.Error += Failed;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // Prerendering has no event handlers and never invokes OnAfterRender.
+        if (firstRender)
+        {
+            Interactive = true;
+            StateHasChanged();
+        }
     }
 
     protected override async Task OnParametersSetAsync()

@@ -22,7 +22,10 @@ async function ready(page, mode) {
       .locator("header")
       .filter({ hasText: "browser runtime" })
       .waitFor();
-  else await page.waitForTimeout(700);
+  await page
+    .locator("button:enabled")
+    .filter({ hasText: /^Matching$/ })
+    .waitFor();
 }
 async function preset(page, name, identity) {
   await page.getByRole("button", { name, exact: true }).click();
@@ -40,6 +43,42 @@ async function matrixResult(page, key, expected) {
   assert.equal(await result.innerText(), expected);
 }
 
+test("prerendered controls wait for real interactive rendering before accepting input", async () => {
+  const context = await browser.newContext();
+  let releaseBoot;
+  const boot = new Promise((resolve) => {
+    releaseBoot = resolve;
+  });
+  try {
+    const page = await context.newPage();
+    await page.route("**/_framework/blazor.web.js", async (route) => {
+      await boot;
+      await route.continue();
+    });
+    await page.goto(`${origin}/server/filters`, { waitUntil: "commit" });
+    const matching = page.getByRole("button", { name: "Matching", exact: true });
+    await matching.waitFor();
+    assert.equal(
+      await matching.isDisabled(),
+      true,
+      "Server prerender must not expose a clickable control before its handler exists",
+    );
+    releaseBoot();
+    await matching.click();
+    await matrixResult(page, "filter-targeting", "ON");
+    await matrixResult(page, "filter-context-property", "ON");
+    await page.getByRole("button", { name: "Non-matching", exact: true }).click();
+    await matrixResult(page, "filter-targeting", "OFF");
+    await matrixResult(page, "filter-context-property", "OFF");
+    await matching.click();
+    await matrixResult(page, "filter-targeting", "ON");
+    await matrixResult(page, "filter-context-property", "ON");
+  } finally {
+    releaseBoot();
+    await context.close();
+  }
+});
+
 test("matching and non-matching presets select their Order in SSR and interactive filter matrices", async () => {
   const context = await browser.newContext();
   try {
@@ -50,6 +89,10 @@ test("matching and non-matching presets select their Order in SSR and interactiv
       ["matching", "ON"],
     ]) {
       await page.goto(`${origin}/ssr/filters?preset=${name}`);
+      assert.equal(
+        await page.getByRole("button", { name: "Matching", exact: true }).isDisabled(),
+        true,
+      );
       await matrixResult(page, "filter-targeting", expected);
       await matrixResult(page, "filter-context-property", expected);
     }
