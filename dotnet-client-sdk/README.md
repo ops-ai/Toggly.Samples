@@ -99,6 +99,8 @@ dotnet build Console -c Release --no-restore
 dotnet build Desktop -c Release --no-restore
 dotnet run --project tests/Smoke -c Release --no-restore
 dotnet run --project Console -c Release --no-build -- --smoke
+# On macOS or Linux, with Python 3: verify idle Ctrl+C, input and terminal EOF.
+python3 tests/console_terminal.py
 # In a graphical desktop session: initialize, render, change context and close.
 dotnet run --project Desktop -c Release --no-build -- --smoke
 ```

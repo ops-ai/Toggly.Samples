@@ -29,7 +29,10 @@ try
         Console.WriteLine(
             "1 Home | 2 Gates | 3 API | 4 Identity | 5 Order | 6 Filters | 7 Lifecycle | m Matching | n Non-matching | l Local prerequisite | r Refresh | q Quit"
         );
-        var command = Console.ReadLine();
+        // Console.ReadLine (and terminal-backed ReadLineAsync) can block while idle.
+        // Keep native line editing on a background thread, but cancel this await so
+        // Ctrl+C reaches async SDK disposal without requiring another input line.
+        var command = await Task.Run(() => Console.ReadLine()).WaitAsync(shutdown.Token);
         if (command is null or "q")
         {
             break;
