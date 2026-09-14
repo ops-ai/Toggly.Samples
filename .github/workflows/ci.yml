@@ -20,6 +20,7 @@ jobs:
     outputs:
       nextjs-server-sdk: ${{ steps.filter.outputs.nextjs-server-sdk }}
       javascript-sdk: ${{ steps.filter.outputs.javascript-sdk }}
+      react-sdk: ${{ steps.filter.outputs.react-sdk }}
       electron-sdk: ${{ steps.filter.outputs.electron-sdk }}
       nodejs-koa-sdk: ${{ steps.filter.outputs.nodejs-koa-sdk }}
     steps:
@@ -35,6 +36,11 @@ jobs:
               - 'docs/**'
             javascript-sdk:
               - 'javascript-sdk/**'
+              - '.github/workflows/ci.yml'
+              - 'README.md'
+              - 'docs/**'
+            react-sdk:
+              - 'react-sdk/**'
               - '.github/workflows/ci.yml'
               - 'README.md'
               - 'docs/**'
@@ -87,6 +93,28 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: javascript-sdk/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          VITE_TOGGLY_APP_KEY: ci-placeholder
+          VITE_TOGGLY_ENVIRONMENT: Production
+
+  react-sdk:
+    name: react-sdk
+    needs: changes
+    if: needs.changes.outputs.react-sdk == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: react-sdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: react-sdk/package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm run build
