@@ -1,0 +1,15 @@
+@model WorkshopModel
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>@ViewData["Title"] · Toggly Embedded</title><link rel="stylesheet" href="~/site.css" /></head>
+<body><a class="skip" href="#main">Skip to content</a>
+<header><a class="brand" href="/">toggly<span>Embedded workshop</span></a><a class="button" href="/internal/features">Open feature dashboard ↗</a></header>
+<div class="shell"><nav aria-label="Workshop"><p class="eyebrow">LEARN BY CHANGING A FLAG</p>
+@foreach (var destination in new[] { ("/", "Overview"), ("/gates", "Declarative gates"), ("/programmatic", "Programmatic API"), ("/identity", "Request identity"), ("/orders", "Order context"), ("/filters", "Filters matrix"), ("/integrations", "Storage & migration") })
+{ <a href="@(destination.Item1 + "?preset=" + Model.Persona.Preset)" aria-current="@(Context.Request.Path == destination.Item1 ? "page" : null)">@destination.Item2</a> }
+<div class="sidebar-note">One application.<br />One environment.<br /><strong>Your database.</strong></div></nav>
+<main id="main"><div class="statusbar"><span>Storage: <strong>@Model.StorageState</strong></span><span>Environment: <strong>Production</strong></span><span>Demo identity: <strong>@Model.Persona.Name</strong></span></div>
+@if (Model.StorageState == "Uninitialized") { <aside class="notice"><strong>Initialize or import</strong><p>There are no stored feature definitions yet. Every flag evaluates OFF. Open the dashboard to create a catalog, or import <code>example-catalog.json</code> directly.</p></aside> }
+else if (Model.StorageState != "Available") { <aside class="notice"><strong>Storage needs attention</strong><p>The SDK retains its last valid definitions when available. Check the <a href="/internal/features/storage">storage page</a> before editing.</p></aside> }
+@RenderBody()
+<footer>Published Toggly packages · Server-rendered Razor · No account or app key</footer></main></div></body></html>

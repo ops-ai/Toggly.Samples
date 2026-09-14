@@ -227,3 +227,14 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+
+  - package-ecosystem: nuget
+    directory: /dotnet-embedded-dashboard
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+    groups:
+      toggly-packages:
+        patterns: ['Toggly.*']
