@@ -4,7 +4,7 @@ Follow one feature flag from configuration to a native Angular template, a servi
 
 ## Quick start
 
-Use Node **22.23.2** (with npm **10.9.8**) or a compatible newer Angular-supported Node release. The lockfile installs Angular **22.1.6**, Angular CLI/build **22.1.7**, `@ops-ai/ngx-feature-flags-toggly` **2.8.1**, and `@ops-ai/toggly-hooks-types` **1.4.5** for the SDK's peer API.
+Use Node **22.23.2** (with npm **10.9.8**) or a compatible newer Angular-supported Node release. The lockfile installs Angular **22.1.6**, Angular CLI/build **22.1.8**, `@ops-ai/ngx-feature-flags-toggly` **2.8.1**, `@ops-ai/toggly-hooks-types` **1.4.5** for the SDK's peer API, and Vitest **4.1.11**.
 
 ```sh
 cd angular-sdk
