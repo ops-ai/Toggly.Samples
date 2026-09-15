@@ -43,7 +43,8 @@ assert.match(homeHtml, /id="section-order"/);
 assert.match(homeHtml, /id="section-filters"/);
 assert.match(homeHtml, /id="section-unique"/);
 assert.match(homeHtml, /id="filter-matrix"/);
-assert.match(homeHtml, /id="live-snapshot"/);
+assert.match(homeHtml, /live-snapshot/);
+assert.match(homeHtml, /live-filter-checklist|LiveFlagsIsland/);
 
 run(['run', 'build:ssr']);
 
@@ -114,7 +115,15 @@ await withServer(undefined, async (origin, home) => {
     await page.waitForSelector('#react-island');
     await page.waitForSelector('#vue-island');
     await page.waitForSelector('#svelte-island');
+    await page.waitForSelector('#live-snapshot');
+    await page.waitForSelector('#live-filter-checklist');
     assert.deepEqual(errors, [], 'islands must hydrate without browser exceptions');
+    const dashboardPill = await page.locator('[data-live-flag="new-dashboard"] .pill').textContent();
+    assert.match(dashboardPill ?? '', /true|false/);
+    assert.ok(
+      await page.locator('[data-live-filter="filter-always-on"]').count(),
+      'client filter checklist must render filter rows from $flags',
+    );
   } finally {
     await browser.close();
   }

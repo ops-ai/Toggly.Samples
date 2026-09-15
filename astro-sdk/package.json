@@ -8,7 +8,7 @@
     "build": "astro build",
     "build:ssr": "SAMPLE_OUTPUT=server astro build",
     "check": "astro check",
-    "test": "node tests/verify-evaluations.mjs && node tests/verify.mjs"
+    "test": "node tests/verify-evaluations.mjs && node --experimental-strip-types tests/verify-live-refresh.mjs && node tests/verify.mjs"
   },
   "dependencies": {
     "@astrojs/node": "11.1.5",

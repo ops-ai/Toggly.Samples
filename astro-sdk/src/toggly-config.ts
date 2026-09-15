@@ -38,9 +38,10 @@ export function createTogglyOptions(
     // enableVariants, boolean defaults work, but entity context is ignored on
     // that path — Order VIP uses a separate non-variant client below.
     enableVariants: true,
-    // Islands hydrate from the integration inject; keep live sockets off so
-    // offline/placeholder runs stay deterministic.
-    enableLiveUpdates: false,
+    // Live sockets only when an App Key is present. Offline/placeholder CI
+    // stays deterministic (no WebSocket); Home still subscribes to `$flags`
+    // so programmatic refreshFlags / store updates refresh the UI.
+    enableLiveUpdates: Boolean(appKey),
     verifySignatures: true,
     enableUsageTracking: false,
     telemetryAttachProcessHandlers: false,

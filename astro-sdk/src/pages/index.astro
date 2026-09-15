@@ -3,6 +3,7 @@ import Feature from '@ops-ai/astro-feature-flags-toggly/components/Feature.astro
 import FeatureClient from '@ops-ai/astro-feature-flags-toggly/components/FeatureClient.astro';
 import { createTogglyServerClient } from '@ops-ai/astro-feature-flags-toggly';
 import MissingKeyBanner from '../components/MissingKeyBanner.astro';
+import LiveFlagsIsland from '../components/LiveFlagsIsland';
 import ReactIsland from '../components/ReactIsland';
 import VueIsland from '../components/VueIsland.vue';
 import SvelteIsland from '../components/SvelteIsland.svelte';
@@ -221,29 +222,39 @@ const bobHref = '/?identity=bob&role=user&order=ord-standard';
           </tbody>
         </table>
 
-        <h3>Live snapshot (request-scoped getFlags)</h3>
-        <table class="snapshot" id="live-snapshot">
-          <thead>
-            <tr>
-              <th>Key</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              Object.entries(snapshot).map(([key, value]) => (
-                <tr>
-                  <td><code>{key}</code></td>
-                  <td>
-                    <span class:list={['pill', value ? 'on' : 'off']}>
-                      {String(value)}
-                    </span>
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
+        <h3>Live snapshot (client `$flags` store)</h3>
+        <p>
+          SSR still evaluates flags for gates below. This table hydrates from the
+          published <code>$flags</code> atom and follows SDK background refresh
+          (live WebSocket when an App Key is set, or <code>refreshFlags()</code>)
+          without issuing its own fetch.
+        </p>
+        {/* client:only — same inject store as islands; avoids SSR/store mismatch */}
+        <LiveFlagsIsland client:only="react" mode="snapshot" />
+        <noscript>
+          <table class="snapshot" id="live-snapshot-ssr-fallback">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                Object.entries(snapshot).map(([key, value]) => (
+                  <tr>
+                    <td><code>{key}</code></td>
+                    <td>
+                      <span class:list={['pill', value ? 'on' : 'off']}>
+                        {String(value)}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </noscript>
       </section>
 
       <!-- 2. Declarative gates -->
@@ -409,6 +420,13 @@ const bobHref = '/?identity=bob&role=user&order=ord-standard';
           <a href={matchingHref}>Matching preset</a>
           <a href={nonMatchingHref}>Non-matching preset</a>
         </p>
+        <h3>Client filter checklist (follows `$flags` refresh)</h3>
+        <p>
+          Same native store subscription as the Home live snapshot. Server
+          matrix below stays request-scoped entity evaluation.
+        </p>
+        <LiveFlagsIsland client:only="react" mode="filters" />
+        <h3>Server filters matrix</h3>
         <table class="matrix" id="filter-matrix">
           <thead>
             <tr>

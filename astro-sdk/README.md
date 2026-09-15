@@ -45,8 +45,9 @@ server used by middleware and page-gate checks.
 
 1. Confirm the missing-key banner (no App Key) and that **Server dashboard
    enabled** is visible — `new-dashboard` defaults to ON.
-2. In a live app, turn `new-dashboard` off and reload. The server ON path and
-   React/Vue/Svelte island ON paths disappear; negate paths appear.
+2. In a live app, turn `new-dashboard` off — with an App Key the Home live
+   snapshot and client filter checklist follow `$flags` background refresh
+   without a full reload; reload still updates server Feature and islands.
 3. Leave `api-v2` off. The **any** multi-key gate still shows; the **all** gate
    does not. That is why requirement matters.
 4. Open `/?preset=matching` then `/?preset=nonmatching`. Identity and
@@ -84,12 +85,12 @@ request-scoped client with `enableVariants: true`.
 
 | Section | What to learn | Read |
 | --- | --- | --- |
-| 1. Home | Map, checklist, request snapshot | `src/pages/index.astro` |
+| 1. Home | Map, checklist, live `$flags` snapshot | `index.astro`, `LiveFlagsIsland.tsx`, `sample/live-flags.ts` |
 | 2. Declarative gates | Feature / negate / multi-key / FeatureClient | `index.astro`, SDK `components/Feature.astro` |
 | 3. Programmatic API | getFlag, evaluateGate, getVariant | `index.astro` frontmatter |
 | 4. Identity | Per-request identity/claims from URL | `src/middleware.ts`, `src/toggly-config.ts` |
 | 5. Order VIP | Entity context without changing user identity | `index.astro`, `src/sample/catalog.ts` |
-| 6. Filters matrix | Matching / non-matching presets | `#section-filters`, `catalog.ts` |
+| 6. Filters matrix | Matching / non-matching presets + live client checklist | `#section-filters`, `LiveFlagsIsland`, `catalog.ts` |
 | 7. Package-unique | Integration, middleware, x-feature, islands | `astro.config.mjs`, `middleware.ts`, `beta.md`, `src/components/*Island*` |
 | 8. Missing App Key | Visible banner, defaults, no crash | `MissingKeyBanner.astro` |
 
@@ -134,3 +135,4 @@ issue. `npm test` verifies mixed islands against the production SSR build.
 - [ ] `/beta/` served with default, 404 with `TOGGLY_BETA_ACCESS_DEFAULT=false`
 - [ ] Request identity comes from the current URL/middleware, never a shared process client
 - [ ] Combined islands work in production; do not claim mixed React+Vue **dev** support
+- [ ] Live snapshot / client filter checklist follow `$flags` after background refresh (App Key enables live sockets; offline CI uses `refreshFlags` regression)
