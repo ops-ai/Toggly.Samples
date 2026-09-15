@@ -1610,7 +1610,7 @@ dependencies = [
  "serde_json",
  "sha1",
  "sha2",
- "toggly",
+ "toggly 0.4.0",
  "toggly-rocket",
 ]
 
@@ -2024,7 +2024,16 @@ version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
 dependencies = [
- "thiserror-impl",
+ "thiserror-impl 1.0.69",
+]
+
+[[package]]
+name = "thiserror"
+version = "2.0.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec86235f5fcc2a73650310756d2ac5b138a5780bbbdfae3eeccec992c435ba4f"
+dependencies = [
+ "thiserror-impl 2.0.20",
 ]
 
 [[package]]
@@ -2036,6 +2045,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.119",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "2.0.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -2110,7 +2130,36 @@ dependencies = [
  "serde_json",
  "sha1",
  "sha2",
- "thiserror",
+ "thiserror 1.0.69",
+ "tokio",
+ "tokio-tungstenite",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "toggly"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7de70d1d05054b628687e3d713ce9ea3cb3269a39a3e2ae914122b17e05f3a72"
+dependencies = [
+ "async-trait",
+ "base64 0.23.1",
+ "chrono",
+ "dashmap",
+ "ecdsa",
+ "futures-util",
+ "hex",
+ "p256",
+ "parking_lot",
+ "rand",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha1",
+ "sha2",
+ "thiserror 2.0.20",
  "tokio",
  "tokio-tungstenite",
  "tracing",
@@ -2119,15 +2168,15 @@ dependencies = [
 
 [[package]]
 name = "toggly-rocket"
-version = "0.4.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c71a31d6c33f85802cefcfe305f4eae36624b87ca50e60c21f2f31937554d75"
+checksum = "839519fac4daeb7bd871cf865cac0f1f609e88bb3d0fdfd6e3ef0684912d2dca"
 dependencies = [
  "rocket",
  "serde",
  "serde_json",
  "time",
- "toggly",
+ "toggly 0.6.0",
  "tokio",
  "tracing",
 ]
@@ -2351,7 +2400,7 @@ dependencies = [
  "rustls 0.22.4",
  "rustls-pki-types",
  "sha1",
- "thiserror",
+ "thiserror 1.0.69",
  "url",
  "utf-8",
 ]
