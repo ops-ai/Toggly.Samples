@@ -1,0 +1,36 @@
+{
+  "name": "toggly-astro-sdk-sample",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "build:ssr": "SAMPLE_OUTPUT=server astro build",
+    "check": "astro check",
+    "test": "node tests/verify-evaluations.mjs && node tests/verify.mjs"
+  },
+  "dependencies": {
+    "@astrojs/node": "11.1.5",
+    "@astrojs/react": "6.0.5",
+    "@astrojs/svelte": "9.0.1",
+    "@astrojs/vue": "7.0.2",
+    "@nanostores/react": "2.0.1",
+    "@nanostores/vue": "1.1.0",
+    "@ops-ai/astro-feature-flags-toggly": "1.15.0",
+    "astro": "7.3.2",
+    "nanostores": "1.5.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "svelte": "5.57.0",
+    "vue": "3.5.42"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@playwright/test": "1.63.0",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22.23.2"
+  }
+}
