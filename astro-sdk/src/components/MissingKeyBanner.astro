@@ -1,0 +1,22 @@
+---
+/**
+ * Visible configuration banner when TOGGLY_APP_KEY is empty.
+ * Feature gates keep working via flagDefaults; nothing crashes.
+ */
+interface Props {
+  configured: boolean;
+}
+const { configured } = Astro.props;
+---
+
+{
+  !configured && (
+    <aside id="missing-app-key" class="banner" role="status">
+      <strong>No Toggly App Key configured.</strong>
+      Safe <code>flagDefaults</code> are active — copy
+      <code>.env.example</code> to <code>.env</code>, set
+      <code>TOGGLY_APP_KEY</code>, and restart for live definitions. Browser
+      and presentation gates are not authorization.
+    </aside>
+  )
+}

@@ -1,0 +1,522 @@
+---
+import Feature from '@ops-ai/astro-feature-flags-toggly/components/Feature.astro';
+import FeatureClient from '@ops-ai/astro-feature-flags-toggly/components/FeatureClient.astro';
+import { createTogglyServerClient } from '@ops-ai/astro-feature-flags-toggly';
+import MissingKeyBanner from '../components/MissingKeyBanner.astro';
+import LiveFlagsIsland from '../components/LiveFlagsIsland';
+import ReactIsland from '../components/ReactIsland';
+import VueIsland from '../components/VueIsland.vue';
+import SvelteIsland from '../components/SvelteIsland.svelte';
+import {
+  createTogglyOptions,
+  createTogglyRequestContext,
+  orderEntity,
+} from '../toggly-config';
+import {
+  demoKeys,
+  filterCatalog,
+  httpDerivedFilterKeys,
+  orders,
+} from '../sample/catalog';
+import '../styles.css';
+
+/**
+ * Home showcase — all eight Sample Contract sections on one teaching page.
+ *
+ * Server Feature.* components read Astro.locals.toggly from middleware.
+ * Extra createTogglyServerClient calls below are also request-scoped: each
+ * closes in finally so identity never leaks across visitors.
+ */
+
+const configured = Boolean(import.meta.env.TOGGLY_APP_KEY);
+const requestContext = createTogglyRequestContext(Astro.url);
+const baseOptions = {
+  ...createTogglyOptions(
+    import.meta.env.TOGGLY_APP_KEY,
+    import.meta.env.TOGGLY_ENVIRONMENT ?? 'Production',
+  ),
+  identity: requestContext.identity,
+  claims: requestContext.claims,
+  enableUsageTracking: false,
+  telemetryAttachProcessHandlers: false,
+  usageFlushInterval: 0,
+};
+
+const order = orderEntity(requestContext.orderKey);
+const vipOrder = orderEntity(orders.vip.Id);
+const standardOrder = orderEntity(orders.standard.Id);
+
+// Boolean gates / snapshot use a variants-enabled client so evaluateGate
+// honors flagDefaults the same way Feature.astro does via middleware.
+const apiClient = createTogglyServerClient({ ...baseOptions, enableVariants: true });
+// Entity + local definition filters need enableVariants: false so getFlag
+// evaluates ContextProperty rules against the Order entity.
+const entityClient = createTogglyServerClient({
+  ...baseOptions,
+  enableVariants: false,
+});
+const variantClient = createTogglyServerClient({
+  ...baseOptions,
+  enableVariants: true,
+});
+
+let snapshot: Record<string, boolean> = {};
+let filterRows: Array<{
+  key: string;
+  name: string;
+  rule: string;
+  value: boolean | null;
+  note: string;
+}> = [];
+let programmatic: {
+  dashboard: boolean;
+  api: boolean;
+  anyGate: boolean;
+  allGate: boolean;
+  expressVip: boolean;
+  expressStandard: boolean;
+} = {
+  dashboard: false,
+  api: false,
+  anyGate: false,
+  allGate: false,
+  expressVip: false,
+  expressStandard: false,
+};
+let variant: { name: string; configurationValue?: unknown } | null = null;
+
+try {
+  const flags = await apiClient.getFlags();
+  for (const key of demoKeys) {
+    snapshot[key] = Boolean(flags[key]);
+  }
+  for (const row of filterCatalog) {
+    snapshot[row.key] = Boolean(flags[row.key]);
+  }
+
+  programmatic = {
+    dashboard: await apiClient.getFlag('new-dashboard'),
+    api: await apiClient.getFlag('api-v2'),
+    anyGate: await apiClient.evaluateGate(['new-dashboard', 'api-v2'], 'any'),
+    allGate: await apiClient.evaluateGate(['new-dashboard', 'api-v2'], 'all'),
+    expressVip: await entityClient.getFlag('ExpressCheckout', false, vipOrder),
+    expressStandard: await entityClient.getFlag(
+      'ExpressCheckout',
+      false,
+      standardOrder,
+    ),
+  };
+
+  for (const row of filterCatalog) {
+    if (httpDerivedFilterKeys.has(row.key)) {
+      filterRows.push({
+        ...row,
+        value: null,
+        note: 'Unsupported on published Astro server eval context (no request UA/country/language wiring)',
+      });
+      continue;
+    }
+
+    const entity =
+      row.key === 'filter-context-property' ? order : undefined;
+    const value = await entityClient.getFlag(row.key, false, entity ?? null);
+    filterRows.push({
+      ...row,
+      value,
+      note:
+        row.key === 'filter-percentage'
+          ? 'Sticky by identity; Matching/Non-matching labels do not prescribe the result'
+          : row.key === 'filter-context-property'
+            ? `Evaluated against Order ${order.key} (Vip=${String(order.attributes.Vip)})`
+            : 'Evaluated with request identity/claims only',
+    });
+  }
+
+  variant = await variantClient.getVariant('new-dashboard');
+} finally {
+  await apiClient.close({ timeoutMs: 2000 });
+  await entityClient.close({ timeoutMs: 2000 });
+  await variantClient.close({ timeoutMs: 2000 });
+}
+
+const matchingHref = '/?preset=matching';
+const nonMatchingHref = '/?preset=nonmatching';
+const aliceHref = '/?identity=alice&role=admin&order=ord-vip';
+const bobHref = '/?identity=bob&role=user&order=ord-standard';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Toggly Astro SDK Sample</title>
+  </head>
+  <body>
+    <main>
+      <header id="home">
+        <h1>Toggly Astro SDK Sample</h1>
+        <p>
+          Learn how a feature flag reaches Astro server components, middleware,
+          Markdown page gates, and React/Vue/Svelte islands. Presentation gates
+          are not authorization.
+        </p>
+        <MissingKeyBanner configured={configured} />
+      </header>
+
+      <!-- 1. Home: map, checklist, live snapshot -->
+      <section class="section" id="section-home" aria-labelledby="home-heading">
+        <h2 id="home-heading">1. Home — map, checklist, snapshot</h2>
+        <p>
+          Start here. Toggle <code>new-dashboard</code> in Toggly (or rely on
+          defaults), then watch the declarative and island sections change.
+        </p>
+        <nav class="toc" aria-label="Section map">
+          <ol>
+            <li><a href="#section-home">Home / checklist / snapshot</a></li>
+            <li><a href="#section-gates">Declarative gates</a></li>
+            <li><a href="#section-programmatic">Programmatic API</a></li>
+            <li><a href="#section-identity">Identity</a></li>
+            <li><a href="#section-order">Order VIP entity</a></li>
+            <li><a href="#section-filters">Filters matrix</a></li>
+            <li><a href="#section-unique">Package-unique surfaces</a></li>
+            <li><a href="#section-missing">Missing App Key banner</a></li>
+          </ol>
+        </nav>
+
+        <h3>Flag checklist</h3>
+        <table class="checklist">
+          <thead>
+            <tr>
+              <th>Flag</th>
+              <th>Default offline</th>
+              <th>What to try</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>new-dashboard</code></td>
+              <td>ON</td>
+              <td>Turn off — server Feature and islands should hide the ON path</td>
+            </tr>
+            <tr>
+              <td><code>api-v2</code></td>
+              <td>OFF</td>
+              <td>Leave off to see negate + any-gate teaching</td>
+            </tr>
+            <tr>
+              <td><code>enhanced-submit</code></td>
+              <td>ON</td>
+              <td>Disables island submit buttons when off</td>
+            </tr>
+            <tr>
+              <td><code>ExpressCheckout</code></td>
+              <td>OFF (needs Order.Vip)</td>
+              <td>Use VIP Order preset / entity section</td>
+            </tr>
+            <tr>
+              <td><code>beta-access</code></td>
+              <td>ON</td>
+              <td>Visit <a href="/beta/">/beta/</a>; set <code>TOGGLY_BETA_ACCESS_DEFAULT=false</code> to deny</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Live snapshot (client `$flags` store)</h3>
+        <p>
+          SSR still evaluates flags for gates below. This table hydrates from the
+          published <code>$flags</code> atom and follows SDK background refresh
+          (live WebSocket when an App Key is set, or <code>refreshFlags()</code>)
+          without issuing its own fetch.
+        </p>
+        {/* client:only — same inject store as islands; avoids SSR/store mismatch */}
+        <LiveFlagsIsland client:only="react" mode="snapshot" />
+        <noscript>
+          <table class="snapshot" id="live-snapshot-ssr-fallback">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                Object.entries(snapshot).map(([key, value]) => (
+                  <tr>
+                    <td><code>{key}</code></td>
+                    <td>
+                      <span class:list={['pill', value ? 'on' : 'off']}>
+                        {String(value)}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </noscript>
+      </section>
+
+      <!-- 2. Declarative gates -->
+      <section class="section" id="section-gates" aria-labelledby="gates-heading">
+        <h2 id="gates-heading">2. Declarative gates</h2>
+        <p>
+          <code>Feature.astro</code> evaluates on the server during SSR/SSG
+          using <code>Astro.locals.toggly</code>. Prefer a second
+          <code>negate</code> gate for the off path instead of inventing a
+          FeatureOff API.
+        </p>
+
+        <Feature flag="new-dashboard">
+          <p id="server-dashboard">Server dashboard enabled</p>
+        </Feature>
+        <Feature flag="new-dashboard" negate={true}>
+          <p id="server-dashboard-off">Existing dashboard (new-dashboard off)</p>
+        </Feature>
+
+        <Feature flag="api-v2" negate={true}>
+          <p id="server-api-fallback">API v2 is disabled</p>
+        </Feature>
+        <Feature flag="api-v2">
+          <p id="server-api-on">API v2 is enabled</p>
+        </Feature>
+
+        <Feature flags={['new-dashboard', 'api-v2']} requirement="any">
+          <p id="server-any-gate">At least one of new-dashboard / api-v2 is enabled</p>
+        </Feature>
+        <Feature flags={['new-dashboard', 'api-v2']} requirement="all">
+          <p id="server-all-gate">Both new-dashboard and api-v2 are enabled</p>
+        </Feature>
+
+        <h3>Client hydrate (FeatureClient)</h3>
+        <FeatureClient flag="new-dashboard" client="load">
+          <p id="feature-client-on">FeatureClient: new-dashboard visible after hydrate</p>
+        </FeatureClient>
+      </section>
+
+      <!-- 3. Programmatic API -->
+      <section
+        class="section"
+        id="section-programmatic"
+        aria-labelledby="programmatic-heading"
+      >
+        <h2 id="programmatic-heading">3. Programmatic API</h2>
+        <p>
+          <code>createTogglyServerClient</code> +
+          <code>getFlag</code> / <code>evaluateGate</code> /
+          <code>getVariant</code>. Variants require
+          <code>enableVariants: true</code> so the client hits
+          evaluated-variants-signed.
+        </p>
+        <ul id="programmatic-results">
+          <li>
+            getFlag(new-dashboard):
+            <code>{String(programmatic.dashboard)}</code>
+          </li>
+          <li>
+            getFlag(api-v2): <code>{String(programmatic.api)}</code>
+          </li>
+          <li>
+            evaluateGate(any): <code>{String(programmatic.anyGate)}</code>
+          </li>
+          <li>
+            evaluateGate(all): <code>{String(programmatic.allGate)}</code>
+          </li>
+        </ul>
+        <div id="variant-outcome">
+          <h3>Experiment assignment</h3>
+          {
+            variant ? (
+              <p>
+                new-dashboard variant: <strong>{variant.name}</strong>;
+                configuration: {JSON.stringify(variant.configurationValue ?? null)}
+              </p>
+            ) : (
+              <p>
+                No live new-dashboard variant assignment is available (defaults
+                mode or no assigned variant).
+              </p>
+            )
+          }
+        </div>
+      </section>
+
+      <!-- 4. Identity -->
+      <section
+        class="section"
+        id="section-identity"
+        aria-labelledby="identity-heading"
+      >
+        <h2 id="identity-heading">4. Identity (request-scoped)</h2>
+        <p>
+          Current request identity:
+          <code id="current-identity">{requestContext.identity ?? 'anonymous'}</code>
+          · role claim:
+          <code id="current-role">{requestContext.claims.role}</code>
+        </p>
+        <p class="controls">
+          Switch users with query params (new request context, not a global
+          mutation):
+          <a href={aliceHref}>Alice / admin</a>
+          <a href={bobHref}>Bob / user</a>
+          <a href="/">Clear</a>
+        </p>
+      </section>
+
+      <!-- 5. Order entity -->
+      <section class="section" id="section-order" aria-labelledby="order-heading">
+        <h2 id="order-heading">5. Entity context — Order VIP</h2>
+        <p>
+          Context kind <code>Order</code> with key <code>Id</code>, boolean
+          <code>Vip</code>, optional <code>Total</code>. Evaluating
+          ExpressCheckout against an Order does not change the signed-in user.
+          Offline defaults cannot run ContextProperty rules (no definition
+          payload), so VIP results stay false until a live App Key loads
+          definitions. The checks below use a request-scoped client with
+          <code>enableVariants: false</code> so entity evaluation is real.
+        </p>
+        {
+          programmatic.expressVip ? (
+            <p id="order-gate-vip">VIP order checkout (ord-vip)</p>
+          ) : (
+            <p id="order-gate-vip-pending">
+              VIP ExpressCheckout is off for this request (defaults or Vip=false).
+            </p>
+          )
+        }
+        {
+          programmatic.expressStandard ? (
+            <p id="order-gate-standard">Standard order checkout unexpectedly on</p>
+          ) : (
+            <p id="order-gate-standard-off">
+              Standard order checkout stays off when Vip=false
+            </p>
+          )
+        }
+        <ul>
+          <li>
+            Programmatic ExpressCheckout ord-vip:
+            <code id="express-vip">{String(programmatic.expressVip)}</code>
+          </li>
+          <li>
+            Programmatic ExpressCheckout ord-standard:
+            <code id="express-standard">{String(programmatic.expressStandard)}</code>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 6. Filters matrix -->
+      <section
+        class="section"
+        id="section-filters"
+        aria-labelledby="filters-heading"
+      >
+        <h2 id="filters-heading">6. Filters matrix</h2>
+        <p>
+          Presets follow <code>FLAG_TEMPLATE.md</code>. Matching =
+          alice/admin/VIP; Non-matching = bob/user/standard.
+        </p>
+        <p class="controls">
+          <a href={matchingHref}>Matching preset</a>
+          <a href={nonMatchingHref}>Non-matching preset</a>
+        </p>
+        <h3>Client filter checklist (follows `$flags` refresh)</h3>
+        <p>
+          Same native store subscription as the Home live snapshot. Server
+          matrix below stays request-scoped entity evaluation.
+        </p>
+        <LiveFlagsIsland client:only="react" mode="filters" />
+        <h3>Server filters matrix</h3>
+        <table class="matrix" id="filter-matrix">
+          <thead>
+            <tr>
+              <th>Flag</th>
+              <th>Filter</th>
+              <th>Result</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              filterRows.map((row) => (
+                <tr data-filter={row.key}>
+                  <td><code>{row.key}</code></td>
+                  <td>{row.name}</td>
+                  <td>
+                    {
+                      row.value === null ? (
+                        <span class="pill gap">unsupported</span>
+                      ) : (
+                        <span class:list={['pill', row.value ? 'on' : 'off']}>
+                          {String(row.value)}
+                        </span>
+                      )
+                    }
+                  </td>
+                  <td>{row.note}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <p id="filter-identity">
+          UserClaims context for
+          <code>{requestContext.identity ?? 'anonymous'}</code> / role
+          <code>{requestContext.claims.role}</code>
+        </p>
+        <p id="filter-vip">
+          Active Order entity: <code>{order.key}</code> Vip=
+          <code>{String(order.attributes.Vip)}</code>
+        </p>
+      </section>
+
+      <!-- 7. Package-unique -->
+      <section
+        class="section"
+        id="section-unique"
+        aria-labelledby="unique-heading"
+      >
+        <h2 id="unique-heading">7. Package-unique surfaces</h2>
+        <ul>
+          <li>
+            Integration in <code>astro.config.mjs</code> injects
+            <code>/client/setup</code> and writes
+            <code>toggly-page-features.json</code>
+          </li>
+          <li>
+            Middleware sets <code>x-toggly-middleware: applied</code> and gates
+            <a href="/beta/">/beta/</a> with <code>x-feature: beta-access</code>
+          </li>
+          <li>
+            React + Vue + Svelte islands use <code>client:only</code> so they
+            hydrate against <code>/client/setup</code> without SSR mismatch.
+            Production mixed islands are OK; Astro 7 <strong>dev</strong> cannot
+            mix React+Vue — see README
+          </li>
+        </ul>
+
+        <div class="grid">
+          {/* Islands depend on /client/setup. client:only avoids SSR HTML that
+              disagrees with the post-init store (React #418 hydration). */}
+          <ReactIsland client:only="react" />
+          <VueIsland client:only="vue" />
+          <SvelteIsland client:only="svelte" />
+        </div>
+      </section>
+
+      <!-- 8. Missing key (banner also at top) -->
+      <section
+        class="section"
+        id="section-missing"
+        aria-labelledby="missing-heading"
+      >
+        <h2 id="missing-heading">8. Missing App Key</h2>
+        <p>
+          The banner at the top is the contract surface. Configured=
+          <code>{String(configured)}</code>. Empty keys fail closed to
+          defaults without throwing.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
