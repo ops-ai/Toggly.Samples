@@ -38,9 +38,9 @@
       },
       "Toggly.FeatureManagement": {
         "type": "Direct",
-        "requested": "[3.6.6, )",
-        "resolved": "3.6.6",
-        "contentHash": "LdtAf5GCZfgb0KoSPxtTRAs1U3W1kbzgaa8aJxQvlGx4Ar/nXdKGRgoEgPocRztOYBqkOxcGlfDp4JM0Paea/Q==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "EJVMywqjqOaEIUDZdDXhfnpHRUbi0FhRvzV455Ycse82aZ9zm+CNfpXDB09HmIGHJ20BK7+I/vb3tPSNvPoxRQ==",
         "dependencies": {
           "Azure.Messaging.WebPubSub": "1.6.0",
           "ConcurrentHashSet": "1.3.0",
