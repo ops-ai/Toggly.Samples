@@ -14,7 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="packages.*.lock.json" />
-    <PackageReference Include="Toggly.FeatureManagement.Blazor" Version="3.7.0" />
+    <PackageReference Include="Toggly.FeatureManagement.Blazor" Version="3.8.0" />
     <PackageReference
       Include="Microsoft.AspNetCore.Components.WebAssembly"
       Version="$(AspNetCoreVersion)"
