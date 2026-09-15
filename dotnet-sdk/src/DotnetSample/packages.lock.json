@@ -38,9 +38,9 @@
       },
       "Toggly.FeatureManagement": {
         "type": "Direct",
-        "requested": "[3.6.6, )",
-        "resolved": "3.6.6",
-        "contentHash": "LdtAf5GCZfgb0KoSPxtTRAs1U3W1kbzgaa8aJxQvlGx4Ar/nXdKGRgoEgPocRztOYBqkOxcGlfDp4JM0Paea/Q==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "EJVMywqjqOaEIUDZdDXhfnpHRUbi0FhRvzV455Ycse82aZ9zm+CNfpXDB09HmIGHJ20BK7+I/vb3tPSNvPoxRQ==",
         "dependencies": {
           "Azure.Messaging.WebPubSub": "1.6.0",
           "ConcurrentHashSet": "1.3.0",
@@ -56,12 +56,12 @@
       },
       "Toggly.FeatureManagement.Hangfire": {
         "type": "Direct",
-        "requested": "[3.6.6, )",
-        "resolved": "3.6.6",
-        "contentHash": "FDehrzenOwpV9GC9dQWD+8Im83uQyYOgbUjzu3OjFYMfANNKaoZ0Z4RgV/hBB4lr2Y+RTEltHy0ZFZfU8cam5w==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "urIkRE2A/zC339a9/xaPM9CKIpeX6fkOKxT4tjucn56TO7oNRhpWYM5KM3JWSmvxXQ1XVf5haOjrcQJExThxGg==",
         "dependencies": {
           "Hangfire.Core": "1.7.33",
-          "Toggly.FeatureManagement": "3.6.6"
+          "Toggly.FeatureManagement": "3.8.0"
         }
       },
       "Toggly.FeatureManagement.HealthChecks": {
