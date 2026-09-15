@@ -40,6 +40,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Elixir Phoenix SDK Showcase | Phoenix 1.8 / LiveView 1.2 / OTP 29 | [`elixir-phoenix-sdk/`](elixir-phoenix-sdk/) | Local evaluation, signed definitions, Plug routes and isolated LiveView contexts |
 | Nuxt SDK Showcase | Nuxt 4 / Node 22 | [`nuxt-sdk/`](nuxt-sdk/) | Vue gates, Nitro request context, Order entities, eleven filters and protected handlers with `@ops-ai/nuxt-toggly` |
 | Remix SDK Sample | Remix 2.17 | [`remix-sdk/`](remix-sdk/) | Loaders/actions, request-scoped identity, browser gates, Order context and filter matrix with `@ops-ai/remix-toggly-*` |
+| React Router SDK Sample | React Router 8 + React 19 | [`react-router-sdk/`](react-router-sdk/) | Framework-mode loaders/actions, request-scoped identity, Feature+negate gates, Order context and filter matrix with `@ops-ai/react-router-toggly` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
 | Rust Rocket SDK Workshop | Rust 1.98.1 + Rocket 0.5.1 | [`rust-rocket-sdk/`](rust-rocket-sdk/) | Native Feature guard, request context, signed fixtures, gates, Order and eleven-filter matrix |
 | Angular SDK Workshop | Angular 22 standalone | [`angular-sdk/`](angular-sdk/) | Native templates, directives, variants, route guard, local gates and Order context |

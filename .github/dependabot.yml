@@ -39,6 +39,26 @@ updates:
           - patch
 
   - package-ecosystem: npm
+    directory: /react-router-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    groups:
+      npm-patch-and-minor:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: react-router
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@react-router/*'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: npm
     directory: /electron-sdk
     schedule:
       interval: weekly
