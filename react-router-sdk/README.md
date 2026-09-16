@@ -131,5 +131,6 @@ browser request, configured rule, and connected dashboard app.
       it when the shared Order context is configured.
 - [ ] `/filters` matching evaluates alice/admin/US/Chrome/Mac/en/VIP; the
       non-matching preset evaluates bob/user/CA/Firefox/Windows/fr/standard.
+      A filter key with no dashboard definition shows `missing`, not `false`.
 - [ ] Confirm AlwaysOn and an open TimeWindow stay on; Percentage remains
       identity-sticky and therefore has no prescribed value.

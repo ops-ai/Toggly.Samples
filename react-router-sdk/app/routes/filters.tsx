@@ -1,4 +1,5 @@
 import { useLoaderData, type LoaderFunctionArgs } from 'react-router'
+import { filterResultLabel, hasFlagDefinition } from '../lib/filter-results.mjs'
 import { FILTER_ROWS, MATCHING_HEADERS, NON_MATCHING_HEADERS, ORDERS } from '../lib/sample-data'
 import { hasServerKey, sampleLoader } from '../lib/toggly.server'
 
@@ -6,7 +7,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const preset = new URL(request.url).searchParams.get('preset') === 'non-matching' ? 'non-matching' : 'matching'
   const headers = preset === 'matching' ? MATCHING_HEADERS : NON_MATCHING_HEADERS
   if (!hasServerKey()) {
-    return { preset, configured: false, results: Object.fromEntries(FILTER_ROWS.map(([key]) => [key, false])) }
+    return { preset, configured: false, results: Object.fromEntries(FILTER_ROWS.map(([key]) => [key, 'missing'])) }
   }
   const client = sampleLoader().getClient()
   const order = preset === 'matching' ? ORDERS[0] : ORDERS[1]
@@ -16,6 +17,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     attributes: { Vip: value.vip, Total: value.total },
   }))
   await client.init()
+  const known = client.getFlags()
   const context = {
     identity: preset === 'matching' ? 'alice' : 'bob',
     claims: { role: preset === 'matching' ? 'admin' : 'user' },
@@ -26,7 +28,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     },
   }
   const results = Object.fromEntries(
-    await Promise.all(FILTER_ROWS.map(async ([key]) => [key, await client.isEnabled(key, context, false, order, 'Order')])),
+    await Promise.all(FILTER_ROWS.map(async ([key]) => {
+      const present = hasFlagDefinition(known, key)
+      const enabled = present ? await client.isEnabled(key, context, false, order, 'Order') : false
+      return [key, filterResultLabel(present, enabled)]
+    })),
   )
   return { preset, configured: true, results }
 }
@@ -47,7 +53,7 @@ export default function Filters() {
               <td><code>{key}</code></td>
               <td>{rule}</td>
               <td>{inputs}</td>
-              <td>{String(page.results[key])}</td>
+              <td>{page.results[key]}</td>
             </tr>
           ))}
         </tbody>
