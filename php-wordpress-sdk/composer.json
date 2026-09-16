@@ -1,0 +1,36 @@
+{
+    "name": "toggly-samples/php-wordpress-sdk",
+    "description": "Native WordPress and PHP feature management showcase",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "~8.5.0",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-pdo_sqlite": "*",
+        "toggly/feature-management-php": "^1.0.0",
+        "toggly/wordpress": "^1.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "TogglySample\\": "src/"
+        }
+    },
+    "scripts": {
+        "setup": "php bin/install.php",
+        "lint": "php bin/lint.php",
+        "test": "php tests/unit.php",
+        "build": [
+            "@lint",
+            "php bin/build.php"
+        ]
+    },
+    "config": {
+        "allow-plugins": false,
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
