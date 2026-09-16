@@ -121,6 +121,46 @@ func TestNativeTemplatesGatesAndAction(t *testing.T) {
 	}
 }
 
+// Published v0.7.0 has no atomic variant+enabled API. The workshop must render
+// GetVariant and IsEnabled as independent reads, not one consistent pair.
+func TestAssignmentAndEnabledAreRenderedIndependently(t *testing.T) {
+	app := offlineApp(t)
+	on := request(app, "GET", "/gates", nil).Body.String()
+	if !strings.Contains(on, `id="variant">compact`) || !strings.Contains(on, `id="compact-variant"`) || !strings.Contains(on, `id="variant-enabled"`) {
+		t.Fatal("expected independently labeled assignment, compact layout, and enabled reads")
+	}
+	if !strings.Contains(on, "no atomic variant+enabled API") || !strings.Contains(on, "own provider snapshot") {
+		t.Fatal("expected honest split-read copy")
+	}
+	page := readSnapshot(t, app, "/api/snapshot")
+	if page.Variant == nil || page.Variant.Name != "compact" || !page.VariantEnabled {
+		t.Fatal("expected both independent fields populated while the fixture is ON")
+	}
+
+	app.fixture.SetDashboard(false)
+	eventually(t, func() bool {
+		p := readSnapshot(t, app, "/api/snapshot")
+		return p.Variant != nil && p.Variant.Name == "compact" && !p.VariantEnabled
+	})
+	off := request(app, "GET", "/gates", nil).Body.String()
+	page = readSnapshot(t, app, "/api/snapshot")
+	if page.Variant == nil || page.Variant.Name != "compact" {
+		t.Fatal("assignment was dropped when the independent enabled read went false")
+	}
+	if page.VariantEnabled {
+		t.Fatal("enabled read should be independently false")
+	}
+	if !strings.Contains(off, `id="compact-variant"`) {
+		t.Fatal("compact UI was gated on IsEnabled, implying one atomic pair")
+	}
+	if !strings.Contains(off, `id="variant-enabled"`) || !strings.Contains(off, "OFF or unavailable") {
+		t.Fatal("enabled state missing after the independent OFF read")
+	}
+	if strings.Contains(off, "neither variant UI branch is enabled") {
+		t.Fatal("page still presents assignment and enabled as one pair")
+	}
+}
+
 func TestConcurrentRequestsKeepIdentityClaimsAndOrderIsolated(t *testing.T) {
 	app := offlineApp(t)
 	var wg sync.WaitGroup

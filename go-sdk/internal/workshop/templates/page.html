@@ -35,13 +35,20 @@ this request's identity and Order to every check. */}}
 {{if featureAny . "new-dashboard" "api-v2"}}Any{{end}}
 {{if featureAll . "new-dashboard" "api-v2"}}All{{end}}`}}</pre></section>
 
-{{/* GetVariant can return an assignment while the flag itself is disabled.
-Check the native variant client's boolean result before showing a variant UI. */}}
-<section><h2>Assigned variant</h2><p>{{.VariantStatus}}</p>{{if .Variant}}<p>Native <code>GetVariant("new-dashboard")</code>: <strong id="variant">{{.Variant.Name}}</strong></p><pre>{{printf "%v" .Variant.ConfigurationValue}}</pre>{{if .VariantEnabled}}{{if eq .Variant.Name "compact"}}
-<article id="compact-variant"><h3>Compact dashboard</h3><p>A compact summary is shown for this assigned variant.</p></article>
+{{/* GetVariant and IsEnabled are independent published-package reads.
+v0.7.0 VariantResult is only {Name, ConfigurationValue}; there is no atomic
+assignment+enabled snapshot. Compact/control UI follows the assignment name
+only and is not gated on the separate enabled read. */}}
+<section><h2>Assignment and enabled state</h2><p>{{.VariantStatus}}</p><p>Published <code>toggly-go</code> v0.7.0 has no atomic variant+enabled API. <code>GetVariant</code> and <code>IsEnabled</code> each take their own provider snapshot. A refresh can land between the two calls, so this page never treats them as one consistent pair.</p>
+<div class="cards">
+<article><h3>Assignment · GetVariant</h3>{{if .Variant}}<p>Native <code>GetVariant("new-dashboard")</code>: <strong id="variant">{{.Variant.Name}}</strong></p><pre>{{printf "%v" .Variant.ConfigurationValue}}</pre>{{else}}<p id="variant-unavailable">No variant assigned or loaded. Enable and configure variants for new-dashboard in your app.</p>{{end}}</article>
+<article><h3>Enabled · IsEnabled</h3>{{if .VariantEnabled}}<p id="variant-enabled" class="on">Independent <code>IsEnabled(..., "new-dashboard", ...)</code>: ON</p>{{else}}<p id="variant-enabled">Independent <code>IsEnabled(..., "new-dashboard", ...)</code>: OFF or unavailable</p>{{end}}</article>
+</div>
+{{if .Variant}}{{if eq .Variant.Name "compact"}}
+<article id="compact-variant"><h3>Compact dashboard</h3><p>This layout follows the assignment name from <code>GetVariant</code> only. It is not gated on the separate <code>IsEnabled</code> read.</p></article>
 {{else if eq .Variant.Name "control"}}
-<article id="control-variant"><h3>Control dashboard</h3><p>The standard summary is shown for this assigned variant.</p></article>
-{{else}}<p>Your app assigned a different variant; its name and configuration are shown above.</p>{{end}}{{else}}<p>The server-evaluated flag is OFF. Its assigned variant is displayed for inspection, but neither variant UI branch is enabled.</p>{{end}}{{else}}<p id="variant-unavailable">No variant assigned or loaded. Enable and configure variants for new-dashboard in your app.</p>{{end}}<p>The two fixed demo personas each have a separate server-evaluated client initialized with <code>VariantIdentity</code>, <code>VariantGroups</code>, and <code>VariantClaims</code> (published v0.7.0). That endpoint needs its own fetch. Local boolean evaluation remains on the shared definitions client; changing request context there needs no extra API call. Do not call <code>SetVariantIdentity</code> on a client shared by concurrent HTTP requests.</p></section>
+<article id="control-variant"><h3>Control dashboard</h3><p>This layout follows the assignment name from <code>GetVariant</code> only. It is not gated on the separate <code>IsEnabled</code> read.</p></article>
+{{else}}<p>Your app assigned a different variant; its name and configuration are shown above. That assignment is independent of the enabled-state read.</p>{{end}}{{end}}<p>The two fixed demo personas each have a separate server-evaluated client initialized with <code>VariantIdentity</code>, <code>VariantGroups</code>, and <code>VariantClaims</code> (published v0.7.0). That endpoint needs its own fetch. Local boolean evaluation remains on the shared definitions client; changing request context there needs no extra API call. Do not call <code>SetVariantIdentity</code> on a client shared by concurrent HTTP requests.</p></section>
 
 {{if .Offline}}<section><h2>Practice a rollout</h2><p>This changes the loopback fixture only. Background refresh runs every 30 seconds; reload after the next successful refresh timestamp.</p><form method="post" action="/fixture/dashboard"><button name="enabled" value="false">Turn dashboard OFF</button> <button name="enabled" value="true">Turn dashboard ON</button></form></section>
 {{end}}

@@ -45,6 +45,9 @@ type Page struct {
 	Context                                            toggly.Context
 	Rows                                               []Row
 	Orders                                             []Row
+	// Variant is only the latest GetVariant assignment. VariantEnabled is a
+	// separate IsEnabled read. Published v0.7.0 has no atomic pair: VariantResult
+	// is {Name, ConfigurationValue}, and each call takes its own snapshot.
 	Variant                                            *toggly.VariantResult
 	VariantEnabled                                     bool
 	All, Any, Negated                                  bool
@@ -223,6 +226,8 @@ func (a *App) view(r *http.Request) Page {
 		// Never expose ProviderDebugInfo wholesale: it contains the app key and
 		// raw network errors may contain credential-bearing request URLs.
 		if v := a.variants[ec.Identity]; v != nil {
+			// Independent published-package reads. GetVariant and IsEnabled each
+			// take their own provider snapshot; do not present them as one result.
 			p.Variant = v.GetVariant("new-dashboard")
 			p.VariantEnabled, _ = v.IsEnabled(r.Context(), "new-dashboard", ec)
 			vi := v.ProviderDebugInfo()

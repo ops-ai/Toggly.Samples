@@ -85,7 +85,7 @@ Samples.
 | `filter-os` | OperatingSystem `Mac`, percentage 100 |
 | `filter-context-property` | ContextProperty on **Order**, `Vip` equals `true`, boolean |
 
-6. For the variant section, configure `new-dashboard` variants named **compact** and **control**, with JSON configuration `{"layout":"compact"}` and `{"layout":"control"}`. Assign alice to compact and bob to control using your variant targeting rules. The UI displays whatever the server actually assigns; it does not manufacture a missing variant. The baseline boolean flag and variant assignment are separate concepts.
+6. For the variant section, configure `new-dashboard` variants named **compact** and **control**, with JSON configuration `{"layout":"compact"}` and `{"layout":"control"}`. Assign alice to compact and bob to control using your variant targeting rules. The UI displays whatever the server actually assigns; it does not manufacture a missing variant. The baseline boolean flag and variant assignment are separate concepts, and the published package has no API that returns both as one snapshot.
 7. Put this app's key only in `.env.local`, start the app, and walk the checklist below. `TOGGLY_APP_KEY` is read by Go on the server; no browser-build prefix is needed.
 
 The canonical [shared flag recipe](../docs/FLAG_TEMPLATE.md) applies unchanged. Matching uses alice/admin/US, `en-US,en;q=0.9`, VIP `ord-vip`, and:
@@ -107,7 +107,7 @@ The shared demo group is `sample-users`. Header fields are deliberately syntheti
 | Path | Learn and observe |
 | --- | --- |
 | `/` | First-flag exercise, section map, flag checklist, current request snapshot, missing-key banner |
-| `/gates` | Native `feature`, `featureAny`, `featureAll`, Go `not`, native assigned variants |
+| `/gates` | Native `feature`, `featureAny`, `featureAll`, Go `not`, independently labeled assignment and enabled reads |
 | `/programmatic` | `IsEnabled`, `EvaluateGate` Any/All and per-flag negate; gated POST action |
 | `/identity` | Initial identity/groups/claims/request context and `MiddlewareWith` handoff |
 | `/orders` | Two actual Order evaluations in one request; VIP versus standard |
@@ -122,7 +122,7 @@ The shared demo group is `sample-users`. Header fields are deliberately syntheti
 1. [`cmd/showcase/main.go`](cmd/showcase/main.go): environment configuration, HTTP server timeouts, graceful shutdown and client ownership.
 2. [`internal/workshop/context.go`](internal/workshop/context.go): schema registration, a fresh context for each request, bounded persona cookie and entity mapping.
 3. [`internal/workshop/app.go`](internal/workshop/app.go): shared definitions client, fixed-identity variant clients, native middleware, gates and per-call evaluation. Comments explain why context is explicit.
-4. [`templates/page.html`](internal/workshop/templates/page.html): native helpers receive page data implementing `TogglyContext()`. Normal Go template conditionals supply negation and display the actual variant.
+4. [`templates/page.html`](internal/workshop/templates/page.html): native helpers receive page data implementing `TogglyContext()`. Normal Go template conditionals supply negation. Assignment and enabled are labeled as independent reads; compact/control layout follows the assignment name only.
 5. [`internal/fixture/server.go`](internal/fixture/server.go): explicitly offline definitions only. You do not need this service in a real integration.
 6. [`internal/workshop/app_test.go`](internal/workshop/app_test.go): real published clients tested through HTTP, templates, concurrency, signature failures and lifecycle.
 
@@ -150,6 +150,7 @@ per-identity lifetime if you need arbitrary identities. Do not call
 ## Behavior and SDK boundaries
 
 - **Loading and refresh:** `NewClient` returns before the first response. Unknown/unloaded flags are false. The page displays the last successful refresh timestamp, and snapshots reevaluate on every request. No browser auto-refresh or public manual SDK Refresh method is assumed. An error retains last accepted definitions; the SDK's historical error timestamp remains visible even after a later success. Variant clients have their own refresh status.
+- **Variant assignment vs enabled (split reads):** Published `toggly-go` v0.7.0 has no atomic variant+enabled API. `VariantResult` is only `{Name, ConfigurationValue}`. `GetVariant` and `IsEnabled` each take their own provider snapshot, so a background refresh can land between the two calls and pair a stale assignment with a newer enabled state. This sample renders assignment and enabled independently; compact/control layout follows the assignment name only and is not gated on the separate enabled read.
 - **Filter expectations:** Matching turns on targeting, claims, country, browser, language, OS, and VIP context. Non-matching turns those off. AlwaysOn and TimeWindow stay on in both presets; 50% rollout results are stable for an identity, not prescribed as on/off by the preset.
 - **DeviceType parser gap:** the published Go parser reports `Other` for the exact Macintosh desktop user agent, so `filter-device-type` remains off even under Matching. The sample does not rename the shared Macintosh rule to make it pass.
 - **Entity kind limitation:** the published ContextProperty evaluator checks entity attributes but does not enforce `ContextKind` against `Entity.Kind`. The sample always maps the correct Order type and demonstrates absent entity as false. A kind name is not an access-control boundary.
@@ -191,7 +192,7 @@ Tests require no dashboard app, external service, or real key. They use actual c
 - [ ] Matching selects alice/admin/VIP; Non-matching selects bob/user/standard, and the cookie persists across sections. A second browser can keep a different preset.
 - [ ] Filters show all eleven rows with the documented device gap, stable percentage, open time window, and opposite targeted results.
 - [ ] Orders shows VIP ON and standard OFF in the same request after definitions load.
-- [ ] Variants display compact for alice and control for bob in offline practice. Live assignments depend on your configured variant rules; the page reports unassigned/loading honestly.
+- [ ] Variants display compact for alice and control for bob in offline practice. Assignment and enabled are labeled as independent reads; compact/control layout is not gated on the enabled value. Live assignments depend on your configured variant rules; the page reports unassigned/loading honestly.
 - [ ] With real flags configured, toggle beta-access and enhanced-submit and observe 200/404 branches for the gate/action after refresh. The sample action saves no data.
 - [ ] Refresh the JSON snapshot after a flag update. The values and refresh timestamp come from the current SDK state, not a previously selected persona.
 - [ ] Stop with Ctrl+C; HTTP and all three SDK clients shut down. Confirm `.env.local` remains ignored.
