@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{.Title}} · Toggly Go workshop</title><link rel="stylesheet" href="/style.css"></head><body>
+<header><a class="brand" href="/">Toggly <span>Go workshop</span></a><p>Learn feature flags through a working Go application.</p></header>
+<nav aria-label="Sections"><a href="/">Home</a><a href="/gates">Gates</a><a href="/programmatic">API</a><a href="/identity">Identity</a><a href="/orders">Order</a><a href="/filters">Filters</a><a href="/integrations">Go integrations</a></nav>
+<main>
+{{if not .Configured}}<aside class="banner" role="status"><strong>Missing app key</strong> — No SDK client or network connection was started. Results are unavailable and gates default to OFF. Set TOGGLY_APP_KEY for your app, or explicitly run TOGGLY_OFFLINE=true for local practice. See README.md for setup.</aside>{{end}}
+{{if .Offline}}<aside class="banner"><strong>Offline practice</strong> — Definitions come from a local signed fixture, not a Toggly application. Evaluation, signatures, templates, and HTTP gates use the published Go SDK.</aside>{{end}}
+<div class="eyebrow">{{.Mode}}</div><h1>{{.Title}}</h1>
+<p class="status">{{.Status}}</p><p>Current sample identity: <strong id="identity">{{.Context.Identity}}</strong> · role {{index .Context.Claims "role"}} · Order {{.Context.Entity.Key}}. These controls demonstrate targeting; they do not authenticate a user.</p>
+<form class="presets" method="post" action="/persona"><button name="preset" value="matching">Matching preset</button><button name="preset" value="nonmatching" class="secondary">Non-matching preset</button></form>
+{{if eq .Path "/"}}
+<section><h2>What is a feature flag?</h2><p>A feature flag is a named decision that lets you release code independently from enabling a feature. The application asks whether <code>new-dashboard</code> is on, then selects a branch. Rules can use a person, a browser, or an Order.</p><h2>Your first flag, in three steps</h2><ol><li>Run offline practice or create <code>new-dashboard</code> in your Go SDK Sample app using the README recipe.</li><li>Open <a href="/gates">Gates</a>. Switch the flag off and on. Offline practice offers local controls on that page.</li><li>After the next background refresh, reload the page. Compare the feature and negated branches. Your code stayed the same.</li></ol></section>
+
+<section><h2>Explore the sample</h2><div class="cards"><a href="/gates"><b>01 · Declarative gates</b>Native template helpers, negate, Any/All, and variants.</a><a href="/programmatic"><b>02 · Programmatic API</b>Evaluate a decision before performing an action.</a><a href="/identity"><b>03 · Identity</b>Understand per-request context and initial targeting.</a><a href="/orders"><b>04 · Entity context</b>Evaluate two Orders for the same person.</a><a href="/filters"><b>05 · Filter matrix</b>Compare eleven shared rules and parser limitations.</a><a href="/integrations"><b>06 · Go integrations</b>Middleware, HTTP gates, signing, and shutdown.</a></div></section>
+
+{{end}}
+{{if eq .Path "/gates"}}
+{{/* These are the SDK FuncMap functions, not sample reimplementations.
+Pass the complete page as the first argument so ContextProvider supplies
+this request's identity and Order to every check. */}}
+<section><h2>Native html/template helpers</h2><p>The page data implements <code>TogglyContext()</code>. Every native helper gets this request's persona instead of a process-wide identity.</p>
+<div class="cards">
+<article><h3>Feature</h3>{{if feature . "new-dashboard"}}<p id="dashboard-on" class="on">New dashboard is ON</p>{{else}}<p id="dashboard-off">Classic dashboard · flag OFF or unavailable</p>{{end}}</article>
+
+
+<article><h3>Negate with Go's not</h3>{{if not (feature . "new-dashboard")}}<p id="negate-visible">The OFF branch is visible.</p>{{else}}<p>The OFF branch is hidden.</p>{{end}}</article>
+
+
+<article><h3>Any</h3>{{if featureAny . "new-dashboard" "api-v2"}}<p id="any-on" class="on">At least one flag is ON</p>{{else}}<p>Neither flag is ON.</p>{{end}}</article>
+
+
+<article><h3>All</h3>{{if featureAll . "new-dashboard" "api-v2"}}<p id="all-on" class="on">Both flags are ON</p>{{else}}<p>At least one required flag is OFF.</p>{{end}}</article>
+</div>
+<pre>{{`{{if feature . "new-dashboard"}}New dashboard{{end}}
+{{if not (feature . "new-dashboard")}}Classic dashboard{{end}}
+{{if featureAny . "new-dashboard" "api-v2"}}Any{{end}}
+{{if featureAll . "new-dashboard" "api-v2"}}All{{end}}`}}</pre></section>
+
+{{/* GetVariant can return an assignment while the flag itself is disabled.
+Check the native variant client's boolean result before showing a variant UI. */}}
+<section><h2>Assigned variant</h2><p>{{.VariantStatus}}</p>{{if .Variant}}<p>Native <code>GetVariant("new-dashboard")</code>: <strong id="variant">{{.Variant.Name}}</strong></p><pre>{{printf "%v" .Variant.ConfigurationValue}}</pre>{{if .VariantEnabled}}{{if eq .Variant.Name "compact"}}
+<article id="compact-variant"><h3>Compact dashboard</h3><p>A compact summary is shown for this assigned variant.</p></article>
+{{else if eq .Variant.Name "control"}}
+<article id="control-variant"><h3>Control dashboard</h3><p>The standard summary is shown for this assigned variant.</p></article>
+{{else}}<p>Your app assigned a different variant; its name and configuration are shown above.</p>{{end}}{{else}}<p>The server-evaluated flag is OFF. Its assigned variant is displayed for inspection, but neither variant UI branch is enabled.</p>{{end}}{{else}}<p id="variant-unavailable">No variant assigned or loaded. Enable and configure variants for new-dashboard in your app.</p>{{end}}<p>The two fixed demo personas each have a separate server-evaluated client initialized with <code>VariantIdentity</code>, <code>VariantGroups</code>, and <code>VariantClaims</code> (published v0.7.0). That endpoint needs its own fetch. Local boolean evaluation remains on the shared definitions client; changing request context there needs no extra API call. Do not call <code>SetVariantIdentity</code> on a client shared by concurrent HTTP requests.</p></section>
+
+{{if .Offline}}<section><h2>Practice a rollout</h2><p>This changes the loopback fixture only. Background refresh runs every 30 seconds; reload after the next successful refresh timestamp.</p><form method="post" action="/fixture/dashboard"><button name="enabled" value="false">Turn dashboard OFF</button> <button name="enabled" value="true">Turn dashboard ON</button></form></section>
+{{end}}
+{{end}}
+{{if eq .Path "/programmatic"}}
+<section><h2>Evaluate before choosing behavior</h2><pre>evalCtx, _ := togglyctx.From(r.Context())
+enabled, err := client.IsEnabled(r.Context(), "api-v2", evalCtx)
+if err != nil { /* return a safe error response */ }
+if enabled { /* use the new API behavior */ }</pre><p>Local evaluation reads downloaded definitions. Identity, claims, request fields, and Order are supplied together on this first check.</p><p>Native EvaluateGate: All = <strong>{{.All}}</strong>, Any = <strong>{{.Any}}</strong>, Any with negate = <strong>{{.Negated}}</strong>. Negate flips each individual flag before combining them; it does not invert the combined result.</p><h3>Gate an action</h3><form method="post" action="/submit"><button>Try enhanced submit</button></form><p>The native HTTP FeatureGate checks <code>enhanced-submit</code> before the handler runs. Success calls <code>RecordUsage</code>; usage sending is disabled in this teaching app. No data is saved. A disabled flag returns 404.</p></section>
+
+{{end}}
+{{if eq .Path "/identity"}}
+<section><h2>Build the context once per request</h2><ol><li>The sample selects alice/admin or bob/user from a bounded demo cookie.</li><li><code>togglyhttp.MiddlewareWith</code> stores a fresh context via <code>GetContext: contextForRequest</code>. Missing UA, language, and country fields are then filled from headers (<code>FromHttpRequest</code> mapping).</li><li>Handlers read <code>togglyctx.From(r.Context())</code> and pass that context explicitly to <code>IsEnabled</code>. Empty per-call fields merge from this ambient context.</li><li>Template data carries the same context via <code>TogglyContext()</code>.</li></ol><p>There is no init-then-set-context network round trip. The shared client downloads definitions; local evaluation uses the full request context. Cookie changes affect only subsequent requests in this browser. Another browser can keep a different persona.</p><p>In your app, build identity/groups/claims from a verified principal. Populate request metadata from headers you trust. Our Matching/Non-matching values are synthetic inputs for repeatable learning.</p></section>
+
+{{end}}
+{{if eq .Path "/orders"}}
+{{/* Orders were evaluated separately with MapEntity in app.go. Do not
+reuse a result cached only by feature key for different entities. */}}
+<section><h2>One user, two Orders</h2><p><code>Order</code> is a business object, not the signed-in person. <code>RegisterContext</code> registers its schema once at startup; <code>MapEntity</code> supplies each instance per evaluation.</p><div class="cards">{{range .Orders}}
+<article><h3>{{.Key}}</h3><p>ExpressCheckout: <strong>{{if .Enabled}}ON{{else}}OFF / unavailable{{end}}</strong></p></article>
+{{end}}</div><pre>orderContext := requestContext
+orderContext.Entity = toggly.MapEntity("Order", order)
+on, err := client.IsEnabled(r.Context(), "ExpressCheckout", orderContext)</pre><p>A VIP Order can pass while a standard Order fails in the same request. The sample always passes kind Order. The published evaluator checks attributes but does not enforce ContextKind against Entity.Kind; do not use the kind string as an authorization boundary.</p></section>
+
+{{end}}
+{{if eq .Path "/filters"}}<section><h2>Compare Matching and Non-matching</h2><p>The presets use the exact shared template: alice/admin/US/Chrome/en/Macintosh/Mac/VIP versus bob/user/CA/Firefox/fr/Windows/standard. AlwaysOn and the open TimeWindow stay ON; Percentage is sticky by identity. DeviceType's desktop parser gap is shown in its row.</p><p>Each segment rule needs its configured percentage (100% here) in addition to the matching value. A missing percentage fails closed.</p></section>
+{{end}}
+{{if eq .Path "/integrations"}}
+<section><h2>Native HTTP gate</h2><p><a class="button" href="/beta">Try beta-access</a> — enabled returns 200; disabled/missing returns the native 404. The gate reads the context installed by the middleware.</p><pre>togglyhttp.MiddlewareWith(togglyhttp.Options{GetContext: contextForRequest})(mux)
+togglyhttp.FeatureGate(client, "beta-access")(handler)</pre><h2>Signed definitions and lifecycle</h2><p>All configured clients request signed definitions with signature verification enabled. Offline practice uses an ephemeral ES256 key on loopback; tests also tamper with signatures and verify that the last accepted state is retained. No private key is stored. The published variant endpoint path does not reject an envelope that omits its signature or key ID; this limitation is documented in the README. Normal signed responses and tampered signatures are exercised here.</p><p>The SDK refreshes in the background. Reload any page or <a href="/api/snapshot">read the current JSON snapshot</a> to see new evaluations. A page is a snapshot at request time; it does not update itself. NewClient is asynchronous, so the initial response may show loading and OFF defaults.</p><p>The process calls Close once for each of its three clients after HTTP shutdown. Request cancellation is checked by sample handlers and passed to programmatic evaluation. Native template helpers internally use context.Background and suppress evaluation errors; they are suitable for presentation, while actions use the HTTP gate.</p><h2>Other supported surfaces</h2><p>A native in-memory SessionStore is configured. Percentage is already deterministic for stable identities. The SDK also supports snapshot providers, custom filters, usage batching, and metrics. This sample disables outbound telemetry and avoids persisting app definitions; see the README for API pointers.</p></section>
+
+{{end}}
+<section><h2>{{if eq .Path "/filters"}}All eleven filters and shared flags{{else}}Flag checklist · current request{{end}}</h2><div class="table-wrap"><table><thead><tr><th>Flag</th><th>Result</th><th>What to observe</th></tr></thead><tbody>{{range .Rows}}<tr data-flag="{{.Key}}"><td><code>{{.Key}}</code></td><td>{{if not $.Configured}}Unavailable{{else if .Enabled}}<span class="on">ON</span>{{else}}OFF{{end}}</td><td>{{.Note}}</td></tr>{{end}}</tbody></table></div></section>
+
+<details><summary>Inspect this request's context and live snapshot</summary><pre id="snapshot">{{.Snapshot}}</pre></details>
+<footer>Start reading at <code>cmd/showcase/main.go</code>, then <code>internal/workshop/context.go</code>, <code>app.go</code>, and <code>templates/page.html</code>. Full setup and a manual checklist are in README.md.</footer>
+</main></body></html>
