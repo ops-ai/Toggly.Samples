@@ -12,6 +12,7 @@
     "offline": "npm run build && node dist/src/main.js --offline",
     "dev": "npm run build && npm start",
     "test": "npm run build && node --test dist/test/*.test.js",
+    "soak": "npm run build && node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/soak.mjs",
     "format": "npm exec --yes --package=prettier@3.6.2 -- prettier --no-error-on-unmatched-pattern --write \"src/**/*.{ts,js,css}\" \"tests/**/*.{ts,mjs,json,md}\" \"test/**/*.{ts,mjs,json,md}\" \"examples/**/*.ts\" \"*.{ts,mjs,json,md}\"",
     "format:check": "npm exec --yes --package=prettier@3.6.2 -- prettier --no-error-on-unmatched-pattern --check \"src/**/*.{ts,js,css}\" \"tests/**/*.{ts,mjs,json,md}\" \"test/**/*.{ts,mjs,json,md}\" \"examples/**/*.ts\" \"*.{ts,mjs,json,md}\"",
     "prebuild": "npm run format:check"

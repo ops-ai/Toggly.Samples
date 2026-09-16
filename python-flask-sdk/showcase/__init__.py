@@ -47,6 +47,12 @@ def create_app(overrides=None, *, client=None):
         app.config['SECRET_KEY'] = secrets.token_urlsafe(64)
     app.config['OFFLINE'] = not app.config['TOGGLY_APP_KEY'] or app.config['TOGGLY_APP_KEY'] == 'ci-placeholder'
     app.config['TOGGLY_DISABLE_BACKGROUND_REFRESH'] = app.config['TOGGLY_REFRESH_INTERVAL'] <= 0
+    if not overrides or 'TOGGLY_ENABLE_USAGE_TRACKING' not in overrides:
+        # Fixture/loopback definition hosts never upload. Live production keys do.
+        app.config['TOGGLY_ENABLE_USAGE_TRACKING'] = (
+            not app.config['OFFLINE']
+            and str(app.config['TOGGLY_BASE_URL']).rstrip('/').startswith('https://definitions.toggly.io')
+        )
 
     # When Flask-Login is installed, the adapter reads current_user; configure
     # LoginManager even if your current request is anonymous.

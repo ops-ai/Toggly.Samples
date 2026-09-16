@@ -19,7 +19,8 @@ defmodule TogglyShowcase.MixProject do
       ],
       aliases: [
         setup: ["deps.get --check-locked", "assets.build"],
-        "assets.build": ["run --no-start scripts/build_assets.exs"]
+        "assets.build": ["run --no-start scripts/build_assets.exs"],
+        soak: ["run --no-start scripts/soak.exs"]
       ]
     ]
   end

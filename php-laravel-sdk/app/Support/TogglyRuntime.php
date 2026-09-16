@@ -27,7 +27,8 @@ final class TogglyRuntime
 
     public function __construct(public readonly DemoContext $context)
     {
-        $this->offline = trim((string) config('toggly.app_key')) === '';
+        $key = trim((string) config('toggly.app_key'));
+        $this->offline = $key === '' || $key === 'ci-placeholder';
     }
 
     public function initialize(): void

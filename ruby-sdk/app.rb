@@ -58,7 +58,7 @@ module RubyShowcase
       if path == '/api/snapshot'
         return json(200, mode: @service.configuration.mode, ready: @service.client.ready,
                          context: context.to_h, csrf: session['csrf'], flags: @service.snapshot(context),
-                         telemetry: @service.telemetry.summary)
+                         telemetry: @service.telemetry&.summary || { mode: 'live' })
       end
       if { '/api/v2' => 'api-v2', '/beta' => 'beta-access' }.key?(path)
         flag = { '/api/v2' => 'api-v2', '/beta' => 'beta-access' }.fetch(path)

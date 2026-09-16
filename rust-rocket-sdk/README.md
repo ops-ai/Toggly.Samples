@@ -60,12 +60,14 @@ an app key.
 |---|---|
 | Rust stable | 1.98.1 |
 | Rocket | 0.5.1 |
-| `toggly` | 0.4.0 |
-| `toggly-rocket` | 0.4.0 |
+| `toggly` | 0.6.0 |
+| `toggly-rocket` | 0.6.0 |
 
 These were the latest stable host/runtime and latest published SDK releases at
-scaffolding on September 11, 2026 UTC, checked against Rust's stable manifest and
-crates.io. Cargo.lock records normal registry package checksums and transitive
+the 2026-09-16 cache-telemetry refresh, checked against Rust's stable manifest and
+crates.io. Live mode reports definition cache hits on the usage pipeline; offline
+and placeholder keys do not upload usage. `python scripts/soak.py` waits for
+refresh + flush when a real `TOGGLY_APP_KEY` is set. Cargo.lock records normal registry package checksums and transitive
 resolution. There are no local SDK paths, tarballs, dependency patches or resolver
 overrides. Supporting signing dependencies match the native SDK's compatible
 P-256/SHA-2 generation; they do not change its signature protocol.

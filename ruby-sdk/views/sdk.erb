@@ -20,8 +20,13 @@
 <section class="card">
   <p class="eyebrow">USAGE + METRICS</p>
   <h2>Watch native batching locally</h2>
-  <p>Native checks collect usage; the submission form records usage, measurement, counter and observation events. This sample injects a local transport through the public API. No telemetry is sent to Toggly in any mode, including connected mode. With no app key, the SDK does not start telemetry and batch counts stay zero. Counts describe flushed batches, not per-user or per-request totals.</p>
+  <% if @service.configuration.mode == 'connected' %>
+  <p>Live mode reports definition cache hits and feature usage on the SDK usage pipeline (default flush ~60s). Offline, missing-key, and fixture runs keep a local capture transport and do not upload to Toggly.</p>
+  <pre><code><%= h(JSON.pretty_generate({ mode: 'live', transport: 'sdk-default' })) %></code></pre>
+  <% else %>
+  <p>Native checks collect usage; the submission form records usage, measurement, counter and observation events. This sample injects a local transport through the public API. Fixture and missing-key modes never upload to Toggly. Counts describe flushed batches, not per-user or per-request totals.</p>
   <pre><code><%= h(JSON.pretty_generate(@service.telemetry.summary)) %></code></pre>
+  <% end %>
   <form action="/actions/flush" method="post">
     <%= csrf_field %>
     <button type="submit">Record view &amp; flush native telemetry →</button>

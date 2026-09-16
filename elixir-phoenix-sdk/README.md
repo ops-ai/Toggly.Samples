@@ -1,6 +1,6 @@
 # Elixir / Phoenix SDK showcase
 
-A working Phoenix 1.8 / LiveView 1.2 application using `toggly` **0.1.1** with `toggly_phoenix` and `toggly_live_view` **0.1.0**. It teaches feature flags through local OTP evaluation, server route gates and independent LiveView contexts.
+A working Phoenix 1.8 / LiveView 1.2 application using `toggly` **0.1.1** with `toggly_phoenix` and `toggly_live_view` **0.1.0**. It teaches feature flags through local OTP evaluation, server route gates and independent LiveView contexts. Live mode enables usage upload (feature checks); Hex has not published `toggly` 0.2.0 yet, so definition cache-hit fields land only after that release. Offline and `ci-placeholder` do not upload usage. `mix soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 ## Quick start
 

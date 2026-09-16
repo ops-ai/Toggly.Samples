@@ -29,10 +29,14 @@ export function createApp({ appKey = '', environment = 'Production', fixtureUrl,
     appKey: offline ? 'offline-fixture' : configured ? appKey : undefined,
     // Only the loopback fixture has unsigned definitions. Live mode verifies them.
     environment, baseUrl: fixtureUrl, verifySignatures: !offline,
-    enableStreaming: false, refreshInterval: offline || !configured ? 0 : 180000,
+    enableStreaming: false,
+    refreshInterval: configured && !offline ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
     // Fixture/default runs never report usage. A configured live app retains the
     // SDK defaults; tests can disable telemetry without replacing the evaluator.
-    enableUsageTracking: configured && telemetry, enableMetrics: configured && telemetry,
+    enableUsageTracking: configured && !offline && telemetry,
+    enableMetrics: configured && !offline && telemetry,
+    usageFlushInterval: configured && !offline && telemetry
+      ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000) : 0,
     timeout: 3000, registerContextsOnStartup: false, hooks,
     // This runs for every request. It deliberately does not call a global
     // setIdentity API: a global identity would leak targeting between requests.

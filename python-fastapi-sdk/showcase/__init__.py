@@ -30,6 +30,10 @@ def create_app(overrides=None):
             raise ValueError('Set SAMPLE_SESSION_SECRET to a locally generated stable secret.')
         settings['secret'] = secrets.token_urlsafe(64)
     settings['offline'] = settings['app_key'] in ('', 'ci-placeholder')
+    live = (
+        not settings['offline']
+        and str(settings['base_url']).rstrip('/').startswith('https://definitions.toggly.io')
+    )
 
     def initialize():
         if settings['offline']:
@@ -44,7 +48,8 @@ def create_app(overrides=None):
                 refresh_interval=settings['refresh_interval'],
                 disable_background_refresh=settings['refresh_interval'] <= 0,
                 enable_live_updates=False,
-                enable_usage_tracking=False,
+                enable_usage_tracking=live,
+                usage_flush_interval=float(os.getenv('TOGGLY_USAGE_FLUSH_INTERVAL', '60')),
                 enable_metrics=False,
                 register_contexts_on_startup=False,
                 connect_timeout=2,

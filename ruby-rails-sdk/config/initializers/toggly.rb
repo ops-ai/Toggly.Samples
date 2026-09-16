@@ -5,9 +5,12 @@ require_relative '../../app/models/order'
 require_relative '../../app/services/request_context'
 
 key = ENV.fetch('TOGGLY_APP_KEY', '').strip
+key = '' if key == 'ci-placeholder'
 period = Integer(ENV.fetch('TOGGLY_REFRESH_INTERVAL', '10'))
 raise ArgumentError, 'Refresh interval must be 1–3600 seconds' unless (1..3600).cover?(period)
 fixture = ENV['TOGGLY_LOCAL_FIXTURE'] == 'true'
+live = !key.empty? && !fixture
+ENV['TOGGLY_DISABLE_TELEMETRY'] = '1' unless live
 url = ENV['TOGGLY_DEFINITIONS_URL']
 if fixture
   uri = URI(url.to_s)

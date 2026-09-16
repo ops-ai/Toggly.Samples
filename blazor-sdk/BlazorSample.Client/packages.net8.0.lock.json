@@ -17,25 +17,25 @@
       },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
-        "requested": "[8.0.31, )",
-        "resolved": "8.0.31",
-        "contentHash": "OJdAGATV2QoVWL11zlDLEluA06q8rK+cgZR47ohrO8V+Qj5z9dlvN7bG9/0e5t0IOe+yD8tREC0bpsEgDGrzIQ=="
+        "requested": "[8.0.30, )",
+        "resolved": "8.0.30",
+        "contentHash": "SfmwuZjUPBTEoBMAsXZ/hWkaEK9oL+Y/UtAx7N6RyWHfcMt9J0ExrNPuOgTyPbCXIyiTBFsxFNrPLEZNPmJcvA=="
       },
       "Microsoft.NET.Sdk.WebAssembly.Pack": {
         "type": "Direct",
-        "requested": "[8.0.31, )",
-        "resolved": "8.0.31",
-        "contentHash": "2lpN4OyUAuaUliPm3KJ/BKJstSo0W4saQfxG4kba2jBWovFNnEPlO4RMLN0M7B3mVhkoOvSFReFrxA+vHLggyg=="
+        "requested": "[10.0.11, )",
+        "resolved": "10.0.11",
+        "contentHash": "qTQsflEOjG1xG8FCfQJZbVd7DErJdKqKoW4gxH1HlgGQ5IBBloehLvXhMhzYqogYyajU7YEUKZvJ4n/vA7sAmQ=="
       },
       "Toggly.FeatureManagement.Blazor": {
         "type": "Direct",
-        "requested": "[3.7.0, )",
-        "resolved": "3.7.0",
-        "contentHash": "36HWlfcxqH5TjYinuTplkLvpENP2D8jLNFPGd/w0EM0ww+MIRT7gjeByYvyBnJJabmbFypYD6IvSMPnq9AM+Iw==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "ubXMXO6YT/V0WTv3AZZCTw54JhxIXUeezYPyVU72rhfYZ3Dh77uynq6G7cDzS56dmCCQ4LVdME03DAo0ru5mMw==",
         "dependencies": {
           "Microsoft.AspNetCore.Components.Authorization": "8.0.31",
           "Microsoft.AspNetCore.Components.Web": "8.0.31",
-          "Toggly.FeatureManagement.Client": "3.7.0"
+          "Toggly.FeatureManagement.Client": "3.8.0"
         }
       },
       "Microsoft.AspNetCore.Authorization": {
@@ -233,8 +233,8 @@
       },
       "Toggly.FeatureManagement.Client": {
         "type": "Transitive",
-        "resolved": "3.7.0",
-        "contentHash": "6XvKj9DrzshTLCogR47sVQdAPK6kVUVzB6E6SDFIiFyN8PVqt53IuLlCBlk817IY6o9hXYqRJRhBtiFHtOEZGA=="
+        "resolved": "3.8.0",
+        "contentHash": "EXk8ppZ3bfrquwHQWyuvnT8cwi9ZnSeQpWekJYc2A2tfJfnt2DpICtYI4FKW/MI7mLfux6RDxPlrYezFN53KcA=="
       }
     },
     "net8.0/browser-wasm": {}

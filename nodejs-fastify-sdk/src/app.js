@@ -11,6 +11,7 @@ export async function createApp({ appKey = '', environment = 'Production', fixtu
   // selects defaults: no featureDefaults are provided here, so unknown flags are OFF.
   const offline = Boolean(fixtureUrl);
   const configured = Boolean(appKey && appKey !== 'ci-placeholder');
+  const live = configured && !offline;
   // Initialization can finish with an error and fallback results. Report the SDK's
   // state, not merely the presence of credentials. Cached means retained definitions
   // in this process; this sample does not configure a persistent disk cache.
@@ -34,7 +35,10 @@ export async function createApp({ appKey = '', environment = 'Production', fixtu
     // Context registration is off: these prepared Order objects need no startup write.
     appKey: offline ? 'offline-fixture' : configured ? appKey : undefined,
     environment, baseUrl: fixtureUrl ?? baseUrl, verifySignatures: !offline,
-    enableStreaming: false, refreshInterval: offline || !configured ? 0 : 180000,
+    enableStreaming: false,
+    refreshInterval: live ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
+    enableUsageTracking: live, enableMetrics: live,
+    usageFlushInterval: live ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000) : 0,
     timeout: 3000, registerContextsOnStartup: false, hooks,
     // Demo controls let readers impersonate targeting inputs. In a real service,
     // derive identity/claims from a trusted session; feature gates are not login checks.

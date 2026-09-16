@@ -11,12 +11,13 @@
     "start": "node --env-file-if-exists=.env --env-file-if-exists=.env.local src/server.js",
     "offline": "node src/server.js --offline",
     "test": "node --test",
-    "build": "node --check src/app.js && node --check src/catalog.js && node --check src/fixture.js && node --check src/server.js && node --check src/view.js",
+    "soak": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/soak.mjs",
+    "build": "node --check src/app.js && node --check src/catalog.js && node --check src/fixture.js && node --check src/server.js && node --check src/view.js && node --check scripts/soak.mjs",
     "dev": "node --env-file-if-exists=.env --env-file-if-exists=.env.local src/server.js"
   },
   "dependencies": {
-    "@ops-ai/toggly-express": "0.2.0",
-    "@ops-ai/toggly-node-core": "0.9.0",
+    "@ops-ai/toggly-express": "0.2.1",
+    "@ops-ai/toggly-node-core": "0.9.1",
     "express": "5.2.1"
   }
 }

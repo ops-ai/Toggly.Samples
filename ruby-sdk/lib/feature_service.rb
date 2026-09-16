@@ -9,10 +9,15 @@ module RubyShowcase
   class FeatureService
     attr_reader :client, :configuration, :telemetry
 
-    def initialize(configuration, snapshot_provider: nil, telemetry: LocalTelemetry.new)
+    def initialize(configuration, snapshot_provider: nil, telemetry: nil)
       @configuration = configuration
-      @telemetry = telemetry
-      options = configuration.options.merge(usage_client: telemetry, metrics_client: telemetry)
+      live = configuration.mode == 'connected'
+      @telemetry = telemetry || (live ? nil : LocalTelemetry.new)
+      options = configuration.options.dup
+      unless live
+        options[:usage_client] = @telemetry
+        options[:metrics_client] = @telemetry
+      end
       unless configuration.mode == 'offline'
         options[:snapshot_provider] = snapshot_provider || Toggly::SnapshotProviders::File.new(path: configuration.snapshot_path)
       end

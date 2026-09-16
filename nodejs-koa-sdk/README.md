@@ -1,6 +1,6 @@
 # Node Koa SDK Sample
 
-Eight navigable sections backed by the actual published Koa adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-13: Koa **3.2.1**, `@koa/router` **15.7.0**, `@ops-ai/toggly-koa` **0.4.0**, and `@ops-ai/toggly-node-core` **0.9.1** (adapter/core have exact pins; the router accepts compatible updates through its lockfile).
+Eight navigable sections backed by the actual published Koa adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-16: Koa **3.2.1**, `@koa/router` **15.7.0**, `@ops-ai/toggly-koa` **0.4.0**, and `@ops-ai/toggly-node-core` **0.9.1** (adapter/core have exact pins; the router accepts compatible updates through its lockfile). Live mode reports definition cache hits on the usage pipeline; offline, missing-key, and `ci-placeholder` runs do not upload usage. `npm run soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 ```sh
 npm ci

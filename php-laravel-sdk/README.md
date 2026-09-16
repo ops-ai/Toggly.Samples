@@ -35,7 +35,11 @@ route at `public/index.php`. Do not serve the repository root or `.env`.
 
 ## Published versions
 
-Refreshed from public Composer metadata on September 10, 2026:
+Refreshed from public Composer metadata on September 16, 2026.
+Live mode still records usage through PHP 1.0.0; Packagist has not published
+1.1.x yet, so definition cache-hit fields are not available on this pin.
+Offline and `ci-placeholder` do not upload usage. `composer soak` waits for
+refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 | Component | Version |
 |---|---|

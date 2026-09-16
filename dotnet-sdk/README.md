@@ -228,17 +228,19 @@ and signature verification. Keep app keys out of browser HTML, JSON and logs.
 
 ## Versions
 
-Registry checkpoint: 2026-09-10. Exact NuGet resolution is committed in both
-`packages.lock.json` files.
+Registry checkpoint: 2026-09-16. Exact NuGet resolution is committed in both
+`packages.lock.json` files. Live mode reports definition cache hits on the usage
+pipeline; offline and `ci-placeholder` runs do not upload usage. `python scripts/soak.py`
+waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 | Dependency | Version |
 |---|---|
 | .NET SDK / ASP.NET Core runtime | 10.0.401 / 10.0.12 |
-| Toggly.FeatureManagement | 3.6.6 |
-| Toggly.FeatureManagement.Web | 3.6.6 |
-| Toggly.FeatureManagement.Hangfire | 3.6.6 |
-| Toggly.FeatureManagement.HealthChecks | 3.6.6 |
-| Toggly.FeatureManagement.NSwag | 3.6.6 |
+| Toggly.FeatureManagement | 3.8.0 |
+| Toggly.FeatureManagement.Web | 3.8.0 |
+| Toggly.FeatureManagement.Hangfire | 3.8.0 |
+| Toggly.FeatureManagement.HealthChecks | 3.8.0 |
+| Toggly.FeatureManagement.NSwag | 3.8.0 |
 | Hangfire.AspNetCore | 1.8.25 |
 | Hangfire.InMemory | 1.0.0 |
 | NSwag.AspNetCore | 14.7.1 |

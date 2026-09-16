@@ -46,18 +46,21 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 APP_KEY = os.getenv('TOGGLY_APP_KEY', '').strip()
-OFFLINE = not APP_KEY
+OFFLINE = not APP_KEY or APP_KEY == 'ci-placeholder'
+BASE_URL = os.getenv('TOGGLY_BASE_URL', 'https://definitions.toggly.io')
+# Loopback/fixture definition hosts never upload usage. Production live keys do.
+LIVE = (not OFFLINE) and BASE_URL.rstrip('/').startswith('https://definitions.toggly.io')
 MANAGEMENT = os.getenv('SAMPLE_MANAGEMENT') == '1'
 TOGGLY = {} if MANAGEMENT else {
     'APP_KEY': APP_KEY or None,
     'ENVIRONMENT': os.getenv('TOGGLY_ENVIRONMENT', 'Production'),
-    'BASE_URL': os.getenv('TOGGLY_BASE_URL', 'https://definitions.toggly.io'),
+    'BASE_URL': BASE_URL,
     'USE_SIGNED_DEFINITIONS': True,
     'ENABLE_VARIANTS': False,  # Shared client evaluates local definitions per request.
     'FEATURE_DEFAULTS': {},  # An absent flag defaults OFF.
     'REFRESH_INTERVAL': float(os.getenv('TOGGLY_REFRESH_INTERVAL', '30')),
     'DISABLE_BACKGROUND_REFRESH': OFFLINE,
-    'ENABLE_USAGE_TRACKING': False,
+    'ENABLE_USAGE_TRACKING': LIVE,
     'CONNECT_TIMEOUT': 2.0,
     'REQUEST_TIMEOUT': 3.0,
 }

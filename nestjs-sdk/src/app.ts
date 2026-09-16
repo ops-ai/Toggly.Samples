@@ -155,12 +155,15 @@ export async function createApp({
         baseUrl: fixtureUrl,
         verifySignatures: !offline,
         enableStreaming: configured && !offline,
-        refreshInterval: configured && !offline ? 180000 : 0,
+        refreshInterval:
+          configured && !offline ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
         timeout: 3000,
         registerContextsOnStartup: false,
         hooks,
         enableUsageTracking: configured && !offline,
         enableMetrics: configured && !offline,
+        usageFlushInterval:
+          configured && !offline ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000) : 0,
         contextFactory(req) {
           // Demo controls are explicitly untrusted. Production applications read their
           // authenticated principal and trusted proxy metadata instead of query fields.

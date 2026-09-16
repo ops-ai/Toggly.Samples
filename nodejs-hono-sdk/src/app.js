@@ -10,6 +10,7 @@ export function createApp({ appKey = '', environment = 'Production', fixtureUrl,
   const app = new Hono();
   const offline = Boolean(fixtureUrl);
   const configured = Boolean(appKey && appKey !== 'ci-placeholder');
+  const live = configured && !offline;
   // Set provenance before initialization so even an early error is labelled.
   // These responses depend on request inputs; do not cache them for another user.
   app.use('*', async (c, next) => {
@@ -27,7 +28,10 @@ export function createApp({ appKey = '', environment = 'Production', fixtureUrl,
     // Environment selects a definition set, not NODE_ENV. Only the loopback
     // fixture disables signatures; configured service traffic requires them.
     environment, baseUrl: fixtureUrl, verifySignatures: !offline,
-    enableStreaming: false, refreshInterval: offline || !configured ? 0 : 180000,
+    enableStreaming: false,
+    refreshInterval: live ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
+    enableUsageTracking: live, enableMetrics: live,
+    usageFlushInterval: live ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000) : 0,
     timeout: 3000, registerContextsOnStartup: false, hooks,
     async getContext(c) {
       const input = inputs(c.req);
