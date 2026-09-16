@@ -226,6 +226,14 @@ updates:
     labels:
       - dependencies
   - package-ecosystem: maven
+    directory: /java-spring-boot-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: maven
     directory: /java-spring-mvc-sdk
     schedule:
       interval: weekly
