@@ -23,6 +23,7 @@ struct Document {
     body: String,
     revision: usize,
     fail: bool,
+    last_timestamp: u64,
 }
 
 pub struct Fixture {
@@ -48,6 +49,7 @@ impl Fixture {
             body: String::new(),
             revision: 0,
             fail: false,
+            last_timestamp: 0,
         }));
         let listener = TcpListener::bind("127.0.0.1:0")?;
         listener.set_nonblocking(true)?;
@@ -127,10 +129,16 @@ impl Fixture {
     /// No custom evaluation logic or production app key is used here.
     pub fn replace(&self, definitions: Value, tamper: bool) {
         let defs = definitions.to_string();
-        let timestamp = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("system time")
-            .as_secs();
+        // 0.6.1 treats a signed timestamp <= the last applied one as a cache hit
+        // and skips the new revision. Keep fixture timestamps strictly increasing.
+        let timestamp = {
+            let document = self.document.lock().expect("fixture lock");
+            let now = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("system time")
+                .as_secs();
+            now.max(document.last_timestamp.saturating_add(1))
+        };
         // Match the platform signing protocol: SHA256 prehash, then ECDSA over
         // SHA256(prehash). Signature bytes are P1363, not ASN.1/DER.
         let hash = Sha256::digest(Sha256::digest(format!("{defs}|{timestamp}").as_bytes()));
@@ -145,6 +153,7 @@ impl Fixture {
         document.body = body;
         document.revision += 1;
         document.fail = false;
+        document.last_timestamp = timestamp;
     }
 
     pub fn fail(&self, fail: bool) {
@@ -166,6 +175,8 @@ impl Fixture {
             .refresh_interval(Duration::from_secs(2))
             .http_timeout(Duration::from_secs(2))
             .disable_background_refresh(!background)
+            // Defensive: keep usage off. This does not disable metrics.
+            .enable_usage_tracking(false)
             .build()
     }
 }

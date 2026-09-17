@@ -60,18 +60,12 @@ an app key.
 |---|---|
 | Rust stable | 1.98.1 |
 | Rocket | 0.5.1 |
-| `toggly` | 0.4.0 |
-| `toggly-rocket` | 0.4.0 |
+| `toggly` | 0.6.1 |
+| `toggly-rocket` | 0.6.1 |
 
-These were the latest stable host/runtime and latest published SDK releases at
-scaffolding on September 11, 2026 UTC, checked against Rust's stable manifest and
-crates.io. Cargo.lock records normal registry package checksums and transitive
-resolution. There are no local SDK paths, tarballs, dependency patches or resolver
-overrides. Supporting signing dependencies match the native SDK's compatible
-P-256/SHA-2 generation; they do not change its signature protocol.
+Versions are pinned in `Cargo.toml` and locked in `Cargo.lock`.
 
-The customer documentation may teach newer source APIs. This sample deliberately
-documents the actual **published 0.4.0** boundary:
+What this release supports:
 
 - `Feature<'_>` is a real `FromRequest` guard. It borrows exactly one
   `State<TogglyClient>` value. The native client is not Clone; an `Arc` state would
@@ -81,9 +75,9 @@ documents the actual **published 0.4.0** boundary:
   composition around public core APIs.
 - No native variant allocation API or Toggly template directives/macros are
   claimed. Rocket's route macros belong to Rocket.
-- `TogglyFairing::from_config` is exercised in integration tests with a placeholder
-  fixture. It logs the app key on Ignite and supplies no shutdown hook. The main
-  app uses explicit construction plus Rocket's shutdown fairing instead.
+- `TogglyFairing::from_config` builds managed state on Ignite. It logs the app
+  key and has no shutdown hook, so this sample constructs the client explicitly
+  and uses Rocket's shutdown fairing instead.
 - Desktop `DeviceType=Macintosh` is unsupported: the native parser returns Other
   for the exact shared Chrome/macOS User-Agent. The matrix retains the Macintosh
   recipe, displays native false and labels the gap. `OperatingSystem=Mac` works.
@@ -110,11 +104,11 @@ sources. Never treat a feature flag as the sole access-control boundary.
 
 ## Exact application and flag recipe
 
-Use the reviewed [shared application setup guide](../docs/APP_SETUP.md)
-for picker names, context registration, single-feature management API fallback
-when the catalog omits a filter, and the required **final save, definitions
-request and saved readback** checks. This is a manual recipe; no live creation,
-flag readback or service acceptance has been performed for this sample.
+Use the [shared application setup guide](../docs/APP_SETUP.md)
+for picker names, context registration, and the management API fallback
+when the catalog omits a filter. After you create the application and flags,
+save them, request definitions, and confirm the saved values in the dashboard.
+The sample does not create that application or those flags for you.
 
 - Workspace: use one you can manage (the one from signup is enough).
 - Application: **Rust Rocket SDK Sample**.
@@ -171,10 +165,11 @@ The exact shared User-Agent strings are in `src/context.rs`. The extra
 `ord-high-value` is non-VIP with Total=250; `ord-no-total` omits Total. Keep
 identity fixed while switching Order to demonstrate user/entity separation.
 
-Local schema registration runs before constructing the SDK client. Published
-0.4.0 fetches initial definitions **before** its best-effort remote catalog PUT.
-Consequently, manually save the remote Order binding before testing the live
-flag; do not assume startup makes a missing remote rule immediately valid.
+The sample registers the Order schema locally before it builds the SDK client.
+Startup also tries to upload that schema to Toggly, but the upload is
+best-effort. A failed or ignored upload does not create the remote Order
+binding. Save the Order context and flag binding in the Toggly dashboard
+before you test the live flag.
 
 ## Native behavior and lifetime
 
@@ -197,7 +192,7 @@ managed state is absent. The sample beta route instead resolves full context and
 returns 404 for off, 503 for error. Enhanced submit re-checks CSRF and its flag on
 the POST; it changes no business data.
 
-`evaluate_gate` negates **each feature before** Any/All aggregation in 0.4.0. It
+`evaluate_gate` negates **each feature before** Any/All aggregation in 0.6.1. It
 does not negate the aggregate. An empty gate returns false. Multi-key checks and
 Home rows are separate native evaluations, not an atomic all-flags revision.
 Each displayed boolean/error pair comes from one native call; no invented SDK

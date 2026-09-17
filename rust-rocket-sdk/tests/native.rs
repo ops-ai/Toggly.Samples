@@ -62,6 +62,46 @@ async fn preset(app: &Client, matching: bool) {
     assert_eq!(result.status(), Status::SeeOther);
 }
 
+/// 0.6.1 returns Ok(()) for a concurrent refresh without evaluating the new
+/// body. Drain the immediate tokio interval tick, then wait until the fixture
+/// request count is stable so an explicit refresh is not skipped.
+async fn wait_for_idle_refresh(fixture: &Fixture) {
+    for _ in 0..100 {
+        if fixture.request_count() > 1 {
+            break;
+        }
+        rocket::tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+    let mut last = fixture.request_count();
+    let mut stable = 0;
+    for _ in 0..50 {
+        rocket::tokio::time::sleep(Duration::from_millis(10)).await;
+        let now = fixture.request_count();
+        if now == last {
+            stable += 1;
+            if stable >= 3 {
+                return;
+            }
+        } else {
+            last = now;
+            stable = 0;
+        }
+    }
+}
+
+async fn refresh_after_idle(
+    client: &TogglyClient,
+    fixture: &Fixture,
+) -> Result<(), impl std::fmt::Debug> {
+    wait_for_idle_refresh(fixture).await;
+    let first = client.refresh().await;
+    if first.is_ok() {
+        wait_for_idle_refresh(fixture).await;
+        return client.refresh().await;
+    }
+    first
+}
+
 #[rocket::async_test]
 async fn full_matrix_initial_context_unknown_error_and_order() {
     let (app, fixture) = workshop().await;
@@ -384,7 +424,7 @@ async fn signed_tampering_transport_failure_refresh_and_shutdown() {
     );
     fixture.replace(Fixture::definitions(), true);
     assert!(
-        client.refresh().await.is_err(),
+        refresh_after_idle(&client, &fixture).await.is_err(),
         "tampered signed defs must be rejected"
     );
     assert_eq!(
@@ -393,7 +433,7 @@ async fn signed_tampering_transport_failure_refresh_and_shutdown() {
         "last good definitions retained"
     );
     fixture.fail(true);
-    assert!(client.refresh().await.is_err());
+    assert!(refresh_after_idle(&client, &fixture).await.is_err());
     assert!(client.last_error().await.is_some());
     assert!(
         TogglyClient::new(fixture.config(false)).await.is_err(),
@@ -406,7 +446,7 @@ async fn signed_tampering_transport_failure_refresh_and_shutdown() {
             .unwrap()
     );
     fixture.replace(Fixture::definitions(), false);
-    client.refresh().await.unwrap();
+    refresh_after_idle(&client, &fixture).await.unwrap();
     let mut changed = Fixture::definitions();
     changed[0]["filters"] = json!([{"name":"AlwaysOff", "parameters":{}}]);
     fixture.replace(changed, false);
