@@ -64,7 +64,7 @@ jobs:
         run: python3 tests/run_hosted.py
       - name: Retain native test evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wordpress-native-results
           path: php-wordpress-sdk/tests/.results/
