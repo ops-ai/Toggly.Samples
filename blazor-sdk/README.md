@@ -96,11 +96,11 @@ Use one application host/service account per directory; this is not a distribute
 cache or a multi-writer deployment design.
 
 The directory remains **trusted local application state**, including the public
-JWKS. SDK 3.7.0 re-verifies the exact saved signed definitions and rejects a typed
+JWKS. SDK 3.8.0 re-verifies the exact saved signed definitions and rejects a typed
 copy that differs from those bytes. This does not authenticate simultaneous
 replacement of both definitions and their saved public signing keys by an attacker
 who controls the directory. The adapter preserves the SDK's timestamp fields;
-SDK 3.7.0 does not enforce the persisted JWKS expiry timestamp or a maximum offline
+SDK 3.8.0 does not enforce the persisted JWKS expiry timestamp or a maximum offline
 definitions age. Offline operation cannot learn about a revoked signing key or
 new flag value. Protect the service account and storage, and reconnect to obtain
 current definitions. Do not treat this cache as a new independent trust anchor.

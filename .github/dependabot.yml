@@ -298,6 +298,14 @@ updates:
     labels:
       - dependencies
   - package-ecosystem: cargo
+    directory: /rust-actix-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: cargo
     directory: /rust-axum-sdk
     schedule:
       interval: weekly

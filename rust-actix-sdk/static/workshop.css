@@ -1,0 +1,223 @@
+:root {
+    color-scheme: light;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    color: #162c42;
+    background: #eef3f5;
+    line-height: 1.6;
+}
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+}
+header {
+    padding: 3rem max(1.25rem, calc((100vw - 1150px) / 2));
+    background: #122b43;
+    color: #f5fafc;
+}
+h1 {
+    max-width: 850px;
+    margin: 0.7rem 0;
+    font-size: clamp(2rem, 4vw, 3.3rem);
+    line-height: 1.14;
+    letter-spacing: -0.04em;
+}
+h2 {
+    margin: 0.25rem 0 1.3rem;
+    font-size: 2rem;
+    line-height: 1.25;
+}
+h3 {
+    margin: 0 0 0.8rem;
+    font-size: 1.25rem;
+}
+a {
+    color: #075c81;
+    text-underline-offset: 3px;
+}
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding: 0.8rem max(1rem, calc((100vw - 1150px) / 2));
+    background: white;
+    border-bottom: 1px solid #c9d5dc;
+}
+nav a {
+    padding: 0.45rem 0.65rem;
+    text-decoration: none;
+    border-radius: 0.35rem;
+    font-weight: 650;
+    font-size: 0.9rem;
+}
+nav a[aria-current] {
+    background: #d7edf3;
+    color: #123f55;
+}
+main {
+    max-width: 1190px;
+    margin: auto;
+    padding: 1.5rem 1.25rem 3rem;
+}
+.eyebrow {
+    font-size: 0.75rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+}
+.notice {
+    padding: 1.1rem 1.4rem;
+    background: #fff1d1;
+    border: 1px solid #ddbf7b;
+    border-left: 5px solid #b0770d;
+    border-radius: 0.4rem;
+    margin-bottom: 2rem;
+    color: #553900;
+}
+.notice p {
+    margin: 0.3rem 0 0;
+}
+.card {
+    background: white;
+    border: 1px solid #ccd9df;
+    border-radius: 0.65rem;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    min-width: 0;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem;
+}
+pre {
+    padding: 1rem;
+    background: #edf3f7;
+    border-radius: 0.4rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 0.9rem;
+}
+code {
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    overflow-wrap: anywhere;
+}
+.table-scroll {
+    overflow-x: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin-top: 1rem;
+}
+th, td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #dce5ea;
+    vertical-align: top;
+}
+thead {
+    background: #edf3f7;
+}
+th {
+    font-weight: 600;
+}
+.badge {
+    display: inline-block;
+    padding: 0.1rem 0.65rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+.on {
+    background: #d4f0e4;
+    color: #125038;
+}
+.off {
+    background: #e8edf1;
+    color: #354757;
+}
+.error {
+    background: #ffe4e3;
+    color: #832221;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 650;
+}
+input, select {
+    display: block;
+    width: 100%;
+    padding: 0.65rem;
+    margin-top: 0.25rem;
+    border: 1px solid #97adbb;
+    border-radius: 0.3rem;
+    background: white;
+    color: #162c42;
+    font: inherit;
+}
+button, .button {
+    display: inline-block;
+    background: #086885;
+    color: white;
+    border: 1px solid #086885;
+    border-radius: 0.35rem;
+    padding: 0.65rem 1rem;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+}
+.secondary {
+    background: #f2f6f8;
+    color: #16495d;
+    border-color: #99b5c1;
+}
+.preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+:focus-visible {
+    outline: 3px solid #bf6800;
+    outline-offset: 3px;
+}
+footer {
+    padding: 1.5rem;
+    background: #dfe8ed;
+    font-size: 0.8rem;
+    text-align: center;
+}
+.skip {
+    position: absolute;
+    left: -10000px;
+}
+.skip:focus {
+    left: 1rem;
+    top: 1rem;
+    padding: 0.5rem;
+    background: white;
+}
+@media (max-width: 700px) {
+    .grid, .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .card {
+        padding: 1rem;
+    }
+    th, td {
+        padding: 0.5rem;
+    }
+    table {
+        font-size: 0.85rem;
+    }
+}

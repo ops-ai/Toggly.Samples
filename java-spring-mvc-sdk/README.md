@@ -52,7 +52,7 @@ Verified against official registries on 2026-09-10:
 | Maven | 3.9.12 |
 | `io.toggly:toggly-core` | 1.5.1 |
 | `io.toggly:toggly-spring-mvc` | 1.5.1 |
-| `org.apache.tomcat.embed:tomcat-embed-core` | 11.0.25 |
+| `org.apache.tomcat.embed:tomcat-embed-core` | 11.0.26 |
 | Jakarta Servlet API supplied by Tomcat | 6.1 |
 | Spring Framework BOM / spring-webmvc / spring-context-support | 7.0.9 |
 | FreeMarker | 2.3.35 |

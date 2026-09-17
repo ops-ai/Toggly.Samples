@@ -245,7 +245,7 @@ waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 | Hangfire.InMemory | 1.0.0 |
 | NSwag.AspNetCore | 14.7.1 |
 | Microsoft.AspNetCore.Mvc.Testing | 10.0.12 |
-| Microsoft.NET.Test.Sdk / xUnit / VS runner | 18.10.0 / 2.9.3 / 4.0.0 |
+| Microsoft.NET.Test.Sdk / xUnit / VS runner | 18.10.1 / 2.9.3 / 4.0.0 |
 
 ## Verification and production build
 

@@ -42,6 +42,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Remix SDK Sample | Remix 2.17 | [`remix-sdk/`](remix-sdk/) | Loaders/actions, request-scoped identity, browser gates, Order context and filter matrix with `@ops-ai/remix-toggly-*` |
 | React Router SDK Sample | React Router 8 + React 19 | [`react-router-sdk/`](react-router-sdk/) | Framework-mode loaders/actions, request-scoped identity, Feature+negate gates, Order context and filter matrix with `@ops-ai/react-router-toggly` |
 | Fastify SDK Showcase | Fastify 5 | [`nodejs-fastify-sdk/`](nodejs-fastify-sdk/) | Request-scoped plugin context, native gates, Order and filter matrix with `@ops-ai/toggly-fastify` |
+| Rust Actix SDK Workshop | Rust 1.98.1 + Actix-web 4.15.0 | [`rust-actix-sdk/`](rust-actix-sdk/) | Native Feature extractor, TogglyMiddleware/TogglyData, signed fixtures, gates, Order and eleven-filter matrix |
 | Rust Rocket SDK Workshop | Rust 1.98.1 + Rocket 0.5.1 | [`rust-rocket-sdk/`](rust-rocket-sdk/) | Native Feature guard, request context, signed fixtures, gates, Order and eleven-filter matrix |
 | Rust Axum SDK Workshop | Rust 1.98.1 + Axum 0.7.9 | [`rust-axum-sdk/`](rust-axum-sdk/) | Native Feature extractor, TogglyLayer/state, signed fixtures, gates, Order and eleven-filter matrix |
 | Go SDK Sample | Go 1.27 + net/http | [`go-sdk/`](go-sdk/) | Native templates and HTTP gates, request identity, Order, filters, signed definitions and isolated variants |
