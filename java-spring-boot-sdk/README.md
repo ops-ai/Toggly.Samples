@@ -52,23 +52,23 @@ Verified against official registries on 2026-09-16:
 | Embedded Tomcat (Boot 3.5.16) | 10.1.55 |
 
 **Host choice.** Published starter 1.6.0 declares `spring-boot.version` 3.5.16.
-Latest stable Boot is 4.1.1 (4.2.0-M1 is a milestone). **OPS-1257** re-probed that
-combination on 2026-09-16 with Actuator kept on the classpath. When a
-`TogglyClient` exists (workshop / `TOGGLY_APP_KEY` path), startup still fails:
+Latest stable Boot is 4.1.1 (4.2.0-M1 is a milestone). A Boot 4.1.1 host with
+Actuator on the classpath fails when a `TogglyClient` exists (workshop /
+`TOGGLY_APP_KEY` path):
 `ClassNotFoundException: org.springframework.boot.actuate.health.HealthIndicator`.
-Published `TogglyHealthIndicator` implements the Boot 3 type; Boot 4.1.1 moved it
+Published `TogglyHealthIndicator` implements that Boot 3 type; Boot 4.1.1 moved it
 to `org.springframework.boot.health.contributor.HealthIndicator` and removed the
 old class from `spring-boot-actuator`. A missing-key Boot 4 process can start,
 but `/actuator/health` has no `toggly` component and `/actuator/toggly` is 404 —
-that is not a working Actuator host. Do not drop Actuator to hide the CNFE.
+that is not a working Actuator host. Excluding Actuator would drop the starter's
+health indicator and `/actuator/toggly`.
 
 Boot 4.1.1 also dropped `spring-boot-starter-aop` from the BOM (no 4.1.1
 artifact; the replacement is `spring-boot-starter-aspectj`). Pinning AOP 3.5.16
-unblocks Maven only. Native Actuator still dies once the client is created.
+unblocks Maven only. Native Actuator still fails once the client is created.
 
 This sample therefore stays on the starter's declared **3.5.16** host. A Boot 4
-sample needs a published starter that implements Boot 4 health/Actuator
-([OPS-1192](https://linear.app/opsai/issue/OPS-1192/w316-spring-boot-4-parallel-starter)).
+host needs a published starter that implements Boot 4 health and Actuator.
 
 The starter's `snapshotProvider()` bean returns null. Boot 3.5.16 will not inject
 that null into `togglyClient`. `TogglySampleConfiguration` supplies a
