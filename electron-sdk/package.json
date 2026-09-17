@@ -16,7 +16,7 @@
     "test:packed-hosts": "node test/packed-hosts.mjs"
   },
   "dependencies": {
-    "@ops-ai/electron-feature-flags-toggly": "1.0.0",
+    "@ops-ai/electron-feature-flags-toggly": "1.0.1",
     "@vitejs/plugin-react": "5.2.0",
     "dotenv": "17.4.2",
     "electron": "44.3.0",
