@@ -1,0 +1,24 @@
+[package]
+name = "rust-actix-sdk-sample"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+publish = false
+
+[dependencies]
+actix-web = "=4.15.0"
+toggly = "=0.6.1"
+toggly-actix = "=0.6.1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "sync", "time"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+cookie = { version = "0.18", features = ["private", "percent-encode"] }
+p256 = { version = "0.13", features = ["ecdsa"] }
+sha2 = "0.10"
+sha1 = "0.10"
+base64 = "0.23"
+rand = "0.8"
+futures-util = "0.3"
+
+[dev-dependencies]
+actix-http = "3"
