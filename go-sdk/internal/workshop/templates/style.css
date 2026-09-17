@@ -1,0 +1,227 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #15352f;
+  background: #f5f8f5;
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+header,
+nav,
+main {
+  max-width: 1120px;
+  margin: auto;
+  padding: 1.4rem 2rem;
+}
+
+.brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: #123e32;
+}
+
+.brand span {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 0.7rem;
+}
+
+header p {
+  margin: 0.25rem 0;
+  color: #536a62;
+}
+
+nav {
+  display: flex;
+  gap: 1.3rem;
+  flex-wrap: wrap;
+  border-block: 1px solid #cbdad2;
+}
+
+a {
+  color: #126347;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.12;
+  margin: 0.5rem 0 1rem;
+  letter-spacing: -0.04em;
+}
+
+h2 {
+  line-height: 1.25;
+  font-size: 1.4rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  margin-top: 1.5rem;
+}
+
+.banner {
+  padding: 1rem 1.2rem;
+  background: #fff4cf;
+  border: 1px solid #d9bd61;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.status {
+  color: #536a62;
+  font-size: 0.9rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.cards article,
+.cards > a {
+  padding: 1.2rem;
+  background: white;
+  border: 1px solid #ccded3;
+  border-radius: 12px;
+}
+
+.cards a {
+  display: block;
+  text-decoration: none;
+}
+
+.cards b {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+section {
+  margin: 2rem 0;
+}
+
+.on {
+  color: #126347;
+  font-weight: 750;
+}
+
+button,
+.button {
+  display: inline-block;
+  background: #155d47;
+  color: white;
+  border: 0;
+  padding: 0.7rem 1rem;
+  border-radius: 7px;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button.secondary {
+  background: #e1ece5;
+  color: #194a3b;
+}
+
+.presets {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #bf8b00;
+  outline-offset: 3px;
+}
+
+pre {
+  overflow: auto;
+  background: #e8f0e9;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+code {
+  font-size: 0.88em;
+  overflow-wrap: anywhere;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background: white;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.8rem;
+  border-bottom: 1px solid #d7e1da;
+}
+
+th {
+  background: #e7efe9;
+}
+
+td:first-child {
+  min-width: 180px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+footer {
+  font-size: 0.85rem;
+  border-top: 1px solid #d0ddd4;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  color: #526a60;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  header,
+  nav,
+  main {
+    padding: 1rem;
+  }
+
+  nav {
+    gap: 0.9rem;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  th,
+  td {
+    padding: 0.6rem;
+  }
+
+  .brand span {
+    display: block;
+    margin: 0;
+  }
+}

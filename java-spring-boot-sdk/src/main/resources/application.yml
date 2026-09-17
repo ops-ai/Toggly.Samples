@@ -1,0 +1,35 @@
+# Sample host defaults. A blank TOGGLY_APP_KEY keeps toggly.enabled=false so
+# starter auto-configuration does not construct a client or call Toggly.
+server:
+  address: 127.0.0.1
+  port: 8090
+  tomcat:
+    threads:
+      max: 8
+toggly:
+  enabled: false
+  app-key: ${TOGGLY_APP_KEY:}
+  environment: ${TOGGLY_ENVIRONMENT:Production}
+  base-url: ${TOGGLY_BASE_URL:https://definitions.toggly.io}
+  refresh-interval-seconds: 60
+  default-feature-state: false
+  enable-usage-tracking: false
+  enable-metrics: false
+  register-contexts-on-startup: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,toggly
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: false
+spring:
+  freemarker:
+    suffix: .ftlh
+    settings:
+      recognize_standard_file_extensions: true
+      template_exception_handler: rethrow
