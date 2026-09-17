@@ -60,19 +60,18 @@ an app key.
 |---|---|
 | Rust stable | 1.98.1 |
 | Rocket | 0.5.1 |
-| `toggly` | 0.6.0 |
-| `toggly-rocket` | 0.6.0 |
+| `toggly` | 0.6.1 |
+| `toggly-rocket` | 0.6.1 |
 
 These were the latest stable host/runtime and latest published same-generation
-SDK pair on September 17, 2026 UTC (`toggly-rocket` 0.6.1 was not on crates.io;
-`toggly` 0.6.1 was, but the adapter pair is 0.6.0). Cargo.lock records normal
-registry package checksums and transitive resolution. There are no local SDK
-paths, tarballs, dependency patches or resolver overrides. Supporting signing
-dependencies match the native SDK's compatible P-256/SHA-2 generation; they do
-not change its signature protocol.
+SDK pair on September 17, 2026 UTC, checked against crates.io. Cargo.lock
+records normal registry package checksums and transitive resolution. There are
+no local SDK paths, tarballs, dependency patches or resolver overrides.
+Supporting signing dependencies match the native SDK's compatible P-256/SHA-2
+generation; they do not change its signature protocol.
 
 The customer documentation may teach newer source APIs. This sample deliberately
-documents the actual **published 0.6.0** boundary:
+documents the actual **published 0.6.1** boundary:
 
 - `Feature<'_>` is a real `FromRequest` guard. It borrows exactly one
   `State<TogglyClient>` value. The native client is not Clone; an `Arc` state would
@@ -173,7 +172,7 @@ The exact shared User-Agent strings are in `src/context.rs`. The extra
 identity fixed while switching Order to demonstrate user/entity separation.
 
 Local schema registration runs before constructing the SDK client. Published
-0.6.0 fetches initial definitions **before** its best-effort remote catalog PUT.
+0.6.1 fetches initial definitions **before** its best-effort remote catalog PUT.
 Consequently, manually save the remote Order binding before testing the live
 flag; do not assume startup makes a missing remote rule immediately valid.
 
@@ -198,7 +197,7 @@ managed state is absent. The sample beta route instead resolves full context and
 returns 404 for off, 503 for error. Enhanced submit re-checks CSRF and its flag on
 the POST; it changes no business data.
 
-`evaluate_gate` negates **each feature before** Any/All aggregation in 0.6.0. It
+`evaluate_gate` negates **each feature before** Any/All aggregation in 0.6.1. It
 does not negate the aggregate. An empty gate returns false. Multi-key checks and
 Home rows are separate native evaluations, not an atomic all-flags revision.
 Each displayed boolean/error pair comes from one native call; no invented SDK
