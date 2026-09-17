@@ -385,7 +385,7 @@ async fn orders(context: &WorkshopContext, client: Option<&TogglyClient>) -> Str
     <p>The user answers “who?”. The Order answers “what?”. Id maps to the entity key, Vip is a boolean, and Total is an optional number.</p>
     <p>Keep identity fixed and switch ord-vip (Vip=true, Total=40) to ord-standard (Vip=false, Total=40). ord-high-value has Total=250 but is not VIP; ord-no-total omits Total.</p>
     <pre><code>{entity}</code></pre>
-    <p>Register the Order schema locally before client construction. In published 0.6.1 the remote schema PUT happens after the first definition fetch and is best-effort; provision the context and flag binding manually as described in Configuration.</p>
+    <p>Register the Order schema locally before client construction. In published 0.6.1 the remote schema PUT is attempted before the first definition fetch and is best-effort (<code>let _ = client.put(...).send().await</code>). A failed or ignored PUT still leaves the remote binding unprovisioned; provision the context and flag binding manually as described in Configuration.</p>
 </section>"##,
         result = badge(&result)
     )

@@ -62,7 +62,7 @@ async fn preset(app: &Client, matching: bool) {
     assert_eq!(result.status(), Status::SeeOther);
 }
 
-/// 0.6.0 returns Ok(()) for a concurrent refresh without evaluating the new
+/// 0.6.1 returns Ok(()) for a concurrent refresh without evaluating the new
 /// body. Drain the immediate tokio interval tick, then wait until the fixture
 /// request count is stable so an explicit refresh is not skipped.
 async fn wait_for_idle_refresh(fixture: &Fixture) {
@@ -87,6 +87,19 @@ async fn wait_for_idle_refresh(fixture: &Fixture) {
             stable = 0;
         }
     }
+}
+
+async fn refresh_after_idle(
+    client: &TogglyClient,
+    fixture: &Fixture,
+) -> Result<(), impl std::fmt::Debug> {
+    wait_for_idle_refresh(fixture).await;
+    let first = client.refresh().await;
+    if first.is_ok() {
+        wait_for_idle_refresh(fixture).await;
+        return client.refresh().await;
+    }
+    first
 }
 
 #[rocket::async_test]
@@ -409,21 +422,18 @@ async fn signed_tampering_transport_failure_refresh_and_shutdown() {
             .await
             .unwrap()
     );
-    wait_for_idle_refresh(&fixture).await;
     fixture.replace(Fixture::definitions(), true);
-    let mut tamper = client.refresh().await;
-    if tamper.is_ok() {
-        wait_for_idle_refresh(&fixture).await;
-        tamper = client.refresh().await;
-    }
-    assert!(tamper.is_err(), "tampered signed defs must be rejected");
+    assert!(
+        refresh_after_idle(&client, &fixture).await.is_err(),
+        "tampered signed defs must be rejected"
+    );
     assert_eq!(
         client.feature_keys().await.len(),
         FLAGS.len(),
         "last good definitions retained"
     );
     fixture.fail(true);
-    assert!(client.refresh().await.is_err());
+    assert!(refresh_after_idle(&client, &fixture).await.is_err());
     assert!(client.last_error().await.is_some());
     assert!(
         TogglyClient::new(fixture.config(false)).await.is_err(),
@@ -436,7 +446,7 @@ async fn signed_tampering_transport_failure_refresh_and_shutdown() {
             .unwrap()
     );
     fixture.replace(Fixture::definitions(), false);
-    client.refresh().await.unwrap();
+    refresh_after_idle(&client, &fixture).await.unwrap();
     let mut changed = Fixture::definitions();
     changed[0]["filters"] = json!([{"name":"AlwaysOff", "parameters":{}}]);
     fixture.replace(changed, false);

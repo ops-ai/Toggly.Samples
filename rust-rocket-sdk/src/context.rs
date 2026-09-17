@@ -96,8 +96,10 @@ pub fn order(id: &str) -> Option<TogglyEntityContext> {
 }
 
 pub fn register_order() {
-    // Register locally before constructing the client. Published 0.6.1 performs
-    // the remote catalog PUT after fetching definitions; manual setup is required.
+    // Register locally before constructing the client. Published 0.6.1 attempts
+    // the remote catalog PUT before the first definitions fetch (best-effort
+    // `let _ = client.put(...).send().await`); a failed PUT still leaves the
+    // remote binding unprovisioned, so manual setup is required.
     register_context_schema(EntityContextSchemaRegistration {
         kind: "Order".into(),
         key_property: "Id".into(),

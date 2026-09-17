@@ -172,9 +172,11 @@ The exact shared User-Agent strings are in `src/context.rs`. The extra
 identity fixed while switching Order to demonstrate user/entity separation.
 
 Local schema registration runs before constructing the SDK client. Published
-0.6.1 fetches initial definitions **before** its best-effort remote catalog PUT.
-Consequently, manually save the remote Order binding before testing the live
-flag; do not assume startup makes a missing remote rule immediately valid.
+0.6.1 attempts the remote catalog PUT **before** the first definitions fetch
+and treats it as best-effort (`let _ = client.put(...).send().await`). A
+failed or ignored PUT still leaves the remote Order binding unprovisioned.
+Manually save the remote Order binding before testing the live flag; do not
+assume startup makes a missing remote rule immediately valid.
 
 ## Native behavior and lifetime
 
