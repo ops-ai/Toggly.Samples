@@ -1,0 +1,185 @@
+[
+  {
+    "featureKey": "new-dashboard",
+    "filters": [
+      {
+        "name": "AlwaysOn",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "featureKey": "api-v2",
+    "filters": [
+      {
+        "name": "AlwaysOff",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "featureKey": "enhanced-submit",
+    "filters": [
+      {
+        "name": "AlwaysOn",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "featureKey": "ExpressCheckout",
+    "filters": [
+      {
+        "name": "ContextProperty",
+        "parameters": {
+          "Property": "Vip",
+          "Operator": "eq",
+          "Value": "true",
+          "ValueType": "boolean"
+        }
+      }
+    ],
+    "contextKind": "Order"
+  },
+  {
+    "featureKey": "beta-access",
+    "filters": [
+      {
+        "name": "AlwaysOn",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-always-on",
+    "filters": [
+      {
+        "name": "AlwaysOn",
+        "parameters": {}
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-percentage",
+    "filters": [
+      {
+        "name": "Percentage",
+        "parameters": {
+          "Value": 50
+        }
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-targeting",
+    "filters": [
+      {
+        "name": "Targeting",
+        "parameters": {
+          "Audience.Users:0": "alice",
+          "Audience.DefaultRolloutPercentage": 0
+        }
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-user-claims",
+    "filters": [
+      {
+        "name": "UserClaims",
+        "parameters": {
+          "Claim": "role",
+          "Value": "admin",
+          "Percentage": 100
+        }
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-time-window",
+    "filters": [
+      {
+        "name": "TimeWindow",
+        "parameters": {
+          "Start": "2020-01-01T00:00:00Z",
+          "End": "2099-12-31T23:59:59Z"
+        }
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-country",
+    "filters": [
+      {
+        "name": "Country",
+        "parameters": {
+          "Country:0": "US",
+          "Percentage": 100
+        }
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-browser-family",
+    "filters": [
+      {
+        "name": "BrowserFamily",
+        "parameters": {
+          "BrowserFamily:0": "Chrome",
+          "Percentage": 100
+        }
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-browser-language",
+    "filters": [
+      {
+        "name": "BrowserLanguage",
+        "parameters": {
+          "BrowserLanguage:0": "en",
+          "Percentage": 100
+        }
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-device-type",
+    "filters": [
+      {
+        "name": "DeviceType",
+        "parameters": {
+          "DeviceType:0": "Macintosh",
+          "Percentage": 100
+        }
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-os",
+    "filters": [
+      {
+        "name": "OperatingSystem",
+        "parameters": {
+          "OperatingSystem:0": "Mac",
+          "Percentage": 100
+        }
+      }
+    ]
+  },
+  {
+    "featureKey": "filter-context-property",
+    "filters": [
+      {
+        "name": "ContextProperty",
+        "parameters": {
+          "Property": "Vip",
+          "Operator": "eq",
+          "Value": "true",
+          "ValueType": "boolean"
+        }
+      }
+    ],
+    "contextKind": "Order"
+  }
+]
