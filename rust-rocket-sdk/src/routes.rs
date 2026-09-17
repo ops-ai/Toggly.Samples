@@ -189,7 +189,7 @@ pub async fn beta(
     client: OptionalClient<'_>,
 ) -> Result<RawHtml<String>, Status> {
     // This denial is sample route composition using the native core evaluator.
-    // FeatureEnabled is a data struct, not a FromRequest guard in 0.4.0.
+    // FeatureEnabled is a data struct, not a FromRequest guard in 0.6.0.
     let result = decision(client.0, "beta-access", &context.evaluation).await;
     if result.error {
         return Err(Status::ServiceUnavailable);

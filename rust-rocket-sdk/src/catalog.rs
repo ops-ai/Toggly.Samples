@@ -58,7 +58,7 @@ pub const FILTERS: [(&str, &str, &str); 11] = [
     (
         "filter-device-type",
         "DeviceType Macintosh",
-        "Unsupported desktop detection in published 0.4.0: native false even for Matching. Recipe is unchanged.",
+        "Unsupported desktop detection in published 0.6.0: native false even for Matching. Recipe is unchanged.",
     ),
     (
         "filter-os",

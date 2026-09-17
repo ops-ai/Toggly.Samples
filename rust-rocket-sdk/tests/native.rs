@@ -62,6 +62,33 @@ async fn preset(app: &Client, matching: bool) {
     assert_eq!(result.status(), Status::SeeOther);
 }
 
+/// 0.6.0 returns Ok(()) for a concurrent refresh without evaluating the new
+/// body. Drain the immediate tokio interval tick, then wait until the fixture
+/// request count is stable so an explicit refresh is not skipped.
+async fn wait_for_idle_refresh(fixture: &Fixture) {
+    for _ in 0..100 {
+        if fixture.request_count() > 1 {
+            break;
+        }
+        rocket::tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+    let mut last = fixture.request_count();
+    let mut stable = 0;
+    for _ in 0..50 {
+        rocket::tokio::time::sleep(Duration::from_millis(10)).await;
+        let now = fixture.request_count();
+        if now == last {
+            stable += 1;
+            if stable >= 3 {
+                return;
+            }
+        } else {
+            last = now;
+            stable = 0;
+        }
+    }
+}
+
 #[rocket::async_test]
 async fn full_matrix_initial_context_unknown_error_and_order() {
     let (app, fixture) = workshop().await;
@@ -382,11 +409,14 @@ async fn signed_tampering_transport_failure_refresh_and_shutdown() {
             .await
             .unwrap()
     );
+    wait_for_idle_refresh(&fixture).await;
     fixture.replace(Fixture::definitions(), true);
-    assert!(
-        client.refresh().await.is_err(),
-        "tampered signed defs must be rejected"
-    );
+    let mut tamper = client.refresh().await;
+    if tamper.is_ok() {
+        wait_for_idle_refresh(&fixture).await;
+        tamper = client.refresh().await;
+    }
+    assert!(tamper.is_err(), "tampered signed defs must be rejected");
     assert_eq!(
         client.feature_keys().await.len(),
         FLAGS.len(),

@@ -110,7 +110,7 @@ pub async fn page(
 <header>
     <div class="eyebrow">TOGGLY / RUST + ROCKET</div>
     <h1>Feature flags, one request at a time.</h1>
-    <p>A hands-on workshop using published toggly 0.4.0, toggly-rocket 0.4.0 and Rocket 0.5.1.</p>
+    <p>A hands-on workshop using published toggly 0.6.0, toggly-rocket 0.6.0 and Rocket 0.5.1.</p>
 </header>
 <nav aria-label="Workshop sections">
 {nav}</nav>
@@ -308,13 +308,13 @@ async fn declarative(context: &WorkshopContext, client: Option<&TogglyClient>) -
     request_context.clone(),
     false,
 ).await?</code></pre>
-    <p>Published 0.4.0 negates each individual feature before Any/All aggregation. It does not invert the final gate. An empty key list returns false. Errors render the fallback.</p>
+    <p>Published 0.6.0 negates each individual feature before Any/All aggregation. It does not invert the final gate. An empty key list returns false. Errors render the fallback.</p>
 </section>
 <div class="grid">
 {cards}</div>
 <section class="card">
     <h3>Variants: unsupported</h3>
-    <p>Published toggly 0.4.0 has no native variant allocation API. This sample does not invent a variant or call a boolean result a variant.</p>
+    <p>Published toggly 0.6.0 has no native variant allocation API. This sample does not invent a variant or call a boolean result a variant.</p>
 </section>"##
     )
 }
@@ -385,7 +385,7 @@ async fn orders(context: &WorkshopContext, client: Option<&TogglyClient>) -> Str
     <p>The user answers “who?”. The Order answers “what?”. Id maps to the entity key, Vip is a boolean, and Total is an optional number.</p>
     <p>Keep identity fixed and switch ord-vip (Vip=true, Total=40) to ord-standard (Vip=false, Total=40). ord-high-value has Total=250 but is not VIP; ord-no-total omits Total.</p>
     <pre><code>{entity}</code></pre>
-    <p>Register the Order schema locally before client construction. In published 0.4.0 the remote schema PUT happens after the first definition fetch and is best-effort; provision the context and flag binding manually as described in Configuration.</p>
+    <p>Register the Order schema locally before client construction. In published 0.6.0 the remote schema PUT happens after the first definition fetch and is best-effort; provision the context and flag binding manually as described in Configuration.</p>
 </section>"##,
         result = badge(&result)
     )
@@ -401,7 +401,7 @@ async fn native(feature: toggly_rocket::Feature&lt;'_&gt;) {
 }</code></pre>
     <p><a href="/native">Try the native guard</a>. It reads X-User-Id first, then X-Identity; absent headers are anonymous. Those headers are untrusted demo inputs. The adapter does not map workshop cookies, claims, groups, request metadata or Order.</p>
     <pre><code>curl -H 'X-User-Id: alice' -H 'X-Identity: bob' http://localhost:8016/native</code></pre>
-    <p>The native guard returns false on evaluation error and HTTP 500 if managed state is absent. FeatureEnabled and FeatureDisabled are data structs without FromRequest implementations in 0.4.0, so they cannot be used as native route guards.</p>
+    <p>The native guard returns false on evaluation error and HTTP 500 if managed state is absent. FeatureEnabled and FeatureDisabled are data structs without FromRequest implementations in 0.6.0, so they cannot be used as native route guards.</p>
     <h3>Full-context denial route: sample composition</h3>
     <p><a href="/beta">Open the beta route</a>. The sample guard assembles context, the native core evaluates beta-access, and the route returns 404 when disabled or 503 on error.</p>
     <h3>Fairing and lifetime</h3>
