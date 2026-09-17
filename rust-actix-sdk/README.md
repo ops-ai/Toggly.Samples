@@ -20,7 +20,7 @@ Open **http://localhost:8018**. The process generates an in-memory cookie key. A
 new process invalidates earlier cookies. For a stable local key:
 
 ```sh
-export SAMPLE_COOKIE_KEY="$(openssl rand -hex 32)"
+export SAMPLE_COOKIE_KEY="$(openssl rand -hex 64)"
 cargo build --release --locked
 ./target/release/rust-actix-sdk-sample
 ```

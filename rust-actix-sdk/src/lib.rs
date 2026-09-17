@@ -96,12 +96,19 @@ pub fn is_placeholder(key: &str) -> bool {
 }
 
 pub fn cookie_key() -> Key {
-    if let Ok(value) = std::env::var("SAMPLE_COOKIE_KEY") {
-        let trimmed = value.trim();
-        if trimmed.len() >= 64
-            && let Ok(bytes) = decode_cookie_material(trimmed)
-        {
-            return Key::from(&bytes);
+    cookie_key_from_env(std::env::var("SAMPLE_COOKIE_KEY").ok().as_deref())
+}
+
+/// Decode first, then require at least 64 bytes. Cookie 0.18's `Key::from`
+/// panics on shorter material; `openssl rand -hex 32` is only 32 decoded bytes.
+pub(crate) fn cookie_key_from_env(value: Option<&str>) -> Key {
+    if let Some(trimmed) = value.map(str::trim).filter(|value| !value.is_empty()) {
+        match decode_cookie_material(trimmed) {
+            Ok(bytes) if bytes.len() >= 64 => return Key::from(&bytes),
+            _ => eprintln!(
+                "SAMPLE_COOKIE_KEY must decode to at least 64 bytes \
+                 (openssl rand -hex 64); generating an ephemeral key instead."
+            ),
         }
     }
     Key::generate()
@@ -334,5 +341,48 @@ where
             );
             Ok(response)
         })
+    }
+}
+
+#[cfg(test)]
+mod cookie_key_tests {
+    use super::{cookie_key_from_env, decode_cookie_material};
+    use cookie::{Cookie, CookieJar, Key};
+
+    #[test]
+    fn hex32_would_panic_key_from_and_now_falls_back() {
+        // openssl rand -hex 32 → 64 hex characters → 32 decoded bytes.
+        let hex32 = "ab".repeat(32);
+        let bytes = decode_cookie_material(&hex32).expect("valid hex");
+        assert_eq!(bytes.len(), 32);
+        assert!(
+            std::panic::catch_unwind(|| Key::from(&bytes)).is_err(),
+            "32-byte material still panics cookie::Key::from"
+        );
+        let _fallback = cookie_key_from_env(Some(&hex32));
+    }
+
+    #[test]
+    fn hex64_builds_a_stable_cookie_key() {
+        let hex64 = "cd".repeat(64);
+        let bytes = decode_cookie_material(&hex64).expect("valid hex");
+        assert_eq!(bytes.len(), 64);
+        let first = cookie_key_from_env(Some(&hex64));
+        let second = cookie_key_from_env(Some(&hex64));
+        let mut writer = CookieJar::new();
+        writer
+            .private_mut(&first)
+            .add(Cookie::new("persona", "alice"));
+        let encoded = writer.get("persona").expect("private cookie").to_string();
+        let mut reader = CookieJar::new();
+        reader.add_original(Cookie::parse(encoded).expect("cookie"));
+        assert_eq!(
+            reader
+                .private(&second)
+                .get("persona")
+                .expect("decrypt")
+                .value(),
+            "alice"
+        );
     }
 }
