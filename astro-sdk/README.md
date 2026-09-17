@@ -35,7 +35,15 @@ Installed versions (pinned in `package.json` / lockfile):
 | `@ops-ai/astro-feature-flags-toggly` | 1.15.0 |
 | `@astrojs/node` | 11.1.5 |
 | `@astrojs/react` / `vue` / `svelte` | 6.0.5 / 7.0.2 / 9.0.1 |
-| React / Vue / Svelte | 19.2.4 / 3.5.42 / 5.57.0 |
+| React / Vue / Svelte | 19.3.0 / 3.5.42 / 5.57.0 |
+| TypeScript | 6.0.3 |
+| `@astrojs/check` | 0.9.10 |
+
+React and React DOM are pinned together. TypeScript stays on **6.0.3**, the
+newest published release in `@astrojs/check` 0.9.10's peer range
+(`^5.0.0 || ^6.0.0`). TypeScript 7 is not landed: no published
+`@astrojs/check` (latest 0.9.10) or current Astro 7.3.2 toolchain declares a
+`^7` TypeScript peer.
 
 `npm run build` produces the static SSG site (including
 `toggly-page-features.json`). `npm run build:ssr` builds the Node adapter
