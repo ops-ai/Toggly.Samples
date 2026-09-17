@@ -2,8 +2,8 @@
 
 An actual .NET 8 Blazor Web App with separately compiled WebAssembly client code.
 Explore static SSR, Interactive Server, WebAssembly and Interactive Auto using
-`Toggly.FeatureManagement.Blazor` **3.7.0**, `.Blazor.Server` **3.7.0**, portable
-Client **3.7.0** and trusted `.NET` **3.7.0**. Presentation gates are not backend
+`Toggly.FeatureManagement.Blazor` **3.8.0**, `.Blazor.Server` **3.8.0**, portable
+Client **3.8.0** and trusted `.NET` **3.8.0**. Presentation gates are not backend
 authorization; demo personas do not authenticate a user.
 
 ## Quick start
@@ -93,11 +93,11 @@ Use one application host/service account per directory; this is not a distribute
 cache or a multi-writer deployment design.
 
 The directory remains **trusted local application state**, including the public
-JWKS. SDK 3.7.0 re-verifies the exact saved signed definitions and rejects a typed
+JWKS. SDK 3.8.0 re-verifies the exact saved signed definitions and rejects a typed
 copy that differs from those bytes. This does not authenticate simultaneous
 replacement of both definitions and their saved public signing keys by an attacker
 who controls the directory. The adapter preserves the SDK's timestamp fields;
-SDK 3.7.0 does not enforce the persisted JWKS expiry timestamp or a maximum offline
+SDK 3.8.0 does not enforce the persisted JWKS expiry timestamp or a maximum offline
 definitions age. Offline operation cannot learn about a revoked signing key or
 new flag value. Protect the service account and storage, and reconnect to obtain
 current definitions. Do not treat this cache as a new independent trust anchor.
