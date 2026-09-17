@@ -20,10 +20,14 @@ Open **http://localhost:8017**. The process generates an in-memory cookie key. A
 new process invalidates earlier cookies. For a stable local key:
 
 ```sh
-export SAMPLE_COOKIE_KEY="$(openssl rand -hex 32)"
+export SAMPLE_COOKIE_KEY="$(openssl rand -hex 64)"
 cargo build --release --locked
 ./target/release/rust-axum-sdk-sample
 ```
+
+`SAMPLE_COOKIE_KEY` must decode to at least 64 bytes (`openssl rand -hex 64`
+produces 128 hex characters). A shorter or unusable value is logged and replaced
+with an ephemeral key instead of aborting the process.
 
 The release binary binds loopback only, on port 8017, with eight Tokio worker
 threads. Set `AXUM_PORT` if that port is occupied; update the manual origin recipe
