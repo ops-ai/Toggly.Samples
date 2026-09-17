@@ -25,10 +25,16 @@ final class TogglyRuntime
     private ?string $subscription = null;
     private bool $refreshFailed = false;
 
+    public static function isOfflineKey(?string $key): bool
+    {
+        $trimmed = trim((string) $key);
+
+        return $trimmed === '' || $trimmed === 'ci-placeholder';
+    }
+
     public function __construct(public readonly DemoContext $context)
     {
-        $key = trim((string) config('toggly.app_key'));
-        $this->offline = $key === '' || $key === 'ci-placeholder';
+        $this->offline = self::isOfflineKey(config('toggly.app_key'));
     }
 
     public function initialize(): void

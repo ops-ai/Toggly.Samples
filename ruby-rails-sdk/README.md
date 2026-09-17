@@ -63,14 +63,13 @@ are separate evidence.
 
 ## Versions and verification
 
-Official Ruby downloads and RubyGems metadata checked September 10, 2026
-(September 11 UTC):
+Official Ruby downloads and RubyGems metadata checked September 17, 2026:
 
 | Component | Selected version |
 |---|---|
 | Ruby | 4.0.6 |
 | Rails | 8.1.3.1 |
-| `toggly-rails` / `toggly` | 0.2.1 / 0.5.0 |
+| `toggly-rails` / `toggly` | 0.3.1 / 0.5.1 |
 | Puma / Rack | 8.0.2 / 3.2.7 |
 | Propshaft | 1.3.2 |
 | JSON | 2.21.2, explicit `>= 2, < 3` |

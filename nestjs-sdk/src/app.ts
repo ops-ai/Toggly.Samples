@@ -17,6 +17,7 @@ export interface SampleOptions {
   environment?: string;
   fixtureUrl?: string;
   hooks?: Hook[];
+  telemetry?: boolean;
 }
 
 export async function createApp({
@@ -24,6 +25,7 @@ export async function createApp({
   environment = 'Production',
   fixtureUrl,
   hooks = [],
+  telemetry = true,
 }: SampleOptions = {}) {
   const offline = Boolean(fixtureUrl);
   const configured = Boolean(appKey && appKey !== 'ci-placeholder');
@@ -154,16 +156,18 @@ export async function createApp({
         environment,
         baseUrl: fixtureUrl,
         verifySignatures: !offline,
-        enableStreaming: configured && !offline,
+        enableStreaming: configured && !offline && telemetry,
         refreshInterval:
           configured && !offline ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
         timeout: 3000,
         registerContextsOnStartup: false,
         hooks,
-        enableUsageTracking: configured && !offline,
-        enableMetrics: configured && !offline,
+        enableUsageTracking: configured && !offline && telemetry,
+        enableMetrics: configured && !offline && telemetry,
         usageFlushInterval:
-          configured && !offline ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000) : 0,
+          configured && !offline && telemetry
+            ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000)
+            : 0,
         contextFactory(req) {
           // Demo controls are explicitly untrusted. Production applications read their
           // authenticated principal and trusted proxy metadata instead of query fields.

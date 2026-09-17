@@ -4,7 +4,7 @@ import { inputs, keys, filters } from './catalog.js';
 import { page } from './view.js';
 
 // Published adapter uses one process-wide client: run one sample instance per process.
-export async function createApp({ appKey = '', environment = 'Production', fixtureUrl, baseUrl, hooks = [], getContext } = {}) {
+export async function createApp({ appKey = '', environment = 'Production', fixtureUrl, baseUrl, hooks = [], getContext, telemetry = true } = {}) {
   const app = Fastify();
   // A flag key names one decision; appKey + environment select its definitions.
   // Offline replaces only the definition transport. An absent/placeholder app key
@@ -37,8 +37,8 @@ export async function createApp({ appKey = '', environment = 'Production', fixtu
     environment, baseUrl: fixtureUrl ?? baseUrl, verifySignatures: !offline,
     enableStreaming: false,
     refreshInterval: live ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
-    enableUsageTracking: live, enableMetrics: live,
-    usageFlushInterval: live ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000) : 0,
+    enableUsageTracking: live && telemetry, enableMetrics: live && telemetry,
+    usageFlushInterval: live && telemetry ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000) : 0,
     timeout: 3000, registerContextsOnStartup: false, hooks,
     // Demo controls let readers impersonate targeting inputs. In a real service,
     // derive identity/claims from a trusted session; feature gates are not login checks.

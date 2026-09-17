@@ -3,6 +3,25 @@ import assert from 'node:assert/strict';
 import { createApp } from '../src/app.js';
 import { startFixture } from '../src/fixture.js';
 
+function isolateFetchFromProduction(
+  originalFetch: typeof fetch,
+  onDefinitions: (url: string, options?: RequestInit) => Promise<Response>,
+) {
+  return (url: RequestInfo | URL, options?: RequestInit) => {
+    const href = String(url);
+    if (href.startsWith('https://definitions.toggly.io/')) {
+      return onDefinitions(href, options);
+    }
+    if (/^https?:\/\/127\.0\.0\.1(?::\d+)?(?:[/?#]|$)/.test(href)) {
+      return originalFetch(url, options);
+    }
+    if (/^https?:\/\/([a-z0-9-]+\.)*toggly\.io(?::\d+)?(?:[/?#]|$)/i.test(href)) {
+      return Promise.resolve(new Response('{}', { status: 204 }));
+    }
+    assert.fail(`test keys must never contact an external service: ${href}`);
+  };
+}
+
 test('installed NestJS package drives all eight sections, gates, presets and entity overrides', async () => {
   const fixture = await startFixture();
   const app = await createApp({ fixtureUrl: fixture.baseUrl });
@@ -77,17 +96,48 @@ test('installed NestJS package drives all eight sections, gates, presets and ent
   }
 });
 test('missing key uses defaults without crashing and makes the configuration gap visible', async () => {
-  const app = await createApp();
-  await app.listen(0, '127.0.0.1');
-  const url = await app.getUrl();
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = isolateFetchFromProduction(originalFetch, () => {
+    assert.fail('missing key must never contact definitions.toggly.io');
+  });
   try {
-    assert.match(await (await fetch(url)).text(), /Missing app key/);
-    assert.equal((await fetch(url + '/gates/enabled')).status, 404);
-    assert.equal((await fetch(url + '/gates/beta')).status, 403);
-    assert.deepEqual(await (await fetch(url + '/unique/parameter')).json(), {
-      enhancedSubmit: false,
-    });
+    const app = await createApp();
+    await app.listen(0, '127.0.0.1');
+    const url = await app.getUrl();
+    try {
+      assert.match(await (await fetch(url)).text(), /Missing app key/);
+      assert.equal((await fetch(url + '/gates/enabled')).status, 404);
+      assert.equal((await fetch(url + '/gates/beta')).status, 403);
+      assert.deepEqual(await (await fetch(url + '/unique/parameter')).json(), {
+        enhancedSubmit: false,
+      });
+    } finally {
+      await app.close();
+    }
   } finally {
-    await app.close();
+    globalThis.fetch = originalFetch;
+  }
+});
+test('configured signed mode rejects unsigned transport and never contacts production', async () => {
+  const originalFetch = globalThis.fetch;
+  let definitionRequests = 0;
+  globalThis.fetch = isolateFetchFromProduction(originalFetch, () => {
+    definitionRequests++;
+    return Promise.resolve(new Response(JSON.stringify({ defs: [] }), { status: 200 }));
+  });
+  try {
+    const app = await createApp({ appKey: 'test-only-not-a-real-key', telemetry: false });
+    await app.listen(0, '127.0.0.1');
+    const url = await app.getUrl();
+    try {
+      const data = await (await fetch(url + '/api/evaluate')).json();
+      assert.match(data.source, /^Unavailable/);
+      assert.equal(data.flags['new-dashboard'], false);
+    } finally {
+      await app.close();
+    }
+    assert.ok(definitionRequests > 0);
+  } finally {
+    globalThis.fetch = originalFetch;
   }
 });
