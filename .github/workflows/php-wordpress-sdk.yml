@@ -1,0 +1,71 @@
+name: PHP WordPress SDK Sample
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - 'php-wordpress-sdk/**'
+      - '.github/workflows/php-wordpress-sdk.yml'
+      - '.github/dependabot.yml'
+      - 'README.md'
+      - 'docs/**'
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - 'php-wordpress-sdk/**'
+      - '.github/workflows/php-wordpress-sdk.yml'
+      - '.github/dependabot.yml'
+      - 'README.md'
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: php-wordpress-sdk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php-wordpress-sdk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: php-wordpress-sdk
+    env:
+      TOGGLY_APP_KEY: ''
+      TOGGLY_ENVIRONMENT: Production
+      SAMPLE_URL: http://localhost:8011
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5.10'
+          extensions: openssl, pdo_sqlite
+          tools: composer:2.10.3
+          coverage: none
+      - name: Install Apache for native FPM requests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apache2 curl unzip
+      - name: Install locked published packages
+        run: |
+          composer validate --strict
+          composer install --no-interaction --prefer-dist --no-progress
+          composer check-platform-reqs
+      - name: Install disposable WordPress
+        run: composer setup
+      - name: Unit tests and plugin build
+        run: |
+          composer test
+          composer build
+      - name: Native WordPress HTTP, signing and cron tests
+        run: python3 tests/run_hosted.py
+      - name: Retain native test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wordpress-native-results
+          path: php-wordpress-sdk/tests/.results/
+          if-no-files-found: ignore

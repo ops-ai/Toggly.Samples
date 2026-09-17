@@ -81,6 +81,14 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+  - package-ecosystem: composer
+    directory: /php-wordpress-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
   - package-ecosystem: npm
     directory: /javascript-sdk
     schedule:

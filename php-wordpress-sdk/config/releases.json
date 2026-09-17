@@ -1,0 +1,12 @@
+{
+    "wordpress": {
+        "version": "7.1",
+        "url": "https://wordpress.org/wordpress-7.1.tar.gz",
+        "sha256": "05a5f89138f632b7329f1202f2a0553c5f7fe4daf8e4b9ca7ebae9b9466b9e86"
+    },
+    "sqlite": {
+        "version": "3.0.2",
+        "url": "https://downloads.wordpress.org/plugin/sqlite-database-integration.3.0.2.zip",
+        "sha256": "1602e75577ad9b3a7e3e4a6a44a81b9541cdee2124d48928faf61c6fd3cd4f74"
+    }
+}

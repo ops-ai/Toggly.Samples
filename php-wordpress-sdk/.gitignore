@@ -1,0 +1,5 @@
+/vendor/
+/.runtime/
+/.env
+/tests/.results/
+__pycache__/

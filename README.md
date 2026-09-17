@@ -47,6 +47,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Angular SDK Workshop | Angular 22 standalone | [`angular-sdk/`](angular-sdk/) | Native templates, directives, variants, route guard, local gates and Order context |
 | Ruby Rails SDK Sample | Rails 8.1 / Ruby 4 | [`ruby-rails-sdk/`](ruby-rails-sdk/) | Native Railtie and view/controller gates, request contexts, Orders, filter matrix and cache snapshots |
 | PHP Laravel SDK Sample | PHP 8.5 + Laravel 13 | [`php-laravel-sdk/`](php-laravel-sdk/) | Native Blade, middleware, attributes, request identity, variants, filter matrix and explicit Order support limits |
+| PHP WordPress SDK Sample | PHP 8.5 + WordPress 7.1 | [`php-wordpress-sdk/`](php-wordpress-sdk/) | Native plugin, shortcodes, request identity, Order, filter matrix, cron lifecycle and explicit PHP evaluator limits |
 | JavaScript SDK Sample | Vanilla TypeScript + Vite | [`javascript-sdk/`](javascript-sdk/) | Browser flags, variants, session identity, entity context, and live refresh with `@ops-ai/feature-flags-toggly` |
 | React SDK Showcase | React 19 + Vite | [`react-sdk/`](react-sdk/) | Provider, declarative and programmatic gates, session identity, Order context, eleven-filter matrix, variants, and safe no-key defaults with `@ops-ai/react-feature-flags-toggly` |
 | Electron SDK Sample | Electron 44 + React 19 | [`electron-sdk/`](electron-sdk/) | Secure main/preload/renderer feature gates, desktop session context, Order context, cache and signed definition updates with `@ops-ai/electron-feature-flags-toggly` |
