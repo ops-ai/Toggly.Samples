@@ -1,0 +1,38 @@
+name: Go SDK sample
+
+on:
+  push:
+    branches: [develop, main]
+    paths: ['go-sdk/**', '.github/workflows/go-sdk.yml', 'docs/**', 'README.md']
+  pull_request:
+    branches: [develop, main]
+    paths: ['go-sdk/**', '.github/workflows/go-sdk.yml', 'docs/**', 'README.md']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: go-sdk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  go-sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: go-sdk
+    env:
+      TOGGLY_APP_KEY: ci-placeholder
+      TOGGLY_ENVIRONMENT: Production
+      TOGGLY_OFFLINE: 'true'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-sdk/go.mod
+          cache-dependency-path: go-sdk/go.sum
+      - run: go mod download
+      - run: go mod verify
+      - run: go test -race ./...
+      - run: go vet ./...
+      - run: go build ./...
