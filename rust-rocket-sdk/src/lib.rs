@@ -37,7 +37,10 @@ pub async fn start() -> Result<(Rocket<Build>, Option<fixture::Fixture>), std::i
             .http_timeout(Duration::from_secs(5))
             .use_signed_definitions(true)
             .enable_usage_tracking(true)
-            .usage_flush_interval(Duration::from_secs(env_secs("TOGGLY_USAGE_FLUSH_INTERVAL", 60)))
+            .usage_flush_interval(Duration::from_secs(env_secs(
+                "TOGGLY_USAGE_FLUSH_INTERVAL",
+                60,
+            )))
             .build()
     };
     // Do not print SDK errors/configuration: transport messages can contain the key.
