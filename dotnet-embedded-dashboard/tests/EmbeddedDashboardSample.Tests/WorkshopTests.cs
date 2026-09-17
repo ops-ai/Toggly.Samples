@@ -113,7 +113,7 @@ public sealed class WorkshopTests
         var persisted = (await nextEditor.ReadAsync())!;
         var feature = persisted.Document.Features.Single(feature => feature.Key == "filter-targeting");
         Assert.False(feature.Enabled);
-        Assert.Equal("alice", Assert.Single(feature.Rules).Parameters["Audience.Users:0"]);
+        Assert.Equal("alice-users", Assert.Single(feature.Rules).Parameters["Audience.Users"]);
         feature.Enabled = true;
         await nextEditor.TryWriteAsync(persisted.Document, persisted.Revision);
         Assert.True((await Snapshot(nextClient, "matching")).GetProperty("flags").GetProperty("filter-targeting").GetBoolean());

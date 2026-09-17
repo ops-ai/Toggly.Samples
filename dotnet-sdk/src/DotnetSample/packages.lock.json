@@ -38,9 +38,9 @@
       },
       "Toggly.FeatureManagement": {
         "type": "Direct",
-        "requested": "[3.6.6, )",
-        "resolved": "3.6.6",
-        "contentHash": "LdtAf5GCZfgb0KoSPxtTRAs1U3W1kbzgaa8aJxQvlGx4Ar/nXdKGRgoEgPocRztOYBqkOxcGlfDp4JM0Paea/Q==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "EJVMywqjqOaEIUDZdDXhfnpHRUbi0FhRvzV455Ycse82aZ9zm+CNfpXDB09HmIGHJ20BK7+I/vb3tPSNvPoxRQ==",
         "dependencies": {
           "Azure.Messaging.WebPubSub": "1.6.0",
           "ConcurrentHashSet": "1.3.0",
@@ -56,44 +56,44 @@
       },
       "Toggly.FeatureManagement.Hangfire": {
         "type": "Direct",
-        "requested": "[3.6.6, )",
-        "resolved": "3.6.6",
-        "contentHash": "FDehrzenOwpV9GC9dQWD+8Im83uQyYOgbUjzu3OjFYMfANNKaoZ0Z4RgV/hBB4lr2Y+RTEltHy0ZFZfU8cam5w==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "urIkRE2A/zC339a9/xaPM9CKIpeX6fkOKxT4tjucn56TO7oNRhpWYM5KM3JWSmvxXQ1XVf5haOjrcQJExThxGg==",
         "dependencies": {
           "Hangfire.Core": "1.7.33",
-          "Toggly.FeatureManagement": "3.6.6"
+          "Toggly.FeatureManagement": "3.8.0"
         }
       },
       "Toggly.FeatureManagement.HealthChecks": {
         "type": "Direct",
-        "requested": "[3.6.6, )",
-        "resolved": "3.6.6",
-        "contentHash": "gd7oKyzwdS4vJKplcryxuGWw7NcvxVQ/SY9FLXB7dpr3fIsFUls6cmpIWnGaAkguVx+K3DZCaHslDtQcLop87w==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "O+3Z1E/CuhZBlitj7XwJuixEQUATC3kzBO+iItflTgYzrc209neyaKKkwfUKLuq8C/44bY8GcYelfB2WJyiNfg==",
         "dependencies": {
-          "Toggly.FeatureManagement": "3.6.6"
+          "Toggly.FeatureManagement": "3.8.0"
         }
       },
       "Toggly.FeatureManagement.NSwag": {
         "type": "Direct",
-        "requested": "[3.6.6, )",
-        "resolved": "3.6.6",
-        "contentHash": "p/MdyXD4FhpuXwXX6c3ZHw4PQvzzvAhCvsXpaoB7phRrYRJ8MLAekHLa/oiJZCwW9J8iWxT0dEgH3bdvVG4xyg==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "hvMUT6FaGRB73pizrVPisIYJ5niFEmvWM5gbaM3fnogAw4vmeOiyEj5N6NSk519jHymMvvBfhvDANYw+WEjO2g==",
         "dependencies": {
           "Microsoft.FeatureManagement.AspNetCore": "4.0.0",
           "NSwag.AspNetCore": "14.6.3",
           "NSwag.Core": "14.6.3",
           "NSwag.Core.Yaml": "14.6.3",
           "NSwag.Generation.AspNetCore": "14.6.3",
-          "Toggly.FeatureManagement": "3.6.6"
+          "Toggly.FeatureManagement": "3.8.0"
         }
       },
       "Toggly.FeatureManagement.Web": {
         "type": "Direct",
-        "requested": "[3.6.6, )",
-        "resolved": "3.6.6",
-        "contentHash": "OjEwv2lJt2R0MycuX7uR+uzkC/FvJd3Uk+GdpvoRZa28HbtYxUhKs0kLnh7nYIjK638Q9o+sfR+kCnDfpbaRHg==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "uo6UtgGG6OE4LrliZsHzvMwe5vIAYeoY2k4hfnFs6pGKbCRRO5iP41Pjwj0tbvtN5TxDHCFnyKOc/+fYBpqaxg==",
         "dependencies": {
-          "Toggly.FeatureManagement": "3.6.6",
+          "Toggly.FeatureManagement": "3.8.0",
           "UAParser": "3.1.47"
         }
       },

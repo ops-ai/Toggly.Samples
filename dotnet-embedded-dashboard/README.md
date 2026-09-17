@@ -1,6 +1,6 @@
 # .NET embedded dashboard workshop
 
-A complete ASP.NET Core application with the **published Toggly 3.7.0 dashboard**
+A complete ASP.NET Core application with the **published Toggly 3.8.0 dashboard**
 mounted at `/internal/features`, SQLite persistence, and seven Razor workshop
 pages. No Toggly account, app key, internet connection at runtime, frontend build,
 or external service is required. NuGet restore needs internet access.
@@ -49,9 +49,10 @@ its replacement. Imports merge; they do not delete target features absent from
 the file. Keep the default skip selection for any edits you want to retain.
 
 The portable catalog uses `Production`, enabled state separate from retained
-rules, and SDK-compatible flattened parameter names. Enabled features without
-rules compile to `AlwaysOn`; disabled features evaluate false while retaining
-rules for later re-enablement. Unknown features also evaluate false.
+rules, and SDK-compatible parameter names. Enabled features include an
+`AlwaysOn` rule; Targeting references catalog lists (`Audience.Users`) rather
+than indexed `Audience.Users:n` IDs. Disabled features evaluate false while
+retaining rules for later re-enablement. Unknown features also evaluate false.
 
 ## Sections
 
@@ -190,12 +191,12 @@ permissions, approvals or publication state.
 | `example-catalog.json` | Portable, editable rules for the whole workshop |
 | `tests/EmbeddedDashboardSample.Tests/WorkshopTests.cs` | Real SQLite, request separation, dashboard forms and restart tests |
 
-All Toggly dependencies resolve to **3.7.0** from **nuget.org**. Direct references:
+All Toggly dependencies resolve to **3.8.0** from **nuget.org**. Direct references:
 
 | Package | Version |
 |---|---|
-| `Toggly.FeatureManagement.Dashboard` | 3.7.0 |
-| `Toggly.FeatureManagement.Storage.EntityFramework` | 3.7.0 |
+| `Toggly.FeatureManagement.Dashboard` | 3.8.0 |
+| `Toggly.FeatureManagement.Storage.EntityFramework` | 3.8.0 |
 | `Microsoft.EntityFrameworkCore.Sqlite` | 8.0.31 (`net8.0`), 10.0.12 (`net10.0`) |
 | `Microsoft.FeatureManagement.AspNetCore` | 4.7.0, for the MVC feature-gate attribute |
 | `SQLitePCLRaw.bundle_e_sqlite3` | 3.0.5, pins a patched native engine instead of EF 8's older transitive baseline |

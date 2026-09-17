@@ -29,19 +29,19 @@
       },
       "Microsoft.NET.Sdk.WebAssembly.Pack": {
         "type": "Direct",
-        "requested": "[10.0.11, )",
-        "resolved": "10.0.11",
-        "contentHash": "qTQsflEOjG1xG8FCfQJZbVd7DErJdKqKoW4gxH1HlgGQ5IBBloehLvXhMhzYqogYyajU7YEUKZvJ4n/vA7sAmQ=="
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "MIeBVeWkbKdggl3kmmIUnx8ZNEgjD2m1gTN/0W+TDRn6zcL1WZdq5hXhGQ0wjuSlw/8tvwwCg79PemfkJ3+5JA=="
       },
       "Toggly.FeatureManagement.Blazor": {
         "type": "Direct",
-        "requested": "[3.7.0, )",
-        "resolved": "3.7.0",
-        "contentHash": "36HWlfcxqH5TjYinuTplkLvpENP2D8jLNFPGd/w0EM0ww+MIRT7gjeByYvyBnJJabmbFypYD6IvSMPnq9AM+Iw==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "ubXMXO6YT/V0WTv3AZZCTw54JhxIXUeezYPyVU72rhfYZ3Dh77uynq6G7cDzS56dmCCQ4LVdME03DAo0ru5mMw==",
         "dependencies": {
           "Microsoft.AspNetCore.Components.Authorization": "8.0.31",
           "Microsoft.AspNetCore.Components.Web": "8.0.31",
-          "Toggly.FeatureManagement.Client": "3.7.0"
+          "Toggly.FeatureManagement.Client": "3.8.0"
         }
       },
       "Microsoft.AspNetCore.Authorization": {
@@ -276,8 +276,8 @@
       },
       "Toggly.FeatureManagement.Client": {
         "type": "Transitive",
-        "resolved": "3.7.0",
-        "contentHash": "6XvKj9DrzshTLCogR47sVQdAPK6kVUVzB6E6SDFIiFyN8PVqt53IuLlCBlk817IY6o9hXYqRJRhBtiFHtOEZGA=="
+        "resolved": "3.8.0",
+        "contentHash": "EXk8ppZ3bfrquwHQWyuvnT8cwi9ZnSeQpWekJYc2A2tfJfnt2DpICtYI4FKW/MI7mLfux6RDxPlrYezFN53KcA=="
       }
     },
     "net10.0/browser-wasm": {}

@@ -228,22 +228,22 @@ and signature verification. Keep app keys out of browser HTML, JSON and logs.
 
 ## Versions
 
-Registry checkpoint: 2026-09-10. Exact NuGet resolution is committed in both
+Registry checkpoint: 2026-09-17. Exact NuGet resolution is committed in both
 `packages.lock.json` files.
 
 | Dependency | Version |
 |---|---|
 | .NET SDK / ASP.NET Core runtime | 10.0.401 / 10.0.12 |
-| Toggly.FeatureManagement | 3.6.6 |
-| Toggly.FeatureManagement.Web | 3.6.6 |
-| Toggly.FeatureManagement.Hangfire | 3.6.6 |
-| Toggly.FeatureManagement.HealthChecks | 3.6.6 |
-| Toggly.FeatureManagement.NSwag | 3.6.6 |
+| Toggly.FeatureManagement | 3.8.0 |
+| Toggly.FeatureManagement.Web | 3.8.0 |
+| Toggly.FeatureManagement.Hangfire | 3.8.0 |
+| Toggly.FeatureManagement.HealthChecks | 3.8.0 |
+| Toggly.FeatureManagement.NSwag | 3.8.0 |
 | Hangfire.AspNetCore | 1.8.25 |
 | Hangfire.InMemory | 1.0.0 |
 | NSwag.AspNetCore | 14.7.1 |
 | Microsoft.AspNetCore.Mvc.Testing | 10.0.12 |
-| Microsoft.NET.Test.Sdk / xUnit / VS runner | 18.10.0 / 2.9.3 / 4.0.0 |
+| Microsoft.NET.Test.Sdk / xUnit / VS runner | 18.10.1 / 2.9.3 / 4.0.0 |
 
 ## Verification and production build
 

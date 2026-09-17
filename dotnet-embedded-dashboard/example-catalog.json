@@ -13,7 +13,12 @@
       "requirementType": "Any",
       "contextKind": null,
       "contextRequirementType": null,
-      "rules": []
+      "rules": [
+        {
+          "name": "AlwaysOn",
+          "parameters": {}
+        }
+      ]
     },
     {
       "key": "api-v2",
@@ -26,7 +31,12 @@
       "requirementType": "Any",
       "contextKind": null,
       "contextRequirementType": null,
-      "rules": []
+      "rules": [
+        {
+          "name": "AlwaysOn",
+          "parameters": {}
+        }
+      ]
     },
     {
       "key": "enhanced-submit",
@@ -39,7 +49,12 @@
       "requirementType": "Any",
       "contextKind": null,
       "contextRequirementType": null,
-      "rules": []
+      "rules": [
+        {
+          "name": "AlwaysOn",
+          "parameters": {}
+        }
+      ]
     },
     {
       "key": "beta-access",
@@ -52,7 +67,12 @@
       "requirementType": "Any",
       "contextKind": null,
       "contextRequirementType": null,
-      "rules": []
+      "rules": [
+        {
+          "name": "AlwaysOn",
+          "parameters": {}
+        }
+      ]
     },
     {
       "key": "ExpressCheckout",
@@ -89,7 +109,12 @@
       "requirementType": "Any",
       "contextKind": null,
       "contextRequirementType": null,
-      "rules": []
+      "rules": [
+        {
+          "name": "AlwaysOn",
+          "parameters": {}
+        }
+      ]
     },
     {
       "key": "filter-percentage",
@@ -126,7 +151,7 @@
         {
           "name": "Targeting",
           "parameters": {
-            "Audience.Users:0": "alice",
+            "Audience.Users": "alice-users",
             "Audience.DefaultRolloutPercentage": "0",
             "IgnoreCase": "true"
           }
@@ -303,6 +328,16 @@
             "ValueType": "boolean"
           }
         }
+      ]
+    }
+  ],
+  "lists": [
+    {
+      "key": "alice-users",
+      "name": "Alice users",
+      "description": "Workshop targeting list for the matching Alice identity.",
+      "items": [
+        "alice"
       ]
     }
   ],
