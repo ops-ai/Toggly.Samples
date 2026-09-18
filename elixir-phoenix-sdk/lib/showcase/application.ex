@@ -24,7 +24,9 @@ defmodule Showcase.Application do
       max_signature_age_seconds:
         Application.fetch_env!(:toggly_showcase, :max_signature_age_seconds),
       websocket: not offline,
-      refresh_interval: if(offline, do: 0, else: 60_000)
+      refresh_interval: if(offline, do: 0, else: interval("TOGGLY_REFRESH_INTERVAL_MS", 60_000)),
+      flush_interval: if(offline, do: 0, else: interval("TOGGLY_FLUSH_INTERVAL_MS", 60_000)),
+      usage: not offline
     ]
 
     options =
@@ -42,5 +44,18 @@ defmodule Showcase.Application do
       strategy: :one_for_one,
       name: Showcase.Supervisor
     )
+  end
+
+  defp interval(name, default) do
+    case System.get_env(name) do
+      empty when empty in [nil, ""] ->
+        default
+
+      value ->
+        case Integer.parse(value) do
+          {ms, ""} when ms > 0 -> ms
+          _ -> default
+        end
+    end
   end
 end

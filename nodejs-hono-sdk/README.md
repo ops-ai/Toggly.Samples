@@ -1,6 +1,6 @@
 # Node Hono SDK Sample
 
-Eight navigable sections backed by the actual published Hono adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-08: Hono **4.13.7**, `@hono/node-server` **2.1.1**, `@ops-ai/toggly-hono` **0.3.0**, `@ops-ai/toggly-node-core` **0.9.0** (exact pins + lockfile).
+Eight navigable sections backed by the actual published Hono adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-16: Hono **4.13.7**, `@hono/node-server` **2.1.1**, `@ops-ai/toggly-hono` **0.3.1**, `@ops-ai/toggly-node-core` **0.9.1** (exact pins + lockfile). Live mode reports definition cache hits on the usage pipeline; offline, missing-key, and `ci-placeholder` runs do not upload usage. `npm run soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 ```sh
 npm ci

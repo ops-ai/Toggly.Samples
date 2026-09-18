@@ -14,7 +14,8 @@ raise 'SESSION_SECRET must contain at least 64 bytes' if secret.bytesize < 64
 # uses mutexes, so close here outside that trap after serving has stopped.
 at_exit do
   service.close
-  warn "Ruby sample SDK closed=#{service.client.closed?} telemetry_closed=#{service.telemetry.summary[:closed]}"
+  closed = service.telemetry ? service.telemetry.summary[:closed] : 'live'
+  warn "Ruby sample SDK closed=#{service.client.closed?} telemetry_closed=#{closed}"
 end
 
 run RubyShowcase::Application.build(service: service, secret: secret, secure: ENV['SESSION_COOKIE_SECURE'] == 'true')

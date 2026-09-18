@@ -19,8 +19,9 @@ php artisan serve --host=127.0.0.1 --port=8010
 ```
 
 Open [localhost:8010](http://localhost:8010). The generated `APP_KEY` encrypts
-Laravel's session cookies; it is separate from `TOGGLY_APP_KEY`. Keep both in
-your ignored local `.env`. Never commit a real environment file.
+Laravel's session cookies; it is separate from `TOGGLY_APP_KEY`. Keep the
+Laravel key in ignored `.env` and any real Toggly key in ignored `.env.local`.
+Never commit a real environment file.
 
 **First flag:** visit Declarative gates, then Request identity. Choose **All
 baseline flags OFF**, apply, and return to gates. The native `new-dashboard`
@@ -35,7 +36,11 @@ route at `public/index.php`. Do not serve the repository root or `.env`.
 
 ## Published versions
 
-Refreshed from public Composer metadata on September 10, 2026:
+Refreshed from public Composer metadata on September 16, 2026.
+Live mode still records usage through PHP 1.0.0; Packagist has not published
+1.1.x yet, so definition cache-hit fields are not available on this pin.
+Offline and `ci-placeholder` do not upload usage. `composer soak` waits for
+refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 | Component | Version |
 |---|---|
@@ -75,7 +80,8 @@ live application. Follow the shared [flag template](../docs/FLAG_TEMPLATE.md).
    remove a default AlwaysOn row from Order conditions. Select **Save conditions**,
    then the outer **Save Changes / Request Changes**, then **Save / Request** in
    the confirmation dialog. Complete normal approvals and verify the applied rules.
-6. Copy the SDK app key into your ignored `.env` as `TOGGLY_APP_KEY`. Keep
+6. Copy the SDK app key into ignored `.env.local` as `TOGGLY_APP_KEY`. Keep
+   `.env.example` empty and never commit a live key. Keep
    `TOGGLY_BASE_URL=https://definitions.toggly.io/` and
    `TOGGLY_USE_SIGNED_DEFINITIONS=true`. Run `php artisan config:clear`, restart
    the development server and reload. The banner must now say Live definitions.

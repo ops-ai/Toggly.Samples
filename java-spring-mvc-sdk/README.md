@@ -4,7 +4,10 @@ A standalone Spring MVC workshop using published Java core and MVC SDKs.
 Embedded Tomcat runs the actual DispatcherServlet, native context/gate
 interceptors, Boolean argument resolver and model advice. FreeMarker renders
 that native model in real templates. This is the separate MVC adapter; it
-uses ordinary Spring configuration without the Spring Boot starter.
+uses ordinary Spring configuration without the Spring Boot starter. Live mode
+reports definition cache hits on the usage pipeline; offline and `ci-placeholder`
+do not upload usage. `python scripts/soak.py` waits for refresh + flush when a
+real `TOGGLY_APP_KEY` is set.
 
 ## Quick start
 

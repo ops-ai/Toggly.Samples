@@ -6,12 +6,13 @@ import { page } from './view.js';
 // Read catalog.js first: keys identify remotely configured rules, not local switches.
 // Express owns one shared SDK client per process. Its definitions can be reused by
 // every request; the identity/claims/Order used to evaluate them must stay local.
-export function createApp({ appKey = '', environment = 'Production', fixtureUrl, hooks = [] } = {}) {
+export function createApp({ appKey = '', environment = 'Production', fixtureUrl, hooks = [], telemetry = true } = {}) {
   const app = express();
   const offline = Boolean(fixtureUrl);
   // Missing/demo-placeholder keys deliberately select SDK defaults. No featureDefaults
   // are supplied here, so a key without a fetched definition evaluates false.
   const configured = Boolean(appKey && appKey !== 'ci-placeholder');
+  const live = configured && !offline;
   app.use((req, res, next) => {
     res.set('X-Toggly-Source', offline ? 'Offline fixture' : configured ? 'Configured service' : 'Missing app key');
     next();
@@ -26,7 +27,12 @@ export function createApp({ appKey = '', environment = 'Production', fixtureUrl,
     environment, baseUrl: fixtureUrl, verifySignatures: !offline,
     // Live definitions refresh every three minutes; requests evaluate them locally.
     // Offline/default-only runs have no poll timer. Context schema setup is manual.
-    enableStreaming: false, refreshInterval: offline || !configured ? 0 : 180000,
+    enableStreaming: false,
+    refreshInterval: live ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
+    // Fixture/placeholder keys never upload. Live mode uses the SDK usage pipeline
+    // (including definition cache hits) with a positive flush interval.
+    enableUsageTracking: live && telemetry, enableMetrics: live && telemetry,
+    usageFlushInterval: live && telemetry ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000) : 0,
     timeout: 3000, registerContextsOnStartup: false, hooks,
     // Called for each request: targeting claims are not authentication/authorization.
     // A real app should derive these from its trusted session, not demo query fields.

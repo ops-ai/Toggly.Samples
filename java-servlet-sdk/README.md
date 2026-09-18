@@ -2,7 +2,10 @@
 
 A standalone, server-rendered workshop using the published Java core and Servlet
 SDKs. Embedded Tomcat runs the actual listener, context filter, feature-gate
-filter and API servlet. No Spring adapter is involved.
+filter and API servlet. No Spring adapter is involved. Live mode reports
+definition cache hits on the usage pipeline; offline and `ci-placeholder` do not
+upload usage. `python scripts/soak.py` waits for refresh + flush when a real
+`TOGGLY_APP_KEY` is set.
 
 ## Quick start
 

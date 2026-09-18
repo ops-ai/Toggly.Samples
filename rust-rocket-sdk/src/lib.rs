@@ -33,9 +33,14 @@ pub async fn start() -> Result<(Rocket<Build>, Option<fixture::Fixture>), std::i
                 std::env::var("TOGGLY_ENVIRONMENT").unwrap_or_else(|_| "Production".into()),
             )
             .cache_ttl(Duration::ZERO)
-            .refresh_interval(Duration::from_secs(30))
+            .refresh_interval(Duration::from_secs(env_secs("TOGGLY_REFRESH_INTERVAL", 30)))
             .http_timeout(Duration::from_secs(5))
             .use_signed_definitions(true)
+            .enable_usage_tracking(true)
+            .usage_flush_interval(Duration::from_secs(env_secs(
+                "TOGGLY_USAGE_FLUSH_INTERVAL",
+                60,
+            )))
             .build()
     };
     // Do not print SDK errors/configuration: transport messages can contain the key.
@@ -53,9 +58,21 @@ pub async fn start() -> Result<(Rocket<Build>, Option<fixture::Fixture>), std::i
     ))
 }
 
+fn env_secs(name: &str, default: u64) -> u64 {
+    std::env::var(name)
+        .ok()
+        .and_then(|value| value.parse().ok())
+        .filter(|value| *value > 0)
+        .unwrap_or(default)
+}
+
 pub fn is_placeholder(key: &str) -> bool {
     let key = key.trim();
-    key.is_empty() || matches!(key, "placeholder" | "YOUR_APP_KEY" | "your-app-key")
+    key.is_empty()
+        || matches!(
+            key,
+            "placeholder" | "YOUR_APP_KEY" | "your-app-key" | "ci-placeholder"
+        )
 }
 
 pub fn application(client: Option<TogglyClient>, mode: Mode) -> Rocket<Build> {

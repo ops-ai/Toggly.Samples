@@ -6,10 +6,11 @@ import { page } from './view.js';
 // One shared client caches definitions and refreshes them for this process. Each
 // request gets its own evaluation context; sharing a client must not share a user.
 // The published adapter has one module-level client: run one configured app per process.
-export function createApp({ appKey = '', environment = 'Production', fixtureUrl, hooks = [], contextHook } = {}) {
+export function createApp({ appKey = '', environment = 'Production', fixtureUrl, hooks = [], contextHook, telemetry = true } = {}) {
   const app = new Hono();
   const offline = Boolean(fixtureUrl);
   const configured = Boolean(appKey && appKey !== 'ci-placeholder');
+  const live = configured && !offline;
   // Set provenance before initialization so even an early error is labelled.
   // These responses depend on request inputs; do not cache them for another user.
   app.use('*', async (c, next) => {
@@ -27,7 +28,10 @@ export function createApp({ appKey = '', environment = 'Production', fixtureUrl,
     // Environment selects a definition set, not NODE_ENV. Only the loopback
     // fixture disables signatures; configured service traffic requires them.
     environment, baseUrl: fixtureUrl, verifySignatures: !offline,
-    enableStreaming: false, refreshInterval: offline || !configured ? 0 : 180000,
+    enableStreaming: false,
+    refreshInterval: live ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
+    enableUsageTracking: live && telemetry, enableMetrics: live && telemetry,
+    usageFlushInterval: live && telemetry ? Number(process.env.TOGGLY_USAGE_FLUSH_INTERVAL_MS || 60000) : 0,
     timeout: 3000, registerContextsOnStartup: false, hooks,
     async getContext(c) {
       const input = inputs(c.req);

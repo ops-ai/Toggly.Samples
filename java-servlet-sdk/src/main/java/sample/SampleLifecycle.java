@@ -5,6 +5,7 @@ import io.toggly.core.config.TogglyConfig;
 import io.toggly.servlet.TogglyServletContextListener;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,16 +25,19 @@ public final class SampleLifecycle extends TogglyServletContextListener {
     }
     public static SampleLifecycle fromEnvironment(Map<String, String> env) {
         return new SampleLifecycle(env.get("TOGGLY_APP_KEY"), env.getOrDefault("TOGGLY_ENVIRONMENT", "Production"),
-                "https://definitions.toggly.io", 60);
+                "https://definitions.toggly.io", Long.parseLong(env.getOrDefault("TOGGLY_REFRESH_INTERVAL", "60")));
     }
     public static SampleLifecycle unconfigured() { return fromEnvironment(Map.of()); }
-    public boolean configured() { return !appKey.isBlank(); }
+    public boolean configured() { return !appKey.isBlank() && !"ci-placeholder".equals(appKey); }
 
     @Override protected TogglyConfig createConfig(ServletContext context) {
+        boolean live = configured();
         return TogglyConfig.builder().appKey(appKey).environment(environment).baseUrl(baseUrl)
                 .useSignedDefinitions(true).defaultFeatureState(false).refreshIntervalSeconds(pollSeconds)
                 // Polling is enough for this small sample. No WebSocket URL (which contains the key) is logged.
-                .enableLiveUpdates(false).enableUsageTracking(false).enableMetrics(false)
+                .enableLiveUpdates(false).enableUsageTracking(live).enableMetrics(false)
+                .usageFlushInterval(Duration.ofSeconds(Long.parseLong(
+                        System.getenv().getOrDefault("TOGGLY_USAGE_FLUSH_INTERVAL", "60"))))
                 .registerContextsOnStartup(false).onError((message, error) -> errors.incrementAndGet()).build();
     }
     @Override public void contextInitialized(ServletContextEvent event) {

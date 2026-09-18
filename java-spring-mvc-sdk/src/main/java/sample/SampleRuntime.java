@@ -2,6 +2,7 @@ package sample;
 
 import io.toggly.core.TogglyClient;
 import io.toggly.core.config.TogglyConfig;
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,17 +18,19 @@ public final class SampleRuntime implements AutoCloseable {
     }
     public static SampleRuntime fromEnvironment(Map<String, String> env) {
         return new SampleRuntime(env.get("TOGGLY_APP_KEY"), env.getOrDefault("TOGGLY_ENVIRONMENT", "Production"),
-                "https://definitions.toggly.io", 60);
+                "https://definitions.toggly.io", Long.parseLong(env.getOrDefault("TOGGLY_REFRESH_INTERVAL", "60")));
     }
     public static SampleRuntime unconfigured() { return fromEnvironment(Map.of()); }
-    public boolean configured() { return !appKey.isBlank(); }
+    public boolean configured() { return !appKey.isBlank() && !"ci-placeholder".equals(appKey); }
     public TogglyClient client() { return client; }
     void start() {
         // An empty key means setup mode, with no synthetic key, remote request, or client.
         if (!configured()) return;
         var config = TogglyConfig.builder().appKey(appKey).environment(environment).baseUrl(baseUrl)
                 .useSignedDefinitions(true).defaultFeatureState(false).refreshIntervalSeconds(pollSeconds)
-                .enableLiveUpdates(false).enableUsageTracking(false).enableMetrics(false)
+                .enableLiveUpdates(false).enableUsageTracking(true).enableMetrics(false)
+                .usageFlushInterval(Duration.ofSeconds(Long.parseLong(
+                        System.getenv().getOrDefault("TOGGLY_USAGE_FLUSH_INTERVAL", "60"))))
                 .registerContextsOnStartup(false).onError((message, error) -> errors.incrementAndGet()).build();
         // Passing no custom provider gives the client ownership of its real HTTP provider.
         client = new TogglyClient(config);

@@ -422,6 +422,7 @@ async fn signed_tampering_transport_failure_refresh_and_shutdown() {
             .await
             .unwrap()
     );
+    wait_for_idle_refresh(&fixture).await;
     fixture.replace(Fixture::definitions(), true);
     assert!(
         refresh_after_idle(&client, &fixture).await.is_err(),

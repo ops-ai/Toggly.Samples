@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Support\OfflineTransport;
 use App\Support\TogglyRuntime;
+use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Client\ClientInterface;
 use Tests\Support\FixtureTransport;
@@ -86,6 +87,27 @@ final class LifecycleTest extends TestCase
         $this->assertSame('non-matching', session('demo.preset'));
         $this->assertSame('standard', session('demo.order'));
         $this->assertSame('all', session('demo.scenario'));
+    }
+
+    public function test_http_client_stays_offline_for_empty_and_placeholder_keys(): void
+    {
+        $this->assertTrue(TogglyRuntime::isOfflineKey(''));
+        $this->assertTrue(TogglyRuntime::isOfflineKey('ci-placeholder'));
+        $this->assertTrue(TogglyRuntime::isOfflineKey('  ci-placeholder  '));
+        $this->assertFalse(TogglyRuntime::isOfflineKey('fixture-live-binding'));
+
+        $this->get('/')->assertOk();
+        $this->assertInstanceOf(OfflineTransport::class, app(ClientInterface::class));
+
+        foreach (['ci-placeholder', '  ci-placeholder  '] as $key) {
+            config(['toggly.app_key' => $key]);
+            $this->app->forgetInstance(ClientInterface::class);
+            $this->assertInstanceOf(OfflineTransport::class, app(ClientInterface::class), $key);
+        }
+
+        config(['toggly.app_key' => 'fixture-live-binding']);
+        $this->app->forgetInstance(ClientInterface::class);
+        $this->assertInstanceOf(Client::class, app(ClientInterface::class));
     }
 
     public function test_native_events_and_usage_are_released_after_rendering(): void

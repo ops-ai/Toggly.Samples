@@ -1,6 +1,6 @@
 # Node Express SDK Sample
 
-Eight navigable sections backed by the actual published Express adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-08: Express **5.2.1**, `@ops-ai/toggly-express` **0.2.0**, `@ops-ai/toggly-node-core` **0.9.0** (exact pins + lockfile).
+Eight navigable sections backed by the actual published Express adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-16: Express **5.2.1**, `@ops-ai/toggly-express` **0.2.1**, `@ops-ai/toggly-node-core` **0.9.1** (exact pins + lockfile). Live mode reports definition cache hits on the usage pipeline; offline, missing-key, and `ci-placeholder` runs do not upload usage. `npm run soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 ```sh
 npm ci

@@ -228,8 +228,10 @@ and signature verification. Keep app keys out of browser HTML, JSON and logs.
 
 ## Versions
 
-Registry checkpoint: 2026-09-17. Exact NuGet resolution is committed in both
-`packages.lock.json` files.
+Registry checkpoint: 2026-09-16. Exact NuGet resolution is committed in both
+`packages.lock.json` files. Live mode reports definition cache hits on the usage
+pipeline; offline and `ci-placeholder` runs do not upload usage. `python scripts/soak.py`
+waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 | Dependency | Version |
 |---|---|

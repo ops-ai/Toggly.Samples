@@ -43,9 +43,11 @@ bundle exec puma -e production -C config/puma.rb
 
 `.env.example` documents the supported settings. The sample reads process
 environment variables; it does not automatically load a `.env` file. Never put a
-real key in a committed file or browser variable. A connected key fetches live
-definitions, but **telemetry still uses local capture and is never delivered to
-Toggly by this sample**.
+real key in a committed file or browser variable. A connected key fetches live definitions and reports definition cache hits on
+the usage pipeline (default flush ~60s). Offline, missing-key, fixture, and
+`ci-placeholder` runs keep a local capture transport and do not upload usage.
+`bundle exec ruby script/soak.rb` waits for refresh + flush when a real
+`TOGGLY_APP_KEY` is set.
 
 ## Your first flag
 

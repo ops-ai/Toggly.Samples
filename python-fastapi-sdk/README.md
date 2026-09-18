@@ -283,8 +283,11 @@ FastAPI claims/country/browser/language/OS columns stay OFF without explicit map
 Latest stable/published checkpoint: **2026-09-10**.
 [Python](https://www.python.org/downloads/) 3.14.7,
 [FastAPI](https://pypi.org/project/fastapi/) 0.141.1,
-[toggly](https://pypi.org/project/toggly/) 0.7.0,
-[toggly-fastapi](https://pypi.org/project/toggly-fastapi/) 0.3.0,
+[toggly](https://pypi.org/project/toggly/) 0.7.1,
+[toggly-fastapi](https://pypi.org/project/toggly-fastapi/) 0.3.1.
+Live mode reports definition cache hits on the usage pipeline; offline,
+missing-key, fixture, and `ci-placeholder` runs do not upload usage.
+`python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 [Uvicorn](https://pypi.org/project/uvicorn/) 0.52.4, Jinja 3.1.6, Starlette 1.6.0, AnyIO 4.15.1,
 itsdangerous 2.2.0, python-multipart 0.0.32, python-dotenv 1.2.3,
 cryptography 50.0.1. HTTPX 0.28.1 runs native ASGI/HTTP tests; build 1.6.1 and

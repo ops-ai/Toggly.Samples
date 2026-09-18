@@ -5,6 +5,9 @@ Spring WebFlux and Reactor Netty. Native `TogglyContextFilter` wraps native
 `FeatureGateFilter` beans in the actual Spring host. Controllers use the real
 `ReactiveTogglyClient`, including across delayed scheduler boundaries.
 FreeMarker renders evaluated results. There is no Spring Boot starter dependency.
+Live mode reports definition cache hits on the usage pipeline; offline and
+`ci-placeholder` do not upload usage. `python scripts/soak.py` waits for refresh
++ flush when a real `TOGGLY_APP_KEY` is set.
 
 ## Quick start
 

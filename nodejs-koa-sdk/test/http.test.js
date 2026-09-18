@@ -6,6 +6,22 @@ import { startFixture } from '../src/fixture.js';
 import { presets, filters } from '../src/catalog.js';
 import { closeKoaToggly, getKoaToggly } from '@ops-ai/toggly-koa';
 
+function isolateFetchFromProduction(originalFetch, onDefinitions) {
+  return (url, options) => {
+    const href = String(url);
+    if (href.startsWith('https://definitions.toggly.io/')) {
+      return onDefinitions(href, options);
+    }
+    if (/^https?:\/\/127\.0\.0\.1(?::\d+)?(?:[/?#]|$)/.test(href)) {
+      return originalFetch(url, options);
+    }
+    if (/^https?:\/\/([a-z0-9-]+\.)*toggly\.io(?::\d+)?(?:[/?#]|$)/i.test(href)) {
+      return Promise.resolve(new Response('{}', { status: 204 }));
+    }
+    assert.fail(`test keys must never contact an external service: ${href}`);
+  };
+}
+
 // Each test gets a real HTTP server. That exercises Koa's middleware order,
 // request headers and adapter integration instead of testing mock functions.
 async function serve(config, run) {
@@ -105,13 +121,10 @@ test('actual published Koa adapter and node core HTTP integration', async t => {
     await t.test('configured signed mode rejects unsigned transport', async () => {
       const originalFetch = globalThis.fetch;
       let definitionRequests = 0;
-      globalThis.fetch = (url, options) => {
-        if (String(url).startsWith('https://definitions.toggly.io/')) {
-          definitionRequests++;
-          return Promise.resolve(new Response(JSON.stringify({ defs: fixture.state.definitions }), { status: 200 }));
-        }
-        return originalFetch(url, options);
-      };
+      globalThis.fetch = isolateFetchFromProduction(originalFetch, () => {
+        definitionRequests++;
+        return Promise.resolve(new Response(JSON.stringify({ defs: fixture.state.definitions }), { status: 200 }));
+      });
       try {
         await serve({ appKey: 'test-only-not-a-real-key' }, async request => {
           const data = await (await request('/api/evaluate')).json();

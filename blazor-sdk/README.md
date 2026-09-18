@@ -3,7 +3,10 @@
 An actual .NET 8 Blazor Web App with separately compiled WebAssembly client code.
 Explore static SSR, Interactive Server, WebAssembly and Interactive Auto using
 `Toggly.FeatureManagement.Blazor` **3.8.0**, `.Blazor.Server` **3.8.0**, portable
-Client **3.8.0** and trusted `.NET` **3.8.0**. Presentation gates are not backend
+Client **3.8.0** and trusted `.NET` **3.8.0**. Live mode reports definition cache
+hits on the usage pipeline; offline and `ci-placeholder` runs do not upload usage.
+`python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
+Presentation gates are not backend
 authorization; demo personas do not authenticate a user.
 
 ## Quick start

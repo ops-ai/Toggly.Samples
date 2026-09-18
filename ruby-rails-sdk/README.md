@@ -63,14 +63,13 @@ are separate evidence.
 
 ## Versions and verification
 
-Official Ruby downloads and RubyGems metadata checked September 10, 2026
-(September 11 UTC):
+Official Ruby downloads and RubyGems metadata checked September 17, 2026:
 
 | Component | Selected version |
 |---|---|
 | Ruby | 4.0.6 |
 | Rails | 8.1.3.1 |
-| `toggly-rails` / `toggly` | 0.2.1 / 0.5.0 |
+| `toggly-rails` / `toggly` | 0.3.1 / 0.5.1 |
 | Puma / Rack | 8.0.2 / 3.2.7 |
 | Propshaft | 1.3.2 |
 | JSON | 2.21.2, explicit `>= 2, < 3` |
@@ -164,9 +163,11 @@ After a restart during an outage, native `Toggly.client.ready` can remain false
 while restored definitions still evaluate correctly. The UI presents readiness
 and evaluations separately. `refresh(force: true)` rescues transport failures
 inside the SDK; the refresh button says an attempt occurred, not that a fetch
-succeeded. Native core usage/metric methods exist, but this adapter's configure
-path leaves telemetry disabled and does not expose its transport options; this
-sample makes no telemetry delivery claim. The optional WebSocket dependency is
+succeeded. Connected live mode uses the core SDK default (usage on, flush ~60s)
+and reports definition cache hits on the usage pipeline. Offline, fixture, and
+`ci-placeholder` set `TOGGLY_DISABLE_TELEMETRY=1` so nothing is uploaded.
+`bundle exec ruby script/soak.rb` waits for refresh + flush when a real
+`TOGGLY_APP_KEY` is set. The optional WebSocket dependency is
 not installed. There is no native variant allocation or public browser
 subscription API in this sample's packages.
 

@@ -10,6 +10,7 @@ module RubyShowcase
 
     def initialize(env = ENV)
       key = env.fetch('TOGGLY_APP_KEY', '').strip
+      key = '' if key == 'ci-placeholder'
       @environment = env.fetch('TOGGLY_ENVIRONMENT', 'Production')
       @refresh_interval = Integer(env.fetch('TOGGLY_REFRESH_INTERVAL', '10'))
       raise ArgumentError, 'Refresh interval must be between 1 and 3600 seconds' unless (1..3600).cover?(@refresh_interval)
@@ -27,6 +28,8 @@ module RubyShowcase
       # Isolate persisted definitions by application/environment without writing the key.
       namespace = Digest::SHA256.hexdigest("#{key}:#{@environment}")[0, 20]
       @snapshot_path = env.fetch('TOGGLY_SNAPSHOT_PATH', File.expand_path("../tmp/#{namespace}.json", __dir__))
+      connected = @mode == 'connected'
+      fixture = @mode == 'fixture'
       @options = {
         app_key: key.empty? ? nil : key,
         environment: @environment,
@@ -36,11 +39,14 @@ module RubyShowcase
         http_timeout: 3,
         enable_live_updates: false,
         disable_entity_context_registration: true,
-        enable_usage_tracking: true,
-        enable_metrics: true,
-        usage_flush_interval: 0,
-        metrics_flush_interval: 0
+        enable_usage_tracking: connected || fixture,
+        enable_metrics: connected || fixture
       }
+      unless connected
+        # Fixture/offline capture stays local. Live mode uses the SDK default (~60s).
+        @options[:usage_flush_interval] = 0
+        @options[:metrics_flush_interval] = 0
+      end
       @options[:definitions_url] = url unless url.to_s.empty?
     end
   end

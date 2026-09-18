@@ -1,6 +1,6 @@
 # NestJS SDK Sample
 
-Eight pages show the same feature decisions through NestJS HTTP guards, request-scoped services, JSON and HTML. Requirements: Node **22+**; npm. Packages: `@ops-ai/toggly-nestjs` **0.1.0**, NestJS **11.2.3**, reflect-metadata **0.2.2**, RxJS **7.8.2**. The adapter requires Node core **^0.9.1**. Direct dependencies are pinned registry references. The committed lockfile resolves published registry packages, including Node core **0.9.1**. No SDK source imports, copies or file dependencies are used.
+Eight pages show the same feature decisions through NestJS HTTP guards, request-scoped services, JSON and HTML. Requirements: Node **22+**; npm. Packages: `@ops-ai/toggly-nestjs` **0.1.0**, NestJS **11.2.3**, reflect-metadata **0.2.2**, RxJS **7.8.2**. The adapter requires Node core **^0.9.1**. Direct dependencies are pinned registry references. The committed lockfile resolves published registry packages, including Node core **0.9.1**. No SDK source imports, copies or file dependencies are used. Live mode reports definition cache hits on the usage pipeline; offline, missing-key, and `ci-placeholder` runs do not upload usage. `npm run soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 ## Quick start
 

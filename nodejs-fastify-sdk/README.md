@@ -1,6 +1,6 @@
 # Fastify SDK Sample
 
-Standalone server-rendered HTML and HTTP API using published **Fastify 5.12.4**, **@ops-ai/toggly-fastify 0.3.0**, and **@ops-ai/toggly-node-core 0.9.0** (npm versions verified 2026-09-12). Node 22+.
+Standalone server-rendered HTML and HTTP API using published **Fastify 5.12.4**, **@ops-ai/toggly-fastify 0.3.1**, and **@ops-ai/toggly-node-core 0.9.1** (npm versions verified 2026-09-16). Node 22+. Live mode reports definition cache hits on the usage pipeline; offline, missing-key, and `ci-placeholder` runs do not upload usage. `npm run soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 This is a Fastify 5 host: Fastify 5 requires Node 20+, while the adapter also
 supports retained Fastify 4 hosts on Node 18+. The committed lockfile uses

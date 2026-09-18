@@ -20,9 +20,9 @@ final class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(RequestFactoryInterface::class, HttpFactory::class);
         $this->app->singleton(ClientInterface::class, function ($app): ClientInterface {
-            // A blank key selects an explicit local transport for the entire lifecycle,
-            // including destructor telemetry. Native parsing and evaluation still run.
-            if (trim((string) config('toggly.app_key')) === '') {
+            // Empty and CI-placeholder keys stay on the local transport for the
+            // entire lifecycle, including destructor telemetry. Real keys use Guzzle.
+            if (TogglyRuntime::isOfflineKey(config('toggly.app_key'))) {
                 return $app->make(OfflineTransport::class);
             }
 

@@ -266,8 +266,11 @@ Flask claims/country/browser/language/OS columns stay OFF without explicit mappi
 Latest stable runtime and published dependency checkpoint: **2026-09-10**.
 [Python](https://www.python.org/downloads/) 3.14.7,
 [Flask](https://pypi.org/project/Flask/) 3.1.3,
-[toggly](https://pypi.org/project/toggly/) 0.7.0,
-[toggly-flask](https://pypi.org/project/toggly-flask/) 0.3.0,
+[toggly](https://pypi.org/project/toggly/) 0.7.1,
+[toggly-flask](https://pypi.org/project/toggly-flask/) 0.3.1.
+Live mode reports definition cache hits on the usage pipeline; offline,
+missing-key, fixture, and `ci-placeholder` runs do not upload usage.
+`python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 Flask-Login 0.6.3, Flask-WTF 1.3.0 and Gunicorn 26.2.0.
 python-dotenv 1.2.3 loads local configuration; cryptography 50.0.1 supports signed
 definitions and generated test signatures; build 1.6.1 / setuptools 84.0.0 package
