@@ -23,7 +23,9 @@ Use the applications, context kind, flags, and filter presets in
 ## Quality
 
 - The sample README includes a quick start, Toggly app setup, package versions,
-  a section table, and a manual checklist.
+  a section table, and a manual checklist. Write README and on-page teaching
+  copy for someone running the sample. Do not leave review notes, crate-audit
+  narratives, Linear IDs, or implementation leftovers in public sample docs.
 - Teach a reader who is new to feature flags: include a first-toggle exercise
   with enabled/disabled expectations and a source-reading map. Explain keys,
   definitions, environments, evaluation, initialization, defaults, refresh/cache

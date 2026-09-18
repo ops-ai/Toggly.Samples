@@ -129,7 +129,7 @@ impl Fixture {
     /// No custom evaluation logic or production app key is used here.
     pub fn replace(&self, definitions: Value, tamper: bool) {
         let defs = definitions.to_string();
-        // 0.6.0 treats a signed timestamp <= the last applied one as a cache hit
+        // 0.6.1 treats a signed timestamp <= the last applied one as a cache hit
         // and skips the new revision. Keep fixture timestamps strictly increasing.
         let timestamp = {
             let document = self.document.lock().expect("fixture lock");
@@ -175,6 +175,7 @@ impl Fixture {
             .refresh_interval(Duration::from_secs(2))
             .http_timeout(Duration::from_secs(2))
             .disable_background_refresh(!background)
+            // Defensive: keep usage off. This does not disable metrics.
             .enable_usage_tracking(false)
             .build()
     }

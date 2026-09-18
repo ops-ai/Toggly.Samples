@@ -2110,9 +2110,9 @@ dependencies = [
 
 [[package]]
 name = "toggly"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7de70d1d05054b628687e3d713ce9ea3cb3269a39a3e2ae914122b17e05f3a72"
+checksum = "75e86e43359f86ef412ed26542bd43bd5e6600e5e6cad4817c085b2aec871ee8"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
@@ -2139,9 +2139,9 @@ dependencies = [
 
 [[package]]
 name = "toggly-rocket"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "839519fac4daeb7bd871cf865cac0f1f609e88bb3d0fdfd6e3ef0684912d2dca"
+checksum = "7a0d0b7795cd5ca69b86c68d55a3f25d373a2e13d7f98f498593041b1c8f51c9"
 dependencies = [
  "rocket",
  "serde",
