@@ -26,11 +26,11 @@
       },
       "Toggly.FeatureManagement.Client.Desktop": {
         "type": "Direct",
-        "requested": "[3.7.0, )",
-        "resolved": "3.7.0",
-        "contentHash": "PHuW2mks1p5KWvpG6D72bhRnKWJYWku2F94tRkCmhMrLLgNcicZjoI7habr4x4xjP07c0WfI83miztqb+SSzmA==",
+        "requested": "[3.8.0, )",
+        "resolved": "3.8.0",
+        "contentHash": "esNMnLb4KZ2UO0B8VF3HWx8/ACxvRMK07LN5AAg/ARZihCmFPWAiDgBha0ZkyknSa7MEBoJ2ER7R9q5cfmrbcQ==",
         "dependencies": {
-          "Toggly.FeatureManagement.Client": "3.7.0"
+          "Toggly.FeatureManagement.Client": "3.8.0"
         }
       },
       "Avalonia": {
@@ -189,8 +189,8 @@
       },
       "Toggly.FeatureManagement.Client": {
         "type": "Transitive",
-        "resolved": "3.7.0",
-        "contentHash": "6XvKj9DrzshTLCogR47sVQdAPK6kVUVzB6E6SDFIiFyN8PVqt53IuLlCBlk817IY6o9hXYqRJRhBtiFHtOEZGA=="
+        "resolved": "3.8.0",
+        "contentHash": "EXk8ppZ3bfrquwHQWyuvnT8cwi9ZnSeQpWekJYc2A2tfJfnt2DpICtYI4FKW/MI7mLfux6RDxPlrYezFN53KcA=="
       }
     }
   }

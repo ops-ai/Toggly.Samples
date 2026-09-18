@@ -1,6 +1,6 @@
 # .NET client SDK showcase
 
-A console and Avalonia desktop application using `Toggly.FeatureManagement.Client.Desktop` **3.7.0**, its portable client dependency **3.7.0**, and Avalonia **11.3.6**. Requires .NET SDK/runtime **8+**. The desktop host runs on macOS, Linux and Windows using Avalonia's native platform requirements; it needs a graphical desktop session.
+A console and Avalonia desktop application using `Toggly.FeatureManagement.Client.Desktop` **3.8.0**, its portable client dependency **3.8.0**, and Avalonia **11.3.6**. Requires .NET SDK/runtime **8+**. The desktop host runs on macOS, Linux and Windows using Avalonia's native platform requirements; it needs a graphical desktop session.
 
 The two hosts share the same seven-section showcase and real SDK calls. They require no ASP.NET Core app or Generic Host. Feature rollout in an end-user application does not replace backend authorization.
 
