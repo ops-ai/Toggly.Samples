@@ -52,13 +52,23 @@ Verified against official registries on 2026-09-16:
 | Embedded Tomcat (Boot 3.5.16) | 10.1.55 |
 
 **Host choice.** Published starter 1.6.0 declares `spring-boot.version` 3.5.16.
-Latest stable Boot is 4.1.1 (4.2.0-M1 is a milestone). A native Boot 4.1.1
-startup with Actuator on the classpath fails:
+Latest stable Boot is 4.1.1 (4.2.0-M1 is a milestone). A Boot 4.1.1 host with
+Actuator on the classpath fails when a `TogglyClient` exists (workshop /
+`TOGGLY_APP_KEY` path):
 `ClassNotFoundException: org.springframework.boot.actuate.health.HealthIndicator`.
-Boot 4 moved that type to `org.springframework.boot.health`. Excluding Actuator
-auto-configuration would drop the starter's health indicator and `/actuator/toggly`.
-This sample therefore uses the starter's declared **3.5.16** host, not a silent
-downgrade from a working Boot 4 combination.
+Published `TogglyHealthIndicator` implements that Boot 3 type; Boot 4.1.1 moved it
+to `org.springframework.boot.health.contributor.HealthIndicator` and removed the
+old class from `spring-boot-actuator`. A missing-key Boot 4 process can start,
+but `/actuator/health` has no `toggly` component and `/actuator/toggly` is 404 —
+that is not a working Actuator host. Excluding Actuator would drop the starter's
+health indicator and `/actuator/toggly`.
+
+Boot 4.1.1 also dropped `spring-boot-starter-aop` from the BOM (no 4.1.1
+artifact; the replacement is `spring-boot-starter-aspectj`). Pinning AOP 3.5.16
+unblocks Maven only. Native Actuator still fails once the client is created.
+
+This sample therefore stays on the starter's declared **3.5.16** host. A Boot 4
+host needs a published starter that implements Boot 4 health and Actuator.
 
 The starter's `snapshotProvider()` bean returns null. Boot 3.5.16 will not inject
 that null into `togglyClient`. `TogglySampleConfiguration` supplies a
