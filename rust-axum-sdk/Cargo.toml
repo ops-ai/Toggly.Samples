@@ -20,4 +20,4 @@ base64 = "0.23"
 rand = "0.8"
 
 [dev-dependencies]
-tower = { version = "0.4", features = ["util"] }
+tower = { version = "0.5", features = ["util"] }
