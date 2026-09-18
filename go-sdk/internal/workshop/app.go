@@ -46,7 +46,7 @@ type Page struct {
 	Rows                                               []Row
 	Orders                                             []Row
 	// Variant is only the latest GetVariant assignment. VariantEnabled is a
-	// separate IsEnabled read. Published v0.7.0 has no atomic pair: VariantResult
+	// separate IsEnabled read. Published v0.8.1 has no atomic pair: VariantResult
 	// is {Name, ConfigurationValue}, and each call takes its own snapshot.
 	Variant                                            *toggly.VariantResult
 	VariantEnabled                                     bool
@@ -117,7 +117,7 @@ func New(cfg Config) (*App, error) {
 		// Server-evaluated variants are a DIFFERENT endpoint and cache. Fix each
 		// client's identity, groups, and claims before its first request; never
 		// call SetVariantIdentity on a client shared by HTTP requests. There are
-		// exactly two demo clients. v0.7.0 copies VariantGroups/VariantClaims
+		// exactly two demo clients. v0.8.1 copies VariantGroups/VariantClaims
 		// into the first evaluated-variants-signed query.
 		for _, identity := range []string{"alice", "bob"} {
 			role := "user"
