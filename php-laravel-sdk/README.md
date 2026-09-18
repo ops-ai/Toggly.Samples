@@ -37,19 +37,20 @@ route at `public/index.php`. Do not serve the repository root or `.env`.
 ## Published versions
 
 Refreshed from public Composer metadata on September 18, 2026.
-Live mode records usage including definition cache-hit fields on PHP 1.1.3,
-posting to `https://metrics.toggly.io/`. Offline and `ci-placeholder` do not
-upload usage. `composer soak` starts `artisan serve` and hits showcase routes
-so each request can refresh and flush when a real `TOGGLY_APP_KEY` is set.
-PHP-FPM has no background timer.
+Live mode records usage including definition cache-hit fields on PHP 1.1.x
+(`^1.1.3`), posting to `https://metrics.toggly.io/`. Composer takes the latest
+1.x of each Toggly package; `composer.lock` records what was resolved. Offline
+and `ci-placeholder` do not upload usage. `composer soak` starts `artisan serve`
+and hits showcase routes so each request can refresh and flush when a real
+`TOGGLY_APP_KEY` is set. PHP-FPM has no background timer.
 
 | Component | Version |
 |---|---|
 | PHP runtime | 8.5.10 |
 | Composer | 2.10.3 |
 | `laravel/framework` | 13.31.0 |
-| `toggly/feature-management-php` | 1.1.3 |
-| `toggly/laravel` | 1.0.0 |
+| `toggly/feature-management-php` | ^1.1.3 (lock 1.1.3) |
+| `toggly/laravel` | ^1.0.0 (lock 1.0.0) |
 | `guzzlehttp/guzzle` / `guzzlehttp/psr7` | 8.2.0 / 3.1.0 |
 | `phpunit/phpunit` | 13.3.3 |
 
