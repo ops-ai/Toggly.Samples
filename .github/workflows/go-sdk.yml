@@ -27,7 +27,7 @@ jobs:
       TOGGLY_OFFLINE: 'true'
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go-sdk/go.mod
           cache-dependency-path: go-sdk/go.sum
