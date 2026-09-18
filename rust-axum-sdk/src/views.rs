@@ -385,7 +385,7 @@ async fn orders(context: &WorkshopContext, client: Option<&TogglyClient>) -> Str
     <p>The user answers “who?”. The Order answers “what?”. Id maps to the entity key, Vip is a boolean, and Total is an optional number.</p>
     <p>Keep identity fixed and switch ord-vip (Vip=true, Total=40) to ord-standard (Vip=false, Total=40). ord-high-value has Total=250 but is not VIP; ord-no-total omits Total.</p>
     <pre><code>{entity}</code></pre>
-    <p>Register the Order schema locally before client construction. In published 0.6.0 the remote schema PUT happens during construction, before the first definition fetch, and is best-effort; provision the context and flag binding manually as described in Configuration.</p>
+    <p>Register the Order schema locally before constructing the client. Startup also tries to upload that schema to Toggly, but the upload is best-effort. Save the Order context and flag binding in the dashboard before testing the live flag. See Configuration.</p>
 </section>"##,
         result = badge(&result)
     )
@@ -406,8 +406,8 @@ fn surfaces() -> String {
     <p><a href="/extractor">TogglyExtractor</a> unwraps the same extension. <a href="/state">TogglyState</a> is a dedicated Axum state wrapper; <code>is_enabled</code> uses <code>EvalContext::default()</code> unless you call <code>is_enabled_with_context</code>.</p>
     <h3>Full-context denial route: sample composition</h3>
     <p><a href="/beta">Open the beta route</a>. Workshop middleware assembles context, the native core evaluates beta-access, and the route returns 404 when disabled or 503 on error.</p>
-    <h3>Axum 0.8 / unpublished adapter</h3>
-    <p>Latest crates.io Axum is 0.8.9. Published <code>toggly-axum</code> 0.6.0 depends on <code>axum ^0.7</code>. <code>toggly-axum08</code> exists in the SDK source tree as 0.1.0 and is <strong>not</strong> on crates.io. This sample therefore hosts Axum 0.7.9 with published crates only. Do not copy a path dependency or claim 0.8 support.</p>
+    <h3>Published Axum version</h3>
+    <p>This sample uses published <code>toggly</code> and <code>toggly-axum</code> 0.6.x on Axum 0.7 because the Axum 0.8 adapter is not published. Stay on Axum 0.7.9 with these crates.</p>
     <h3>Lifetime and cache</h3>
     <p>The process owns one <code>Arc&lt;TogglyClient&gt;</code>. Axum's graceful shutdown calls <code>close</code> once. No per-request client, identity mutation, definition refresh or cache clear occurs. The default 60-second evaluation key omits Order, claims and request metadata. This workshop uses public <code>cache_ttl(Duration::ZERO)</code> so those edits expire immediately. Entries are still created; this is not a structural cache-disable switch.</p>
 </section>"##.into()
@@ -418,12 +418,12 @@ fn setup() -> String {
     <h3>Connect your own Toggly application</h3>
     <ol>
         <li>Create Rust Axum SDK Sample in a workspace you can manage, technology Rust, environment Production.</li>
-        <li>Use the reviewed manual setup guide linked in README. Register Order (Id string key, Vip boolean, Total optional number).</li>
+        <li>Follow the shared application setup guide linked in the README. Register Order (Id string key, Vip boolean, Total optional number).</li>
         <li>Create all sixteen flags from the shared template and save each final configuration. Request definitions and read back the saved filter and context binding.</li>
         <li>Export TOGGLY_APP_KEY and restart. Environment defaults to Production.</li>
     </ol>
     <p>This server evaluates locally. Browser origins are only needed if you introduce direct browser SDK requests; when applicable add http://localhost:8017 (and http://127.0.0.1:8017 if used).</p>
-    <p>No live app has been provisioned by this sample. Keep real keys in local environment configuration and never commit them. The app does not load .env files automatically.</p>
+    <p>The sample does not create that application or those flags for you. Keep real keys in local environment configuration and never commit them. The app does not load .env files automatically.</p>
     <h3>Loading, defaults and errors</h3>
     <p>Startup awaits the initial signed definitions before serving requests. A missing or placeholder key selects the visible signed loopback fixture. A real-key startup error leaves the workshop available with errors/off decisions and no silent demo fallback.</p>
     <p>Unknown keys return false. A failed refresh retains the last accepted definitions; reload the snapshot after the next successful poll. Raw transport errors are never shown because they may contain the app key.</p>
