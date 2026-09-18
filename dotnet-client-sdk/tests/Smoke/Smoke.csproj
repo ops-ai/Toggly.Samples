@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Toggly.FeatureManagement.Client.Desktop" Version="3.7.0" />
+    <PackageReference Include="Toggly.FeatureManagement.Client.Desktop" Version="3.8.0" />
     <Compile Include="../../Shared/Showcase.cs" Link="Showcase.cs" />
   </ItemGroup>
 </Project>
