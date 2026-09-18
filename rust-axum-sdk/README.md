@@ -65,19 +65,12 @@ an app key.
 | `toggly` | 0.6.0 |
 | `toggly-axum` | 0.6.0 |
 
-These were the latest published SDK releases and the newest Axum series the
-published adapter actually supports, checked on 16 September 2026 UTC against
-crates.io. Latest-host Axum is **0.8.9**. `toggly-axum` 0.6.0 declares
-`axum ^0.7`. `toggly-axum08` exists in the SDK source tree as 0.1.0 and is
-**not published** on crates.io. This sample therefore hosts Axum 0.7.9 with
-registry packages only. Cargo.lock records normal registry checksums. There are
-no local SDK paths, tarballs, dependency patches or resolver overrides.
+Versions are pinned in `Cargo.toml` and locked in `Cargo.lock`.
 
-Supporting signing dependencies match the native SDK's compatible P-256/SHA-2
-generation; they do not change its signature protocol.
+This sample uses published `toggly` and `toggly-axum` 0.6.x on Axum 0.7
+because the Axum 0.8 adapter is not published. Stay on this stack.
 
-The customer documentation may teach newer source APIs or an Axum 0.8 adapter.
-This sample documents the actual **published 0.6.0 / Axum 0.7** boundary:
+What this release supports:
 
 - Native extractors and `TogglyLayer` look up `Extension<Arc<TogglyClient>>`, not
   `State<TogglyClient>`. The client is not Clone.
@@ -118,11 +111,11 @@ sources. Never treat a feature flag as the sole access-control boundary.
 
 ## Exact application and flag recipe
 
-Use the reviewed [shared application setup guide](../docs/APP_SETUP.md)
-for picker names, context registration, single-feature management API fallback
-when the catalog omits a filter, and the required **final save, definitions
-request and saved readback** checks. This is a manual recipe; no live creation,
-flag readback or service acceptance has been performed for this sample.
+Use the [shared application setup guide](../docs/APP_SETUP.md)
+for picker names, context registration, and the management API fallback
+when the catalog omits a filter. After you create the application and flags,
+save them, request definitions, and confirm the saved values in the dashboard.
+The sample does not create that application or those flags for you.
 
 - Workspace: use one you can manage (the one from signup is enough).
 - Application: **Rust Axum SDK Sample**.
@@ -179,15 +172,11 @@ The exact shared User-Agent strings are in `src/context.rs`. The extra
 `ord-high-value` is non-VIP with Total=250; `ord-no-total` omits Total. Keep
 identity fixed while switching Order to demonstrate user/entity separation.
 
-Local schema registration runs before constructing the SDK client. Published
-0.6.0 performs the remote catalog PUT during construction, **before**
-`initialize()` fetches definitions. Transport errors are ignored. Manually save
-the remote Order binding before testing the live flag; do not assume startup
-makes a missing remote rule immediately valid.
-
-The Rust dashboard picker still omits Percentage, Targeting and TimeWindow. Use
-the shared [management API procedure](../docs/APP_SETUP.md#when-a-filter-is-missing-from-the-picker)
-with this sample's verified native parameter form.
+The sample registers the Order schema locally before it builds the SDK client.
+Startup also tries to upload that schema to Toggly, but the upload is
+best-effort. A failed or ignored upload does not create the remote Order
+binding. Save the Order context and flag binding in the Toggly dashboard
+before you test the live flag.
 
 ## Native behavior and lifetime
 
@@ -227,9 +216,7 @@ remains shared and is not cleared on requests.
 Native polling runs every 30 seconds live and 2 seconds offline. A failed poll
 retains the last accepted definitions and displays a redacted refresh warning;
 raw errors and app-key-bearing URLs are never shown. A subsequent successful poll
-updates future requests. Published 0.6.0 rejects a signed document whose
-timestamp is not newer than the last accepted one, so fixture replacements in
-tests wait for the next second. Axum graceful shutdown calls `close`; the
+updates future requests. Axum graceful shutdown calls `close`; the
 loopback fixture remains alive until shutdown finishes, then its owned thread is
 joined.
 
@@ -251,18 +238,6 @@ Fixture signatures preserve the platform protocol: raw definitions plus timestam
 SHA-256 prehash then ECDSA over SHA-256(prehash), with ES256/P1363 signature bytes
 and the matching SHA-1-derived public key id. The private key exists only in
 memory. This sample does not patch or replace native signature verification.
-
-## Docs notes for the separate Docs slice
-
-Checked against [docs.toggly.io/sdks/rust](https://docs.toggly.io/sdks/rust) and
-the published 0.6.0 crate sources on 16 September 2026:
-
-- Customer docs should teach Axum 0.7 + published `toggly-axum` 0.6.0, or clearly
-  mark any Axum 0.8 / `toggly-axum08` material as unpublished source.
-- `FeatureEnabled` must not be documented as a working extractor until it
-  implements `FromRequestParts`.
-- `TogglyLayer` fail-open when the client extension is missing should be stated.
-- Header precedence is X-User-Id then X-Identity, matching the published crate.
 
 ## Verification
 
