@@ -121,7 +121,7 @@ func TestNativeTemplatesGatesAndAction(t *testing.T) {
 	}
 }
 
-// Published v0.7.0 has no atomic variant+enabled API. The workshop must render
+// Published v0.8.1 has no atomic variant+enabled API. The workshop must render
 // GetVariant and IsEnabled as independent reads, not one consistent pair.
 func TestAssignmentAndEnabledAreRenderedIndependently(t *testing.T) {
 	app := offlineApp(t)

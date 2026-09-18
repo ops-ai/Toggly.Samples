@@ -42,7 +42,7 @@ A flag is not authentication or permission to access sensitive data. Keep your a
 
 ## Create your Toggly application
 
-Dashboard provisioning is a manual setup step. Use the reviewed
+Dashboard provisioning is a manual setup step. Use the
 [shared application setup guide](../docs/APP_SETUP.md) for picker names,
 context registration, and the single-feature management API fallback when a
 filter is missing from the catalog. You do not need a workspace named Toggly
@@ -140,7 +140,7 @@ code, not a native authentication API.
 
 Variants use a different server-evaluated endpoint. This sample has exactly two
 extra clients, initialized with `VariantIdentity`, `VariantGroups`, and
-`VariantClaims` for alice/admin and bob/user. v0.7.0 copies those values into
+`VariantClaims` for alice/admin and bob/user. v0.8.1 copies those values into
 the first `evaluated-variants-signed` query. They cannot leak assignments by
 changing shared identity. They live until shutdown, so there is no per-request
 client creation or unbounded identity cache. In a real server, design a bounded
@@ -150,7 +150,7 @@ per-identity lifetime if you need arbitrary identities. Do not call
 ## Behavior and SDK boundaries
 
 - **Loading and refresh:** `NewClient` returns before the first response. Unknown/unloaded flags are false. The page displays the last successful refresh timestamp, and snapshots reevaluate on every request. No browser auto-refresh or public manual SDK Refresh method is assumed. An error retains last accepted definitions; the SDK's historical error timestamp remains visible even after a later success. Variant clients have their own refresh status.
-- **Variant assignment vs enabled (split reads):** Published `toggly-go` v0.7.0 has no atomic variant+enabled API. `VariantResult` is only `{Name, ConfigurationValue}`. `GetVariant` and `IsEnabled` each take their own provider snapshot, so a background refresh can land between the two calls and pair a stale assignment with a newer enabled state. This sample renders assignment and enabled independently; compact/control layout follows the assignment name only and is not gated on the separate enabled read.
+- **Variant assignment vs enabled (split reads):** Published `toggly-go` v0.8.1 has no atomic variant+enabled API. `VariantResult` is only `{Name, ConfigurationValue}`. The server envelope also carries an `enabled` field, but `GetVariant` does not expose it. `GetVariant` and `IsEnabled` each take their own provider snapshot, so a background refresh can land between the two calls and pair a stale assignment with a newer enabled state. This sample renders assignment and enabled independently; compact/control layout follows the assignment name only and is not gated on the separate enabled read.
 - **Filter expectations:** Matching turns on targeting, claims, country, browser, language, OS, and VIP context. Non-matching turns those off. AlwaysOn and TimeWindow stay on in both presets; 50% rollout results are stable for an identity, not prescribed as on/off by the preset.
 - **DeviceType parser gap:** the published Go parser reports `Other` for the exact Macintosh desktop user agent, so `filter-device-type` remains off even under Matching. The sample does not rename the shared Macintosh rule to make it pass.
 - **Entity kind limitation:** the published ContextProperty evaluator checks entity attributes but does not enforce `ContextKind` against `Entity.Kind`. The sample always maps the correct Order type and demonstrates absent entity as false. A kind name is not an access-control boundary.
@@ -162,13 +162,15 @@ per-identity lifetime if you need arbitrary identities. Do not call
 
 ## Package versions and verification
 
-Verified at refresh time on 2026-09-16 against the Go module proxy and
-`go.dev/dl`:
+Verified at refresh time on 2026-09-17 against the Go module proxy and
+`go.dev/dl`. Published `toggly-go` v0.8.1 requires Go 1.25 or later and
+compiles with current `golang.org/x/crypto` and `golang.org/x/net`. This
+sample keeps the Go 1.27.1 toolchain.
 
 | Dependency | Version |
 | --- | --- |
 | Go stable toolchain | 1.27.1 |
-| `github.com/ops-ai/Toggly.FeatureManagement/toggly-go` | v0.7.0 |
+| `github.com/ops-ai/Toggly.FeatureManagement/toggly-go` | v0.8.1 |
 | Host framework | Go standard library `net/http` + `html/template` |
 
 `go.mod` and `go.sum` resolve the published module normally; there is no local SDK replacement. Subpackages `toggly`, `togglyctx`, `togglyhttp` and `togglytemplate` come from that module.
