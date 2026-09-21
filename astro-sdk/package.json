@@ -11,7 +11,7 @@
     "test": "node tests/verify-evaluations.mjs && node --experimental-strip-types tests/verify-live-refresh.mjs && node tests/verify.mjs"
   },
   "dependencies": {
-    "@astrojs/node": "11.1.5",
+    "@astrojs/node": "11.1.6",
     "@astrojs/react": "6.0.5",
     "@astrojs/svelte": "9.0.1",
     "@astrojs/vue": "7.0.2",
