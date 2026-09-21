@@ -16,7 +16,7 @@
     "@angular/core": "^22.1.6",
     "@angular/forms": "^22.1.6",
     "@angular/platform-browser": "^22.1.6",
-    "@angular/router": "^22.1.6",
+    "@angular/router": "^22.1.7",
     "@ops-ai/ngx-feature-flags-toggly": "2.8.1",
     "@ops-ai/toggly-hooks-types": "^1.4.5",
     "rxjs": "~7.8.2",
