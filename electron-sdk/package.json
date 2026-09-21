@@ -16,19 +16,19 @@
     "test:packed-hosts": "node test/packed-hosts.mjs"
   },
   "dependencies": {
-    "@ops-ai/electron-feature-flags-toggly": "1.0.0",
+    "@ops-ai/electron-feature-flags-toggly": "1.0.2",
     "@vitejs/plugin-react": "5.2.0",
     "dotenv": "17.4.2",
-    "electron": "44.3.0",
+    "electron": "44.4.2",
     "electron-vite": "5.0.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
   "devDependencies": {
-    "@types/node": "26.5.1",
+    "@types/node": "26.6.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "typescript": "7.0.2",
-    "vitest": "5.0.0"
+    "vitest": "5.0.1"
   }
 }
