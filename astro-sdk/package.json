@@ -18,7 +18,7 @@
     "@nanostores/react": "2.0.1",
     "@nanostores/vue": "1.1.0",
     "@ops-ai/astro-feature-flags-toggly": "1.15.0",
-    "astro": "7.3.2",
+    "astro": "7.3.3",
     "nanostores": "1.5.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
