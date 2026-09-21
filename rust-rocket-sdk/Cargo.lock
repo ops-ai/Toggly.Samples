@@ -2139,9 +2139,9 @@ dependencies = [
 
 [[package]]
 name = "toggly-rocket"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a0d0b7795cd5ca69b86c68d55a3f25d373a2e13d7f98f498593041b1c8f51c9"
+checksum = "67b7233c311a2415c986ca95be076a28f37685876a342aa3649288928a95c7c2"
 dependencies = [
  "rocket",
  "serde",
