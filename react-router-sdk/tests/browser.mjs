@@ -36,7 +36,7 @@ function decodePacket(request) {
   return JSON.parse(decoded.toString('utf8'))
 }
 
-async function capture(page, packets, definitionUsers) {
+async function capture(page, packets, definitionUsers, isNewDashboardEnabled = () => true) {
   await page.route('https://definitions.toggly.io/**', async (route) => {
     const url = new URL(route.request().url())
     definitionUsers.push({
@@ -46,7 +46,7 @@ async function capture(page, packets, definitionUsers) {
     })
     await route.fulfill({
       json: {
-        'new-dashboard': true,
+        'new-dashboard': isNewDashboardEnabled(),
         'api-v2': true,
         'enhanced-submit': false,
         'beta-access': false,
@@ -61,13 +61,25 @@ async function capture(page, packets, definitionUsers) {
   })
 }
 
-function assertIdentityEvents(packets, identity) {
+function effectiveCheckCount(packets, identity) {
+  return packets
+    .filter((packet) => packet.u === identity)
+    .reduce((total, packet) => total + Object.values(packet.f || {}).reduce(
+      (featureTotal, variants) => featureTotal + Object.values(variants).reduce(
+        (variantTotal, counts) => variantTotal + (counts[0] || 0),
+        0,
+      ),
+      0,
+    ), 0)
+}
+
+function assertIdentityEvents(packets, identity, expectedActions = 1) {
   const owned = packets.filter((packet) => packet.u === identity)
   assert.ok(owned.length, `${identity} has an independently attributed packet`)
   const feature = owned.map((packet) => packet.f?.['new-dashboard']?.enabled).filter(Boolean)
   assert.ok(feature.some((values) => values[0] > 0), `${identity} packet contains automatic feature checks`)
-  assert.equal(feature.reduce((total, values) => total + (values[1] || 0), 0), 1, `${identity} owns exactly one usage event`)
-  assert.equal(feature.reduce((total, values) => total + (values[2] || 0), 0), 1, `${identity} owns exactly one view event`)
+  assert.equal(feature.reduce((total, values) => total + (values[1] || 0), 0), expectedActions, `${identity} owns the expected usage events`)
+  assert.equal(feature.reduce((total, values) => total + (values[2] || 0), 0), expectedActions, `${identity} owns the expected view events`)
   assert.ok(
     owned.some((packet) =>
       packet.m?.['router-sample-actions'] === 1 && packet.m?.['router-sample-cart-size'] === 3,
@@ -76,11 +88,21 @@ function assertIdentityEvents(packets, identity) {
   )
 }
 
+function assertDisabledIdentityEvents(packets, identity) {
+  const disabled = packets
+    .filter((packet) => packet.u === identity)
+    .map((packet) => packet.f?.['new-dashboard']?.disabled)
+    .filter(Boolean)
+  assert.equal(disabled.reduce((total, values) => total + (values[1] || 0), 0), 1, `${identity} owns one disabled usage event`)
+  assert.equal(disabled.reduce((total, values) => total + (values[2] || 0), 0), 1, `${identity} owns one disabled view event`)
+}
+
 try {
   const packets = []
   const definitionUsers = []
+  let newDashboardEnabled = true
   const page = await browser.newPage()
-  await capture(page, packets, definitionUsers)
+  await capture(page, packets, definitionUsers, () => newDashboardEnabled)
   await page.routeWebSocket('wss://definitions.toggly.io/**', (socket) => {
     socket.close({ code: 1000, reason: 'isolated browser test' })
   })
@@ -119,7 +141,40 @@ try {
   await page.getByTestId('record-telemetry').click()
   await expect(page.getByTestId('telemetry-status')).toContainText('alice')
   await expect.poll(() => packets.length).toBeGreaterThan(before)
+  const aliceChecksBeforeSecondAction = effectiveCheckCount(packets, 'alice')
+  before = packets.length
+  await page.getByTestId('record-telemetry').click()
+  await expect.poll(() => packets.length).toBeGreaterThan(before)
+  assert.equal(
+    effectiveCheckCount(packets.slice(before), 'alice'),
+    0,
+    'same-identity explicit events and local status updates add no feature checks',
+  )
+  assert.ok(aliceChecksBeforeSecondAction > 0, 'Alice has an automatic-check baseline')
+  assertIdentityEvents(packets, 'alice', 2)
 
+  // A genuine same-identity refresh changes the authoritative result. Drain
+  // automatic checks first, then prove explicit events use the current OFF
+  // result without triggering another evaluation.
+  const aliceDefinitionsBeforeRefresh = definitionUsers.filter((context) => context.identity === 'alice').length
+  newDashboardEnabled = false
+  await page.getByTestId('refresh-browser-flags').click()
+  await expect(page.getByTestId('new-dashboard-result')).toHaveText('false')
+  await expect(page.getByText('Negate: legacy dashboard is shown while the flag is OFF.')).toBeVisible()
+  await expect.poll(() => definitionUsers.filter((context) => context.identity === 'alice').length)
+    .toBeGreaterThan(aliceDefinitionsBeforeRefresh)
+  before = packets.length
+  await page.getByTestId('flush-browser-telemetry').click()
+  await expect.poll(() => packets.length).toBeGreaterThan(before)
+  const aliceChecksBeforeOffAction = effectiveCheckCount(packets, 'alice')
+  before = packets.length
+  await page.getByTestId('record-telemetry').click()
+  await expect(page.getByTestId('telemetry-status')).toContainText('alice')
+  await expect.poll(() => packets.length).toBeGreaterThan(before)
+  assert.equal(effectiveCheckCount(packets.slice(before), 'alice'), 0, 'OFF explicit events add no feature checks')
+  assertDisabledIdentityEvents(packets.slice(before), 'alice')
+
+  newDashboardEnabled = true
   await page.getByTestId('identify-bob').click()
   await expect(page.getByTestId('client-identity')).toHaveText('bob')
   await expect.poll(() => definitionUsers.some((context) => context.identity === 'bob')).toBe(true)
@@ -128,7 +183,7 @@ try {
   await page.getByTestId('record-telemetry').click()
   await expect(page.getByTestId('telemetry-status')).toContainText('bob')
   await expect.poll(() => packets.length).toBeGreaterThan(before)
-  assertIdentityEvents(packets, 'alice')
+  assert.ok(aliceChecksBeforeOffAction > aliceChecksBeforeSecondAction, 'same-identity refresh produced a fresh automatic-check baseline')
   assertIdentityEvents(packets, 'bob')
   assert.ok(packets.every((packet) => packet.k === 'test-only-not-a-real-key'))
   await page.close()
@@ -155,7 +210,7 @@ try {
     await silentPage.close()
   }
 
-  console.log('React Router browser checks passed: SSR packet silence, public client gates, alice/bob isolation, explicit usage/view/metrics, keyless silence, and opt-out silence')
+  console.log('React Router browser checks passed: SSR packet silence, public client gates, alice/bob isolation, enabled/OFF explicit usage and view, zero-check explicit actions, keyless silence, and opt-out silence')
 } finally {
   await browser.close()
   await Promise.all(servers.map((server) => server.close()))
