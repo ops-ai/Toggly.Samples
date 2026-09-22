@@ -120,10 +120,10 @@ override. Their rows remain in the matrix so that the gap is explicit.
 
 ## Package versions
 
-- `@ops-ai/react-feature-flags-toggly` `1.11.3` (published npm package)
+- `@ops-ai/react-feature-flags-toggly` `1.12.0` (published npm package)
 - React and React DOM `19.3.0`
 - Vite `8.3.0`
-- TypeScript `6.0.2`
+- TypeScript `7.0.2`
 - Vitest `5.0.0`
 
 The React SDK declares peer support for React and React DOM
@@ -150,3 +150,36 @@ For live verification, use a real local App Key only in `.env.local`:
   browser or network.
 - [ ] A configured variant appears in **React SDK surfaces**.
 - [ ] Removing the local key restores the banner and safe false defaults.
+
+## Browser telemetry
+
+The **Telemetry** section uses the service from this sample's existing provider.
+It does not create a second reporter or persist a telemetry queue.
+
+- **Evaluate telemetry feature** evaluates `new-dashboard` once. Checks elsewhere
+  in the showcase are also collected automatically.
+- **Record usage** and **Record view** are explicit button interactions. Rendering
+  the panel records neither. This panel labels these events `enabled`/`disabled`
+  from its last boolean evaluation; the React surfaces panel demonstrates named
+  experiment assignments separately.
+- **Increment counter** adds one to `sample-actions`; **Set gauge** sets
+  `sample-cart-size` to three. Configure those metric keys and types in your
+  sample application before expecting aggregated values.
+- **Flush telemetry** attempts delivery. Success of that call is not proof of
+  ingestion or aggregation.
+
+Collection defaults on with a public app key. Set
+`VITE_TOGGLY_ENABLE_TELEMETRY=false` before provider creation to opt out, then
+restart the dev server or rebuild. Evaluations still work with collection off.
+A missing key uses the existing local false defaults and sends no requests.
+`VITE_TOGGLY_METRICS_BASE_URL` optionally overrides the default
+`https://metrics.toggly.io` collector. All `VITE_` settings are public browser
+configuration; never put a management credential there.
+
+`npm test` includes integration with the installed public SDK and exact compact
+packet assertions. To verify the actual browser, run
+`npx playwright install chromium` followed by `npm run test:browser`.
+Three owned Vite servers exercise collection enabled, opt-out and no-key modes.
+They use only dummy configuration; every external HTTP/WebSocket request is
+intercepted and the metrics host is `.invalid`. Tests send no production traffic.
+`CHROMIUM_PATH` can point to an existing Chromium binary for local runs.

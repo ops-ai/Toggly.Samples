@@ -61,3 +61,17 @@ describe('sample configuration', () => {
     })
   })
 })
+
+describe('telemetry configuration', () => {
+  it('collects with a key by default and explicitly disables collection without one', () => {
+    expect(createProviderOptions('test-only', 'Production', 'user').enableTelemetry).toBe(true)
+    expect(createProviderOptions('', 'Production', 'user').enableTelemetry).toBe(false)
+  })
+
+  it('passes opt-out and metrics host to the same owner', () => {
+    expect(createProviderOptions('test-only', 'Production', 'user', {
+      enableTelemetry: false,
+      metricsBaseUrl: 'https://metrics.test.invalid',
+    })).toMatchObject({ enableTelemetry: false, metricsBaseUrl: 'https://metrics.test.invalid' })
+  })
+})

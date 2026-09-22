@@ -78,6 +78,7 @@ export function createProviderOptions(
   rawAppKey: string | undefined,
   environment: string,
   identity: string,
+  telemetry: Pick<TogglyOptions, 'enableTelemetry' | 'metricsBaseUrl'> = {},
 ): TogglyOptions {
   const appKey = rawAppKey?.trim()
   const remoteOptions = appKey ? { appKey, enableLiveUpdates: true } : {
@@ -89,6 +90,8 @@ export function createProviderOptions(
     ...remoteOptions,
     environment,
     identity,
+    enableTelemetry: Boolean(appKey) && telemetry.enableTelemetry !== false,
+    metricsBaseUrl: telemetry.metricsBaseUrl,
     enableVariants: true,
     featureDefaults,
     onError: (message, error) => {
