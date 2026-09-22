@@ -116,17 +116,28 @@ export class Workshop implements OnDestroy {
       const assigned = await this.sdk.getVariant("new-dashboard");
       variant = assigned?.name ?? (enabled ? "enabled" : "disabled");
     } catch {
-      // A failed check leaves the sample without an actionable selection.
+      // A rejected check supplies no authoritative value. Keep the selection
+      // invalid; only a successful OFF result may publish a disabled variant.
+      if (
+        !this.disposed &&
+        generation === this.selectionGeneration &&
+        context === users[this.preset].identity
+      )
+        this.telemetryActionStatus.set(
+          "The feature check failed; usage and view stay disabled until it succeeds.",
+        );
+      return false;
     }
     if (
       this.disposed ||
       generation !== this.selectionGeneration ||
       context !== users[this.preset].identity
     )
-      return;
+      return false;
     this.telemetrySelection.set(
       Object.freeze({ generation, context, enabled, variant }),
     );
+    return true;
   }
   async selectPreset(preset: Preset) {
     if (this.busy) return;
@@ -168,13 +179,14 @@ export class Workshop implements OnDestroy {
   }
   async evaluateTelemetryFlag() {
     const generation = this.invalidateTelemetrySelection();
-    await this.resolveTelemetrySelection(
+    const selected = await this.resolveTelemetrySelection(
       generation,
       users[this.preset].identity,
     );
-    this.telemetryActionStatus.set(
-      "The SDK captures this feature check automatically when telemetry is enabled.",
-    );
+    if (selected)
+      this.telemetryActionStatus.set(
+        "The SDK captures this feature check automatically when telemetry is enabled.",
+      );
   }
   recordTelemetryUsage() {
     const selection = this.currentTelemetrySelection();

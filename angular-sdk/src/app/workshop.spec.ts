@@ -158,6 +158,37 @@ it("keeps only the latest generation selection and never checks during usage or 
   sdk.removeHook("angular-sample-delayed-selection-test");
   fixture.destroy();
 });
+it("keeps rejected feature or variant evaluations unavailable for explicit events", async () => {
+  const fixture = await mount(),
+    w = TestBed.inject(Workshop),
+    sdk = TestBed.inject(TogglyService);
+  const usage = vi.spyOn(sdk, "recordUsage"),
+    view = vi.spyOn(sdk, "recordView");
+
+  vi.spyOn(sdk, "isFeatureOn").mockRejectedValueOnce(
+    new Error("rejected feature evaluation"),
+  );
+  await w.evaluateTelemetryFlag();
+  expect(w.telemetrySelection()).toBeNull();
+  expect(
+    fixture.nativeElement.querySelector('[data-testid="telemetry-usage"]').disabled,
+  ).toBe(true);
+  w.recordTelemetryUsage();
+  w.recordTelemetryView();
+  expect(usage).not.toHaveBeenCalled();
+  expect(view).not.toHaveBeenCalled();
+
+  vi.spyOn(sdk, "getVariant").mockImplementationOnce(() => {
+    throw new Error("rejected variant evaluation");
+  });
+  await w.evaluateTelemetryFlag();
+  expect(w.telemetrySelection()).toBeNull();
+  w.recordTelemetryUsage();
+  w.recordTelemetryView();
+  expect(usage).not.toHaveBeenCalled();
+  expect(view).not.toHaveBeenCalled();
+  fixture.destroy();
+});
 it("native negation, all/any, local gates and Order values stay coherent", async () => {
   const fixture = await mount(),
     w = TestBed.inject(Workshop),
