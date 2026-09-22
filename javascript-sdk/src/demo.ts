@@ -25,10 +25,10 @@ export const nonMatchingPreset = {
 // Real keys load definitions for one application/environment, including variants.
 // Blank/CI keys instead use deterministic local booleans with no live connection.
 // persistCache controls flags/variants, not the SDK's stored identity/claims.
-export function createTogglyConfig(appKey: string, flagDefaults: Record<string, boolean>, environment = 'Production') {
+export function createTogglyConfig(appKey: string, flagDefaults: Record<string, boolean>, environment = 'Production', telemetryEnabled = true) {
   return appKey && appKey !== 'ci-placeholder'
-    ? { appKey, environment, enableVariants: true }
-    : { flagDefaults, enableLiveUpdates: false, persistCache: false }
+    ? { appKey, environment, enableVariants: true, enableTelemetry: telemetryEnabled }
+    : { flagDefaults, enableLiveUpdates: false, persistCache: false, enableTelemetry: false }
 }
 
 // A gate combines existing evaluations; it does not create a dashboard rule.

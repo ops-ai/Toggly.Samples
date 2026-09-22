@@ -63,7 +63,7 @@ your server still needs to check permissions for protected operations.
 | [`src/main.ts`](src/main.ts) | How does the bundle expose `window.Toggly`, register Order, await initialization, and repaint after refresh? |
 | [`src/demo.ts`](src/demo.ts) | How do live configuration and offline fixtures differ, and how do boolean gates combine? |
 | [`src/sample-app.ts`](src/sample-app.ts) | How do SDK results become DOM branches, refreshed identity, per-order checks, and honest filter labels? |
-| [`src/toggly.d.ts`](src/toggly.d.ts) | Which narrow declarations bridge the published artifact's missing typings? |
+| [`tests/telemetry.test.ts`](tests/telemetry.test.ts) | How are automatic checks and explicit events verified without a live telemetry request? |
 | [`tests/published-sdk.test.ts`](tests/published-sdk.test.ts) | Which gates, entity rules, variants and hooks are exercised against the installed SDK? |
 
 ## Initialization, defaults, and refresh
@@ -96,13 +96,13 @@ identity and claims.
 
 ## Package versions
 
-- `@ops-ai/feature-flags-toggly` `1.8.0`
+- `@ops-ai/feature-flags-toggly` `1.9.0`
 - Vite `8.3.0`
 - TypeScript `7.0.2`
 - Vitest `5.0.0`
 - jsdom `30.0.1` (browser interaction tests)
 
-The published SDK package points its `types` field at a declaration file that is absent from the npm artifact. `src/toggly.d.ts` narrowly describes only the published-artifact-verified APIs used by this sample. The published artifact is a browser IIFE which exposes `window.Toggly`, so the sample loads it for that documented global rather than claiming named ESM exports.
+The published package ships declarations for `window.Toggly`, including its frontend telemetry API. The artifact is a browser IIFE, so the sample loads it for that documented global rather than claiming named ESM exports.
 
 ## Sections
 
@@ -114,8 +114,30 @@ The published SDK package points its `types` field at a declaration file that is
 | `#identity-section` | Identity | Actual SDK identity/claims applied with `setContext` and their browser-wide storage limitation |
 | `#entity` | Entity context | Per-evaluation `Order` context with `Vip` |
 | `#filters` | Filters matrix | Shared matching/non-matching inputs and honest capability labels |
+| `#telemetry` | Frontend telemetry | Automatic feature-check collection, explicit usage/view events, counter/gauge metrics, and flush |
 | `#unique` | Package-unique surfaces | Browser global, WebSocket refresh, variants, defaults, context registration |
 | `#configuration` | Missing-key banner | Visible configuration state without a crash or network call |
+
+## Frontend telemetry
+
+With a configured app key, the SDK collects feature evaluations by default and
+sends batches to `https://metrics.toggly.io`. This sample does not record a view
+just because a section renders. Click **Record usage** or **Record view** to add
+those explicit events, and use the counter and gauge buttons to add
+`sample-actions` and `sample-cart-size` values. Configure those metric names
+in the Toggly application before expecting their values to be accepted. Click
+**Flush telemetry** to ask the SDK to send the current batch; delivery is best
+effort, and the SDK keeps its queue and lifecycle handling.
+
+Set `VITE_TOGGLY_ENABLE_TELEMETRY=false` in `.env.local` to opt out. No-key and
+CI-placeholder modes remain offline, and the evaluation control still exercises
+local defaults. The compact envelope includes the configured app key and
+environment, aggregate feature/metric data, and the current SDK identity as `u`
+when no host-minted `instanceId` is present. Claims, groups, and Order attributes
+are omitted. The server's `AcceptClientGeneratedIdentitiesForMetrics` setting
+controls whether client identity is accepted; a successful HTTP response alone
+does not confirm attribution. Telemetry tests replace `fetch` with a local
+capture and never contact the production metrics endpoint.
 
 ## Filter support
 
@@ -156,6 +178,8 @@ For the named-variant example, enable variants on `new-dashboard`, add a variant
 - [ ] `ord-vip` with `Vip=true` enables `ExpressCheckout`; `ord-standard` with `Vip=false` disables it.
 - [ ] Matching and Non-matching controls show exact shared preset values and mark unsupported overrides as display-only.
 - [ ] Actual browser filter results agree with the browser/request in use; percentage stays stable for an identity.
+- [ ] `#telemetry`: feature checks are captured automatically; usage, views, counter and gauge values are added only after their buttons are clicked; flush is best effort.
+- [ ] Set `VITE_TOGGLY_ENABLE_TELEMETRY=false`, restart, and confirm telemetry writes are disabled while feature evaluation still works.
 - [ ] `.env.local` remains ignored by Git.
 
 ## Verification
