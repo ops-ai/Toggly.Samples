@@ -12,6 +12,8 @@ function sdk(overrides: Partial<SampleSdk> = {}): SampleSdk {
     }),
     getVariant: vi.fn(() => null), refresh: vi.fn(async () => flags),
     setContext: vi.fn(async () => flags), evaluationContext: { identity: 'alice', claims: { role: 'admin' } },
+    recordUsage: vi.fn(), recordView: vi.fn(), incrementCounter: vi.fn(), setGauge: vi.fn(),
+    flushTelemetry: vi.fn(async () => undefined),
     ...overrides,
   }
 }

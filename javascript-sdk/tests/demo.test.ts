@@ -43,16 +43,17 @@ describe('filter presets', () => {
 describe('createTogglyConfig', () => {
   it('uses offline defaults without an app key or for the CI placeholder', () => {
     expect(createTogglyConfig('', { demo: true })).toEqual({
-      flagDefaults: { demo: true }, enableLiveUpdates: false, persistCache: false,
+      flagDefaults: { demo: true }, enableLiveUpdates: false, persistCache: false, enableTelemetry: false,
     })
     expect(createTogglyConfig('ci-placeholder', { demo: true })).toEqual({
-      flagDefaults: { demo: true }, enableLiveUpdates: false, persistCache: false,
+      flagDefaults: { demo: true }, enableLiveUpdates: false, persistCache: false, enableTelemetry: false,
     })
   })
 
   it('uses live evaluation for a real app key', () => {
     expect(createTogglyConfig('real-key', {}, 'Staging')).toEqual({
-      appKey: 'real-key', environment: 'Staging', enableVariants: true,
+      appKey: 'real-key', environment: 'Staging', enableVariants: true, enableTelemetry: true,
     })
+    expect(createTogglyConfig('real-key', {}, 'Staging', false)).toMatchObject({ enableTelemetry: false })
   })
 })

@@ -1,4 +1,4 @@
-// The published 1.7.4 bundle runs for its side effect: it installs window.Toggly.
+// The published 1.9.0 bundle runs for its side effect: it installs window.Toggly.
 // It is a browser IIFE, so a named ESM import would promise an export it lacks.
 import '@ops-ai/feature-flags-toggly'
 import { createTogglyConfig, matchingPreset } from './demo'
@@ -11,6 +11,7 @@ import './style.css'
 const appKey = import.meta.env.VITE_TOGGLY_APP_KEY?.trim() ?? ''
 const configured = Boolean(appKey && appKey !== 'ci-placeholder')
 const environment = import.meta.env.VITE_TOGGLY_ENVIRONMENT || 'Production'
+const telemetryEnabled = import.meta.env.VITE_TOGGLY_ENABLE_TELEMETRY?.trim().toLowerCase() !== 'false'
 const Toggly = window.Toggly
 // Keys identify dashboard flags exactly; an environment selects their rule set.
 // These booleans are a teaching fixture used ONLY without a real app key. They
@@ -22,7 +23,7 @@ const defaults = { 'new-dashboard': true, 'api-v2': false, 'enhanced-submit': tr
 // entity rule reads; orderId becomes its key, and unrelated preset fields vanish.
 Toggly.registerContext<typeof matchingPreset>('Order', value => ({ kind: 'Order', key: value.orderId, attributes: { Vip: value.vip } }))
 // Keep an existing SDK identity instead of resetting it on every page load.
-// In 1.7.4 identity AND claims live in origin-wide localStorage, even when flag
+// In 1.9.0 identity AND claims live in origin-wide localStorage, even when flag
 // cache persistence is off. These demo claims are targeting input, not login or
 // proof of an admin role; browser feature gates cannot authorize server actions.
 if (!Toggly.evaluationContext.identity) {
@@ -40,6 +41,6 @@ const refreshHook = {
 }
 // Wait before reading synchronous flag APIs. Resolution can mean cached/default
 // values after an error, not a successful live fetch; the UI also reads lastError.
-await Toggly.init({ ...createTogglyConfig(appKey, defaults, environment), hooks: [refreshHook] })
-app = mountSample(document.querySelector('#app')!, Toggly, { configured, environment })
+await Toggly.init({ ...createTogglyConfig(appKey, defaults, environment, telemetryEnabled), hooks: [refreshHook] })
+app = mountSample(document.querySelector('#app')!, Toggly, { configured, environment, telemetryEnabled })
 app.render()
