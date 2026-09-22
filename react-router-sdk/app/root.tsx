@@ -61,6 +61,8 @@ export default function App() {
         // Never read TOGGLY_APP_KEY in the browser bundle.
         appKey: import.meta.env.VITE_TOGGLY_APP_KEY,
         environment: import.meta.env.VITE_TOGGLY_ENVIRONMENT || data.environment || 'Production',
+        enableTelemetry: import.meta.env.VITE_TOGGLY_ENABLE_TELEMETRY !== 'false',
+        metricsBaseUrl: import.meta.env.VITE_TOGGLY_METRICS_BASE_URL || undefined,
       }}
     >
       <SampleLayout>

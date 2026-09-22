@@ -8,11 +8,12 @@
     "dev": "react-router dev",
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/*.test.mjs && npm run test:browser",
+    "test:browser": "node tests/browser.mjs",
     "smoke": "node scripts/configured-runtime-smoke.mjs"
   },
   "dependencies": {
-    "@ops-ai/react-router-toggly": "1.0.0",
+    "@ops-ai/react-router-toggly": "1.1.0",
     "@react-router/node": "8.4.0",
     "@react-router/serve": "8.4.0",
     "react": "19.3.0",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@react-router/dev": "8.4.0",
+    "@playwright/test": "^1.63.0",
     "@types/node": "22.19.15",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
