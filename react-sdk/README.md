@@ -160,7 +160,9 @@ It does not create a second reporter or persist a telemetry queue.
   in the showcase are also collected automatically.
 - **Record usage** and **Record view** are explicit button interactions. Rendering
   the panel records neither. This panel labels these events `enabled`/`disabled`
-  from its last boolean evaluation; the React surfaces panel demonstrates named
+  from its last valid boolean evaluation. Context and definition changes clear
+  that selection; evaluate again before recording usage/view. Pending older
+  evaluations cannot restore it after those changes; the React surfaces panel demonstrates named
   experiment assignments separately.
 - **Increment counter** adds one to `sample-actions`; **Set gauge** sets
   `sample-cart-size` to three. Configure those metric keys and types in your

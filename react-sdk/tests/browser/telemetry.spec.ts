@@ -15,7 +15,7 @@ test('published provider emits explicit compact events and honors collection pol
       return route.fulfill({ status: 202, headers: { 'access-control-allow-origin': '*' } })
     }
     if (url.hostname === 'definitions.toggly.io' && url.pathname.includes('/evaluated-variants-signed/')) {
-      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ defs: { 'new-dashboard': false } }) })
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ defs: { 'new-dashboard': { enabled: url.searchParams.get('userId') === 'alice', variant: url.searchParams.get('userId') === 'alice' ? 'enabled' : 'disabled' } } }) })
     }
     // Unexpected external requests remain blocked.
     return route.fulfill({ status: 403, body: '{}' })
@@ -36,7 +36,7 @@ test('published provider emits explicit compact events and honors collection pol
     await expect(panel.getByRole('status')).toHaveText(/Flush attempted/)
   }
   await flush()
-  if (info.project.name === 'enabled') {
+  async function drainStartup() {
     // Concurrent initial SDK evaluations wait on 100 ms callbacks. UI loading
     // alone does not prove those checks have reached the owner's buffer.
     // Require two quiet flushes on separate polls; fail if startup never settles.
@@ -50,6 +50,9 @@ test('published provider emits explicit compact events and honors collection pol
       return quietFlushes
     }, { timeout: 5_000, intervals: [100, 250, 500], message: 'Initial showcase checks must drain before measuring explicit interactions' }).toBe(2)
 
+  }
+  if (info.project.name === 'enabled') {
+    await drainStartup()
     expect(packets.length).toBeGreaterThan(0)
     // Existing showcase evaluations are checks; rendering the new panel is not a view/usage.
     for (const packet of packets) for (const variants of Object.values(packet.f ?? {})) for (const values of Object.values(variants)) expect([values[1] ?? 0, values[2] ?? 0]).toEqual([0, 0])
@@ -63,6 +66,29 @@ test('published provider emits explicit compact events and honors collection pol
     expect(packets).toHaveLength(1)
     expect(packets[0]).toMatchObject({ k: 'telemetry-test-only', e: 'Production', f: { 'new-dashboard': { disabled: [1, 1, 1] } }, m: { 'sample-actions': 1, 'sample-cart-size': 3 } })
     expect(Object.keys(packets[0]).every(key => ['k', 'e', 'u', 'i', 'f', 'm'].includes(key))).toBe(true)
+    await page.getByRole('button', { name: 'Apply matching preset', exact: true }).click()
+    await expect(page.getByText(/Applied alice/)).toBeVisible()
+    await expect(page.locator('#snapshot li').first()).toHaveText('new-dashboard on')
+    await expect(panel.getByRole('button', { name: 'Record usage' })).toBeDisabled()
+    await panel.getByRole('button', { name: 'Evaluate telemetry feature' }).click()
+    await expect(panel.getByText('Last evaluation: enabled', { exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Apply non-matching preset', exact: true }).click()
+    await expect(page.getByText(/Applied bob/)).toBeVisible()
+    await expect(page.locator('#snapshot li').first()).toHaveText('new-dashboard off')
+    await expect(panel.getByText('Last evaluation: not evaluated', { exact: true })).toBeVisible()
+    await expect(panel.getByRole('button', { name: 'Record usage' })).toBeDisabled()
+    await expect(panel.getByRole('button', { name: 'Record view' })).toBeDisabled()
+    await drainStartup()
+    packets.length = 0
+    await panel.getByRole('button', { name: 'Evaluate telemetry feature' }).click()
+    await expect(panel.getByText('Last evaluation: disabled', { exact: true })).toBeVisible()
+    await panel.getByRole('button', { name: 'Record usage' }).click()
+    await panel.getByRole('button', { name: 'Record view' }).click()
+    await flush()
+    expect(packets).toHaveLength(1)
+    expect(packets[0]).toMatchObject({ u: 'bob', f: { 'new-dashboard': { disabled: [1, 1, 1] } } })
+    expect(packets[0].f['new-dashboard'].enabled).toBeUndefined()
+
   } else {
     expect(packets).toEqual([])
     await expect(panel.getByText(/Collection is off/)).toBeVisible()

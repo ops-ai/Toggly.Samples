@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Feature, useFeatureFlag, useFeatureGate, useVariant } from '@ops-ai/react-feature-flags-toggly'
 import { filterRows } from './filter-catalog'
 import type { Order } from './sample-config'
-import { useProgrammaticFlag, useTogglyService } from './toggly'
+import { setSampleContext, useProgrammaticFlag, useTogglyService } from './toggly'
 
 const snapshotFlags = ['new-dashboard', 'api-v2', 'enhanced-submit', 'ExpressCheckout', 'beta-access']
 
@@ -53,7 +53,7 @@ export function IdentityPanel({ initialIdentity }: { initialIdentity: string }) 
   async function applyIdentity() {
     if (!toggly) { setMessage('No provider service is available; add an app key to evaluate remotely.'); return }
     // Initial identity went into provider creation. This is only a later session change.
-    await toggly.setContext({ identity, groups: ['beta'], claims: { role } })
+    await setSampleContext(toggly, { identity, groups: ['beta'], claims: { role } })
     sessionStorage.setItem('toggly-react-sample.identity', identity)
     setMessage('Context changed and the SDK refreshed this identity’s definitions.')
   }
@@ -112,7 +112,7 @@ export function FiltersMatrix() {
     setPreset(next); const matching = next === 'matching'
     if (toggly) {
       // Country and user-agent are browser/network inputs, documented below rather than fabricated.
-      await toggly.setContext({ identity: matching ? 'alice' : 'bob', groups: [], claims: { role: matching ? 'admin' : 'user' } })
+      await setSampleContext(toggly, { identity: matching ? 'alice' : 'bob', groups: [], claims: { role: matching ? 'admin' : 'user' } })
     }
     setMessage(matching ? 'Applied alice + role=admin. Use a matching browser/network for header-derived rows.' : 'Applied bob + role=user. Header-derived rows depend on your actual browser/network.')
   }
