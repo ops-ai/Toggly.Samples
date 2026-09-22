@@ -89,6 +89,33 @@ describe("real published Vue plugin and native surfaces", () => {
     expect(w.get('[data-testid="telemetry-view"]').attributes("disabled"))
       .toBeDefined();
   });
+  it("uses the main client's disabled decision when the variant client retains an assignment", async () => {
+    await mountWorkshop({
+      VITE_TOGGLY_APP_KEY: "test-only-not-a-real-key",
+      VITE_TOGGLY_METRICS_BASE_URL: "https://telemetry.test.invalid",
+    });
+    const main = workshop.mainService;
+    const evaluate = vi.spyOn(main, "isFeatureOn").mockResolvedValue(false);
+    const assignment = vi
+      .spyOn(workshop.variantService, "getVariant")
+      .mockReturnValue({ name: "compact" });
+    const usage = vi.spyOn(main, "recordUsage");
+    const view = vi.spyOn(main, "recordView");
+
+    await workshop.evaluateTelemetryFlag();
+    expect(workshop.state.telemetrySelection).toMatchObject({
+      context: "alice",
+      enabled: false,
+      variant: "disabled",
+    });
+    workshop.recordTelemetryUsage();
+    workshop.recordTelemetryView();
+
+    expect(evaluate).toHaveBeenCalledTimes(1);
+    expect(assignment).not.toHaveBeenCalled();
+    expect(usage).toHaveBeenCalledExactlyOnceWith("new-dashboard", "disabled");
+    expect(view).toHaveBeenCalledExactlyOnceWith("new-dashboard", "disabled");
+  });
   it("starts without a key, renders native Feature, builder, composables and all eleven filters", async () => {
     const w = await mountWorkshop();
     expect(w.get('[data-testid="missing-key"]').text()).toContain("No App Key");

@@ -160,7 +160,9 @@ try {
   }
   let tamper = false;
   let failRefresh = false;
+  let mainEnabled = true;
   const requests = [];
+  const failedRefreshRequests = [];
   const telemetryPackets = [];
   const live = await browser.newPage();
   // Live-update socket delivery is outside this test; do not contact a real
@@ -189,8 +191,10 @@ try {
     requests.push(url);
     if (url.pathname.includes("/.well-known/jwks"))
       return route.fulfill({ json: { keys: [jwk] } });
-    if (failRefresh)
+    if (failRefresh) {
+      failedRefreshRequests.push(url.pathname);
       return route.fulfill({ status: 503, body: "test refresh failure" });
+    }
     const body = await envelope(
       url.pathname.includes("variants")
         ? {
@@ -200,7 +204,7 @@ try {
               configurationValue: { density: "signed" },
             },
           }
-        : { "new-dashboard": true, "api-v2": true },
+        : { "new-dashboard": mainEnabled, "api-v2": true },
     );
     if (tamper)
       body.signature =
@@ -229,31 +233,64 @@ try {
   await expect(live.getByTestId("telemetry-result")).toContainText(
     "new-dashboard: ON",
   );
+  await live.getByTestId("telemetry-flush").click();
+  await expect.poll(() => telemetryPackets.length).toBe(2);
+  const packetChecks = (packet) =>
+    Object.values(packet.f || {}).reduce(
+      (total, variants) =>
+        total +
+        Object.values(variants).reduce((sum, counts) => sum + counts[0], 0),
+      0,
+    );
+  const mainBaseline = telemetryPackets.find(
+    (packet) => packet.f?.["api-v2"],
+  );
+  const variantBaseline = telemetryPackets.find(
+    (packet) => packet.f?.["new-dashboard"] && !packet.f?.["api-v2"],
+  );
+  assert.ok(mainBaseline, "main owner emitted its automatic feature checks");
+  assert.ok(variantBaseline, "variant owner emitted its automatic feature check");
+  const mainChecksBefore = packetChecks(mainBaseline);
+  const variantChecksBefore = packetChecks(variantBaseline);
+  assert.ok(mainChecksBefore > 0, "main owner has a check-count baseline");
+  assert.ok(variantChecksBefore > 0, "variant owner has a check-count baseline");
+  const beforeExplicitPackets = telemetryPackets.length;
   await live.getByTestId("telemetry-usage").click();
-  const evaluatedBeforeExplicitEvents = requests.filter((url) =>
-    url.pathname.includes("/evaluated-signed/"),
-  ).length;
   await live.getByTestId("telemetry-view").click();
   await live.getByTestId("telemetry-counter").click();
   await live.getByTestId("telemetry-gauge").click();
   await live.getByTestId("telemetry-flush").click();
-  await expect.poll(() => telemetryPackets.length).toBe(2);
+  await expect.poll(() => telemetryPackets.length).toBeGreaterThan(
+    beforeExplicitPackets,
+  );
+  const explicitPackets = telemetryPackets.slice(beforeExplicitPackets);
+  const ownerCheckDelta = (ownerPackets) =>
+    ownerPackets.reduce((sum, packet) => sum + packetChecks(packet), 0);
   assert.equal(
-    requests.filter((url) => url.pathname.includes("/evaluated-signed/")).length,
-    evaluatedBeforeExplicitEvents,
-    "explicit telemetry actions do not trigger additional feature checks",
+    ownerCheckDelta(
+      explicitPackets.filter((packet) => packet.m || packet.f?.["api-v2"]),
+    ),
+    0,
+    "explicit actions add no main-owner feature checks",
+  );
+  assert.equal(
+    ownerCheckDelta(
+      explicitPackets.filter(
+        (packet) => packet.f?.["new-dashboard"] && !packet.f?.["api-v2"],
+      ),
+    ),
+    0,
+    "explicit actions add no variant-owner feature checks",
   );
   const mainPacket = telemetryPackets.find((packet) => packet.m);
-  const variantPacket = telemetryPackets.find(
-    (packet) => packet.f?.["new-dashboard"] && !packet.m,
-  );
+  const variantPacket = variantBaseline;
   assert.ok(mainPacket, "the plugin-owned main service sends explicit events");
   assert.ok(variantPacket, "the separate keyed variant service sends checks");
   assert.equal(mainPacket.k, "test-only-not-a-real-key");
   assert.equal(mainPacket.e, "Production");
   assert.equal(mainPacket.u, "alice");
   const mainFeature = mainPacket.f["new-dashboard"];
-  assert.ok(mainFeature.enabled[0] > 0, "main-service checks are automatic");
+  assert.ok(packetChecks(mainBaseline) > 0, "main-service checks are automatic");
   assert.equal(mainFeature.signed[1], 1, "usage uses the selected variant");
   assert.equal(mainFeature.signed[2], 1, "view uses the selected variant");
   assert.deepEqual(mainPacket.m, {
@@ -263,6 +300,63 @@ try {
   const variantFeature = Object.values(variantPacket.f["new-dashboard"])[0];
   assert.ok(variantFeature[0] > 0, "variant-service checks are automatic");
   assert.equal(variantPacket.u, "alice");
+  failRefresh = true;
+  await live.getByTestId("nonmatching").click();
+  await expect(live.getByTestId("user-context")).toContainText(
+    '"identity": "bob"',
+  );
+  await live.getByRole("alert").waitFor();
+  await expect(live.getByTestId("telemetry-result")).toContainText(
+    "No current selection",
+  );
+  await expect(live.getByTestId("telemetry-usage")).toBeDisabled();
+  await expect(live.getByTestId("telemetry-view")).toBeDisabled();
+  assert.deepEqual(
+    failedRefreshRequests,
+    [
+      "/evaluated-signed/test-only-not-a-real-key/Production",
+      "/evaluated-variants-signed/test-only-not-a-real-key/Production",
+    ],
+    "both real SDK clients received the intercepted 503 refresh",
+  );
+  failRefresh = false;
+  await live.getByTestId("matching").click();
+  await expect(live.getByTestId("telemetry-result")).toContainText(
+    "new-dashboard: ON",
+  );
+  await expect(live.getByTestId("telemetry-usage")).toBeEnabled();
+  await expect(live.getByTestId("telemetry-view")).toBeEnabled();
+  // Refresh the same identity with the authoritative main client OFF while
+  // the separate variant client still returns its signed ON assignment.
+  mainEnabled = false;
+  await live.getByTestId("matching").click();
+  await expect(live.getByTestId("variant-name")).toContainText("signed");
+  await expect(live.getByTestId("telemetry-result")).toContainText(
+    "new-dashboard: OFF · variant disabled",
+  );
+  await live.getByTestId("telemetry-flush").click();
+  await expect.poll(() => telemetryPackets.length).toBeGreaterThan(3);
+  const beforeDisabledEvents = telemetryPackets.length;
+  await live.getByTestId("telemetry-usage").click();
+  await live.getByTestId("telemetry-view").click();
+  await live.getByTestId("telemetry-flush").click();
+  await expect.poll(() => telemetryPackets.length).toBeGreaterThan(
+    beforeDisabledEvents,
+  );
+  const disabledEventPacket = telemetryPackets
+    .slice(beforeDisabledEvents)
+    .find((packet) => packet.f?.["new-dashboard"]?.disabled);
+  assert.ok(disabledEventPacket, "main OFF events use the disabled variant");
+  assert.deepEqual(
+    disabledEventPacket.f["new-dashboard"].disabled.slice(1),
+    [1, 1],
+  );
+  assert.equal(
+    disabledEventPacket.f["new-dashboard"].compact,
+    undefined,
+    "a stale variant assignment is not attributed to the main owner's OFF result",
+  );
+  mainEnabled = true;
   tamper = true;
   await live.getByTestId("nonmatching").click();
   await live.getByRole("alert").waitFor();

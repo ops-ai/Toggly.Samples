@@ -103,8 +103,14 @@ export function createWorkshop(env = import.meta.env) {
     let variant;
     try {
       enabled = await service.isFeatureOn("new-dashboard");
-      const assignment = variantService.getVariant("new-dashboard");
-      variant = assignment?.name || (enabled ? "enabled" : "disabled");
+      if (enabled) {
+        const assignment = variantService.getVariant("new-dashboard");
+        variant = assignment?.name || "enabled";
+      } else {
+        // The main client's decision owns explicit events recorded on it.
+        // A separate variant client may still hold an older assignment.
+        variant = "disabled";
+      }
     } catch (error) {
       if (
         !disposed &&
@@ -294,8 +300,8 @@ export function createWorkshop(env = import.meta.env) {
       stopRefresh();
       stopVariantRefresh();
       stopTransport();
-      // The plugin service is a module singleton shared by all Vue hosts; only
-      // dispose the separately owned variants client here.
+      // The Vue plugin owns its service for this app; this workshop owns and
+      // disposes the separate variants client.
       variantService.dispose();
     },
   };
