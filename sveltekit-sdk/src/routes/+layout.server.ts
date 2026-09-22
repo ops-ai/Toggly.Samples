@@ -16,6 +16,7 @@ export const load: LayoutServerLoad = async (event) => {
     toggly: await loadToggly(event),
     publicKey: publicEnv.PUBLIC_TOGGLY_APP_KEY ?? '',
     environment: publicEnv.PUBLIC_TOGGLY_ENVIRONMENT ?? 'Production',
+    telemetryEnabled: publicEnv.PUBLIC_TOGGLY_ENABLE_TELEMETRY !== 'false',
     offline: !env.TOGGLY_APP_KEY || !publicEnv.PUBLIC_TOGGLY_APP_KEY,
     matching,
     // This is public demo input for teaching, never private session data.

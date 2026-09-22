@@ -2,6 +2,7 @@
   import { onMount, onDestroy, setContext } from 'svelte';
   import { createToggly } from '@ops-ai/toggly-sveltekit';
   import { sections } from '$lib/catalog';
+  import TelemetryControls from '$lib/TelemetryControls.svelte';
   import type { LayoutData } from './$types';
   export let data: LayoutData;
   // Synchronous SSR seed avoids a disabled branch flashing before hydration; each layout owns its store.
@@ -9,6 +10,7 @@
   const toggly = createToggly(data.toggly, {
     appKey: data.publicKey,
     environment: data.environment,
+    enableTelemetry: data.telemetryEnabled,
     // Browser callbacks defer origin-owned storage access until mounting.
     storage: {
       getItem: (key: string) => window.localStorage.getItem(key),
@@ -62,6 +64,7 @@
         Offline demonstration · Set TOGGLY_APP_KEY and PUBLIC_TOGGLY_APP_KEY to connect your
         application. Fixtures are not live dashboard state.
       </div>{/if}<slot />
+    <TelemetryControls {toggly} />
   </main>
 </div>
 
