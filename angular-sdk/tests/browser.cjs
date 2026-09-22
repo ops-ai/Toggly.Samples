@@ -1,5 +1,6 @@
 const { chromium, expect } = require("@playwright/test");
 const { webcrypto, createHash } = require("node:crypto");
+const { gunzipSync } = require("node:zlib");
 const fs = require("node:fs"),
   path = require("node:path"),
   os = require("node:os"),
@@ -35,11 +36,13 @@ const root = path.resolve(__dirname, "..");
   });
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const url = "http://127.0.0.1:" + server.address().port;
-  function build(name, key) {
+  function build(name, key, telemetryEnabled = true) {
     const env = {
       ...process.env,
       TOGGLY_APP_KEY: key,
       TOGGLY_ENVIRONMENT: "Production",
+      TOGGLY_ENABLE_TELEMETRY: telemetryEnabled ? "true" : "false",
+      TOGGLY_METRICS_BASE_URL: "https://telemetry.test.invalid",
     };
     execFileSync(process.execPath, ["scripts/configure.cjs"], {
       cwd: root,
@@ -67,6 +70,14 @@ const root = path.resolve(__dirname, "..");
     build("offline", "");
     const page = await browser.newPage();
     const errors = [];
+    const offlineTelemetry = [];
+    await page.route(
+      "https://telemetry.test.invalid/**",
+      async (route) => {
+        offlineTelemetry.push(route.request().url());
+        await route.fulfill({ status: 202, body: "" });
+      },
+    );
     page.on("pageerror", (e) => errors.push(String(e)));
     await page.goto(url);
     assert.equal(
@@ -81,6 +92,11 @@ const root = path.resolve(__dirname, "..");
     await page.getByTestId("native-directive").waitFor();
     await page.getByTestId("variant-compact").waitFor();
     assert.match(await page.getByTestId("mode").innerText(), /No App Key/);
+    assert.match(
+      await page.getByTestId("telemetry-status").innerText(),
+      /Offline mode.*telemetry is silent/,
+    );
+    await expect(page.getByTestId("telemetry-usage")).toBeDisabled();
     await page.getByTestId("toggle-new-dashboard").click();
     await expect(page.getByTestId("toggle-new-dashboard")).toHaveText(
       "new-dashboard: OFF",
@@ -149,14 +165,22 @@ const root = path.resolve(__dirname, "..");
       })
       .click();
     await page.getByRole("alert").waitFor();
-    await expect(page.getByTestId("toggle-new-dashboard")).toContainText("ON");
+    await expect(page.getByTestId("identity")).toContainText("bob");
+    await expect(page.getByTestId("toggle-new-dashboard")).toContainText("OFF");
+    await expect(page.getByTestId("filter-targeting")).toContainText("OFF");
     await page
       .getByRole("button", { name: "Recover fixture transport", exact: true })
       .click();
     await page.getByTestId("native-component").waitFor();
     await expect(page.getByTestId("toggle-new-dashboard")).toContainText("ON");
+    await expect(page.getByTestId("filter-targeting")).toContainText("OFF");
     await expect(page.getByRole("alert")).toContainText(
       "retains this diagnostic",
+    );
+    assert.deepEqual(
+      offlineTelemetry,
+      [],
+      "no-key offline evaluation and explicit controls never POST telemetry",
     );
     for (const width of [1280, 390]) {
       await page.setViewportSize({ width, height: 900 });
@@ -220,8 +244,10 @@ const root = path.resolve(__dirname, "..");
     let enabled = true,
       tamper = false,
       fail = false,
+      failingIdentity = "",
       assigned = "compact";
-    const requests = [];
+    const requests = [],
+      telemetryPackets = [];
     const orderGate = {
       requirement: "all",
       rules: [{ property: "Vip", op: "eq", value: "true", type: "boolean" }],
@@ -248,18 +274,40 @@ const root = path.resolve(__dirname, "..");
         };
       });
       const p = await context.newPage();
+      await p.route(
+        "https://telemetry.test.invalid/**",
+        async (route) => {
+          const request = route.request();
+          assert.equal(request.method(), "POST");
+          const bytes = request.postDataBuffer();
+          const body = request.headers()["content-encoding"] === "gzip"
+            ? gunzipSync(bytes)
+            : bytes;
+          telemetryPackets.push({
+            url: request.url(),
+            headers: request.headers(),
+            body: JSON.parse(body.toString("utf8")),
+          });
+          await route.fulfill({ status: 202, body: "" });
+        },
+      );
       await p.route("https://definitions.toggly.io/**", async (route) => {
         const u = new URL(route.request().url());
         requests.push(u);
         if (u.pathname.includes("/.well-known/jwks"))
           return route.fulfill({ json: { keys: [jwk] } });
-        if (fail) return route.fulfill({ status: 503, body: "offline" });
+        const identity = u.searchParams.get(
+          u.pathname.includes("variants") ? "userId" : "u",
+        );
+        if (fail || identity === failingIdentity)
+          return route.fulfill({ status: 503, body: "offline" });
         const flags = {
           "new-dashboard": enabled,
           "api-v2": true,
           "enhanced-submit": enabled,
           "beta-access": enabled,
           "filter-always-on": enabled,
+          "filter-targeting": identity === "alice",
           ExpressCheckout: orderGate,
           "filter-context-property": orderGate,
         };
@@ -302,6 +350,34 @@ const root = path.resolve(__dirname, "..");
       assert.deepEqual(initial[0].searchParams.getAll("g"), ["beta"]);
       assert.equal(initial[0].searchParams.get("claim.role"), "admin");
     }
+    // A real Chromium page exercises the installed published SDK and Angular
+    // service; Playwright intercepts the .invalid destination before networking.
+    await p.getByTestId("telemetry-evaluate").click();
+    await expect(p.getByTestId("telemetry-result")).toContainText(
+      "new-dashboard: ON",
+    );
+    await p.getByTestId("telemetry-usage").click();
+    await p.getByTestId("telemetry-view").click();
+    await p.getByTestId("telemetry-counter").click();
+    await p.getByTestId("telemetry-gauge").click();
+    await p.getByTestId("telemetry-flush").click();
+    await expect.poll(() => telemetryPackets.length).toBe(1);
+    const packet = telemetryPackets[0];
+    assert.equal(packet.url, "https://telemetry.test.invalid/api/frontend/telemetry");
+    assert.equal(packet.body.k, "test-only-angular");
+    assert.equal(packet.body.e, "Production");
+    assert.equal(packet.body.u, "alice");
+    assert.ok(packet.body.f["new-dashboard"]);
+    const checksAndActions = Object.values(packet.body.f["new-dashboard"])[0];
+    assert.ok(checksAndActions[0] > 0, "feature checks are captured automatically");
+    assert.equal(checksAndActions[1], 1, "usage requires its explicit action");
+    assert.equal(checksAndActions[2], 1, "view requires its explicit action");
+    assert.deepEqual(packet.body.m, {
+      "sample-actions": 1,
+      "sample-cart-size": 3,
+    });
+    assert.equal("groups" in packet.body, false);
+    assert.equal("claims" in packet.body, false);
     async function notify(revision) {
       await p.evaluate(
         (revision) =>
@@ -331,9 +407,13 @@ const root = path.resolve(__dirname, "..");
     await notify("r3");
     await p.getByTestId("native-component").waitFor();
     await p.getByTestId("variant-comfortable").waitFor();
+    await expect(p.getByTestId("filter-targeting")).toContainText("ON");
     const before = requests.filter((u) =>
       u.pathname.includes("/evaluated"),
     ).length;
+    // Alice's targeting flag is ON. A failed switch to bob must not carry that
+    // previous identity's evaluation into bob's view.
+    failingIdentity = "bob";
     await p
       .getByRole("button", { name: "Non-matching · bob", exact: true })
       .click();
@@ -343,6 +423,53 @@ const root = path.resolve(__dirname, "..");
         () => requests.filter((u) => u.pathname.includes("/evaluated")).length,
       )
       .toBe(before + 2);
+    await expect(p.getByTestId("toggle-new-dashboard")).toHaveText(
+      "new-dashboard: OFF",
+    );
+    await expect(p.getByTestId("filter-targeting")).toContainText("OFF");
+    await p.getByRole("alert").waitFor();
+    await expect(p.getByTestId("telemetry-result")).toContainText(
+      "new-dashboard: OFF",
+    );
+    telemetryPackets.length = 0;
+    await p.getByTestId("telemetry-usage").click();
+    await p.getByTestId("telemetry-view").click();
+    await p.getByTestId("telemetry-flush").click();
+    await expect
+      .poll(() => telemetryPackets.some((item) => item.body.u === "bob"))
+      .toBe(true);
+    const bobTelemetry = telemetryPackets.find((item) => item.body.u === "bob");
+    assert.equal(
+      bobTelemetry.body.f["new-dashboard"].disabled[1],
+      1,
+      "explicit events after a failed context switch use bob's disabled result",
+    );
+    assert.equal(
+      bobTelemetry.body.f["new-dashboard"].disabled[2],
+      1,
+      "view events after a failed context switch use bob's disabled result",
+    );
+    assert.equal(
+      bobTelemetry.body.f["new-dashboard"].enabled,
+      undefined,
+      "explicit events do not retain alice's enabled variant",
+    );
+    failingIdentity = "";
+    const failedSwitchRequests = requests.filter((u) =>
+      u.pathname.includes("/evaluated"),
+    ).length;
+    await p
+      .getByRole("button", { name: "Non-matching · bob", exact: true })
+      .click();
+    await expect
+      .poll(
+        () => requests.filter((u) => u.pathname.includes("/evaluated")).length,
+      )
+      .toBe(failedSwitchRequests + 2);
+    await expect(p.getByTestId("toggle-new-dashboard")).toHaveText(
+      "new-dashboard: ON",
+    );
+    await expect(p.getByTestId("filter-targeting")).toContainText("OFF");
     const last = requests
       .filter((u) => u.pathname.includes("/evaluated"))
       .slice(-2);
@@ -361,6 +488,23 @@ const root = path.resolve(__dirname, "..");
       ),
       1,
       "scoped variant service closes its socket when panel unmounts",
+    );
+    await context.close();
+    telemetryPackets.length = 0;
+    build("optout", "test-only-angular", false);
+    ({ p, context } = await livePage());
+    await p.getByTestId("native-component").waitFor();
+    await expect(p.getByTestId("telemetry-status")).toContainText("opted out");
+    await expect(p.getByTestId("telemetry-usage")).toBeDisabled();
+    await p.getByTestId("telemetry-evaluate").click();
+    await expect(p.getByTestId("telemetry-result")).toContainText(
+      "new-dashboard: ON",
+    );
+    await expect(p.getByTestId("telemetry-flush")).toBeDisabled();
+    assert.deepEqual(
+      telemetryPackets,
+      [],
+      "telemetry opt-out preserves evaluations and prevents POSTs",
     );
     await context.close();
     for (const mode of ["tamper", "failure"]) {

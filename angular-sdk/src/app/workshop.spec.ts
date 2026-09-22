@@ -77,6 +77,87 @@ it("renders real native component/template/directive/builder and variant directi
   expect(el.querySelector('[data-testid="variant-compact"]')).not.toBeNull();
   expect(el.querySelectorAll("tbody tr")).toHaveLength(11);
 });
+it("keeps telemetry writes explicit and routes them through the owning service", async () => {
+  const fixture = await mount(),
+    w = TestBed.inject(Workshop),
+    sdk = TestBed.inject(TogglyService);
+  const usage = vi.spyOn(sdk, "recordUsage"),
+    view = vi.spyOn(sdk, "recordView"),
+    counter = vi.spyOn(sdk, "incrementCounter"),
+    gauge = vi.spyOn(sdk, "setGauge"),
+    flush = vi.spyOn(sdk, "flushTelemetry").mockResolvedValue();
+  expect(view).not.toHaveBeenCalled();
+  expect(fixture.nativeElement.querySelector('[data-testid="telemetry-status"]').textContent).toMatch(/offline|disabled|opted out/i);
+  const enabled = fixture.nativeElement.querySelector('[data-testid="telemetry-usage"]');
+  expect(enabled.disabled).toBe(true);
+  await w.evaluateTelemetryFlag();
+  expect(w.telemetryResult()).toContain("new-dashboard");
+  w.recordTelemetryUsage();
+  w.recordTelemetryView();
+  w.incrementSampleActions();
+  w.setSampleCartSize();
+  await w.flushTelemetry();
+  expect(usage).toHaveBeenCalledWith("new-dashboard", "enabled");
+  expect(view).toHaveBeenCalledWith("new-dashboard", "enabled");
+  expect(counter).toHaveBeenCalledWith("sample-actions", 1);
+  expect(gauge).toHaveBeenCalledWith("sample-cart-size", 3);
+  expect(flush).toHaveBeenCalledOnce();
+  fixture.destroy();
+});
+it("keeps only the latest generation selection and never checks during usage or view", async () => {
+  const fixture = await mount(),
+    w = TestBed.inject(Workshop),
+    sdk = TestBed.inject(TogglyService);
+  await w.evaluateTelemetryFlag();
+  expect(w.telemetrySelection()?.enabled).toBe(true);
+
+  let admit!: () => void,
+    release!: () => void;
+  const admitted = new Promise<void>((resolve) => (admit = resolve));
+  const held = new Promise<void>((resolve) => (release = resolve));
+  let holdFirst = true;
+  const hook = {
+    getMetadata: () => ({ name: "angular-sample-delayed-selection-test" }),
+    afterEvaluation: async (
+      flagKey: string,
+      _data: unknown,
+      result: boolean,
+    ) => {
+      if (holdFirst && flagKey === "new-dashboard") {
+        holdFirst = false;
+        expect(result).toBe(true);
+        admit();
+        await held;
+      }
+    },
+  };
+  sdk.addHook(hook);
+  const staleEvaluation = w.evaluateTelemetryFlag();
+  await admitted;
+
+  fixtureState.toggles["new-dashboard"] = false;
+  await w.refreshContext();
+  await vi.waitFor(() => expect(w.telemetrySelection()?.enabled).toBe(false));
+  const current = w.telemetrySelection();
+  expect(current?.context).toBe("alice");
+  expect(Object.isFrozen(current)).toBe(true);
+
+  release();
+  await staleEvaluation;
+  expect(w.telemetrySelection()).toBe(current);
+  expect(w.telemetryResult()).toContain("new-dashboard: OFF");
+
+  const checks = vi.spyOn(sdk, "isFeatureOn"),
+    usage = vi.spyOn(sdk, "recordUsage"),
+    view = vi.spyOn(sdk, "recordView");
+  w.recordTelemetryUsage();
+  w.recordTelemetryView();
+  expect(checks).not.toHaveBeenCalled();
+  expect(usage).toHaveBeenCalledWith("new-dashboard", "disabled");
+  expect(view).toHaveBeenCalledWith("new-dashboard", "disabled");
+  sdk.removeHook("angular-sample-delayed-selection-test");
+  fixture.destroy();
+});
 it("native negation, all/any, local gates and Order values stay coherent", async () => {
   const fixture = await mount(),
     w = TestBed.inject(Workshop),

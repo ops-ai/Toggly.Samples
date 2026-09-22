@@ -21,7 +21,8 @@
     <a href="#home">01 Start</a><a href="#gates">02 Gates</a
     ><a href="#actions">03 Actions</a><a href="#identity">04 Identity</a
     ><a href="#order">05 Order</a><a href="#filters">06 Filters</a
-    ><a href="#variants">07 Variants</a><a href="#surfaces">08 Angular</a>
+    ><a href="#variants">07 Variants</a><a href="#surfaces">08 Angular</a
+    ><a href="#telemetry">09 Telemetry</a>
   </nav>
   <section class="panel" id="home">
     <h2>01 · Your first flag: new-dashboard</h2>
@@ -103,5 +104,27 @@
       externalization keeps the genuine WebCrypto signature verifier enabled; it
       is not a crypto replacement.
     </p>
+  </section>
+  <section class="panel" id="telemetry">
+    <h2>09 · Frontend telemetry</h2>
+    <p data-testid="telemetry-status" aria-live="polite">
+      {{w.telemetryEnabled ? 'Telemetry is enabled for this configured app. Feature checks are captured automatically; explicit events require a click.' : w.offline ? 'Offline mode: feature checks use local fixtures and telemetry is silent.' : 'Telemetry is opted out. Feature evaluation remains enabled.'}}
+    </p>
+    <p>
+      Rendering this section does not record a view. Evaluate the flag, then use
+      the explicit usage, view, counter and gauge controls. Flush is best effort.
+    </p>
+    <button data-testid="telemetry-evaluate" (click)="w.evaluateTelemetryFlag()">
+      Evaluate new-dashboard
+    </button>
+    <strong data-testid="telemetry-result">{{w.telemetryResult()}}</strong>
+    <p>
+      <button data-testid="telemetry-usage" [disabled]="!w.telemetryEnabled || !w.telemetrySelection()" (click)="w.recordTelemetryUsage()">Record usage</button>
+      <button data-testid="telemetry-view" [disabled]="!w.telemetryEnabled || !w.telemetrySelection()" (click)="w.recordTelemetryView()">Record view</button>
+      <button data-testid="telemetry-counter" [disabled]="!w.telemetryEnabled" (click)="w.incrementSampleActions()">Increment sample-actions</button>
+      <button data-testid="telemetry-gauge" [disabled]="!w.telemetryEnabled" (click)="w.setSampleCartSize()">Set sample-cart-size</button>
+      <button data-testid="telemetry-flush" [disabled]="!w.telemetryEnabled" (click)="w.flushTelemetry()">Flush telemetry</button>
+    </p>
+    <p data-testid="telemetry-action-status" aria-live="polite">{{w.telemetryActionStatus()}}</p>
   </section>
 </main>

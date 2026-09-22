@@ -4,7 +4,7 @@ Follow one feature flag from configuration to a native Angular template, a servi
 
 ## Quick start
 
-Use Node **22.23.2** (with npm **10.9.8**) or a compatible newer Angular-supported Node release. The lockfile installs Angular **22.1.6**, Angular CLI/build **22.1.8**, `@ops-ai/ngx-feature-flags-toggly` **2.8.1**, `@ops-ai/toggly-hooks-types` **1.4.5** for the SDK's peer API, and Vitest **4.1.11**.
+Use Node **22.23.2** (with npm **10.9.8**) or a compatible newer Angular-supported Node release. The lockfile installs Angular **22.1.6**, Angular CLI/build **22.1.8**, `@ops-ai/ngx-feature-flags-toggly` **2.9.0**, `@ops-ai/toggly-hooks-types` **1.4.5** for the SDK's peer API, and Vitest **4.1.11**.
 
 ```sh
 cd angular-sdk
@@ -22,7 +22,7 @@ cp .env.example .env.local
 npm start
 ```
 
-Restart after changing configuration. Angular has no automatic public environment-variable prefix: [configure.cjs](scripts/configure.cjs) deliberately copies only `TOGGLY_APP_KEY` and `TOGGLY_ENVIRONMENT` into generated browser code. The App Key is public configuration, **not an API/admin secret**. Never put secret tokens into this file or a browser bundle. `.env.local` and the generated file are ignored.
+Restart after changing configuration. Angular has no automatic public environment-variable prefix: [configure.cjs](scripts/configure.cjs) copies only `TOGGLY_APP_KEY`, `TOGGLY_ENVIRONMENT`, the telemetry opt-out, and an optional public metrics base URL into generated browser code. Telemetry is enabled by default for a configured app; set `TOGGLY_ENABLE_TELEMETRY=false` to opt out without disabling feature evaluation. The App Key is public configuration, **not an API/admin secret**. Never put secret tokens into this file or a browser bundle. `.env.local` and the generated file are ignored.
 
 ## Why the Angular setup matters
 
@@ -44,6 +44,7 @@ The official application builder is configured with `externalDependencies: ["cry
 | 06 Filters           | [filter-matrix.ts](src/app/sections/filter-matrix.ts), [catalog.ts](src/app/sample/catalog.ts) | Compare eleven real SDK results and inspect reference HTTP inputs               |
 | 07 Variants          | [variants.ts](src/app/sections/variants.ts)                                                    | Native `*featureVariant` and `getVariant` assignment/configuration              |
 | 08 Angular surfaces  | [app.routes.ts](src/app/app.routes.ts), [workshop.ts](src/app/sample/workshop.ts)              | Deny the Beta route, restrict a local gate, simulate failure and recover        |
+| 09 Frontend telemetry | [home.html](src/app/home.html), [workshop.ts](src/app/sample/workshop.ts), [config.ts](src/app/sample/config.ts) | Observe automatic checks, click explicit usage/view/metric actions, and opt out |
 
 The SDK returns Promises and offers refresh callbacks. `from(isFeatureOn(...))` is a **one-shot RxJS composition**, not a native `isFeatureOn$` API. The checklist's BehaviorSubject is another small sample bridge: it subscribes to `subscribeFeaturesRefresh` and `subscribeLocalGatesChanged`, reevaluates the real service, and releases subscriptions on destruction. Generation checks discard stale async snapshots after user/Order changes or disposal.
 
@@ -94,7 +95,7 @@ The expandable HTTP presets show US/CA, English/French, and Chrome-on-Mac/Firefo
 
 ## Defaults, recovery and security
 
-The loading state is visible until native checks settle. Live mode verifies signed definitions and uses OFF defaults on an initial failure; a later context-refresh failure retains the last successfully evaluated snapshot and records its diagnostic. `persistCache: false` keeps workshop sessions independent. The SDK's `lastError` retains its most recent diagnostic even after a later successful request, so the alert is labelled historical and the checklist shows current results. The offline failure/recovery controls demonstrate both states.
+The loading state is visible until native checks settle. Live mode verifies signed definitions and uses OFF defaults on an initial failure. After a context change, a failed refresh keeps the new identity and its cached/default flags; it never reuses the previous user's snapshot. `persistCache: false` keeps workshop sessions independent. The SDK's `lastError` retains its most recent diagnostic even after a later successful request, so the alert is labelled historical and the checklist shows current results. The offline controls demonstrate fail-closed context changes and recovery for the selected identity.
 
 Feature flags choose presentation; they do not authorize payments, API calls or access to protected data. Claims supplied by a browser are untrusted. The Beta route guard is an interface example, not a server permission boundary. A real backend must independently authenticate and authorize actions.
 
@@ -107,7 +108,7 @@ npm test
 TOGGLY_APP_KEY=ci-placeholder TOGGLY_ENVIRONMENT=Production npm run build
 ```
 
-Tests use deterministic local HTTP/socket transport, not a live service. Unit tests exercise the installed SDK and Angular templates. Their JIT harness explicitly marks views when checking linked SDK components; production acceptance is the separate AOT browser test, which never marks SDK views. Browser tests build missing-key and signed modes, verify native rendering, tamper rejection, identity, Order, route denial/allow, background notifications, subscription/socket cleanup, and desktop/mobile layout. `npm test` forces unit fixtures even if you have a local App Key. `CHROMIUM_EXECUTABLE` may point to an installed Chrome binary; `SCREENSHOT_DIR` optionally saves walkthrough images.
+Tests use deterministic local HTTP/socket transport, not a live service. Unit tests exercise the installed SDK and Angular templates. Their JIT harness explicitly marks views when checking linked SDK components; production acceptance is the separate AOT browser test, which never marks SDK views. Browser tests build missing-key, enabled and opted-out modes, intercept the telemetry host, verify the compact packet, and cover native rendering, tamper rejection, identity, Order, route denial/allow, background notifications, subscription/socket cleanup, and desktop/mobile layout. `npm test` forces unit fixtures even if you have a local App Key. `CHROMIUM_EXECUTABLE` may point to an installed Chrome binary; `SCREENSHOT_DIR` optionally saves walkthrough images.
 
 Manual checklist:
 
@@ -117,6 +118,9 @@ Manual checklist:
 - Switch to bob: targeting/claims change and the variant becomes comfortable with the matching dashboard rules.
 - Disable `beta-access`: navigation stays on the workshop. Reenable it: the Beta page opens.
 - In offline mode, fail/recover transport: OFF defaults recover while the most recent diagnostic remains visible.
+- The browser test starts with alice's `filter-targeting` ON and fails a switch to bob: alice's ON state must not appear for bob; the service shows OFF defaults until bob's request succeeds. The offline failure/recovery buttons also show safe defaults and restored results for the selected identity.
+- In offline mode, evaluate `new-dashboard`: local checks still work and telemetry actions stay disabled. With a configured sample App Key, the SDK captures feature checks automatically. Click **Evaluate new-dashboard** to select the current context and variant; usage/view remain disabled until that selection settles and are invalidated during identity or definitions refreshes. Then click **Record usage**, **Record view**, counter/gauge, and **Flush telemetry** to demonstrate explicit events without adding feature checks to those actions. Rendering the section alone does not record a view.
+- Set `TOGGLY_ENABLE_TELEMETRY=false` and restart: feature evaluation remains active while telemetry write controls stay disabled.
 - With a real App Key, change a flag in the dashboard without clicking sample controls: native gates, checklist and filter matrix should update together.
 
 See the [Angular SDK guide](https://docs.toggly.io/sdks/javascript/angular) and [Sample Contract](../docs/SAMPLE_CONTRACT.md).
