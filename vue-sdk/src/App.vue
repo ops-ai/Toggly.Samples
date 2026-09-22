@@ -1,5 +1,5 @@
 <script setup>
-import { inject } from "vue";
+import { inject, onMounted } from "vue";
 import TemplateGates from "./components/TemplateGates.vue";
 import OrderGate from "./components/OrderGate.vue";
 import Variants from "./components/Variants.vue";
@@ -8,7 +8,9 @@ import FilterMatrix from "./components/FilterMatrix.vue";
 import { workshopKey } from "./sample/workshop";
 import { demoKeys } from "./sample/catalog";
 const workshop = inject(workshopKey);
+const service = inject("$toggly");
 const { state } = workshop;
+onMounted(() => void workshop.attach(service));
 const sections = [
   ["home", "Start here"],
   ["declarative", "Template gates"],
@@ -18,6 +20,7 @@ const sections = [
   ["filters", "Filters matrix"],
   ["variants", "Variants"],
   ["native", "Vue surfaces"],
+  ["telemetry", "Telemetry"],
 ];
 </script>
 <template>
@@ -134,6 +137,72 @@ const sections = [
     <FilterMatrix />
     <Variants v-if="state.ready" />
     <Actions section="native" />
+    <section id="telemetry" class="panel">
+      <div class="section-top">
+        <span class="number">09</span>
+        <h2>Frontend telemetry</h2>
+      </div>
+      <p data-testid="telemetry-status" role="status" aria-live="polite">
+        {{
+          state.telemetryEnabled
+            ? "Telemetry is enabled for both configured client instances. Feature checks are automatic; explicit events require a click."
+            : state.offline
+              ? "Offline mode: fixture checks stay local and telemetry is silent."
+              : "Telemetry is opted out. Feature evaluation remains active."
+        }}
+      </p>
+      <p>
+        Rendering this panel does not record a view. Evaluate the flag to
+        select the current identity and variant before recording usage or a
+        view. Those buttons stay disabled while that selection is unavailable.
+      </p>
+      <div class="controls">
+        <button
+          @click="workshop.evaluateTelemetryFlag()"
+          :disabled="!state.ready || state.busy"
+          data-testid="telemetry-evaluate"
+        >
+          Evaluate new-dashboard
+        </button>
+        <strong data-testid="telemetry-result">
+          {{
+            state.telemetrySelection
+              ? `new-dashboard: ${state.telemetrySelection.enabled ? "ON" : "OFF"} · variant ${state.telemetrySelection.variant}`
+              : "No current selection; evaluate the flag first."
+          }}
+        </strong>
+      </div>
+      <div class="controls">
+        <button
+          @click="workshop.recordTelemetryUsage()"
+          :disabled="!state.ready || !state.telemetryEnabled || state.busy || !state.telemetrySelection"
+          data-testid="telemetry-usage"
+        >Record usage</button>
+        <button
+          @click="workshop.recordTelemetryView()"
+          :disabled="!state.ready || !state.telemetryEnabled || state.busy || !state.telemetrySelection"
+          data-testid="telemetry-view"
+        >Record view</button>
+        <button
+          @click="workshop.incrementSampleActions()"
+          :disabled="!state.ready || !state.telemetryEnabled || state.busy"
+          data-testid="telemetry-counter"
+        >Increment sample-actions</button>
+        <button
+          @click="workshop.setSampleCartSize()"
+          :disabled="!state.ready || !state.telemetryEnabled || state.busy"
+          data-testid="telemetry-gauge"
+        >Set sample-cart-size</button>
+        <button
+          @click="workshop.flushTelemetry()"
+          :disabled="!state.ready || !state.telemetryEnabled || state.busy"
+          data-testid="telemetry-flush"
+        >Flush telemetry</button>
+      </div>
+      <p data-testid="telemetry-action-status" aria-live="polite">
+        {{ state.telemetryActionStatus }}
+      </p>
+    </section>
     <footer>
       <strong>Keep your fallback. Keep your authorization.</strong>
       <p>

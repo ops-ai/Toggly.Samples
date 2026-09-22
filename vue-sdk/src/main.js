@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import { toggly, togglyService } from "@ops-ai/vue-feature-flags-toggly";
+import { toggly } from "@ops-ai/vue-feature-flags-toggly";
 import App from "./App.vue";
 import { createWorkshop, workshopKey } from "./sample/workshop";
 import "./style.css";
@@ -11,7 +11,6 @@ const app = createApp(App);
 app.use(toggly, workshop.options); // Registers native Feature and injects $toggly.
 app.provide(workshopKey, workshop);
 app.mount("#app");
-workshop.attach(togglyService);
 if (import.meta.hot)
   import.meta.hot.dispose(() => {
     app.unmount();

@@ -2,7 +2,8 @@
 // transport is faked. No private SDK fields or sample-only substitute gates.
 import assert from "node:assert/strict";
 import { createHash, webcrypto } from "node:crypto";
-import { chromium } from "@playwright/test";
+import { chromium, expect } from "@playwright/test";
+import { gunzipSync } from "node:zlib";
 import { createServer, build, preview } from "vite";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -15,8 +16,11 @@ const browser = await chromium.launch({
 });
 const servers = [];
 const buildDirectory = await mkdtemp(join(tmpdir(), "toggly-vue-browser-"));
-async function serve(port, appKey = "") {
+async function serve(port, appKey = "", telemetry = true) {
   process.env.VITE_TOGGLY_APP_KEY = appKey;
+  process.env.VITE_TOGGLY_ENABLE_TELEMETRY = telemetry ? "true" : "false";
+  process.env.VITE_TOGGLY_METRICS_BASE_URL =
+    "https://telemetry.test.invalid";
   if (appKey) {
     // Verify the production browser bundle too: a dev-only pass could hide a
     // signature dependency that the production bundler transforms differently.
@@ -51,10 +55,20 @@ try {
     viewport: { width: 1280, height: 900 },
   });
   const errors = [];
+  const offlineTelemetry = [];
   page.on("pageerror", (e) => errors.push(e.message));
+  await page.route("https://telemetry.test.invalid/**", async (route) => {
+    offlineTelemetry.push(route.request().url());
+    await route.fulfill({ status: 202, body: "" });
+  });
   await page.goto(await serve(4173));
   await page.getByTestId("new-ui").waitFor();
   assert.match(await page.getByTestId("missing-key").innerText(), /No App Key/);
+  await page.getByTestId("telemetry-evaluate").click();
+  await expect(page.getByTestId("telemetry-result")).toContainText(
+    "new-dashboard: ON",
+  );
+  await expect(page.getByTestId("telemetry-usage")).toBeDisabled();
   await page.getByTestId("toggle-new-dashboard").click();
   await page.getByTestId("old-ui").waitFor();
   await page.getByTestId("toggle-new-dashboard").click();
@@ -86,6 +100,11 @@ try {
       `horizontal overflow at ${width}`,
     );
   }
+  assert.deepEqual(
+    offlineTelemetry,
+    [],
+    "keyless offline checks and controls never POST telemetry",
+  );
   if (process.env.SCREENSHOT_DIR) {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.screenshot({
@@ -140,7 +159,9 @@ try {
     };
   }
   let tamper = false;
+  let failRefresh = false;
   const requests = [];
+  const telemetryPackets = [];
   const live = await browser.newPage();
   // Live-update socket delivery is outside this test; do not contact a real
   // WebSocket endpoint with the explicit test-only App Key below.
@@ -152,11 +173,24 @@ try {
       addEventListener() {}
     };
   });
+  await live.route("https://telemetry.test.invalid/**", async (route) => {
+    const request = route.request();
+    assert.equal(request.method(), "POST");
+    const bytes = request.postDataBuffer();
+    const body =
+      request.headers()["content-encoding"] === "gzip"
+        ? gunzipSync(bytes)
+        : bytes;
+    telemetryPackets.push(JSON.parse(body.toString("utf8")));
+    await route.fulfill({ status: 202, body: "" });
+  });
   await live.route("https://definitions.toggly.io/**", async (route) => {
     const url = new URL(route.request().url());
     requests.push(url);
     if (url.pathname.includes("/.well-known/jwks"))
       return route.fulfill({ json: { keys: [jwk] } });
+    if (failRefresh)
+      return route.fulfill({ status: 503, body: "test refresh failure" });
     const body = await envelope(
       url.pathname.includes("variants")
         ? {
@@ -191,6 +225,44 @@ try {
   assert.equal(evaluated[0].searchParams.get("u"), "alice");
   assert.deepEqual(evaluated[0].searchParams.getAll("g"), ["beta"]);
   assert.equal(evaluated[0].searchParams.get("claim.role"), "admin");
+  await live.getByTestId("telemetry-evaluate").click();
+  await expect(live.getByTestId("telemetry-result")).toContainText(
+    "new-dashboard: ON",
+  );
+  await live.getByTestId("telemetry-usage").click();
+  const evaluatedBeforeExplicitEvents = requests.filter((url) =>
+    url.pathname.includes("/evaluated-signed/"),
+  ).length;
+  await live.getByTestId("telemetry-view").click();
+  await live.getByTestId("telemetry-counter").click();
+  await live.getByTestId("telemetry-gauge").click();
+  await live.getByTestId("telemetry-flush").click();
+  await expect.poll(() => telemetryPackets.length).toBe(2);
+  assert.equal(
+    requests.filter((url) => url.pathname.includes("/evaluated-signed/")).length,
+    evaluatedBeforeExplicitEvents,
+    "explicit telemetry actions do not trigger additional feature checks",
+  );
+  const mainPacket = telemetryPackets.find((packet) => packet.m);
+  const variantPacket = telemetryPackets.find(
+    (packet) => packet.f?.["new-dashboard"] && !packet.m,
+  );
+  assert.ok(mainPacket, "the plugin-owned main service sends explicit events");
+  assert.ok(variantPacket, "the separate keyed variant service sends checks");
+  assert.equal(mainPacket.k, "test-only-not-a-real-key");
+  assert.equal(mainPacket.e, "Production");
+  assert.equal(mainPacket.u, "alice");
+  const mainFeature = mainPacket.f["new-dashboard"];
+  assert.ok(mainFeature.enabled[0] > 0, "main-service checks are automatic");
+  assert.equal(mainFeature.signed[1], 1, "usage uses the selected variant");
+  assert.equal(mainFeature.signed[2], 1, "view uses the selected variant");
+  assert.deepEqual(mainPacket.m, {
+    "sample-actions": 1,
+    "sample-cart-size": 3,
+  });
+  const variantFeature = Object.values(variantPacket.f["new-dashboard"])[0];
+  assert.ok(variantFeature[0] > 0, "variant-service checks are automatic");
+  assert.equal(variantPacket.u, "alice");
   tamper = true;
   await live.getByTestId("nonmatching").click();
   await live.getByRole("alert").waitFor();
@@ -201,8 +273,55 @@ try {
     "tampered signed ON payload must not enable UI",
   );
   await live.close();
+
+  tamper = false;
+  const optedOut = await browser.newPage();
+  const optedOutPackets = [];
+  await optedOut.addInitScript(() => {
+    window.WebSocket = class {
+      readyState = 0;
+      close() {}
+      send() {}
+      addEventListener() {}
+    };
+  });
+  await optedOut.route("https://telemetry.test.invalid/**", async (route) => {
+    optedOutPackets.push(route.request().url());
+    await route.fulfill({ status: 202, body: "" });
+  });
+  await optedOut.route("https://definitions.toggly.io/**", async (route) => {
+    const url = new URL(route.request().url());
+    if (url.pathname.includes("/.well-known/jwks"))
+      return route.fulfill({ json: { keys: [jwk] } });
+    const body = await envelope(
+      url.pathname.includes("variants")
+        ? {
+            "new-dashboard": {
+              enabled: true,
+              variant: "signed",
+              configurationValue: { density: "signed" },
+            },
+          }
+        : { "new-dashboard": true, "api-v2": true },
+    );
+    return route.fulfill({ json: body });
+  });
+  await optedOut.goto(await serve(4175, "test-only-not-a-real-key", false));
+  await optedOut.getByTestId("new-ui").waitFor();
+  await optedOut.getByTestId("telemetry-evaluate").click();
+  await expect(optedOut.getByTestId("telemetry-result")).toContainText(
+    "new-dashboard: ON",
+  );
+  await expect(optedOut.getByTestId("telemetry-usage")).toBeDisabled();
+  await expect(optedOut.getByTestId("telemetry-flush")).toBeDisabled();
+  assert.deepEqual(
+    optedOutPackets,
+    [],
+    "opt-out preserves evaluations and prevents telemetry POSTs",
+  );
+  await optedOut.close();
   console.log(
-    "Browser checks passed: offline controls/mobile layout, production-bundle signed SDK responses, tamper rejection, initial context",
+    "Browser checks passed: offline/keyless silence, enabled dual-client telemetry packets, opt-out silence, mobile layout, signed definitions and tamper rejection",
   );
 } finally {
   await browser.close();
