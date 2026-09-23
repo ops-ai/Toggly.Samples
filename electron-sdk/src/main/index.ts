@@ -128,7 +128,7 @@ async function runNativeHostContract(window: BrowserWindow): Promise<void> {
         void poll()
       })
     `)
-    if (hostMode !== 'keyless') {
+    if (hostMode === 'enabled' || hostMode === 'optout') {
       const telemetry = await window.webContents.executeJavaScript(`
         (() => {
           const direct = window.toggly.isFeatureOn('new-dashboard')
@@ -160,8 +160,16 @@ async function runNativeHostContract(window: BrowserWindow): Promise<void> {
 }
 
 app.whenReady().then(async () => {
+  if (hostReport && process.env.TOGGLY_SAMPLE_HOST_PID_PATH) {
+    await writeFile(process.env.TOGGLY_SAMPLE_HOST_PID_PATH, String(process.pid))
+  }
+  if (process.env.TOGGLY_SAMPLE_HOST_FAIL === 'true') {
+    app.exit(1)
+    return
+  }
   await ensureToggly()
   const window = await createWindow()
+  if (process.env.TOGGLY_SAMPLE_HOST_HANG === 'true') return
   await runNativeHostContract(window)
 })
 

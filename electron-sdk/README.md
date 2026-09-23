@@ -157,6 +157,7 @@ npm ci
 npm test
 npm run build
 npm run test:public-host
+npm run test:native-timeout
 
 # Retained maintainer compatibility contract, separate from public proof.
 TOGGLY_ELECTRON_SDK_TARBALL=/absolute/path/to/ops-ai-electron-feature-flags-toggly-1.1.0.tgz npm run test:packed-hosts
@@ -170,6 +171,8 @@ preload, context-isolated renderer IPC bridge, and React hooks/components in
 an actual hidden Electron window. On Linux it requires a display server such
 as Xvfb. The candidate tarball is neither committed nor substituted with an
 SDK source path or an unpublished registry version.
+`test:native-timeout` opens a real hidden window, forces a timeout, and verifies
+that the owned Electron app PID is gone; it also checks the early-failure path.
 
 CI also uses a synthetic main-only key for the intercepted host contract.
 It does not prove live dashboard setup, connectivity, signatures, or cache

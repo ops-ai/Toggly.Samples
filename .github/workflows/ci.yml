@@ -148,6 +148,7 @@ jobs:
       - run: npm run build
       - run: sudo apt-get update && sudo apt-get install --yes xvfb
       - run: xvfb-run -a npm run test:public-host
+      - run: xvfb-run -a npm run test:native-timeout
       - uses: actions/checkout@v7
         with:
           repository: ops-ai/Toggly.FeatureManagement

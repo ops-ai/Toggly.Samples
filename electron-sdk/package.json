@@ -14,6 +14,7 @@
     "build": "electron-vite build",
     "test": "vitest run",
     "test:public-host": "node test/public-host.mjs",
+    "test:native-timeout": "node test/native-timeout.mjs",
     "test:packed-hosts": "node test/packed-hosts.mjs"
   },
   "dependencies": {

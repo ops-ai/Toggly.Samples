@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict'
-import { spawn } from 'node:child_process'
 import { mkdtempSync, readFileSync, realpathSync, rmSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { launchElectron } from './native-host.mjs'
 
 const sample = dirname(dirname(fileURLToPath(import.meta.url)))
 const require = createRequire(join(sample, 'package.json'))
@@ -26,29 +26,7 @@ async function run(mode) {
     TOGGLY_SAMPLE_HOST_MODE: mode,
     ELECTRON_DISABLE_SECURITY_WARNINGS: 'true',
   }
-  const [command, args] = process.platform === 'darwin'
-    ? ['/usr/bin/open', [
-      '-W', '-n', '-g',
-      ...Object.entries(environment)
-        .filter(([key]) => key.startsWith('TOGGLY_') || key === 'ELECTRON_DISABLE_SECURITY_WARNINGS')
-        .flatMap(([key, value]) => ['--env', `${key}=${value}`]),
-      dirname(dirname(dirname(executable))), '--args', sample,
-    ]]
-    : [executable, [sample, ...(process.platform === 'linux' ? ['--no-sandbox'] : [])]]
-
-  const exitCode = await new Promise((resolve, reject) => {
-    const child = spawn(command, args, { cwd: sample, env: environment, stdio: 'pipe' })
-    let output = ''
-    child.stdout.on('data', chunk => { output += chunk })
-    child.stderr.on('data', chunk => { output += chunk })
-    const timeout = setTimeout(() => child.kill('SIGTERM'), 35_000)
-    child.once('error', error => { clearTimeout(timeout); reject(error) })
-    child.once('close', code => {
-      clearTimeout(timeout)
-      if (code !== 0) reject(new Error(`${mode}: Electron exited ${code}\n${output}`))
-      else resolve(code)
-    })
-  })
+  const exitCode = await launchElectron({ executable, hostDirectory: sample, reportPath, environment })
   assert.equal(exitCode, 0)
   const report = JSON.parse(readFileSync(reportPath, 'utf8'))
   assert.equal(report.passed, true, JSON.stringify(report))
