@@ -16,7 +16,7 @@ const hosts = [
 ]
 
 if (!tarball || !existsSync(tarball)) {
-  throw new Error('TOGGLY_ELECTRON_SDK_TARBALL must name the packed 1.0.2 SDK artifact')
+  throw new Error('TOGGLY_ELECTRON_SDK_TARBALL must name the packed 1.1.0 SDK artifact')
 }
 
 function run(command, args, cwd) {
@@ -113,6 +113,7 @@ try {
       feature: false,
       negatedFeature: true,
       hookIsDisabled: true,
+      packets: [],
     })
     console.log(`PACKED_ELECTRON_SAMPLE_${host.electron}_HOST_PASS`)
   }

@@ -1,7 +1,7 @@
 # Electron SDK Sample
 
 A beginner-oriented Electron 44 + React 19 desktop application using published
-[`@ops-ai/electron-feature-flags-toggly` 1.0.0](https://www.npmjs.com/package/@ops-ai/electron-feature-flags-toggly).
+[`@ops-ai/electron-feature-flags-toggly` 1.1.0](https://www.npmjs.com/package/@ops-ai/electron-feature-flags-toggly).
 It pins Electron 44.3.0, electron-vite 5.0.0, React 19.3.0, Vite React plugin
 5.2.0, TypeScript 7.0.2, Vitest 5.0.0, and dotenv 17.4.2. These were checked
 against npm on 2026-09-12. Run with Node 22.12+; CI uses Node 24.
@@ -45,8 +45,9 @@ Read the sample in this order:
 ```
 
 Main owns the key. `contextIsolation: true` and `nodeIntegration: false` keep
-Node out of page code. `exposeToggly()` permits only feature decisions,
-snapshots, explicit session updates and update subscriptions; do not expose a
+Node out of page code. `exposeToggly()` permits feature decisions,
+snapshots, explicit session updates, telemetry events and update subscriptions;
+do not expose a
 generic IPC channel or the App Key.
 
 ## Contract sections
@@ -79,9 +80,28 @@ rollouts stable for that identity.
 For `ExpressCheckout`, this sample sends the published entity object
 `{ kind: 'Order', key: 'ord-vip', attributes: { Id, Vip, Total } }` only to
 that evaluation. It does not change the desktop identity to inspect an order.
-Electron SDK 1.0.0 publishes boolean flags and
+Electron SDK 1.1.0 publishes boolean flags and
 all/any/negate gates, but no named-variant or experiment-assignment API. The
 dashboard labels are boolean UI branches, not A/B assignments.
+
+## Main-owned telemetry
+
+With a configured App Key, SDK 1.1.0 automatically counts effective feature
+checks made by direct, gate, and committed React paths. The Electron section
+demonstrates explicit `recordUsage`, `recordView`, `incrementCounter`,
+`setGauge`, and `flushTelemetry` through the validated preload bridge. Main
+owns one reporter shared across windows; the renderer receives neither the
+App Key nor a transport configuration. Set `TOGGLY_DISABLE_TELEMETRY=true`
+in main to opt out. Missing-key mode also disables reporting. Event variants
+label usage or views, not named flag assignments.
+
+Main attaches the SDK lifecycle hook for window blur, last-window close,
+suspend, and app quit. The public host test runs a real hidden BrowserWindow
+with bundled preload after a clean registry install. It intercepts definitions
+and telemetry, captures a compact gzipped packet, and checks keyless, opt-out,
+validated IPC, React, and explicit API paths without a production POST. The
+observed packet contains an anonymous `u` field; acceptance of that optional
+wire field is tracked separately from this sample verification.
 
 ## Create the Toggly application manually
 
@@ -115,7 +135,7 @@ Matching sends `alice`, `role=admin`, and a VIP Order. Non-matching sends
 `bob`, `role=user`, and a standard Order. The full template inputs are visible
 in the UI to keep configuration consistent.
 
-| Filter | Matching / non-matching | Electron 1.0.0 |
+| Filter | Matching / non-matching | Electron 1.1.0 |
 | --- | --- | --- |
 | AlwaysOn, Percentage, Targeting, UserClaims, TimeWindow | Template values | Supported. Percentage is sticky and has no prescribed result. |
 | ContextProperty | VIP / standard Order | Supported per evaluation. |
@@ -136,22 +156,24 @@ cd electron-sdk
 npm ci
 npm test
 npm run build
+npm run test:public-host
 
-# Maintainer native contract; the tarball is an uncommitted packed 1.0.2 SDK.
-TOGGLY_ELECTRON_SDK_TARBALL=/absolute/path/to/ops-ai-electron-feature-flags-toggly-1.0.2.tgz npm run test:packed-hosts
+# Retained maintainer compatibility contract, separate from public proof.
+TOGGLY_ELECTRON_SDK_TARBALL=/absolute/path/to/ops-ai-electron-feature-flags-toggly-1.1.0.tgz npm run test:packed-hosts
 npm run dev
 ```
 
-`test:packed-hosts` installs the supplied packed candidate into disposable
+`test:public-host` uses the public 1.1.0 package recorded in the registry
+lockfile. `test:packed-hosts` installs the supplied packed candidate into disposable
 Electron 28.3.3 and 44.3.0 hosts. It runs the built main, custom compiled
 preload, context-isolated renderer IPC bridge, and React hooks/components in
 an actual hidden Electron window. On Linux it requires a display server such
 as Xvfb. The candidate tarball is neither committed nor substituted with an
 SDK source path or an unpublished registry version.
 
-CI runs without an App Key, proving the missing-key/default branch without
-fabricating a credential. It does not prove live dashboard setup, connectivity,
-signatures, or cache behavior.
+CI also uses a synthetic main-only key for the intercepted host contract.
+It does not prove live dashboard setup, connectivity, signatures, or cache
+behavior.
 
 ## Manual checklist
 
