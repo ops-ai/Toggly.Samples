@@ -24,7 +24,7 @@ test("native core mapper evaluates VIP/standard and fails closed without entity"
   );
   assert.equal(await client.getFlag("ExpressCheckout"), false);
   assert.equal(await client.getFlag("unknown"), false);
-  client.stopWebSocket();
+  client.dispose({ flush: false });
 });
 test("native clients isolate initial identity, cache and manual refresh", async () => {
   const calls = [];
@@ -53,8 +53,8 @@ test("native clients isolate initial identity, cache and manual refresh", async 
   assert.equal(await alice.getFlag("demo"), true);
   await alice.refreshFlags();
   assert.equal(await alice.getFlag("demo"), false);
-  alice.stopWebSocket();
-  bob.stopWebSocket();
+  alice.dispose({ flush: false });
+  bob.dispose({ flush: false });
 });
 test("native failed transport preserves defaults and last known good data", async () => {
   let fail = true;
@@ -73,7 +73,7 @@ test("native failed transport preserves defaults and last known good data", asyn
   fail = true;
   await client.refreshFlags();
   assert.equal(await client.getFlag("demo"), true);
-  client.stopWebSocket();
+  client.dispose({ flush: false });
 });
 test("recorded matrix preserves exact shared keys and truthful always/time behavior", () => {
   const flags = fixtureFlags(

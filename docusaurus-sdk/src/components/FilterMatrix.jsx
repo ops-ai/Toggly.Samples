@@ -7,7 +7,7 @@ export default function FilterMatrix() {
   const { preset, offline, order, entityFilter } = useWorkshop();
   return (
     <section className="panel" id="filters">
-      <h2>06 · Eleven filters, one reference matrix</h2>
+      <h2>07 · Eleven filters, one reference matrix</h2>
       <p>
         {offline
           ? "Recorded fixture outcomes through the native binding."

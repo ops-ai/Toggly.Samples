@@ -1,6 +1,6 @@
 # Docusaurus SDK workshop
 
-A Docusaurus 3 site that takes one feature flag through native MDX/React components, a programmatic action, a live filter matrix and a real core Order mapper. It uses the published **@ops-ai/toggly-docusaurus-plugin 0.9.0** and **@ops-ai/toggly-client-core 0.4.0**, with **Docusaurus 3.10.2** and **React 19.3.0** recorded in the lockfile.
+A Docusaurus 3 site that takes one feature flag through native MDX/React components, a programmatic action, a live filter matrix and a real core Order mapper. It uses the published **@ops-ai/toggly-docusaurus-plugin 0.10.0** and **@ops-ai/toggly-client-core 0.5.1**, with **Docusaurus 3.10.2** and **React 19.3.0** recorded in the lockfile.
 
 ## Run the workshop
 
@@ -20,9 +20,10 @@ Open **http://localhost:3000**. No App Key is needed for the labelled **OFFLINE 
 2. Switch it OFF. Native `Feature` removes the new UI; its negated sibling shows the existing UI. The checklist and `useFlag` hook agree.
 3. Keep `api-v2` ON. The sample's **all** result is OFF, but **any** is ON. These are explicitly composed booleans, not an invented native multi-key component.
 4. Check submit, then turn the device prerequisite off and check again. The local AND can deny an enabled flag; it never enables a denied flag.
-5. Select bob and compare the recorded filter matrix. Pick VIP/standard Order: Express Checkout changes without changing the user.
-6. Open the MDX Beta guide. Inspect its `x-feature` frontmatter and native `Feature flag`/`negate` examples.
-7. Exercise safe OFF defaults, then restore the recorded values. This control replaces defaults; it does not pretend a network request failed.
+5. Record and flush the explicit workshop usage, view, counter and gauge. This action does not evaluate another feature.
+6. Select bob and compare the recorded filter matrix. Pick VIP/standard Order: Express Checkout changes without changing the user.
+7. Open the MDX Beta guide. Inspect its `x-feature` frontmatter and native `Feature flag`/`negate` examples.
+8. Exercise safe OFF defaults, then restore the recorded values. This control replaces defaults; it does not pretend a network request failed.
 
 ## Connect your application
 
@@ -35,6 +36,10 @@ cp .env.example .env.local
 
 Live mode requires signed responses. Offline toggle/default buttons are disabled; change flags in Toggly and observe native polling update the UI and checklist together. A one-second interval makes this teaching exercise responsive; use an appropriate longer refresh interval in a production application.
 
+Frontend telemetry is enabled by default when `TOGGLY_APP_KEY` is configured. Set `TOGGLY_ENABLE_TELEMETRY=false` for an explicit opt-out. Definitions continue to use `definitions.toggly.io`; compact usage and business-metric batches use the independent `https://metrics.toggly.io/api/frontend/telemetry` endpoint. The provider owns one reporter for React components and hooks. The separate Order core client owns a second reporter because it performs independent entity evaluations, and its cleanup calls `dispose()` so replacement cannot leave reporter or browser lifecycle resources behind.
+
+Automatic checks are recorded at the SDK evaluation boundary. The workshop button explicitly records one usage and one view for `docusaurus-workshop` with the `workshop` variant, adds two to `docusaurus-sample-actions`, sets `docusaurus-sample-gauge` to three, and awaits a best-effort flush. Explicit usage/view calls do not perform another flag check. Rendering a component does not imply a view. Telemetry delivery is bounded and best effort; it must not be used as an authorization or billing decision.
+
 Identity is supplied before each client first fetches. This installed binding/core does not expose startup groups/claims or a context setter. The shown groups/claims are fixture reference inputs and are not sent in live mode. Switching users remounts clients with their supported identity configuration. Order evaluation uses a separate actual core instance, so two client requests are intentional. The plugin's mapped navbar may also evaluate independently with its configured build identity; it is not a session-aware authorization boundary.
 
 ## What each section teaches
@@ -44,8 +49,9 @@ Identity is supplied before each client first fetches. This installed binding/co
 | Home         | Live `useToggly().flags`, checklist and missing-key guidance — [index.jsx](src/pages/index.jsx)                                      |
 | Declarative  | Native `Feature`, negate, `useFlag`; labelled all/any composition — [NativeGates.jsx](src/components/NativeGates.jsx)                |
 | Programmatic | Await native `getFlag` and preserve denied action — [NativeGates.jsx](src/components/NativeGates.jsx)                                |
+| Telemetry    | Provider checks, explicit usage/view, app metrics, opt-out and flush — [NativeGates.jsx](src/components/NativeGates.jsx)           |
 | Identity     | Immutable client per selected session; provider remount/cleanup — [Root.jsx](src/theme/Root.jsx)                                     |
-| Order        | Native core `registerContext`/`getFlag`, late-result guard and polling cleanup — [OrderContext.jsx](src/components/OrderContext.jsx) |
+| Order        | Native core `registerContext`/`getFlag`, late-result guard and owner disposal — [OrderContext.jsx](src/components/OrderContext.jsx) |
 | Filters      | All eleven rows, real provider state and honest HTTP inputs — [FilterMatrix.jsx](src/components/FilterMatrix.jsx)                    |
 | Variants     | No native variant assignment/configuration API; keep the existing layout                                                             |
 | Docusaurus   | MDX, page/navbar mapping, build/browser/edge boundaries — [beta.mdx](docs/beta.mdx), [docusaurus.config.js](docusaurus.config.js)    |
@@ -56,7 +62,7 @@ The [catalog](src/sample/catalog.cjs) holds exact shared names, recorded fixture
 
 - `Feature` uses `flag`, with `negate`; there is no native FeatureGateBuilder, multi-key or variant component here. Sample all/any and local AND are labelled compositions.
 - The core supports canonical entities and `registerContext`. The plugin's React helper omits entity arguments. No other JavaScript SDK singleton substitutes for the core registry.
-- The provider owns its polling/WebSocket lifecycle. Views read native context instead of copying its flags. Core has no public refresh subscription, so its view polls and rejects late completions after user/Order changes or unmount.
+- The provider owns its polling/WebSocket/reporter lifecycle. Views read native context instead of copying its flags. Core has no public refresh subscription, so its view polls and rejects late completions after user/Order changes or unmount, then disposes the complete core owner.
 - Fetch or signature failures preserve cached flags or configured defaults. The native API can absorb errors; absence of `useToggly.error` does not prove a successful fresh request. Browser tests explicitly check cold failure defaults and tampered signatures.
 - User identity and claims select presentation, never authorization. Protect real data and actions on the server.
 
@@ -77,7 +83,7 @@ npm run build
 npm run serve
 ```
 
-Linux CI installs Chromium with `npx playwright install --with-deps chromium`. `CHROMIUM_EXECUTABLE=/absolute/path/to/chrome` can select an existing browser locally. Tests use generated ephemeral signing keys and intercepted HTTP/WebSocket transport, never a real service or real App Key. The browser suite builds isolated offline and placeholder-key production sites, walks controls/MDX/mobile layout, verifies signatures/fallbacks, changes remote responses without sample controls and confirms old-session polling stops. Native core tests cover mapper behavior, defaults, identity isolation and cache refresh.
+Linux CI installs Chromium with `npx playwright install --with-deps chromium`. `CHROMIUM_EXECUTABLE=/absolute/path/to/chrome` can select an existing browser locally. Tests use generated ephemeral signing keys and intercepted HTTP/WebSocket transport, never a real service or real App Key. Every placeholder-key metrics request is intercepted before navigation. The browser suite builds isolated offline, telemetry-enabled and opted-out sites; walks controls/MDX/mobile layout; verifies signatures/fallbacks; captures gzip or plain compact packets; proves explicit calls add no checks; changes remote responses without sample controls; and confirms old-session polling stops. Native core tests cover mapper behavior, defaults, identity isolation and cache refresh. The separate Order client calls `dispose()` on replacement and unmount.
 
 ## Manual checklist
 
@@ -89,6 +95,8 @@ Linux CI installs Chromium with `npx playwright install --with-deps chromium`. `
 - [ ] VIP/standard Orders change core decisions without changing the user.
 - [ ] Confirm HTTP reference values versus actual browser-derived targeting.
 - [ ] Denied actions stay denied with remote/local prerequisites off.
+- [ ] Explicit usage/view and business metrics flush without another check.
+- [ ] Opt-out and keyless modes emit no frontend telemetry.
 - [ ] Inspect MDX/native build branches and page/navbar mapping.
 - [ ] Check narrow layout and cold network/signature failure defaults.
 

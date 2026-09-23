@@ -47,6 +47,9 @@ module.exports = {
         renderAllDuringBuild: true,
         staticGating: false,
         featureFlagsRefreshInterval: 1000,
+        enableTelemetry:
+          process.env.TOGGLY_ENABLE_TELEMETRY === "false" ? false : undefined,
+        metricsBaseUrl: "https://metrics.toggly.io",
       },
     ],
   ],

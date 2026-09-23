@@ -59,12 +59,12 @@ export default function OrderContext() {
       active = false;
       ++revision;
       clearInterval(timer);
-      client.stopWebSocket();
+      client.dispose();
     };
   }, [client, order]);
   return (
     <section className="panel" id="order">
-      <h2>05 · Same user. Different Order.</h2>
+      <h2>06 · Same user. Different Order.</h2>
       <p>
         Order attributes travel with this evaluation. They do not change
         identity or upload a dashboard schema.
