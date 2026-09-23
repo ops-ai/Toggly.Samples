@@ -11,10 +11,14 @@ export function createTogglyOptions(
   appKey: string | undefined,
   environment = 'Production',
   betaAccessDefault = true,
+  definitionsBaseUri?: string,
+  metricsBaseUrl?: string,
 ) {
   return {
     appKey,
     environment,
+    ...(definitionsBaseUri ? { baseURI: definitionsBaseUri } : {}),
+    ...(metricsBaseUrl ? { metricsBaseUrl } : {}),
     flagDefaults: {
       'new-dashboard': true,
       'api-v2': false,
@@ -44,6 +48,7 @@ export function createTogglyOptions(
     enableLiveUpdates: Boolean(appKey),
     verifySignatures: true,
     enableUsageTracking: false,
+    enableMetrics: false,
     telemetryAttachProcessHandlers: false,
     usageFlushInterval: 0,
   };

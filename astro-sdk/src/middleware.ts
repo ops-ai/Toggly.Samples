@@ -21,6 +21,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
       import.meta.env.TOGGLY_APP_KEY,
       import.meta.env.TOGGLY_ENVIRONMENT ?? 'Production',
       runtimeEnvironment?.TOGGLY_BETA_ACCESS_DEFAULT !== 'false',
+      import.meta.env.TOGGLY_DEFINITIONS_BASE_URI,
+      import.meta.env.TOGGLY_METRICS_BASE_URL,
     ),
     identity: requestContext.identity,
     claims: requestContext.claims,
