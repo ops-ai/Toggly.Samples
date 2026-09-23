@@ -206,6 +206,8 @@ jobs:
         env:
           TOGGLY_APP_KEY: ci-placeholder
           TOGGLY_ENVIRONMENT: Production
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
       - run: npm run build
         env:
           TOGGLY_APP_KEY: ci-placeholder

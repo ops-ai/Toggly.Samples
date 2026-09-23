@@ -65,3 +65,24 @@ describe('shared catalogue inputs', () => {
     expect(getDemoEvalContext(requestEvent('/?preset=non-matching')).identity).toBe('bob')
   })
 })
+
+
+describe('browser telemetry configuration stays separate from server metrics', () => {
+  it('enables the browser owner only with a key and preserves server opt-outs', () => {
+    expect(createTogglyModuleOptions({ TOGGLY_APP_KEY: 'test-only' })).toMatchObject({
+      enableTelemetry: true, enableUsageTracking: true, enableMetrics: true,
+      serverEnableUsageTracking: false, serverEnableMetrics: false,
+    })
+    expect(createTogglyModuleOptions({})).toMatchObject({ enableTelemetry: false })
+  })
+  it('forwards opt-out and explicit definition/metrics endpoints through module options', () => {
+    expect(createTogglyModuleOptions({
+      TOGGLY_APP_KEY: 'test-only', TOGGLY_ENABLE_TELEMETRY: 'false',
+      TOGGLY_BASE_URI: 'http://127.0.0.1:4199', TOGGLY_METRICS_BASE_URL: 'https://metrics.test.invalid',
+    })).toMatchObject({ enableTelemetry: false, baseUri: 'http://127.0.0.1:4199', metricsBaseUrl: 'https://metrics.test.invalid' })
+  })
+  it('can disable live updates during an isolated public-consumer probe', () => {
+    expect(createTogglyModuleOptions({ TOGGLY_ENABLE_LIVE_UPDATES: 'false' }))
+      .toMatchObject({ enableLiveUpdates: false })
+  })
+})
