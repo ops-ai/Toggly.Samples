@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { existsSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { stripVTControlCharacters } from 'node:util';
 import { gunzipSync } from 'node:zlib';
 import { chromium } from '@playwright/test';
 
@@ -50,7 +51,10 @@ async function runCase({ optOut = false, plain = false, selection = 'on' }) {
     const beforeGets = definitionGets;
     const output = await build(['run', 'build'], { ...env, SAMPLE_OUTPUT: 'static' });
     await new Promise((resolve) => setTimeout(resolve, 100));
-    assert.match(output, /output: "static"/, 'configured build must use SSG mode');
+    assert.match(stripVTControlCharacters('output: \x1b[32m"static"\x1b[0m'), /output: "static"/,
+      'ANSI styling must not hide the static output marker');
+    assert.match(stripVTControlCharacters(output), /output: "static"/,
+      'configured build must use SSG mode');
     assert.ok(existsSync('dist/index.html'), 'configured SSG must emit static home');
     assert.ok(definitionGets > beforeGets, 'fixture must service configured SSG definitions');
     assert.equal(serverPosts, 0, 'configured SSG build must not emit frontend telemetry');
