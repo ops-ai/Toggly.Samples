@@ -12,8 +12,11 @@ export default function ReactIsland() {
   const variant = useVariant('new-dashboard');
 
   function recordDemoTelemetry() {
-    recordUsage('new-dashboard', variant?.name ?? 'enabled');
-    recordView('new-dashboard', variant?.name ?? 'enabled');
+    if (!dashboard.isReady) return;
+    const selected = dashboard.enabled ? variant?.name ?? 'enabled' : 'disabled';
+    if (!/^[A-Za-z0-9_-]{1,64}$/.test(selected)) return;
+    recordUsage('new-dashboard', selected);
+    recordView('new-dashboard', selected);
     incrementCounter('sample-interactions', 1);
     setGauge('sample-active-panel', 1);
   }
