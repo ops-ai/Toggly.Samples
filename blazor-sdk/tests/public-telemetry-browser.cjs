@@ -143,17 +143,33 @@ const closeServer = (server) => new Promise((resolve, reject) => {
     await page.locator("#record").click();
     await page.locator("#mint").click();
     await page.locator("#status").filter({ hasText: "minted" }).waitFor();
+    // A gate evaluation can flush a render-only packet during identity rotation.
+    await page.locator("#evaluate").click();
+    await page.locator("#flush").click();
+    await page.locator("#status").filter({ hasText: "flushed" }).waitFor();
     await page.locator("#record").click();
     await page.locator("#flush").click();
     await page.locator("#status").filter({ hasText: "flushed" }).waitFor();
     const transition = packets.slice(transitionBefore);
-    assert.equal(transition.length, 2);
-    assert.equal(transition[0].body.u, "private-user");
-    assert.equal(transition[0].body.i, undefined);
-    assert.equal(transition[1].body.i, "local-minted-token");
-    assert.equal(transition[1].body.u, undefined);
-    assert.equal(transition[0].body.m.cart, 3.5);
-    assert.equal(transition[1].body.m.cart, 3.5);
+    const metricTransition = transition.filter(packet => packet.body.m);
+    assert.equal(metricTransition.length, 2);
+    assert.equal(metricTransition[0].body.u, "private-user");
+    assert.equal(metricTransition[0].body.i, undefined);
+    assert.equal(metricTransition[1].body.i, "local-minted-token");
+    assert.equal(metricTransition[1].body.u, undefined);
+    for (const packet of metricTransition)
+      assert.deepEqual(packet.body.m, { cart: 3.5, orders: 2 });
+    const renderOnly = transition.filter(packet => !packet.body.m);
+    assert.ok(renderOnly.length > 0);
+    for (const packet of renderOnly) {
+      assert.ok(packet.body.f && Object.keys(packet.body.f).length > 0);
+      assert.ok(
+        (packet.body.u === "private-user" && packet.body.i === undefined) ||
+        (packet.body.i === "local-minted-token" && packet.body.u === undefined),
+      );
+      assert.equal(packet.headers.authorization, undefined);
+      assert.equal(packet.headers.cookie, undefined);
+    }
     assert.ok(transition.every(packet => packet.url === "/base/api/frontend/telemetry"));
     await page.locator("#record").click();
     const hiddenBefore = packets.length;
