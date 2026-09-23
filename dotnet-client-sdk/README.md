@@ -124,8 +124,8 @@ MIT license. See the [client SDK guide](https://docs.toggly.io/sdks/dotnet-clien
 The separate [PublicTelemetry test hosts](tests/PublicTelemetry/README.md) use
 locked NuGet 3.10.0 portable and Desktop packages. They capture keyed native
 telemetry on a local listener, exercise signed evaluations and bounded retry,
-and test both .NET 8 and .NET 10. Their output records optional identity fields
-without resolving the frontend packet-policy question.
+and test both .NET 8 and .NET 10. Their output records identity attribution;
+the approved packet contract requires `k/e/f/m` and permits optional `i/u`.
 
 ## Live signed-service acceptance
 

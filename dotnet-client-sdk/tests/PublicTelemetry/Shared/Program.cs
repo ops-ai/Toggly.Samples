@@ -162,9 +162,9 @@ static class Program
         return new TogglyClient(options, http, new PortableVerifier());
 #endif
     }
-    // Field-presence checks below document the published package's observed
-    // attribution behavior. They do not approve optional i/u wire policy;
-    // --policy-kefm separately tests the original approved field set.
+    // Field-presence checks document the published package's observed
+    // attribution behavior under approved optional i/u policy.
+    // --diagnose-legacy-kefm keeps the superseded exact field set observable.
     private static void PacketFields(Packet packet, string key, string attributionField)
     {
         Check.Equal(packet.Path, "/api/frontend/telemetry", "compact endpoint");
@@ -215,11 +215,11 @@ static class Program
             await collector.WaitCountAsync(1, TimeSpan.FromSeconds(5));
             var first = collector.Packets.ElementAt(0);
             PacketFields(first, "public-client-a", "u");
-            if (args.Contains("--policy-kefm"))
+            if (args.Contains("--diagnose-legacy-kefm"))
             {
                 var actual = first.Body.RootElement.EnumerateObject().Select(field => field.Name).Order().ToArray();
                 Check.True(actual.SequenceEqual(new[] { "e", "f", "k", "m" }),
-                    $"Original k/e/f/m-only policy conflict: observed {string.Join('/', actual)}");
+                    $"Superseded k/e/f/m-only diagnostic: observed {string.Join('/', actual)}");
             }
             Check.Equal(first.Encoding, "gzip", "ordinary native flush gzip");
             var features = first.Body.RootElement.GetProperty("f");
