@@ -78,6 +78,11 @@ jobs:
           cache-dependency-path: nextjs-server-sdk/package-lock.json
       - run: npm ci
       - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - run: npm run test:browser
+        env:
+          TELEMETRY_TEST_NO_KEY: "1"
       - run: npm run build
         env:
           TOGGLY_APP_KEY: ci-placeholder

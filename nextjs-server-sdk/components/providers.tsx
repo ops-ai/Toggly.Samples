@@ -38,6 +38,8 @@ export function Providers({ children, initialFeatures }: ProvidersProps) {
       config={{
         appKey,
         environment,
+        enableTelemetry: process.env.NEXT_PUBLIC_TOGGLY_ENABLE_TELEMETRY !== 'false',
+        metricsBaseUrl: process.env.NEXT_PUBLIC_TOGGLY_METRICS_BASE_URL?.trim() || undefined,
         onError: (message, error) => {
           console.warn('[Toggly client sample]', message, error)
         },
