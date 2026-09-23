@@ -1,1 +1,1 @@
-{"name":"toggly-blazor-workshop","private":true,"type":"module","scripts":{"test":"node --test tests/browser.test.mjs"},"devDependencies":{"playwright":"1.63.0"}}
+{"name":"toggly-blazor-workshop","private":true,"type":"module","scripts":{"test":"node --test tests/browser.test.mjs","test:public-telemetry":"node tests/public-telemetry-browser.cjs"},"devDependencies":{"playwright":"1.63.0"}}

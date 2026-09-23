@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "Toggly.FeatureManagement.Blazor.Server": {
+        "type": "Direct",
+        "requested": "[3.10.0, )",
+        "resolved": "3.10.0",
+        "contentHash": "dGHkCPWjDaWCnuh1NSZ3D86IFH8Q8NTgX7qmVkRQgptnGcBP/ejO8TITgLDPmleac12uJRqsUwYuVhiflpkKrQ==",
+        "dependencies": {
+          "Toggly.FeatureManagement": "3.10.0",
+          "Toggly.FeatureManagement.Blazor": "3.10.0"
+        }
+      },
+      "Azure.Core": {
+        "type": "Transitive",
+        "resolved": "1.46.0",
+        "contentHash": "MNFRFDHqUBZkeViSrDX6bPfQhXsydKJXu64AntycIzSG+nemh39XCkhDvjES0uisJlHsVex/tmkfA2ZQt913DQ==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "8.0.0",
+          "System.ClientModel": "1.4.0",
+          "System.Memory.Data": "6.0.1"
+        }
+      },
+      "Azure.Messaging.WebPubSub": {
+        "type": "Transitive",
+        "resolved": "1.6.0",
+        "contentHash": "ewewoRnw/wJZMBuALoaIB8raguqM4aXp2Za3jhGYoAp0EEmKw9ZfHVXARzkB7Pb+aoOSwnsudL+izMhD9PA85Q==",
+        "dependencies": {
+          "Azure.Core": "1.46.0"
+        }
+      },
+      "ConcurrentHashSet": {
+        "type": "Transitive",
+        "resolved": "1.3.0",
+        "contentHash": "a30gfk4WDn2f7sOisXpko+CrQ7s5nL1ZWk4afnRwwRQHWPRrRSZpzn5Dz2YWpJtS90NJqkytQ/MkzHq4QYTIbg=="
+      },
+      "Google.Protobuf": {
+        "type": "Transitive",
+        "resolved": "3.25.0",
+        "contentHash": "pIEkH1IqZV1iK8J5MYdG1kOyY0EoQLB6yEKvBq12RYNtvGXwCvnQg5zQsFmcqAEPtIZvSqPozIbUZaEd5a2gCg=="
+      },
+      "Grpc.Core.Api": {
+        "type": "Transitive",
+        "resolved": "2.60.0",
+        "contentHash": "VWah+8dGJhhsay5BQ/Ljq6GYDWj0lSjdzqyoBgUQhXTbBqhs+q5dRFROKxI1xxzlL4pfUO45cf/y+KnHVFG9ew=="
+      },
+      "Grpc.Net.Client": {
+        "type": "Transitive",
+        "resolved": "2.60.0",
+        "contentHash": "J9U96gjZHOcqSgAThg9vZZhLsbTD005bUggPtMP/RVQnGc3+tQJTpkRUCJtJWq9cykNydsRVoyU38TjPP/VJ4A==",
+        "dependencies": {
+          "Grpc.Net.Common": "2.60.0"
+        }
+      },
+      "Grpc.Net.Client.Web": {
+        "type": "Transitive",
+        "resolved": "2.60.0",
+        "contentHash": "qECg3puccOeVE/KIpWfQGmj8N5vVELE63h2jzdsooY5rYIHDczMZaNRqWNSVhwhLyO/tes0TjNzzH1n4Uo0fSQ=="
+      },
+      "Grpc.Net.ClientFactory": {
+        "type": "Transitive",
+        "resolved": "2.60.0",
+        "contentHash": "lCUZjbv6TtI1FbOUE593PLCkXqW2Yrf3KsFfzxIMdJ54o4ELwCEQ26xjfrm+hMTefiXxvXf9FO7zL1rGLWWSig==",
+        "dependencies": {
+          "Grpc.Net.Client": "2.60.0"
+        }
+      },
+      "Grpc.Net.Common": {
+        "type": "Transitive",
+        "resolved": "2.60.0",
+        "contentHash": "Y/917aplgD1RA0q1cd9WpnMGyl9Luu3WZl6ZMpPvNQwg2TNw/3uXUDSriDBybeCtxnKUCtxUcWO3WsVkhM1DcA==",
+        "dependencies": {
+          "Grpc.Core.Api": "2.60.0"
+        }
+      },
+      "Microsoft.Bcl.AsyncInterfaces": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "3WA9q9yVqJp222P3x1wYIGDAkpjAku0TMUaaQV22g6L67AI0LdOIrVS7Ht2vJfLHGSPVuqN94vIr15qn+HEkHw=="
+      },
+      "Microsoft.Extensions.Http.Polly": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "c9cq28bSsycDoHzeIrNODdnZap/Un1B6A7M2QVRlPaIaWAtKcswkDDelhco9NwOdhhkFeVDqk5MrmAbYdfgBTw==",
+        "dependencies": {
+          "Polly": "7.2.4",
+          "Polly.Extensions.Http": "3.0.0"
+        }
+      },
+      "Microsoft.FeatureManagement": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "f+XutOuZZLNq6OJV8z7nys+k89W3PUsoJJgrbYTXd20GvDyJfQ9A8o2MSU8FZT7DY6jQOq3I4KO/+NHsXHdACw=="
+      },
+      "Microsoft.IO.RecyclableMemoryStream": {
+        "type": "Transitive",
+        "resolved": "3.0.1",
+        "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
+      },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      },
+      "Polly": {
+        "type": "Transitive",
+        "resolved": "7.2.4",
+        "contentHash": "bw00Ck5sh6ekduDE3mnCo1ohzuad946uslCDEENu3091+6UKnBuKLo4e+yaNcCzXxOZCXWY2gV4a35+K1d4LDA=="
+      },
+      "Polly.Extensions.Http": {
+        "type": "Transitive",
+        "resolved": "3.0.0",
+        "contentHash": "drrG+hB3pYFY7w1c3BD+lSGYvH2oIclH8GRSehgfyP5kjnFnHKQuuBhuHLv+PWyFuaTDyk/vfRpnxOzd11+J8g==",
+        "dependencies": {
+          "Polly": "7.1.0"
+        }
+      },
+      "System.ClientModel": {
+        "type": "Transitive",
+        "resolved": "1.4.0",
+        "contentHash": "UIAc1qwbgjXksmpVk7obZbnzPqlpWPzbfkh0LdDnI8+7rXu1zmNNrcpWof8DFUytVgNcMFwFY1lT6lGxxovARw==",
+        "dependencies": {
+          "System.Memory.Data": "6.0.1"
+        }
+      },
+      "System.Memory.Data": {
+        "type": "Transitive",
+        "resolved": "6.0.1",
+        "contentHash": "yliDgLh9S9Mcy5hBIdZmX6yphYIW3NH+3HN1kV1m7V1e0s7LNTw/tHNjJP4U9nSMEgl3w1TzYv/KA1Tg9NYy6w=="
+      },
+      "System.Reactive": {
+        "type": "Transitive",
+        "resolved": "6.1.0",
+        "contentHash": "M5cCC1ZMkZr9jbSQGTHnVkb5TDN67qWCV7AP8TAHdGkvDlu0puT5NzemESNn9+HkYIDpWpocP68/i+/ame2/2w=="
+      },
+      "Toggly.FeatureManagement": {
+        "type": "Transitive",
+        "resolved": "3.10.0",
+        "contentHash": "I4L+cMMjjp0HgWyrTDhSaMh+9vy+boabRxk+wok0e4DM6uppoChTFuK+wIWJcueYd438FTEjbR5FX9ZRaWlHZA==",
+        "dependencies": {
+          "Azure.Messaging.WebPubSub": "1.6.0",
+          "ConcurrentHashSet": "1.3.0",
+          "Google.Protobuf": "3.25.0",
+          "Grpc.Net.Client": "2.60.0",
+          "Grpc.Net.Client.Web": "2.60.0",
+          "Grpc.Net.ClientFactory": "2.60.0",
+          "Microsoft.Extensions.Http.Polly": "9.0.0",
+          "Microsoft.FeatureManagement": "4.7.0",
+          "Newtonsoft.Json": "13.0.3",
+          "Websocket.Client": "5.5.0"
+        }
+      },
+      "Toggly.FeatureManagement.Blazor": {
+        "type": "Transitive",
+        "resolved": "3.10.0",
+        "contentHash": "31X3YoAbY4gLSOvvpEZN3qq9GpSr/BuiT2FFt6DaRQOAzSHQPg8C5mqs9VPEHgWaUZoz3Oh4bDhm08cOTDXRqA==",
+        "dependencies": {
+          "Toggly.FeatureManagement.Client": "3.10.0"
+        }
+      },
+      "Toggly.FeatureManagement.Client": {
+        "type": "Transitive",
+        "resolved": "3.10.0",
+        "contentHash": "N4tYlEv5D4dB3uiqTTofshaTRU8ZFH6fjtzE/aOp2OHaAeS2nKxW8TsoD7OsUM4ndQC1Dj50Y+K7jZW/oxcb3w=="
+      },
+      "Websocket.Client": {
+        "type": "Transitive",
+        "resolved": "5.5.0",
+        "contentHash": "xJ5pTXiNSfwOzJVFcrUF1JROo63zjETJgIA4+ik/JxOJdNEv15e3NZ6bgpNQkyWhapcedP5HCa96hn9YCXwenw==",
+        "dependencies": {
+          "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
+          "System.Reactive": "6.1.0"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,267 @@
+// Executes the packed WASM artifact against a cross-origin loopback collector only.
+const { chromium } = require("playwright");
+const http = require("node:http");
+const path = require("node:path");
+const assert = require("node:assert/strict");
+const {
+  loadAssets,
+  createAssetHandler,
+  createCollectorHandler,
+} = require("./public-telemetry-server.cjs");
+// The fixture serves its own published output only; caller-supplied roots are unsupported.
+if (process.argv.length > 2)
+  throw new Error("The WASM fixture does not accept a filesystem root");
+const assets = loadAssets(
+  path.join(__dirname, "PublicTelemetryHost/bin/Release/net10.0/publish/wwwroot"),
+);
+const packets = [],
+  preflights = [];
+const listen = (server) =>
+  new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+const waitFor = async (condition) => {
+  const deadline = Date.now() + 10000;
+  while (!condition()) {
+    if (Date.now() > deadline)
+      throw new Error("Timed out waiting for collector");
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+};
+(async () => {
+  const host = http.createServer(createAssetHandler(assets));
+  let collector;
+  let browser;
+  try {
+    await listen(host);
+    const hostOrigin = `http://127.0.0.1:${host.address().port}`;
+    collector = http.createServer(
+      createCollectorHandler(hostOrigin, packets, preflights),
+    );
+    await listen(collector);
+    browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage();
+    page.on("pageerror", (error) => console.error(error));
+    page.on("console", (message) => {
+      if (message.type() === "error") console.error(message.text());
+    });
+    page.setDefaultTimeout(10000);
+    await page.addInitScript(() => {
+      window.telemetryFetchOptions = [];
+      const originalFetch = window.fetch.bind(window);
+      window.fetch = (input, options) => {
+        if (
+          typeof input === "string" &&
+          input.includes("/api/frontend/telemetry")
+        ) {
+          window.telemetryFetchOptions.push({
+            keepalive: options.keepalive,
+            encoding: options.headers["Content-Encoding"] ?? null,
+            credentials: options.credentials,
+          });
+        }
+        return originalFetch(input, options);
+      };
+    });
+    const collectorUrl = `http://127.0.0.1:${collector.address().port}/base/`;
+    await page.goto(
+      `http://127.0.0.1:${host.address().port}/?collector=${encodeURIComponent(collectorUrl)}`,
+    );
+    await page.locator("#enabled").waitFor({ timeout: 60000 });
+    await page.locator("#negated").waitFor();
+    await page.locator("#any").waitFor();
+    await page.locator("#evaluate").click();
+    await page.locator("#status").filter({ hasText: "direct:True negated:True any:True local:False entity:True" }).waitFor();
+    await page.locator("#flush").click();
+    await page.locator("#status").filter({ hasText: "flushed" }).waitFor();
+    const before = packets.length;
+    await page.locator("#record").click();
+    await page.locator("#flush").click();
+    await waitFor(() => packets.length > before);
+    const ordinary = packets.at(-1);
+    assert.deepEqual(
+      await page.evaluate(() => window.telemetryFetchOptions.at(-1)),
+      { keepalive: false, encoding: "gzip", credentials: "omit" },
+    );
+    assert.equal(ordinary.headers["content-encoding"], "gzip");
+    assert.equal(ordinary.url, "/base/api/frontend/telemetry");
+    assert.deepEqual(ordinary.body.f.checkout.sample, [0, 1, 1]);
+    assert.deepEqual(ordinary.body.m, { cart: 3.5, orders: 2 });
+    assert.equal(ordinary.body.k, "local-wasm-fixture");
+    assert.equal(ordinary.body.e, "Fixture");
+    assert.equal(ordinary.body.u, "private-user");
+    assert.ok(preflights.length > 0);
+    assert.equal(preflights[0]["access-control-request-method"], "POST");
+    assert.equal(ordinary.headers.origin, hostOrigin);
+    assert.equal(ordinary.headers.authorization, undefined);
+    assert.equal(ordinary.headers.cookie, undefined);
+    assert.deepEqual(
+      Object.keys(ordinary.body).sort((left, right) =>
+        left.localeCompare(right),
+      ),
+      ["e", "f", "k", "m", "u"],
+    );
+    assert.equal(ordinary.body.g, undefined);
+    assert.equal(ordinary.body.claims, undefined);
+    assert.ok(!JSON.stringify(ordinary.body).includes("private-group"));
+    assert.ok(!JSON.stringify(ordinary.body).includes("private-claim"));
+    assert.ok(ordinary.bytes <= 49152);
+    // Collector receipt precedes the completion of the managed flush, which can
+    // still drain checks from component rerenders. Fence that flight before
+    // assigning packets to the identity transition below.
+    await page.locator("#status").filter({ hasText: "flushed" }).waitFor();
+    const ordinaryPhase = packets.slice(before);
+    assert.equal(ordinaryPhase.filter(packet => packet.body.f?.checkout).length, 1);
+    for (const render of ordinaryPhase.filter(packet => !packet.body.f?.checkout)) {
+      assert.deepEqual(Object.keys(render.body).sort((a, b) => a.localeCompare(b)), ["e", "f", "k", "u"]);
+      assert.equal(render.body.k, "local-wasm-fixture");
+      assert.equal(render.body.e, "Fixture");
+      assert.equal(render.body.u, "private-user");
+      for (const feature of Object.values(render.body.f))
+        for (const counts of Object.values(feature))
+          assert.ok(counts.every(value => Number.isInteger(value) && value >= 0));
+    }
+    const transitionBefore = packets.length;
+    await page.locator("#record").click();
+    await page.locator("#mint").click();
+    await page.locator("#status").filter({ hasText: "minted" }).waitFor();
+    await page.locator("#record").click();
+    await page.locator("#flush").click();
+    await page.locator("#status").filter({ hasText: "flushed" }).waitFor();
+    const transition = packets.slice(transitionBefore);
+    assert.equal(transition.length, 2);
+    assert.equal(transition[0].body.u, "private-user");
+    assert.equal(transition[0].body.i, undefined);
+    assert.equal(transition[1].body.i, "local-minted-token");
+    assert.equal(transition[1].body.u, undefined);
+    assert.equal(transition[0].body.m.cart, 3.5);
+    assert.equal(transition[1].body.m.cart, 3.5);
+    assert.ok(transition.every(packet => packet.url === "/base/api/frontend/telemetry"));
+    await page.locator("#record").click();
+    const hiddenBefore = packets.length;
+    await page.evaluate(() => {
+      Object.defineProperty(document, "visibilityState", {
+        value: "hidden",
+        configurable: true,
+      });
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await waitFor(() => packets.length > hiddenBefore);
+    assert.equal(packets.at(-1).headers["content-encoding"], undefined);
+    assert.deepEqual(
+      await page.evaluate(() => window.telemetryFetchOptions.at(-1)),
+      { keepalive: true, encoding: null, credentials: "omit" },
+    );
+    assert.equal(packets.at(-1).body.i, "local-minted-token");
+    assert.equal(packets.at(-1).body.u, undefined);
+    await page.locator("#logout").click();
+    await page.locator("#status").filter({ hasText: "anonymous" }).waitFor();
+    await page.evaluate(() =>
+      Object.defineProperty(document, "visibilityState", {
+        value: "visible",
+        configurable: true,
+      }),
+    );
+    await page.locator("#record").click();
+    const exitBefore = packets.length;
+    await page.evaluate(() =>
+      window.dispatchEvent(new PageTransitionEvent("pagehide")),
+    );
+    await waitFor(() => packets.length > exitBefore);
+    assert.equal(packets.at(-1).headers["content-encoding"], undefined);
+    assert.deepEqual(
+      await page.evaluate(() => window.telemetryFetchOptions.at(-1)),
+      { keepalive: true, encoding: null, credentials: "omit" },
+    );
+    await page.locator("#record").click();
+    assert.equal(packets.at(-1).body.i, undefined);
+    assert.equal(packets.at(-1).body.u, undefined);
+    const disposeBefore = packets.length;
+    await page.locator("#dispose").click();
+    await page.locator("#status").filter({ hasText: "disposed" }).waitFor();
+    assert.equal(packets.length, disposeBefore + 1);
+    assert.equal(packets.at(-1).headers["content-encoding"], undefined);
+    assert.deepEqual(
+      await page.evaluate(() => window.telemetryFetchOptions.at(-1)),
+      { keepalive: true, encoding: null, credentials: "omit" },
+    );
+    await page.locator("#record").click();
+    await page.evaluate(() =>
+      window.dispatchEvent(new PageTransitionEvent("pagehide")),
+    );
+    await new Promise((r) => setTimeout(r, 100));
+    assert.equal(packets.length, disposeBefore + 1);
+    for (const options of ["&enabled=false", "&key="]) {
+      const silent = await browser.newPage();
+      const beforeSilent = packets.length;
+      await silent.goto(
+        `http://127.0.0.1:${host.address().port}/?collector=${encodeURIComponent(collectorUrl)}${options}`,
+      );
+      await silent.locator("#enabled").waitFor({ timeout: 60000 });
+      await silent.locator("#record").click();
+      await silent.locator("#flush").click();
+      await silent.locator("#status").filter({ hasText: "flushed" }).waitFor();
+      await silent.locator("#dispose").click();
+      await silent.locator("#status").filter({ hasText: "disposed" }).waitFor();
+      assert.equal(packets.length, beforeSilent);
+      await silent.close();
+    }
+    const independent = await browser.newPage();
+    const isolatedBefore = packets.length;
+    await independent.goto(
+      `http://127.0.0.1:${host.address().port}/?collector=${encodeURIComponent(collectorUrl)}&key=second-owner&environment=Second`,
+    );
+    await independent.locator("#enabled").waitFor({ timeout: 60000 });
+    await independent.locator("#record").click();
+    await independent.locator("#flush").click();
+    await independent
+      .locator("#status")
+      .filter({ hasText: "flushed" })
+      .waitFor();
+    assert.ok(packets.length > isolatedBefore);
+    assert.equal(packets.at(-1).body.k, "second-owner");
+    assert.equal(packets.at(-1).body.e, "Second");
+    await independent.locator("#dispose").click();
+    await independent
+      .locator("#status")
+      .filter({ hasText: "disposed" })
+      .waitFor();
+    await independent.close();
+    const navigating = await browser.newPage();
+    const navigationUrl = `${hostOrigin}/?collector=${encodeURIComponent(collectorUrl)}&key=navigation-owner&environment=Navigation`;
+    await navigating.goto(navigationUrl);
+    await navigating.locator("#enabled").waitFor({ timeout: 60000 });
+    await navigating.locator("#flush").click();
+    await navigating.locator("#status").filter({ hasText: "flushed" }).waitFor();
+    await navigating.locator("#record").click();
+    const navigationBefore = packets.length;
+    await navigating.goto(navigationUrl.replace("/?", "/index.html?"));
+    await waitFor(() => packets.slice(navigationBefore).some(packet => packet.body.k === "navigation-owner" && packet.body.f?.checkout));
+    const navigationPacket = packets.slice(navigationBefore).find(packet => packet.body.k === "navigation-owner" && packet.body.f?.checkout);
+    assert.equal(navigationPacket.headers["content-encoding"], undefined);
+    await navigating.close();
+    console.log(
+      JSON.stringify({
+        wasm: true,
+        crossOrigin: true,
+        packets: packets.length,
+        preflights: preflights.length,
+        ordinary: {
+          keys: Object.keys(ordinary.body).sort(),
+          featureKeys: Object.keys(ordinary.body.f).sort(),
+          metricKeys: Object.keys(ordinary.body.m).sort(),
+          encoding: ordinary.headers["content-encoding"],
+          origin: ordinary.headers.origin,
+          credentialHeaders: ["authorization", "cookie"].filter(key => ordinary.headers[key]),
+        },
+        lifecycle: "hidden, pagehide and disposal plain keepalive verified",
+        realNavigation: "plain keepalive verified",
+      }),
+    );
+  } finally {
+    if (browser) await browser.close();
+    host.close();
+    collector?.close();
+  }
+})().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

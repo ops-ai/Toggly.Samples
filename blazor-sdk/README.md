@@ -243,6 +243,44 @@ assign named variants or record a new experiment API.
 
 ## Automated checks
 
+### Public NuGet 3.10.0 WebAssembly telemetry acceptance
+
+`tests/PublicTelemetryHost` is a separate, credential-free browser fixture for
+`Toggly.FeatureManagement.Blazor` and its portable Client dependency at **3.10.0**.
+It restores from NuGet, not from the SDK repository, a local nupkg, or a project
+reference. The teaching workshop above retains its own 3.8.0 contract and render
+matrix; this fixture adds a focused real-browser transport gate. Its key,
+environment, and metrics URL are synthetic, chosen from the page query string.
+Only the test's loopback collector receives POSTs. Definitions use an offline
+handler, so fallback values and local prerequisites can be checked without a
+live signed-definition service. The entity call covers the per-read API shape;
+it does not prove a deployed Order rule or named variant allocation.
+
+With .NET SDK 10.0.400 and Node 24, from `blazor-sdk/` (the subdirectory
+`global.json` files select SDK 10 while the workshop root selects SDK 8):
+
+```sh
+(cd tests/PublicTelemetryHost && dotnet restore --locked-mode --source https://api.nuget.org/v3/index.json && dotnet publish --no-restore -c Release -p:WasmBuildNative=false)
+(cd tests/ServerTelemetrySilence && dotnet restore --locked-mode --source https://api.nuget.org/v3/index.json && dotnet run --no-restore -c Release)
+npm ci
+npx playwright install chromium
+npm run test:public-telemetry
+```
+
+The Chromium test serves only the published WASM files and two ephemeral
+loopback origins. It checks the real component and session evaluation path,
+explicit usage/view/counter/gauge/flush, separate browser owners, opt-out and
+keyless silence, real navigation, and browser hide/pagehide/disposal. The collector verifies
+OPTIONS and `202` POST, exact compact keys, gzip ordinary delivery, plain
+keepalive delivery, no Authorization or Cookie header, and no groups, claims,
+or entity attributes in the packet. `i` and `u` are recorded as actual public
+3.10.0 behavior; this local run does not decide their open ingestion policy.
+The companion public-package check verifies non-browser/prerender registration
+evaluates a default with zero JS transport calls, and that the published Blazor
+Server session does not implement the frontend reporter. The existing render
+matrix continues to show SSR and Server UI paths. No production key,
+production telemetry POST, Redis, or Victoria Metrics claim is made here.
+
 ```sh
 dotnet restore BlazorSample.sln --locked-mode
 dotnet build BlazorSample.sln --no-restore -c Release
