@@ -37,6 +37,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:public-telemetry
+      - run: npm run test:public-telemetry-cleanup
   sample:
     runs-on: ubuntu-latest
     timeout-minutes: 15

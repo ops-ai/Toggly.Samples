@@ -26,10 +26,29 @@ const waitFor = async (condition) => {
     await new Promise((resolve) => setTimeout(resolve, 20));
   }
 };
+const bounded = async (operation, label) => {
+  let timer;
+  try {
+    return await Promise.race([
+      operation(),
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} timed out`)), 5000);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+};
+const closeServer = (server) => new Promise((resolve, reject) => {
+  server.closeAllConnections();
+  server.close((error) => error ? reject(error) : resolve());
+});
 (async () => {
   const host = http.createServer(createAssetHandler(assets));
   let collector;
   let browser;
+  let browserServer;
+  let primaryError;
   try {
     await listen(host);
     const hostOrigin = `http://127.0.0.1:${host.address().port}`;
@@ -37,7 +56,8 @@ const waitFor = async (condition) => {
       createCollectorHandler(hostOrigin, packets, preflights),
     );
     await listen(collector);
-    browser = await chromium.launch({ headless: true });
+    browserServer = await chromium.launchServer({ headless: true });
+    browser = await chromium.connect(browserServer.wsEndpoint());
     const page = await browser.newPage();
     page.on("pageerror", (error) => console.error(error));
     page.on("console", (message) => {
@@ -256,10 +276,27 @@ const waitFor = async (condition) => {
         realNavigation: "plain keepalive verified",
       }),
     );
+  } catch (error) {
+    primaryError = error;
   } finally {
-    if (browser) await browser.close();
-    host.close();
-    collector?.close();
+    const cleanupErrors = [];
+    for (const [label, operation] of [
+      ["browser.close", () => browser?.close()],
+      ["host.close", () => host.listening ? closeServer(host) : undefined],
+      ["collector.close", () => collector?.listening ? closeServer(collector) : undefined],
+      ["browserServer.kill", () => browserServer?.kill()],
+    ]) {
+      try {
+        await bounded(operation, label);
+      } catch (error) {
+        cleanupErrors.push(error);
+      }
+    }
+    if (primaryError || cleanupErrors.length)
+      throw new AggregateError(
+        [primaryError, ...cleanupErrors].filter(Boolean),
+        "Public telemetry browser run or cleanup failed",
+      );
   }
 })().catch((error) => {
   console.error(error);

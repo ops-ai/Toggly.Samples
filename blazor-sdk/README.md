@@ -265,6 +265,7 @@ With .NET SDK 10.0.400 and Node 24, from `blazor-sdk/` (the subdirectory
 npm ci
 npx playwright install chromium
 npm run test:public-telemetry
+npm run test:public-telemetry-cleanup
 ```
 
 The Chromium test serves only the published WASM files and two ephemeral
