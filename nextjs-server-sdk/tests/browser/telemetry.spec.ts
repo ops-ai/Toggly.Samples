@@ -83,3 +83,56 @@ test('published browser flag and gate surfaces remain available', async ({ page 
   await expect(page.getByText('Gate failed (not both ON)')).toBeVisible()
   await expect(page.getByText('Variant disabled')).toBeVisible()
 })
+
+test('successful ON to OFF refresh requires a new evaluation before explicit events', async ({ page }) => {
+  test.skip(noKey, 'keyless mode does not mount browser feature controls')
+  let enabled = true
+  let definitionRequests = 0
+  const packets: Record<string, unknown>[] = []
+  await page.route('**/*', async route => {
+    const request = route.request()
+    const url = new URL(request.url())
+    if (url.hostname === '127.0.0.1') return route.continue()
+    if (url.hostname === 'definitions.toggly.io' && url.pathname.includes('evaluated-signed')) {
+      definitionRequests++
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ 'new-dashboard': enabled, 'api-v2': false }) })
+    }
+    if (url.hostname === 'metrics.test.invalid' && url.pathname === '/api/frontend/telemetry') {
+      const body = request.postDataBuffer()!
+      packets.push(JSON.parse(request.headers()['content-encoding'] === 'gzip' ? gunzipSync(body).toString() : body.toString()))
+      return route.fulfill({ status: 202, headers: { 'access-control-allow-origin': '*' } })
+    }
+    return route.fulfill({ status: 403, body: '{}' })
+  })
+  await page.routeWebSocket(/.*/, socket => {
+    if (new URL(socket.url()).hostname === '127.0.0.1') socket.connectToServer()
+    else socket.close()
+  })
+  const button = (name: string) => page.getByRole('button', { name, exact: true })
+  await page.goto('/client/telemetry')
+  await expect(button('Evaluate feature')).toBeEnabled()
+  await button('Evaluate feature').click()
+  await expect(page.getByText('Last evaluation: enabled', { exact: false })).toBeVisible()
+  await button('Record usage').click()
+  await button('Flush telemetry').click()
+  await expect.poll(() => packets.length).toBe(1)
+  expect(packets[0].f).toEqual({ 'new-dashboard': { enabled: [1, 1] } })
+
+  enabled = false
+  await page.getByLabel('Collect browser telemetry').click()
+  await expect(page.getByText('Collection is off.', { exact: true })).toBeVisible()
+  await page.getByLabel('Collect browser telemetry').click()
+  await expect(page.getByText('Collection is on.', { exact: true })).toBeVisible()
+  expect(definitionRequests).toBeGreaterThanOrEqual(3)
+  await expect(page.getByText('Last evaluation: not evaluated', { exact: false })).toBeVisible()
+  await expect(button('Record usage')).toBeDisabled()
+  await expect(button('Record view')).toBeDisabled()
+
+  await button('Evaluate feature').click()
+  await expect(page.getByText('Last evaluation: disabled', { exact: false })).toBeVisible()
+  await button('Record usage').click()
+  await button('Record view').click()
+  await button('Flush telemetry').click()
+  await expect.poll(() => packets.length).toBe(2)
+  expect(packets[1].f).toEqual({ 'new-dashboard': { disabled: [1, 1, 1] } })
+})
