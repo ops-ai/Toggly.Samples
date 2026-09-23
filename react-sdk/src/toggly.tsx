@@ -70,3 +70,17 @@ export function useProgrammaticFlag(
 
   return { enabled, loading, evaluate, toggly }
 }
+
+// Notify selections before the SDK changes context, including a failed refresh.
+// The WeakMap follows each existing owner; it creates no SDK or reporter.
+const contextChanges = new WeakMap<TogglyService, Set<() => void>>()
+export function subscribeSampleContextChanges(service: TogglyService, listener: () => void) {
+  let listeners = contextChanges.get(service)
+  if (!listeners) { listeners = new Set(); contextChanges.set(service, listeners) }
+  listeners.add(listener)
+  return () => { listeners.delete(listener) }
+}
+export async function setSampleContext(service: TogglyService, next: Parameters<TogglyService['setContext']>[0]) {
+  contextChanges.get(service)?.forEach(listener => listener())
+  await service.setContext(next)
+}

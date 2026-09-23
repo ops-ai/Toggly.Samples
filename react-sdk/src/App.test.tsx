@@ -9,6 +9,7 @@ const { toggly } = vi.hoisted(() => ({
     evaluateFeatureGate: vi.fn().mockResolvedValue(false),
     setContext: vi.fn().mockResolvedValue(undefined),
     subscribeFeaturesRefresh: vi.fn().mockReturnValue(() => undefined),
+    subscribeLocalGatesChanged: vi.fn().mockReturnValue(() => undefined),
     getVariant: vi.fn().mockReturnValue(null),
   },
 }))

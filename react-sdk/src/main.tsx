@@ -7,12 +7,16 @@ import { createProviderOptions, createSessionIdentity, mapOrderContext, type Ord
 
 const appKey = import.meta.env.VITE_TOGGLY_APP_KEY
 const environment = import.meta.env.VITE_TOGGLY_ENVIRONMENT || 'Production'
+const telemetryEnabled = Boolean(appKey?.trim()) && import.meta.env.VITE_TOGGLY_ENABLE_TELEMETRY !== 'false'
 const initialIdentity = createSessionIdentity(sessionStorage)
 
 // Register this mapper once at the app boundary. Every evaluation still carries its own Order.
 registerContext<Order>('Order', mapOrderContext)
-const TogglyProvider = await createTogglyProvider(createProviderOptions(appKey, environment, initialIdentity))
+const TogglyProvider = await createTogglyProvider(createProviderOptions(appKey, environment, initialIdentity, {
+  enableTelemetry: telemetryEnabled,
+  metricsBaseUrl: import.meta.env.VITE_TOGGLY_METRICS_BASE_URL?.trim() || undefined,
+}))
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode><TogglyProvider><App appKey={appKey} initialIdentity={initialIdentity} /></TogglyProvider></StrictMode>,
+  <StrictMode><TogglyProvider><App appKey={appKey} initialIdentity={initialIdentity} telemetryEnabled={telemetryEnabled} /></TogglyProvider></StrictMode>,
 )

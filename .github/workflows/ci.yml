@@ -123,6 +123,8 @@ jobs:
           cache-dependency-path: react-sdk/package-lock.json
       - run: npm ci
       - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
       - run: npm run build
         env:
           VITE_TOGGLY_APP_KEY: ci-placeholder

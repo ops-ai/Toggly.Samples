@@ -1,16 +1,17 @@
 import './App.css'
+import { TelemetryPanel } from './TelemetryPanel'
 import { MissingAppKeyBanner } from './MissingAppKeyBanner'
 import { DeclarativeGates, FiltersMatrix, IdentityPanel, OrderContextPanel, ProgrammaticApi, ReactSurfaces, Snapshot } from './DemoPanels'
 
-type AppProps = { appKey: string | undefined; initialIdentity: string }
+type AppProps = { appKey: string | undefined; initialIdentity: string; telemetryEnabled?: boolean }
 
-export default function App({ appKey, initialIdentity }: AppProps) {
+export default function App({ appKey, initialIdentity, telemetryEnabled = Boolean(appKey?.trim()) }: AppProps) {
   return <>
     <header>
       <p className="eyebrow">@ops-ai/react-feature-flags-toggly</p>
       <h1>React SDK Showcase</h1>
       <p className="lede">A guided, browser-first Toggly app. Follow configuration → provider → one flag check before adding identity, Order context, and filter rules.</p>
-      <nav aria-label="Showcase sections"><a href="#declarative">Gates</a><a href="#programmatic">API</a><a href="#identity">Identity</a><a href="#order">Order</a><a href="#filters">Filters</a><a href="#surfaces">React surfaces</a></nav>
+      <nav aria-label="Showcase sections"><a href="#declarative">Gates</a><a href="#programmatic">API</a><a href="#identity">Identity</a><a href="#order">Order</a><a href="#filters">Filters</a><a href="#surfaces">React surfaces</a><a href="#telemetry">Telemetry</a></nav>
     </header>
     <main>
       <MissingAppKeyBanner appKey={appKey} />
@@ -23,7 +24,7 @@ export default function App({ appKey, initialIdentity }: AppProps) {
         </ol>
         <p className="muted">An app key identifies evaluated definitions; it is not a management API credential or an authorization boundary.</p>
       </section>
-      <Snapshot /><DeclarativeGates /><ProgrammaticApi /><IdentityPanel initialIdentity={initialIdentity} /><OrderContextPanel /><FiltersMatrix /><ReactSurfaces />
+      <Snapshot /><DeclarativeGates /><ProgrammaticApi /><IdentityPanel initialIdentity={initialIdentity} /><OrderContextPanel /><FiltersMatrix /><ReactSurfaces /><TelemetryPanel enabled={telemetryEnabled} />
     </main>
   </>
 }
