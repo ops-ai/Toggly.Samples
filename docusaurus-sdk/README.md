@@ -36,7 +36,7 @@ cp .env.example .env.local
 
 Live mode requires signed responses. Offline toggle/default buttons are disabled; change flags in Toggly and observe native polling update the UI and checklist together. A one-second interval makes this teaching exercise responsive; use an appropriate longer refresh interval in a production application.
 
-Frontend telemetry is enabled by default when `TOGGLY_APP_KEY` is configured. Set `TOGGLY_ENABLE_TELEMETRY=false` for an explicit opt-out. Definitions continue to use `definitions.toggly.io`; compact usage and business-metric batches use the independent `https://metrics.toggly.io/api/frontend/telemetry` endpoint. The provider owns one reporter for React components and hooks. The separate Order core client owns a second reporter because it performs independent entity evaluations, and its cleanup calls `dispose()` so replacement cannot leave reporter or browser lifecycle resources behind.
+Frontend telemetry is enabled by default when `TOGGLY_APP_KEY` is configured. Set `TOGGLY_ENABLE_TELEMETRY=false` for an explicit opt-out. Definitions continue to use `definitions.toggly.io`; compact usage and business-metric batches use the independent `https://metrics.toggly.io/api/frontend/telemetry` endpoint. The provider owns one reporter for React components and hooks. The separate Order core client owns a second reporter because it performs independent entity evaluations. Its owner effect calls `dispose()` on replacement or unmount; changing Order restarts only the read loop. The Order panel can flush its own checks.
 
 Automatic checks are recorded at the SDK evaluation boundary. The workshop button explicitly records one usage and one view for `docusaurus-workshop` with the `workshop` variant, adds two to `docusaurus-sample-actions`, sets `docusaurus-sample-gauge` to three, and awaits a best-effort flush. Explicit usage/view calls do not perform another flag check. Rendering a component does not imply a view. Telemetry delivery is bounded and best effort; it must not be used as an authorization or billing decision.
 
@@ -62,7 +62,7 @@ The [catalog](src/sample/catalog.cjs) holds exact shared names, recorded fixture
 
 - `Feature` uses `flag`, with `negate`; there is no native FeatureGateBuilder, multi-key or variant component here. Sample all/any and local AND are labelled compositions.
 - The core supports canonical entities and `registerContext`. The plugin's React helper omits entity arguments. No other JavaScript SDK singleton substitutes for the core registry.
-- The provider owns its polling/WebSocket/reporter lifecycle. Views read native context instead of copying its flags. Core has no public refresh subscription, so its view polls and rejects late completions after user/Order changes or unmount, then disposes the complete core owner.
+- The provider owns its polling/WebSocket/reporter lifecycle. Views read native context instead of copying its flags. Core has no public refresh subscription, so its view polls and rejects late completions after user/Order changes or unmount. A separate effect owns and disposes the core client across config replacement and unmount, including development effect replay.
 - Fetch or signature failures preserve cached flags or configured defaults. The native API can absorb errors; absence of `useToggly.error` does not prove a successful fresh request. Browser tests explicitly check cold failure defaults and tampered signatures.
 - User identity and claims select presentation, never authorization. Protect real data and actions on the server.
 

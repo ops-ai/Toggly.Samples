@@ -228,6 +228,7 @@ async function expectNativeReady(page, enabled) {
 
     build("live", "test-only-docusaurus");
     let enabled = true,
+      entityEnabled = true,
       tamper = false,
       fail = false;
     const requests = [];
@@ -269,8 +270,8 @@ async function expectNativeReady(page, enabled) {
         if (fail) return route.fulfill({ status: 503, body: "offline" });
         const body = await envelope({
           ...Object.fromEntries(catalog.allKeys.map((k) => [k, enabled])),
-          ExpressCheckout: catalog.orderGate,
-          "filter-context-property": catalog.orderGate,
+          ExpressCheckout: entityEnabled ? catalog.orderGate : false,
+          "filter-context-property": entityEnabled ? catalog.orderGate : false,
         });
         if (tamper)
           body.signature =
@@ -288,6 +289,22 @@ async function expectNativeReady(page, enabled) {
         .querySelector('[data-testid="order-result"]')
         ?.textContent.includes("ON"),
     );
+    await p.getByRole("button", { name: "Standard Order", exact: true }).click();
+    await expect(p.getByTestId("order-result")).toContainText("OFF");
+    await p.getByRole("button", { name: "VIP Order", exact: true }).click();
+    await expect(p.getByTestId("order-result")).toContainText("ON");
+    await p.getByTestId("flush-order-telemetry").click();
+    const beforeEntityRefresh = telemetryPackets.length;
+    entityEnabled = false;
+    await expect(p.getByTestId("order-result")).toContainText("OFF");
+    await p.getByTestId("flush-order-telemetry").click();
+    await expect.poll(() =>
+      telemetryPackets.slice(beforeEntityRefresh).some(
+        (packet) => packet.f?.ExpressCheckout?.disabled?.[0] > 0,
+      ),
+    ).toBe(true);
+    entityEnabled = true;
+    await expect(p.getByTestId("order-result")).toContainText("ON");
     await expect.poll(() =>
       telemetryPackets.some((packet) => packet.f?.["beta-access"]),
     ).toBe(true);
