@@ -3,10 +3,13 @@ import { publicConfig } from "../../generated-config";
 import { allKeys, users } from "./catalog";
 import { OFFLINE_ORIGIN } from "./offline";
 export const offline = !publicConfig.appKey;
+export const telemetryEnabled =
+  !offline && publicConfig.enableTelemetry !== false;
 export function togglyOptions(variants = false): ITogglyOptions {
   return {
     ...publicConfig,
     appKey: publicConfig.appKey || undefined,
+    enableTelemetry: telemetryEnabled,
     ...users.matching,
     groups: [...users.matching.groups],
     claims: { ...users.matching.claims },
