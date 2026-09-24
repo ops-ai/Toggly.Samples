@@ -17,7 +17,7 @@ GEM
     rackup (2.3.1)
       rack (>= 3)
     rake (13.4.2)
-    toggly (0.5.0)
+    toggly (0.5.2)
 
 PLATFORMS
   aarch64-linux
@@ -32,7 +32,7 @@ DEPENDENCIES
   rack-session (= 2.1.2)
   rackup (= 2.3.1)
   rake (= 13.4.2)
-  toggly (= 0.5.0)
+  toggly (= 0.5.2)
 
 CHECKSUMS
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
@@ -46,7 +46,7 @@ CHECKSUMS
   rack-session (2.1.2) sha256=595434f8c0c3473ae7d7ac56ecda6cc6dfd9d37c0b2b5255330aa1576967ffe8
   rackup (2.3.1) sha256=6c79c26753778e90983761d677a48937ee3192b3ffef6bc963c0950f94688868
   rake (13.4.2) sha256=cb825b2bd5f1f8e91ca37bddb4b9aaf345551b4731da62949be002fa89283701
-  toggly (0.5.0) sha256=03f12373a4e17ea1e33da7aebe45ada5834130625208eb96dfdaa743dd1378e4
+  toggly (0.5.2) sha256=8efe45c21f0b9b542279b81e733414ea55f81aa668dfa260ca6e9576d9302f9e
 
 RUBY VERSION
   ruby 4.0.6
