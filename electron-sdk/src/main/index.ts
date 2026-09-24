@@ -1,8 +1,10 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, powerMonitor } from 'electron'
+import { gunzipSync } from 'node:zlib'
 import { writeFile } from 'node:fs/promises'
 import { config as loadEnvironment } from 'dotenv'
 import {
   closeToggly,
+  attachTogglyLifecycle,
   initToggly,
   registerTogglyIpc,
 } from '@ops-ai/electron-feature-flags-toggly/main'
@@ -17,6 +19,10 @@ const appKey = process.env.TOGGLY_APP_KEY?.trim() ?? ''
 const environment = process.env.TOGGLY_ENVIRONMENT?.trim() || 'Production'
 const configured = Boolean(appKey && appKey !== 'ci-placeholder')
 let disposeIpc: (() => void) | undefined
+let disposeLifecycle: (() => void) | undefined
+const hostReport = process.env.TOGGLY_SAMPLE_HOST_REPORT
+const hostMode = process.env.TOGGLY_SAMPLE_HOST_MODE
+const capturedPackets: unknown[] = []
 
 async function setupToggly(): Promise<void> {
   // The SDK and its ipcMain handlers are process-lifetime resources. Set them
@@ -36,12 +42,28 @@ async function setupToggly(): Promise<void> {
     // A configured desktop app verifies signed definitions before using them.
     // Missing configuration uses local defaults and makes no definitions call.
     verifySignatures: configured,
+    enableTelemetry: process.env.TOGGLY_DISABLE_TELEMETRY !== 'true',
+    // Native host verification uses a synthetic main-only key and intercepts
+    // both transports. It never sends a request to a production endpoint.
+    ...(hostReport ? {
+      verifySignatures: false,
+      enableLiveUpdates: false,
+      metricsBaseUrl: 'https://metrics.example.invalid',
+      fetch: async () => new Response(null, { status: 403 }),
+      telemetryFetch: async (_url: string | URL | Request, options?: RequestInit) => {
+        const body = options?.body
+        const bytes = body instanceof ArrayBuffer ? Buffer.from(body) : Buffer.from(body as Uint8Array)
+        capturedPackets.push(JSON.parse(gunzipSync(bytes).toString('utf8')))
+        return new Response('{"ok":1}', { status: 202 })
+      },
+    } : {}),
     onError: (message, error) => console.warn(`[Toggly Electron sample] ${message}`, error),
   })
 
   // The SDK installs a narrow, documented IPC surface. It forwards updates to
   // every existing window but exposes no generic ipcRenderer or secret value.
   disposeIpc = registerTogglyIpc(ipcMain, BrowserWindow.getAllWindows)
+  disposeLifecycle = attachTogglyLifecycle(app, powerMonitor)
 }
 
 const ensureToggly = createOneTimeSetup(setupToggly)
@@ -51,7 +73,7 @@ async function createWindow(): Promise<BrowserWindow> {
   // call from macOS activate after all windows have been closed.
 
   const window = new BrowserWindow({
-    show: !process.env.TOGGLY_SAMPLE_HOST_REPORT,
+    show: !hostReport,
     width: 1200,
     height: 900,
     minWidth: 900,
@@ -73,7 +95,7 @@ async function createWindow(): Promise<BrowserWindow> {
 }
 
 async function runNativeHostContract(window: BrowserWindow): Promise<void> {
-  const reportPath = process.env.TOGGLY_SAMPLE_HOST_REPORT
+  const reportPath = hostReport
   if (!reportPath) return
 
   try {
@@ -106,9 +128,29 @@ async function runNativeHostContract(window: BrowserWindow): Promise<void> {
         void poll()
       })
     `)
-    await writeFile(reportPath, JSON.stringify({ passed: true, ...result }))
+    if (hostMode === 'enabled' || hostMode === 'optout') {
+      const telemetry = await window.webContents.executeJavaScript(`
+        (() => {
+          const direct = window.toggly.isFeatureOn('new-dashboard')
+          const gate = window.toggly.evaluateFeatureGate(['api-v2', 'enhanced-submit'], 'any')
+          window.toggly.recordUsage('new-dashboard', 'disabled')
+          window.toggly.recordView('Cart', 'blue')
+          window.toggly.incrementCounter('orders', 2)
+          window.toggly.setGauge('cartItems', 3)
+          // The published main IPC validator must reject these renderer inputs.
+          window.toggly.recordUsage('invalid', 'bad variant')
+          window.toggly.incrementCounter('negative', -1)
+          return { direct, gate, flush: typeof window.toggly.flushTelemetry }
+        })()
+      `)
+      await window.webContents.executeJavaScript('window.toggly.flushTelemetry()')
+      Object.assign(result, { telemetry })
+    }
+    await writeFile(reportPath, JSON.stringify({ passed: true, ...result, packets: capturedPackets }))
     disposeIpc?.()
     disposeIpc = undefined
+    disposeLifecycle?.()
+    disposeLifecycle = undefined
     closeToggly()
     app.exit(0)
   } catch (error) {
@@ -118,8 +160,16 @@ async function runNativeHostContract(window: BrowserWindow): Promise<void> {
 }
 
 app.whenReady().then(async () => {
+  if (hostReport && process.env.TOGGLY_SAMPLE_HOST_PID_PATH) {
+    await writeFile(process.env.TOGGLY_SAMPLE_HOST_PID_PATH, String(process.pid))
+  }
+  if (process.env.TOGGLY_SAMPLE_HOST_FAIL === 'true') {
+    app.exit(1)
+    return
+  }
   await ensureToggly()
   const window = await createWindow()
+  if (process.env.TOGGLY_SAMPLE_HOST_HANG === 'true') return
   await runNativeHostContract(window)
 })
 
@@ -131,8 +181,8 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) void createWindow()
 })
 
-app.on('before-quit', () => {
-  // Stop the refresh timer/WebSocket and unregister handlers during shutdown.
+app.on('will-quit', () => {
+  // The SDK lifecycle owns the final best-effort flush before quit.
   disposeIpc?.()
-  closeToggly()
+  disposeLifecycle?.()
 })

@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Feature, useFeatureFlag, useFeatureGate } from '@ops-ai/electron-feature-flags-toggly/react'
-import { evaluateFeatureGate, isFeatureOn } from '@ops-ai/electron-feature-flags-toggly'
+import {
+  evaluateFeatureGate, flushTelemetry, incrementCounter, isFeatureOn,
+  recordUsage, recordView, setGauge,
+} from '@ops-ai/electron-feature-flags-toggly'
 import {
   buildOrderContext,
   coreFlags,
@@ -37,6 +40,7 @@ export function App() {
   const [preset, setPreset] = useState<PresetName>('matching')
   const [vip, setVip] = useState(true)
   const [notice, setNotice] = useState('Choose a session identity, then apply it to refresh the main-process evaluation context.')
+  const [telemetryNotice, setTelemetryNotice] = useState('Telemetry is owned by Electron main.')
   const dashboard = useFeatureFlag('new-dashboard')
   const legacyApi = useFeatureFlag('api-v2', { negate: true })
   const allCore = useFeatureGate(['new-dashboard', 'api-v2'], { requirement: 'all' })
@@ -98,7 +102,7 @@ export function App() {
         <div className="panel"><h3>Negate</h3><p>{legacyApi.isEnabled ? 'Legacy API content shows while api-v2 is OFF.' : 'api-v2 is ON, so the legacy content is hidden.'}</p></div>
         <div className="panel"><h3>Multi-key</h3><p>All: {allCore.isEnabled ? 'ON' : 'OFF'} · Any: {anyCore.isEnabled ? 'ON' : 'OFF'}</p><Feature featureKeys={['new-dashboard', 'api-v2']} requirement="any"><p className="success">At least one dashboard/API decision is enabled.</p></Feature></div>
       </div>
-      <p className="caveat"><strong>Variant limitation:</strong> Electron SDK 1.0.0 publishes boolean flags and gates, but no named-variant or experiment-assignment API. The dashboard labels in this sample are boolean UI branches, not an A/B assignment.</p>
+      <p className="caveat"><strong>Variant limitation:</strong> Electron SDK 1.1.0 publishes boolean flags and gates, but no named-variant or experiment-assignment API. Telemetry variants label explicit events; they are not an A/B assignment.</p>
     </section>
 
     <section id="programmatic">
@@ -131,6 +135,13 @@ export function App() {
     <section id="electron">
       <h2>7. Electron-specific surfaces</h2>
       <div className="grid"><div className="panel"><h3>Main owns configuration</h3><p>It reads <code>TOGGLY_APP_KEY</code>, initializes once before windows, verifies signed definitions when configured, stores last-known-good definitions under Electron <code>userData</code>, and owns refresh/WebSocket work.</p></div><div className="panel"><h3>Preload narrows capability</h3><p><code>exposeToggly()</code> uses contextBridge. Renderer code can ask for flag values, set the explicit session context, and subscribe to updates; it cannot call arbitrary IPC or read the key.</p></div><div className="panel"><h3>Updates fan out</h3><p>The SDK sends a new flag snapshot to every open window after a refresh. React hooks and <code>Feature</code> re-evaluate, keeping UI consistent without exposing transport details.</p></div></div>
+      <div className="panel"><h3>Usage and business metrics</h3><p>Checks above are counted by the main-process SDK. These buttons demonstrate explicit events and metrics through the validated preload bridge. Configure <code>TOGGLY_DISABLE_TELEMETRY=true</code> in main to opt out.</p><div className="controls">
+        <button onClick={() => { recordUsage('new-dashboard', dashboard.isEnabled ? 'enabled' : 'disabled'); setTelemetryNotice('Recorded dashboard usage.') }}>Record usage</button>
+        <button onClick={() => { recordView('Cart', 'blue'); setTelemetryNotice('Recorded Cart view.') }}>Record view</button>
+        <button onClick={() => { incrementCounter('orders', 2); setTelemetryNotice('Incremented orders by 2.') }}>Add orders</button>
+        <button onClick={() => { setGauge('cartItems', 3); setTelemetryNotice('Set cartItems to 3.') }}>Set cart items</button>
+        <button onClick={() => void flushTelemetry().then(() => setTelemetryNotice('Main-process telemetry flush completed.')).catch(() => setTelemetryNotice('Telemetry flush failed.'))}>Flush</button>
+      </div><p className="notice">{telemetryNotice}</p></div>
     </section>
 
     <section id="configuration">
