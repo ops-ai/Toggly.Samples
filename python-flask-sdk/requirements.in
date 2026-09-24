@@ -1,6 +1,6 @@
 # Latest published direct versions verified 2026-09-10; regenerate hash lock with uv.
 Flask==3.1.3
-toggly==0.7.1
+toggly==0.7.2
 toggly-flask==0.3.1
 Flask-Login==0.6.3
 Flask-WTF==1.3.0
