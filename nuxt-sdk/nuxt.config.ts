@@ -14,5 +14,9 @@ export default defineNuxtConfig({
   // createTogglyModuleOptions receives TOGGLY_APP_KEY loaded by Nuxt from .env.
   toggly: createTogglyModuleOptions(process.env),
 
+  // Core's ESM browser build imports named helpers from these published CJS
+  // packages. Prebundle them so Vite serves their named exports to Nuxt 4.
+  vite: { optimizeDeps: { include: ['@ops-ai/toggly-hooks-types', '@ops-ai/toggly-eval'] } },
+
   compatibilityDate: '2026-09-13',
 })

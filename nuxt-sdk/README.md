@@ -4,9 +4,9 @@ A Nuxt **4.5.2** application that teaches Toggly feature flags across the publis
 
 | Package | Version | Responsibility |
 |---|---:|---|
-| `@ops-ai/nuxt-toggly` | `1.2.0` | Nuxt module: auto-imports, Vue components/directives, browser plugin and Nitro plugin |
-| `@ops-ai/nuxt-toggly-core` | `1.12.0` | Definition fetching and feature evaluation |
-| `@ops-ai/nuxt-toggly-client` | `1.2.2` | Vue composables, components and directives |
+| `@ops-ai/nuxt-toggly` | `1.4.0` | Nuxt module: auto-imports, Vue components/directives, browser plugin and Nitro plugin |
+| `@ops-ai/nuxt-toggly-core` | `1.13.0` | Definition fetching and feature evaluation |
+| `@ops-ai/nuxt-toggly-client` | `1.3.0` | Vue composables, components, directives and browser telemetry |
 | `@ops-ai/nuxt-toggly-server` | `1.7.0` | Request-scoped H3/Nitro helpers and route gates |
 
 All four are exact public npm packages. This sample uses no SDK workspace path,
@@ -64,8 +64,16 @@ the browser can fetch public definitions. The Toggly application key identifies
 the app; it is not an end-user secret. Keep it local so the sample does not
 publish an app association. Never put a user token or another private credential
 in Nuxt public runtime configuration. The local tutorial disables optional
-server usage/metrics telemetry; configure your production observability policy
-explicitly when adapting it.
+server usage/metrics telemetry through the module's server-specific options.
+The browser module keeps usage and business metrics enabled with a key. Set
+`TOGGLY_ENABLE_TELEMETRY=false` in local `.env` to opt out of browser reporting.
+`TOGGLY_METRICS_BASE_URL` can direct an isolated test to an intercepting endpoint;
+the default is the public metrics endpoint. The demo telemetry button records
+usage, view, counter and gauge through the module-created browser client and
+flushes the queue. Use metric keys approved for your application when adapting it.
+Nuxt 4's Vite configuration prebundles the published CommonJS hooks and
+evaluator dependencies used by Core's browser ESM build. This keeps the public
+package graph working in the browser without a local SDK source alias.
 
 ## Create the Toggly application
 
@@ -98,7 +106,7 @@ role, country, or query parameter.
 |---|---|---|
 | Home | `/` → Home | Flag checklist and server-evaluated snapshot |
 | Declarative gates | `/` → Declarative gates | `<Feature>`, `negate`, `useFeatureFlag`, `useFeatureOff`, `useFeatureGate`, `v-feature` |
-| Programmatic API | `/` → Programmatic API | `useToggly().isFeatureOn()` and Nitro `isEventFeatureOn()` |
+| Programmatic API | `/` → Programmatic API | `useToggly().isFeatureOn()`, explicit browser telemetry and Nitro `isEventFeatureOn()` |
 | Identity | `/` → Identity | Browser session identity plus `configureEventEvalContext` on each H3 event |
 | Entity context | `/` → Entity context | `Order` canonical context passed to `isFeatureOn()` / `<Feature>` |
 | Filters matrix | `/` → Filters matrix | Matching/Non-matching request and Order presets for all eleven template filters |
@@ -107,7 +115,7 @@ role, country, or query parameter.
 
 ### Capability boundary: variants
 
-`@ops-ai/nuxt-toggly` **1.2.0** exposes boolean feature gates. It does not
+`@ops-ai/nuxt-toggly` **1.4.0** exposes boolean feature gates. It does not
 currently expose an experiment/variant-assignment API, so the declarative
 section calls this out instead of fabricating a variant result. All eleven
 shared filter types are evaluated by the published Nuxt core/server packages;

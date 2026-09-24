@@ -14,8 +14,8 @@ type TogglyRuntimeConfig = {
   claims?: Record<string, unknown>
   featureDefaults?: Record<string, boolean>
   enableLiveUpdates?: boolean
-  enableUsageTracking?: boolean
-  enableMetrics?: boolean
+  serverEnableUsageTracking?: boolean
+  serverEnableMetrics?: boolean
   serverCache?: boolean
   serverCacheTtl?: number
 }
@@ -54,8 +54,8 @@ export async function ensureServerToggly(
     // live updates, not one HTTP polling timer per request.
     refreshInterval: 0,
     enableLiveUpdates: config.enableLiveUpdates,
-    enableUsageTracking: config.enableUsageTracking,
-    enableMetrics: config.enableMetrics,
+    enableUsageTracking: config.serverEnableUsageTracking,
+    enableMetrics: config.serverEnableMetrics,
     cache: config.serverCache,
     cacheTtl: config.serverCacheTtl,
   })

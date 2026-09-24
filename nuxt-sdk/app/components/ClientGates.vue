@@ -81,7 +81,7 @@ onMounted(checkProgrammatically)
 
     <!-- This directive is useful for a small DOM branch without a wrapper. -->
     <p v-feature="'enhanced-submit'" class="result on">enhanced-submit enabled this directive-rendered message.</p>
-    <p class="gap"><strong>Variant:</strong> @ops-ai/nuxt-toggly 1.2.0 exposes boolean gates, not an experiment/variant assignment API. This sample keeps that boundary visible rather than inventing a variant.</p>
+    <p class="gap"><strong>Variant:</strong> @ops-ai/nuxt-toggly 1.4.0 exposes boolean gates, not an experiment/variant assignment API. This sample keeps that boundary visible rather than inventing a variant.</p>
   </section>
 
   <section id="programmatic" class="panel">
@@ -95,6 +95,7 @@ onMounted(checkProgrammatically)
     <button type="button" @click="checkProgrammatically">Evaluate enhanced-submit and this Order</button>
     <p v-if="programmaticResult !== null">enhanced-submit: <strong>{{ programmaticResult ? 'on' : 'off' }}</strong></p>
     <p v-if="entityResult !== null">ExpressCheckout for <code>{{ order.key }}</code>: <strong>{{ entityResult ? 'on' : 'off' }}</strong></p>
+    <TelemetryActions :vip="order.attributes.Vip" />
   </section>
 
   <section id="identity" class="panel">
