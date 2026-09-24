@@ -337,6 +337,22 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+  - package-ecosystem: nuget
+    directory: /blazor-sdk/tests/PublicTelemetryHost
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: nuget
+    directory: /blazor-sdk/tests/ServerTelemetrySilence
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
   - package-ecosystem: npm
     directory: /blazor-sdk
     schedule:
