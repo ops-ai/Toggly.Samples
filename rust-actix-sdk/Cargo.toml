@@ -7,7 +7,7 @@ publish = false
 
 [dependencies]
 actix-web = "=4.15.0"
-toggly = "=0.6.1"
+toggly = "=0.6.3"
 toggly-actix = "=0.6.1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "sync", "time"] }
 serde = { version = "1", features = ["derive"] }
