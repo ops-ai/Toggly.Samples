@@ -28,7 +28,7 @@
     "@angular/compiler-cli": "^22.1.6",
     "@playwright/test": "^1.63.0",
     "jsdom": "^30.0.1",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.8",
     "typescript": "~6.0.3",
     "vitest": "^4.1.11"
   },
