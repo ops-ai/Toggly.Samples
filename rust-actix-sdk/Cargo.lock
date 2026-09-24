@@ -2136,9 +2136,9 @@ dependencies = [
 
 [[package]]
 name = "toggly-actix"
-version = "0.6.1"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17e1069e6ed7cba6683178862d97fec4942aa78548a9fc63b7af865088b646d6"
+checksum = "883bf172b203b23c92006453104dfb511121fc170ce67448fccb155aea964468"
 dependencies = [
  "actix-web",
  "futures-util",
