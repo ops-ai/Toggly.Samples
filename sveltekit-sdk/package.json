@@ -15,19 +15,19 @@
     "prebuild": "npm run format:check"
   },
   "dependencies": {
-    "@ops-ai/toggly-sveltekit": "^0.1.0"
+    "@ops-ai/toggly-sveltekit": "0.2.0"
   },
   "devDependencies": {
-    "@sveltejs/kit": "^2.55.0",
+    "@playwright/test": "^1.58.2",
     "@sveltejs/adapter-node": "^5.5.4",
+    "@sveltejs/kit": "^2.55.0",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@types/node": "^26.5.1",
     "svelte": "^5.53.0",
     "svelte-check": "^4.4.5",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "vitest": "^5.0.0",
-    "@playwright/test": "^1.58.2",
-    "@types/node": "^26.5.1"
+    "vitest": "^5.0.0"
   },
   "engines": {
     "node": ">=22.12.0"

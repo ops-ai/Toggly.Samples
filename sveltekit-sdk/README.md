@@ -12,7 +12,7 @@ npm run dev
 
 Open http://127.0.0.1:5173. With empty keys the missing-key banner stays visible and the server exercises explicitly labelled offline definitions. This is a local teaching mode, not evidence of live provisioning or connectivity. Configure both keys to use your Toggly application.
 
-`TOGGLY_APP_KEY` is a backend App Key read only by `hooks.server.ts`. `PUBLIC_TOGGLY_APP_KEY` is a Front-end App Key intentionally delivered to the browser through SvelteKit's public environment system. `TOGGLY_ENVIRONMENT` and `PUBLIC_TOGGLY_ENVIRONMENT` default to Production. This adapter-node sample uses dynamic environment imports at runtime. No keys are required for the offline tests/build. Never put a backend key in a `PUBLIC_` variable.
+`TOGGLY_APP_KEY` is a backend App Key read only by `hooks.server.ts`. `PUBLIC_TOGGLY_APP_KEY` is a Front-end App Key intentionally delivered to the browser through SvelteKit's public environment system. `TOGGLY_ENVIRONMENT` and `PUBLIC_TOGGLY_ENVIRONMENT` default to Production. Browser telemetry is enabled by default when the front-end key is present; set `PUBLIC_TOGGLY_ENABLE_TELEMETRY=false` to opt out while keeping feature evaluation enabled. This adapter-node sample uses dynamic environment imports at runtime. No keys are required for the offline tests/build. Never put a backend key in a `PUBLIC_` variable.
 
 ## Configure Toggly
 
@@ -62,6 +62,14 @@ The filter presets use the exact Chrome/macOS and Firefox/Windows strings from F
 | `src/routes/[[section]]/+page.server.ts` | Rechecks enhanced-submit before an action                                                                 |
 | `tests/catalog.test.ts`                  | Runs every matching/nonmatching filter through the actual Node evaluator                                  |
 | `tests/browser/showcase.spec.ts`         | Adapter-node SSR, hydration, context navigation, concurrency and action smoke                             |
+
+## Browser telemetry
+
+The root layout creates the only browser client/reporter for that rendered application layout. The telemetry card stays mounted while SvelteKit navigates, and the same client reconnects when its server snapshot changes. Queue usage and view events for `new-dashboard` plus a counter and gauge, then flush them explicitly. The selected event variant comes from the card's reactive result; clicking the actions does not re-evaluate the flag. Events accepted before an identity-changing route update retain their original attribution when they are flushed later.
+
+Use the separate **Front-end App Key** for the browser. Its identity fields are supplied by the current frontend snapshot and are not a substitute for authentication. Keyless mode and `PUBLIC_TOGGLY_ENABLE_TELEMETRY=false` produce no browser telemetry requests. The server-side Node client remains independently configured with usage tracking and metrics disabled in this demo.
+
+The browser suite intercepts the metrics endpoint and returns HTTP 202 to the published reporter, so tests exercise the real compact packets without sending telemetry to production. Its configured, keyless, and opted-out hosts use test-only keys and offline server definitions.
 
 ## Failure and security boundaries
 

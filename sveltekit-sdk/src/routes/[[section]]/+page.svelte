@@ -97,7 +97,7 @@
   </p>
   <div class="card">
     <code>toggly.isEnabled('new-dashboard')</code>
-    <p class:on={dashboard} class:off={!dashboard}>
+    <p class:on={dashboard} class:off={!dashboard} data-testid="dashboard-result">
       {dashboard ? 'Enabled' : 'Disabled'}
     </p>
     <p>
