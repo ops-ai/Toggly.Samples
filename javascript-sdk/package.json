@@ -12,9 +12,9 @@
     "@ops-ai/feature-flags-toggly": "1.9.0"
   },
   "devDependencies": {
-    "jsdom": "30.0.1",
+    "jsdom": "30.1.0",
     "typescript": "7.0.2",
     "vite": "8.3.0",
-    "vitest": "5.0.0"
+    "vitest": "5.0.1"
   }
 }
