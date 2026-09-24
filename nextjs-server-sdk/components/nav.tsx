@@ -27,6 +27,7 @@ const SECTIONS = [
       ['/client/hooks', 'Hooks'],
       ['/client/components', 'Components'],
       ['/client/filters', 'Filters'],
+      ['/client/telemetry', 'Telemetry'],
     ] as const,
   },
   {

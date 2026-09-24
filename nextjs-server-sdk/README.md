@@ -241,3 +241,32 @@ Debug: `GET /api/toggly-debug` (optional `?refresh=1`).
 - [ ] `beta-access` ON → `/edge/beta` renders
 - [ ] `beta-access` OFF → `/edge/beta` redirects to `/edge/waitlist`
 - [ ] `/edge`, `/edge/waitlist`, `/edge/unavailable` remain reachable
+
+## Browser telemetry
+
+Open `/client/telemetry` with a public Front-end App Key configured. The page
+uses the existing browser provider and the published client telemetry companion;
+server and edge clients retain their separate evaluation/analytics ownership.
+
+1. Click **Evaluate feature** to evaluate `new-dashboard` and record its check.
+2. Click **Record usage** or **Record view** for an explicit interaction. Rendering
+   the page does not record a usage/view event. Boolean results use `enabled` or
+   `disabled`, not a named experiment assignment.
+3. **Increment counter** adds one to `sample-interactions`; **Set gauge** sets
+   `sample-cart-value` to 42. Configure those metric keys and types in your sample
+   application before expecting aggregation.
+4. **Flush telemetry** attempts delivery. It does not prove ingestion or metrics
+   aggregation. Uncheck **Collect browser telemetry** to disable this owner's
+   collection and discard its pending telemetry; feature evaluation still works.
+
+Set `NEXT_PUBLIC_TOGGLY_ENABLE_TELEMETRY=false` for an initial opt-out. The optional
+`NEXT_PUBLIC_TOGGLY_METRICS_BASE_URL` defaults to `https://metrics.toggly.io`.
+Public environment values are compiled into the browser bundle; restart/rebuild
+when changing them. Without a public app key the controls do not mount.
+
+Run `npm test` for the existing tests and SSR silence regression. For real-browser
+checks, run `npx playwright install chromium` then `npm run test:browser`; repeat
+with `TELEMETRY_TEST_NO_KEY=1 npm run test:browser`. These tests start their own
+Next server, clear its server app key, use a dummy browser key and intercept all
+external browser HTTP/WebSocket traffic. The metrics host is `.invalid`; tests
+never send live telemetry. `CHROMIUM_PATH` can select an existing Chromium binary.

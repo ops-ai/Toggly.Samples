@@ -22,6 +22,7 @@ export default function ClientIndexPage() {
           <Link href="/client/filters">Filters</Link> — request-UA browser /
           device / OS matrix
         </li>
+        <li><Link href="/client/telemetry">Telemetry</Link> — explicit usage, views, metrics and collection opt-out</li>
       </ul>
     </>
   )
