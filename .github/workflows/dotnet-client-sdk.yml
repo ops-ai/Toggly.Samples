@@ -24,12 +24,25 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: |
+            8.0.x
+            10.0.x
       - run: dotnet restore Console --locked-mode
       - run: dotnet restore Desktop --locked-mode
       - run: dotnet restore tests/Smoke --locked-mode
       - run: dotnet restore tests/LiveAcceptance --locked-mode
       - run: dotnet restore tests/LivePolicy --locked-mode
+      - run: dotnet restore tests/PublicTelemetry/Portable --locked-mode
+      - run: dotnet restore tests/PublicTelemetry/Desktop --locked-mode
+      - run: dotnet build tests/PublicTelemetry/Portable -c Release --no-restore
+      - run: dotnet build tests/PublicTelemetry/Desktop -c Release --no-restore
+      - run: dotnet run --project tests/PublicTelemetry/Portable -f net8.0 -c Release --no-build --no-restore
+      - run: dotnet run --project tests/PublicTelemetry/Portable -f net10.0 -c Release --no-build --no-restore
+      - run: dotnet run --project tests/PublicTelemetry/Desktop -f net8.0 -c Release --no-build --no-restore
+      - run: dotnet run --project tests/PublicTelemetry/Desktop -f net10.0 -c Release --no-build --no-restore
+      - name: Verify bounded explicit retries and ambiguous nonreplay
+        if: runner.os == 'Linux'
+        run: dotnet run --project tests/PublicTelemetry/Portable -f net8.0 -c Release --no-build --no-restore -- --retry
       - run: dotnet build tests/LiveAcceptance -c Release --no-restore
       - run: dotnet run --project tests/LivePolicy -c Release --no-restore
       - name: Verify live runner refuses missing configuration
