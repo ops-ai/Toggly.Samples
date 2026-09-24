@@ -12,6 +12,8 @@ const env = {
   NODE_ENV: 'production',
   PORT: port,
   TOGGLY_APP_KEY: serverOnlyKey,
+  // Keep this configured-key smoke isolated from live telemetry ingestion.
+  TOGGLY_DISABLE_TELEMETRY: '1',
   VITE_TOGGLY_APP_KEY: 'ci-public-placeholder',
   TOGGLY_ENVIRONMENT: 'Production',
 }

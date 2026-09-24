@@ -1,11 +1,12 @@
 import { Feature, useABTest, useFeature, useToggly } from '@ops-ai/react-router-toggly/client'
+import { useState } from 'react'
 
 export function ClientGates() {
   const direct = useFeature('new-dashboard', false)
-  const { isReady, refresh } = useToggly()
+  const toggly = useToggly()
   // The published client has useABTest, but it maps a boolean to labels. It
   // does not expose a dashboard experiment/variant assignment object.
-  const booleanMappedLabel = useABTest('new-dashboard', 'modern', 'classic')
+  const booleanMappedLabel = useABTest('new-dashboard', 'classic', 'modern')
   return (
     <section>
       <h2>Browser package: declarative gates</h2>
@@ -16,9 +17,39 @@ export function ClientGates() {
         <p className="on">Multi-key all gate: both new-dashboard and api-v2 are on.</p>
       </Feature>
       <p>
-        <b>Programmatic client hook:</b> {String(direct)}; provider ready: {String(isReady)}; boolean-mapped “variant”: {booleanMappedLabel}.
+        <b>Programmatic client hook:</b> <span data-testid="new-dashboard-result">{String(direct)}</span>; provider ready: {String(toggly.isReady)}; boolean-mapped “variant”: {booleanMappedLabel}.
       </p>
-      <button onClick={() => void refresh()}>Refresh browser flags</button>
+      <ClientTelemetryDemo enabled={direct} />
+    </section>
+  )
+}
+
+function ClientTelemetryDemo({ enabled }: { enabled: boolean }) {
+  const toggly = useToggly()
+  const [actionStatus, setActionStatus] = useState('No explicit telemetry sent yet.')
+
+  return (
+    <section aria-labelledby="browser-telemetry-heading">
+      <h3 id="browser-telemetry-heading">App-owned browser telemetry</h3>
+      <p>Browser identity: <span data-testid="client-identity">{toggly.identity || 'anonymous'}</span></p>
+      <div className="actions">
+        <button data-testid="identify-alice" onClick={() => void toggly.identify('alice', { groups: ['beta'], claims: { role: 'admin' } })}>Identify alice · beta/admin</button>
+        <button data-testid="identify-bob" onClick={() => void toggly.identify('bob', { groups: [], claims: { role: 'user' } })}>Identify bob · user</button>
+        <button
+          data-testid="record-telemetry"
+          onClick={() => {
+            const variant = enabled ? 'enabled' : 'disabled'
+            toggly.recordUsage('new-dashboard', variant)
+            toggly.recordView('new-dashboard', variant)
+            toggly.incrementCounter('router-sample-actions', 1)
+            toggly.setGauge('router-sample-cart-size', 3)
+            void toggly.flushTelemetry().then(() => setActionStatus(`Sent explicit events for ${toggly.identity || 'anonymous'}.`))
+          }}
+        >Record usage, view and metrics</button>
+        <button data-testid="refresh-browser-flags" onClick={() => void toggly.refresh()}>Refresh browser flags</button>
+        <button data-testid="flush-browser-telemetry" onClick={() => void toggly.flushTelemetry()}>Flush browser telemetry</button>
+      </div>
+      <p role="status" data-testid="telemetry-status">{actionStatus}</p>
     </section>
   )
 }

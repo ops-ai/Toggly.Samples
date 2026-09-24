@@ -64,6 +64,16 @@ assets after changing it. `TOGGLY_ENVIRONMENT` / `VITE_TOGGLY_ENVIRONMENT`
 default to `Production`. The root loader strips `appKey` from any serialized
 server context so the server key never appears in HTML.
 
+The browser provider automatically records feature checks when a public key is
+configured. Set `VITE_TOGGLY_ENABLE_TELEMETRY=false` to opt out. On `/gates`,
+the app-owned `useToggly()` client also demonstrates explicit usage, view,
+counter, gauge, and flush calls. Its `identify()` buttons change only the
+browser client's targeting context; the server's `/identity` cookie remains a
+separate request-scoped example. Demo identities are user-controlled inputs,
+not authentication. `VITE_TOGGLY_METRICS_BASE_URL` is an optional browser
+transport override for controlled development or tests; the SDK default is
+`https://metrics.toggly.io`.
+
 ## Read the source in this order
 
 | File / route | What to learn |
@@ -80,7 +90,7 @@ server context so the server key never appears in HTML.
 | Route | Package surface | What it demonstrates |
 |---|---|---|
 | `/` | `RouterTogglyProvider` | map, checklist, and live hydrated snapshot |
-| `/gates` | `@ops-ai/react-router-toggly/client` | Feature, negate, multi-key `requirement="all"`, hooks |
+| `/gates` | `@ops-ai/react-router-toggly/client` | Feature, negate, multi-key `requirement="all"`, hooks, client identity, and explicit browser telemetry |
 | `/programmatic` | `@ops-ai/react-router-toggly/server` | loader/action helpers and raw client checks |
 | `/identity` | `@ops-ai/react-router-toggly/server` | request-only identity, claims, and request headers |
 | `/orders` | client + server | registered `Order` entity context for ExpressCheckout |
@@ -90,7 +100,7 @@ server context so the server key never appears in HTML.
 
 - `react-router`, `@react-router/dev`, `@react-router/node`, `@react-router/serve` `8.4.0`
 - `react`, `react-dom` `19.3.0`
-- `@ops-ai/react-router-toggly` `1.0.0`
+- `@ops-ai/react-router-toggly` `1.1.0`
 - `isbot` `5.2.2` (required by `@react-router/serve`)
 
 See also [the React Router SDK docs](https://docs.toggly.io/sdks/react-router)
@@ -123,6 +133,10 @@ browser request, configured rule, and connected dashboard app.
 - [ ] `/` shows the route map, baseline checklist, and a hydrated snapshot.
 - [ ] `/gates` shows Feature, negate, and an all-of-two gate after turning on
       `new-dashboard` and `api-v2`.
+- [ ] `/gates` browser telemetry records feature checks and the explicit usage,
+      view, counter, and gauge actions under the selected browser identity.
+- [ ] `VITE_TOGGLY_ENABLE_TELEMETRY=false` preserves flag evaluation while
+      silencing browser telemetry; blank `VITE_TOGGLY_APP_KEY` stays keyless.
 - [ ] `/programmatic` reflects `new-dashboard` and action behavior reflects
       `enhanced-submit`.
 - [ ] `/identity` sets `alice` without leaking that identity into another
