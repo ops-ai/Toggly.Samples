@@ -15,7 +15,7 @@ npm run dev
 
 Open **http://localhost:5173**. With no App Key, the prominent **OFFLINE FIXTURES** banner explains that the sample feeds deterministic payloads through the real SDK. Nothing is sent to a real Toggly app in this mode. You do not need an account to learn the controls.
 
-Installed host/package versions: Vue **3.5.42**, Vite **8.3.0**, Toggly Vue SDK **1.9.5**. The newer SDK 1.9.6 is held because its changed refresh/error behaviour fails this sample’s native integration tests. `package-lock.json` records the full dependency set. This sample uses the official Vite **JavaScript** Vue template.
+Installed host/package versions: Vue **3.5.42**, Vite **8.3.0**, Toggly Vue SDK **1.10.0**. `package-lock.json` records the full dependency set. This sample uses the official Vite **JavaScript** Vue template.
 
 ## Your first flag, in three minutes
 
@@ -36,6 +36,8 @@ cp .env.example .env.local
 ```
 
 Set `VITE_TOGGLY_APP_KEY` to the public **App Key** from your application, and `VITE_TOGGLY_ENVIRONMENT=Production`. Vite exposes `VITE_` variables to browser code at build/start time; they are visible to anyone who loads the app. Never use a management API key or private credential here. `.env.local` is ignored by Git.
+
+The sample enables SDK telemetry for both its main flag client and its separate variants client by default when an App Key is configured. Feature checks are collected automatically. The **Frontend telemetry** section demonstrates explicit usage, view, counter, gauge and flush calls on the main service; rendering the section does not record a view. Usage and view first require a current `new-dashboard` evaluation, and the buttons are disabled while identity/SDK state is changing or a check fails. Flush asks both client instances to deliver their own batches. Set `VITE_TOGGLY_ENABLE_TELEMETRY=false` to opt out while keeping flag and variant evaluation active. `VITE_TOGGLY_METRICS_BASE_URL` is an optional destination override; leave it blank to use the SDK default.
 
 A nonempty App Key selects **LIVE SDK** mode. Offline switches and error simulation are disabled. Change flags in Toggly instead. Known identity, groups and claims are supplied before the first evaluation. Live responses require signature verification, and errors leave safe defaults visible. The two SDK instances request evaluated flags and evaluated variants separately; one request per client is intentional.
 
@@ -85,13 +87,13 @@ The HTTP reference presets are US + `en-US,en;q=0.9` + Chrome on macOS versus CA
 | Order          | Mapper and per-check entity, independent from user targeting                   | [`src/sample/catalog.js`](src/sample/catalog.js) and `src/components/OrderGate.vue` |
 | Filters        | Eleven rows; recorded fixtures versus real request inputs                      | [`src/components/FilterMatrix.vue`](src/components/FilterMatrix.vue)                |
 | Variants       | Native useVariant and configuration fallback                                   | `src/components/Variants.vue` and `workshop.js`                                     |
-| Vue surfaces   | Plugin/injection, builder, local-gate notifications and navigation composition | [`src/main.js`](src/main.js) and `Actions.vue`                                      |
+| Vue surfaces   | Plugin/injection, builder, local-gate notifications and navigation composition | [`src/main.js`](src/main.js), [`src/App.vue`](src/App.vue) and `Actions.vue`         |
 
 `workshop.js` contains orchestration; components do not reconstruct the SDK's evaluation rules. `offline.js` intercepts only a reserved `.invalid` origin, returning unsigned demo payloads. This transport is installed only when no key is configured. The real SDK still evaluates the native UI, local gates and entity rules.
 
 ### Important API distinctions
 
-- Install `toggly` with `app.use`. It globally registers `Feature` and `FeatureGateBuilder`, and provides `$toggly`. The exported `togglyService` is the plugin's browser singleton. This SPA changes its own session context; do not reuse it as mutable request state on a server.
+- Install `toggly` with `app.use`. It globally registers `Feature` and `FeatureGateBuilder`, and provides an app-owned `$toggly` client that is disposed when the Vue app unmounts. The workshop injects and attaches that same client so checks and explicit events share one reporter. The separately exported `togglyService` singleton is not the app-owned client. This SPA changes its own session context; do not reuse it as mutable request state on a server.
 - Call `useFeatureFlag`, `useFeatureGate` and `useVariant` inside setup. Keep their refs so refresh notifications remain reactive. The package does not export `createToggly` or `useToggly`.
 - `setContext` performs the fetch; do not add a second refresh. Changing the selected Order needs no user-context fetch.
 - The evaluated-variants payload contains enabled/variant/configuration assignments, while the evaluated flags payload can contain EntityGates. This sample uses two real service instances so it does not treat a flattened boolean variant snapshot as an entity rule.
@@ -110,7 +112,7 @@ npm run preview
 On Linux CI, use `npx playwright install --with-deps chromium`. For an existing local Chromium installation, set `CHROMIUM_EXECUTABLE=/absolute/path/to/chrome`.
 
 - Unit/component tests mount the actual published plugin and native components/composables. They cover missing-key mode, defaults, negate/all/any, denied actions, identity fetch counts, entity values, local gates, variants and recovery.
-- Headless browser tests walk offline controls at desktop/mobile widths, then feed generated signed responses through a production build of the real browser SDK. They verify initial targeting and reject a tampered signed ON payload. The signing keys exist in test memory only, and all test HTTP/WebSocket transport is isolated from real Toggly services.
+- Headless browser tests walk offline controls at desktop/mobile widths, then feed generated signed responses through a production build of the real browser SDK. They verify initial targeting, reject a tampered signed ON payload, inspect both keyed clients' telemetry packets, and verify opt-out and keyless silence. The signing keys and fake App Key exist in test memory only; telemetry and definitions are intercepted at reserved test endpoints, and the tests send nothing to Toggly.
 - Production builds retain the SDK's browser signature path. Vite may report that Node `crypto` was externalized in the shared dependency; browser verification is covered by the signed-response test.
 
 ## Manual checklist
@@ -122,6 +124,7 @@ On Linux CI, use `npx playwright install --with-deps chromium`. For an existing 
 - [ ] Select VIP/standard Order without changing identity; check ExpressCheckout.
 - [ ] Compare every filter row and distinguish reference HTTP inputs from real ones.
 - [ ] Confirm the variant name/configuration you assigned in the dashboard.
+- [ ] In Frontend telemetry, evaluate the current identity before recording usage/view; opt out with `VITE_TOGGLY_ENABLE_TELEMETRY=false` and confirm evaluations still work.
 - [ ] Deny enhanced-submit remotely and locally; a local gate must never enable it.
 - [ ] Deny beta-access; the existing view remains available.
 - [ ] Simulate a transport error offline, recover, and repeat on a narrow screen.

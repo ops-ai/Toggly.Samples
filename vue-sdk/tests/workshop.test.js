@@ -16,19 +16,106 @@ afterEach(() => {
   workshop = undefined;
   vi.restoreAllMocks();
 });
-async function mountWorkshop() {
-  workshop = createWorkshop({});
+async function mountWorkshop(env = {}) {
+  workshop = createWorkshop(env);
   wrapper = mount(App, {
     global: {
       plugins: [[toggly, workshop.options]],
       provide: { [workshopKey]: workshop },
     },
   });
-  await workshop.attach(togglyService);
   await flushPromises();
   return wrapper;
 }
 describe("real published Vue plugin and native surfaces", () => {
+  it("keeps keyless telemetry silent and attaches to the app-owned plugin service", async () => {
+    const w = await mountWorkshop();
+    expect(workshop.mainService).not.toBe(togglyService);
+    expect(workshop.state.telemetryEnabled).toBe(false);
+    expect(workshop.options.enableTelemetry).toBe(false);
+    expect(w.get('[data-testid="telemetry-status"]').text()).toMatch(
+      /offline.*silent/i,
+    );
+    for (const testId of [
+      "telemetry-usage",
+      "telemetry-view",
+      "telemetry-counter",
+      "telemetry-gauge",
+      "telemetry-flush",
+    ])
+      expect(w.get(`[data-testid="${testId}"]`).attributes("disabled")).toBeDefined();
+
+    await workshop.evaluateTelemetryFlag();
+    expect(workshop.state.telemetrySelection).toMatchObject({
+      context: "alice",
+      enabled: true,
+      variant: "compact",
+    });
+    const usage = vi.spyOn(workshop.mainService, "recordUsage");
+    const checks = vi.spyOn(workshop.mainService, "isFeatureOn");
+    workshop.recordTelemetryUsage();
+    workshop.recordTelemetryView();
+    workshop.incrementSampleActions();
+    workshop.setSampleCartSize();
+    await workshop.flushTelemetry();
+    expect(checks).not.toHaveBeenCalled();
+    expect(usage).not.toHaveBeenCalled();
+
+    const optedOut = createWorkshop({
+      VITE_TOGGLY_APP_KEY: "test-only-not-a-real-key",
+      VITE_TOGGLY_ENABLE_TELEMETRY: "false",
+    });
+    expect(optedOut.state.telemetryEnabled).toBe(false);
+    expect(optedOut.options.enableTelemetry).toBe(false);
+    optedOut.dispose();
+  });
+  it("keeps explicit events invalid after a failed identity refresh", async () => {
+    const w = await mountWorkshop();
+    await workshop.evaluateTelemetryFlag();
+    expect(workshop.state.telemetrySelection?.context).toBe("alice");
+    const usage = vi.spyOn(workshop.mainService, "recordUsage");
+    vi.spyOn(workshop.mainService, "setContext").mockRejectedValue(
+      new Error("simulated refresh failure"),
+    );
+
+    await workshop.preset("nonmatching");
+    expect(workshop.state.user.identity).toBe("bob");
+    expect(workshop.state.telemetrySelection).toBeNull();
+    workshop.recordTelemetryUsage();
+    workshop.recordTelemetryView();
+    expect(usage).not.toHaveBeenCalled();
+    expect(w.get('[data-testid="telemetry-usage"]').attributes("disabled"))
+      .toBeDefined();
+    expect(w.get('[data-testid="telemetry-view"]').attributes("disabled"))
+      .toBeDefined();
+  });
+  it("uses the main client's disabled decision when the variant client retains an assignment", async () => {
+    await mountWorkshop({
+      VITE_TOGGLY_APP_KEY: "test-only-not-a-real-key",
+      VITE_TOGGLY_METRICS_BASE_URL: "https://telemetry.test.invalid",
+    });
+    const main = workshop.mainService;
+    const evaluate = vi.spyOn(main, "isFeatureOn").mockResolvedValue(false);
+    const assignment = vi
+      .spyOn(workshop.variantService, "getVariant")
+      .mockReturnValue({ name: "compact" });
+    const usage = vi.spyOn(main, "recordUsage");
+    const view = vi.spyOn(main, "recordView");
+
+    await workshop.evaluateTelemetryFlag();
+    expect(workshop.state.telemetrySelection).toMatchObject({
+      context: "alice",
+      enabled: false,
+      variant: "disabled",
+    });
+    workshop.recordTelemetryUsage();
+    workshop.recordTelemetryView();
+
+    expect(evaluate).toHaveBeenCalledTimes(1);
+    expect(assignment).not.toHaveBeenCalled();
+    expect(usage).toHaveBeenCalledExactlyOnceWith("new-dashboard", "disabled");
+    expect(view).toHaveBeenCalledExactlyOnceWith("new-dashboard", "disabled");
+  });
   it("starts without a key, renders native Feature, builder, composables and all eleven filters", async () => {
     const w = await mountWorkshop();
     expect(w.get('[data-testid="missing-key"]').text()).toContain("No App Key");
@@ -52,7 +139,7 @@ describe("real published Vue plugin and native surfaces", () => {
       );
     // This public SDK call emits the same refresh notification as a WebSocket
     // reload. No workshop toggle or context control copies the snapshot for us.
-    await togglyService.setContext({
+    await workshop.mainService.setContext({
       identity: "alice",
       groups: ["beta"],
       claims: { role: "admin" },
@@ -69,8 +156,8 @@ describe("real published Vue plugin and native surfaces", () => {
     w.unmount();
     wrapper = undefined;
     workshop.dispose();
-    const checks = vi.spyOn(togglyService, "isFeatureOn");
-    await togglyService.setContext({ identity: "alice" });
+    const checks = vi.spyOn(workshop.mainService, "isFeatureOn");
+    await workshop.mainService.setContext({ identity: "alice" });
     await flushPromises();
     expect(checks).not.toHaveBeenCalled();
   });
@@ -133,7 +220,7 @@ describe("real published Vue plugin and native surfaces", () => {
     expect(w.find('[data-testid="vip-checkout"]').exists()).toBe(false);
     expect(w.get('[data-testid="order-result"]').text()).toBe("OFF");
     expect(workshop.state.user.identity).toBe("alice");
-    expect(await togglyService.isFeatureOn("ExpressCheckout")).toBe(false);
+    expect(await workshop.mainService.isFeatureOn("ExpressCheckout")).toBe(false);
   });
   it("refreshes identity exactly once per actual service and updates variants", async () => {
     const w = await mountWorkshop();
@@ -163,7 +250,7 @@ describe("real published Vue plugin and native surfaces", () => {
     ).toBeDefined();
     await workshop.toggle("enhanced-submit");
     await workshop.local();
-    expect(await togglyService.isFeatureOn("enhanced-submit")).toBe(false);
+    expect(await workshop.mainService.isFeatureOn("enhanced-submit")).toBe(false);
     await workshop.toggle("beta-access");
     await w.get('[data-testid="beta-route"]').trigger("click");
     await flushPromises();
@@ -173,7 +260,9 @@ describe("real published Vue plugin and native surfaces", () => {
     const w = await mountWorkshop();
     await workshop.failure();
     await flushPromises();
-    expect(w.get('[role="alert"]').text()).toContain("fetching feature flags");
+    expect(w.get('[role="alert"]').text()).toContain(
+      "simulated transport failure",
+    );
     expect(workshop.state.snapshot["new-dashboard"]).toBe(false);
     await workshop.failure();
     await flushPromises();
