@@ -1,6 +1,6 @@
 # Exact published versions checked on 2026-09-10. Compile with uv pip compile --generate-hashes.
 Django==6.1.1
-toggly==0.7.1
+toggly==0.7.2
 toggly-django==0.4.1
 gunicorn==26.2.0
 python-dotenv==1.2.3

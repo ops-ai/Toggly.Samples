@@ -176,9 +176,9 @@ sqlparse==0.6.0 \
     --hash=sha256:113c35c75365ab9cc9c7231d68c6428fb11c085fc8e9eb1ad659b7ddbf6cd2b9 \
     --hash=sha256:b861c0288ce2fa56209a9a6412d2e066ac664b3873b89c26c9d8415e8e32996f
     # via django
-toggly==0.7.1 \
-    --hash=sha256:64caf6af7c4c1dd8b8c0fa1e2efd3cd3cda798a00e7305a7096b6e10c5508e24 \
-    --hash=sha256:c300091f6c63279c3e465110f9cbb05933d43a9ee5374c30a56f6447dfdd6e66
+toggly==0.7.2 \
+    --hash=sha256:1a49c3d3f0862b87ad701c937dfa796b659156ab79887ee815c37cf517cb87d2 \
+    --hash=sha256:74a7b090d42a75b95a7b3bd4d7a9f96b5251f7fbb98a24e0f508412f81ffcb15
     # via
     #   -r requirements.in
     #   toggly-django
