@@ -15,7 +15,7 @@
     "@angular/compiler": "^22.1.6",
     "@angular/core": "^22.1.6",
     "@angular/forms": "^22.1.6",
-    "@angular/platform-browser": "^22.1.6",
+    "@angular/platform-browser": "^22.1.7",
     "@angular/router": "^22.1.6",
     "@ops-ai/ngx-feature-flags-toggly": "2.9.0",
     "@ops-ai/toggly-hooks-types": "^1.4.5",
