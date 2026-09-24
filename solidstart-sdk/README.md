@@ -1,6 +1,6 @@
 # SolidStart SDK workshop
 
-A complete SolidStart 2 application using `@ops-ai/solid-feature-flags-toggly` **0.2.0**, SolidJS 1.9.15+, and Node 24+. It renders signed public flags on the server, hydrates a native Solid provider, and independently guards a server endpoint with the shared Node evaluator.
+A complete SolidStart 2 application using `@ops-ai/solid-feature-flags-toggly` **0.3.0**, SolidJS 1.9.15+, and Node 24+. It renders signed public flags on the server, hydrates a native Solid provider, and independently guards a server endpoint with the shared Node evaluator.
 
 ## Quick start
 
@@ -53,6 +53,8 @@ Keys identify decisions; definitions belong to an application/environment. The b
 | Configuration         | Separate missing frontend/backend banners and environment explanations                 |
 
 Matching uses alice, staff and role=admin; Non-matching uses bob, no groups and role=user. These are UI-selected teaching presets, **not authentication**. Replace them with a trusted session lookup before protecting real operations. Request handlers never mutate a shared client's identity. Browser query caching uses the preset argument; a real login/logout flow must invalidate principal-dependent query results.
+
+The Programmatic API section includes explicit browser telemetry actions. With a frontend key, telemetry is enabled by default; set `VITE_TOGGLY_ENABLE_TELEMETRY=false` to opt out. `VITE_TOGGLY_METRICS_BASE_URL` optionally overrides the metrics endpoint independently of `VITE_TOGGLY_BASE_URL`. Usage and view are explicit and component rendering does not record a view. The provider owns one reporter across its gates and direct checks. Define the sample `orders` counter and `active-carts` gauge in Toggly before expecting server-side acceptance. Solid owner cleanup flushes best effort when leaving the route; route snapshot hydration keeps the existing client and queue. Server-side telemetry remains on its existing server client and transport.
 
 The VIP checkbox is independent of the identity preset. AlwaysOn remains on. Configure Percentage 100/0 for deterministic exercises; a 50% rollout is sticky but neither identity guarantees a particular bucket. Configure current/expired time windows to test both outcomes. Country/device/browser/OS/language rows reflect actual request properties, not invented results from the preset buttons. Server snapshot requests forward User-Agent/Accept-Language but originate at the server, so IP-derived country rules can differ after browser refresh. Use real browsers/networks and the shared flag template to verify those cases. This SDK exposes boolean gates and entity predicates, not experiment variant assignment.
 

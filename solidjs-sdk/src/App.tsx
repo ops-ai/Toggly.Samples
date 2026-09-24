@@ -102,6 +102,15 @@ function Workshop(props: { configured: boolean }) {
           Evaluate dashboard
         </button>
         <output>{result()}</output>
+        <h3>Telemetry exercise</h3>
+        <p>Usage and view are explicit actions; rendering this workshop does not record a view.</p>
+        <button onClick={() => toggly.recordUsage('new-dashboard', 'sample-control')}>
+          Record usage
+        </button>
+        <button onClick={() => toggly.recordView('new-dashboard')}>Record view</button>
+        <button onClick={() => toggly.incrementCounter('orders', 2)}>Add orders</button>
+        <button onClick={() => toggly.setGauge('active-carts', 3)}>Set active carts</button>
+        <button onClick={() => void toggly.flushTelemetry()}>Flush telemetry</button>
         <button
           onClick={() => {
             if (toggly.evaluate(['enhanced-submit'])) setSubmitted(true);
@@ -263,6 +272,8 @@ export default function App(props: { config?: TogglyOptions } = {}) {
   const config = props.config ?? {
     appKey: import.meta.env.VITE_TOGGLY_APP_KEY || undefined,
     environment: import.meta.env.VITE_TOGGLY_ENVIRONMENT || 'Production',
+    enableTelemetry: import.meta.env.VITE_TOGGLY_ENABLE_TELEMETRY !== 'false',
+    metricsBaseUrl: import.meta.env.VITE_TOGGLY_METRICS_BASE_URL || undefined,
     flagDefaults: defaults,
     // Callbacks defer origin-owned storage access; the SDK handles denied access.
     storage: {

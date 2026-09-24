@@ -1,6 +1,6 @@
 # SolidJS SDK sample
 
-An interactive browser workshop for `@ops-ai/solid-feature-flags-toggly` **0.2.0** and SolidJS 1.9. It demonstrates the native provider, accessors, gates, resource, targeting and cleanup. This sample uses client rendering; it does not demonstrate SolidStart SSR.
+An interactive browser workshop for `@ops-ai/solid-feature-flags-toggly` **0.3.0** and SolidJS 1.9. It demonstrates the native provider, accessors, gates, resource, targeting and cleanup. This sample uses client rendering; it does not demonstrate SolidStart SSR.
 
 ## Quick start
 
@@ -48,7 +48,7 @@ Matching applies identity alice, groups staff, role=admin and VIP Order. Non-mat
 
 AlwaysOn should remain enabled for either preset. TimeWindow is governed by the service clock and configured window. Percentage 50% is sticky by identity; neither preset promises a specific result. Country, browser family, browser language, device and OS are evaluated from the **actual browser/network request**. Browser JavaScript cannot spoof User-Agent or IP country through these controls. Those matrix rows display real service results, not fabricated preset matches. See the shared flag template for Chrome/macOS and Firefox/Windows test conditions; use suitable real browsers/networks to verify them.
 
-This SDK has no variant assignment API, telemetry or analytics hooks. A boolean alternative is ordinary UI branching. Presentation and demo claims are not authentication; a server must authorize real operations independently.
+This SDK has no variant assignment API; a boolean alternative is ordinary UI branching. The telemetry exercise demonstrates explicit usage/view events, counters and gauges through the provider's single browser reporter. Telemetry is enabled by default with an app key; set `VITE_TOGGLY_ENABLE_TELEMETRY=false` to opt out. `VITE_TOGGLY_METRICS_BASE_URL` optionally overrides the metrics endpoint independently of definitions. Usage/view actions use the documented sample variant; rendering does not imply a view. Define the `orders` counter and `active-carts` gauge in the Toggly application before expecting server-side business metric acceptance. Presentation and demo claims are not authentication; a server must authorize real operations independently.
 
 ## Source-reading map
 

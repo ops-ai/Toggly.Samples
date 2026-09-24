@@ -116,6 +116,15 @@ function Workshop(props: {
         >
           Evaluate any
         </button>
+        <h3>Telemetry exercise</h3>
+        <p>Usage and view are explicit actions; rendering this workshop does not record a view.</p>
+        <button onClick={() => t.recordUsage('new-dashboard', 'sample-control')}>
+          Record usage
+        </button>
+        <button onClick={() => t.recordView('new-dashboard')}>Record view</button>
+        <button onClick={() => t.incrementCounter('orders', 2)}>Add orders</button>
+        <button onClick={() => t.setGauge('active-carts', 3)}>Set active carts</button>
+        <button onClick={() => void t.flushTelemetry()}>Flush telemetry</button>
         <button onClick={() => void t.client.refresh()}>Refresh</button>
         <button onClick={() => void submit()}>Run server action</button>
         <output>{result()}</output>
@@ -253,6 +262,8 @@ export default function Home() {
             appKey: import.meta.env.VITE_TOGGLY_APP_KEY,
             environment: import.meta.env.VITE_TOGGLY_ENVIRONMENT ?? 'Production',
             baseURI: import.meta.env.VITE_TOGGLY_BASE_URL,
+            enableTelemetry: import.meta.env.VITE_TOGGLY_ENABLE_TELEMETRY !== 'false',
+            metricsBaseUrl: import.meta.env.VITE_TOGGLY_METRICS_BASE_URL || undefined,
             // Defining callbacks during SSR is safe; only the mounted browser calls them.
             storage: {
               getItem: (key: string) => window.localStorage.getItem(key),
