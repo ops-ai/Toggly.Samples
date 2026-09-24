@@ -4,11 +4,23 @@ import {
   useFlag,
   useToggly,
 } from "@ops-ai/toggly-docusaurus-plugin/client";
+import { useWorkshop } from "../theme/Root";
 export default function NativeGates() {
   const { enabled, isReady } = useFlag("new-dashboard");
-  const { flags, getFlag } = useToggly();
+  const {
+    flags,
+    getFlag,
+    recordUsage,
+    recordView,
+    incrementCounter,
+    setGauge,
+    flushTelemetry,
+  } = useToggly();
+  const { offline, config } = useWorkshop();
   const [result, setResult] = useState("No action yet");
+  const [telemetryStatus, setTelemetryStatus] = useState("No events recorded");
   const [device, setDevice] = useState(true);
+  const telemetryEnabled = !offline && config.enableTelemetry !== false;
   // Native binding has only a single-key Feature. This all/any composition
   // deliberately accepts booleans only; an EntityGate object is not truthy ON.
   const values = ["new-dashboard", "api-v2"].map((key) => flags[key] === true);
@@ -67,6 +79,51 @@ export default function NativeGates() {
           local-gate registry. It can restrict an enabled flag and never enables
           a denied flag.
         </p>
+      </section>
+      <section className="panel" id="telemetry">
+        <h2>04 · Record an intentional interaction</h2>
+        <p>
+          Checks are counted by the provider and gate APIs. Usage, views and
+          business metrics are explicit events; rendering this section does not
+          imply a view.
+        </p>
+        <div className="row">
+          <button
+            data-testid="record-telemetry"
+            onClick={async () => {
+              recordUsage("docusaurus-workshop", "workshop");
+              recordView("docusaurus-workshop", "workshop");
+              incrementCounter("docusaurus-sample-actions", 2);
+              setGauge("docusaurus-sample-gauge", 3);
+              await flushTelemetry();
+              setTelemetryStatus(
+                offline
+                  ? "No telemetry reporter without an App Key"
+                  : telemetryEnabled
+                    ? "Flush attempted for usage, view, counter and gauge"
+                    : "Telemetry disabled by configuration",
+              );
+            }}
+          >
+            Record and flush telemetry
+          </button>
+          <button
+            data-testid="flush-telemetry"
+            onClick={async () => {
+              await flushTelemetry();
+              setTelemetryStatus(
+                offline
+                  ? "No telemetry reporter without an App Key"
+                  : telemetryEnabled
+                    ? "Flush attempted for queued telemetry"
+                    : "Telemetry disabled by configuration",
+              );
+            }}
+          >
+            Flush queued telemetry
+          </button>
+        </div>
+        <p data-testid="telemetry-status">{telemetryStatus}</p>
       </section>
     </>
   );

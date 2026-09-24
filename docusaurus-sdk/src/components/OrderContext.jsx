@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createTogglyClient } from "@ops-ai/toggly-client-core";
 import { useWorkshop } from "../theme/Root";
 import catalog from "../sample/catalog.cjs";
 export default function OrderContext() {
   const { config, offline, order, setOrder, safeDefaults, setEntityFilter } =
     useWorkshop();
-  const client = useMemo(() => {
+  const [owner, setOwner] = useState(null);
+  useEffect(() => {
     // This is the real independent core registry, not an unrelated JS SDK.
     // The browser binding's getFlag omits entity arguments, so entity checks
     // use native core with its own client and complete canonical Order mapper.
@@ -21,10 +22,15 @@ export default function OrderContext() {
           : config.flagDefaults,
     });
     catalog.registerOrder(core);
-    return core;
+    core.startWebSocket();
+    setOwner({ config, client: core });
+    return () => core.dispose();
   }, [config]);
+  // Effect replay creates a new owner after disposing the previous one.
+  const client = owner?.config === config ? owner.client : null;
   const [enabled, setEnabled] = useState(null);
   useEffect(() => {
+    if (!client) return;
     let active = true,
       revision = 0;
     const read = async () => {
@@ -54,17 +60,15 @@ export default function OrderContext() {
     // Core exposes no refresh event. Poll its cache and ignore late completion
     // when the Order/session changes or this component unmounts.
     const timer = setInterval(read, 1000);
-    client.startWebSocket();
     return () => {
       active = false;
       ++revision;
       clearInterval(timer);
-      client.stopWebSocket();
     };
   }, [client, order]);
   return (
     <section className="panel" id="order">
-      <h2>05 · Same user. Different Order.</h2>
+      <h2>06 · Same user. Different Order.</h2>
       <p>
         Order attributes travel with this evaluation. They do not change
         identity or upload a dashboard schema.
@@ -72,6 +76,13 @@ export default function OrderContext() {
       <div className="row">
         <button onClick={() => setOrder("vip")}>VIP Order</button>
         <button onClick={() => setOrder("standard")}>Standard Order</button>
+        <button
+          data-testid="flush-order-telemetry"
+          disabled={!client}
+          onClick={() => client?.flushTelemetry()}
+        >
+          Flush Order checks
+        </button>
       </div>
       <pre>{JSON.stringify(catalog.orders[order], null, 2)}</pre>
       <p data-testid="order-result">

@@ -41,11 +41,12 @@ export default function Home() {
             ["home", "01 Start"],
             ["gates", "02 Gates"],
             ["actions", "03 Actions"],
-            ["identity", "04 Identity"],
-            ["order", "05 Order"],
-            ["filters", "06 Filters"],
-            ["variants", "07 Variants"],
-            ["surfaces", "08 Docusaurus"],
+            ["telemetry", "04 Telemetry"],
+            ["identity", "05 Identity"],
+            ["order", "06 Order"],
+            ["filters", "07 Filters"],
+            ["variants", "08 Variants"],
+            ["surfaces", "09 Docusaurus"],
           ].map(([id, label]) => (
             <a key={id} href={"#" + id}>
               {label}
@@ -85,7 +86,7 @@ export default function Home() {
         </section>
         <NativeGates />
         <section className="panel" id="identity">
-          <h2>04 · Target a session, not a permission</h2>
+          <h2>05 · Target a session, not a permission</h2>
           <button onClick={() => setPreset("matching")}>
             Matching · alice
           </button>{" "}
@@ -106,7 +107,7 @@ export default function Home() {
         <OrderContext />
         <FilterMatrix />
         <section className="panel" id="variants">
-          <h2>07 · Variants: capability boundary</h2>
+          <h2>08 · Variants: capability boundary</h2>
           <p>
             These Docusaurus packages expose boolean/entity evaluations, not
             variant assignments or configuration values. Keep the existing
@@ -115,7 +116,7 @@ export default function Home() {
           </p>
         </section>
         <section className="panel" id="surfaces">
-          <h2>08 · Docusaurus: build, browser and edge</h2>
+          <h2>09 · Docusaurus: build, browser and edge</h2>
           <p>
             <a href="/docs/beta">Open the MDX Beta guide</a> to inspect native
             Feature/negate and x-feature page mapping. The plugin writes
