@@ -23,7 +23,15 @@ export default defineConfig({
       ...createTogglyOptions(
         process.env.TOGGLY_APP_KEY,
         process.env.TOGGLY_ENVIRONMENT ?? 'Production',
+        true,
+        process.env.TOGGLY_DEFINITIONS_BASE_URI,
+        process.env.TOGGLY_METRICS_BASE_URL,
       ),
+      // Only the injected browser store owns frontend telemetry. The server
+      // options above keep trusted request/build usage reporting disabled.
+      browserEnableUsageTracking: Boolean(process.env.TOGGLY_APP_KEY),
+      browserEnableMetrics: Boolean(process.env.TOGGLY_APP_KEY),
+      enableTelemetry: process.env.TOGGLY_BROWSER_TELEMETRY !== 'false',
       // SSG builds evaluate Feature.astro through middleware + defaults. Enabling
       // all features at build time is for edge-worker strip workflows; keep it
       // off for SSR so request evaluation stays honest.

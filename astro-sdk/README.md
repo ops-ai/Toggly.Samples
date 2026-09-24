@@ -32,7 +32,7 @@ Installed versions (pinned in `package.json` / lockfile):
 | Package | Version |
 | --- | --- |
 | Astro | 7.3.2 |
-| `@ops-ai/astro-feature-flags-toggly` | 1.15.0 |
+| `@ops-ai/astro-feature-flags-toggly` | 1.17.0 |
 | `@astrojs/node` | 11.1.5 |
 | `@astrojs/react` / `vue` / `svelte` | 6.0.5 / 7.0.2 / 9.0.1 |
 | React / Vue / Svelte | 19.3.0 / 3.5.42 / 5.57.0 |
@@ -48,6 +48,17 @@ newest published release in `@astrojs/check` 0.9.10's peer range
 `npm run build` produces the static SSG site (including
 `toggly-page-features.json`). `npm run build:ssr` builds the Node adapter
 server used by middleware and page-gate checks.
+
+With a Frontend App Key, the integration enables browser usage checks and
+business metrics for the one store shared by React, Vue, and Svelte islands.
+The Astro request and build clients keep usage and metrics disabled. Use the
+React island's **Record demo usage, view, counter and gauge** button to send
+explicit events for `new-dashboard`, `sample-interactions`, and
+`sample-active-panel`. **Send queued demo telemetry** flushes them; page exit
+also attempts delivery. Create matching metric definitions in the app before a
+live run. Set `TOGGLY_BROWSER_TELEMETRY=false` to opt out. Without an App Key,
+the sample remains silent. The local test intercepts both gzip and plain
+compact browser packets and does not send to the production metrics host.
 
 ## Your first flag, in three minutes
 
@@ -144,3 +155,4 @@ issue. `npm test` verifies mixed islands against the production SSR build.
 - [ ] Request identity comes from the current URL/middleware, never a shared process client
 - [ ] Combined islands work in production; do not claim mixed React+Vue **dev** support
 - [ ] Live snapshot / client filter checklist follow `$flags` after background refresh (App Key enables live sockets; offline CI uses `refreshFlags` regression)
+- [ ] With a Frontend key and defined metrics, the React demo button records usage, view, counter and gauge from the shared browser store
