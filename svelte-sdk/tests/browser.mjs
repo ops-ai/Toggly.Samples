@@ -300,6 +300,18 @@ try {
   const variantFeature = Object.values(variantPacket.f["new-dashboard"])[0];
   assert.ok(variantFeature[0] > 0, "variant-service checks are automatic");
   assert.equal(variantPacket.u, "alice");
+  // The compact wire packet is k/e/u/f/m only: identity attribution, never the
+  // raw groups/claims/entity payload the SDK evaluated against.
+  for (const packet of [mainPacket, variantPacket]) {
+    assert.deepEqual(
+      Object.keys(packet).sort(),
+      [...new Set(["e", "k", "u", ...(packet.f ? ["f"] : []), ...(packet.m ? ["m"] : [])])].sort(),
+      "packet body is limited to the documented k/e/u/f/m fields",
+    );
+    assert.ok(!("groups" in packet), "packet omits groups");
+    assert.ok(!("claims" in packet), "packet omits claims");
+    assert.ok(!("i" in packet) || !("u" in packet), "packet uses at most one of instanceId/identity");
+  }
   failRefresh = true;
   await live.getByTestId("nonmatching").click();
   await expect(live.getByTestId("user-context")).toContainText(
