@@ -19,7 +19,7 @@
     "@ops-ai/toggly-sveltekit": "0.1.0",
     "@ops-ai/toggly-node-core": "0.9.2",
     "@ops-ai/toggly-signed-defs": "1.2.8",
-    "@nestjs/common": "11.2.3",
+    "@nestjs/common": "12.0.4",
     "@nestjs/core": "11.2.3",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
