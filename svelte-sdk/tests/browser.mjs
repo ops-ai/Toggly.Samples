@@ -347,10 +347,25 @@ try {
   await expect(live.getByTestId("telemetry-view")).toBeEnabled();
   // Drain Alice's automatic checks from the recovery refresh above so the
   // next flush cannot mix a leftover Alice-context packet into Bob's.
+  // Dual-client flush posts at least two packets; wait for both Alice-attributed
+  // posts and a quiet length before switching identity (Seer: a loose
+  // toBeGreaterThan can proceed after the first packet and mis-slice the second).
   const beforeBobSwitchDrain = telemetryPackets.length;
   await live.getByTestId("telemetry-flush").click();
   await expect
-    .poll(() => telemetryPackets.length)
+    .poll(
+      () =>
+        telemetryPackets
+          .slice(beforeBobSwitchDrain)
+          .filter((packet) => packet.u === "alice").length,
+    )
+    .toBeGreaterThanOrEqual(2);
+  await expect
+    .poll(async () => {
+      const settled = telemetryPackets.length;
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      return telemetryPackets.length === settled ? settled : -1;
+    })
     .toBeGreaterThan(beforeBobSwitchDrain);
 
   // Unlike the failed refresh above, this Alice -> Bob switch succeeds (the
@@ -371,7 +386,18 @@ try {
   await live.getByTestId("telemetry-gauge").click();
   await live.getByTestId("telemetry-flush").click();
   await expect
-    .poll(() => telemetryPackets.length)
+    .poll(() =>
+      telemetryPackets
+        .slice(beforeBobPackets)
+        .some((packet) => packet.u === "bob" && packet.f?.["new-dashboard"]),
+    )
+    .toBe(true);
+  await expect
+    .poll(async () => {
+      const settled = telemetryPackets.length;
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      return telemetryPackets.length === settled ? settled : -1;
+    })
     .toBeGreaterThan(beforeBobPackets);
   const bobPackets = telemetryPackets.slice(beforeBobPackets);
   assert.ok(
@@ -395,20 +421,38 @@ try {
   await expect(live.getByTestId("telemetry-result")).toContainText(
     "new-dashboard: OFF · variant disabled",
   );
-  // Drain the automatic OFF check into its own packet first, so the next
-  // flush's usage/view packet is not racily split from it (or merged with it).
+  // Drain the automatic OFF check into its own dual-client flush first, so the
+  // next flush's usage/view packet is not racily split from it (or merged).
   const beforeOffAutomaticFlush = telemetryPackets.length;
   await live.getByTestId("telemetry-flush").click();
   await expect
-    .poll(() => telemetryPackets.length)
+    .poll(() => telemetryPackets.length - beforeOffAutomaticFlush)
+    .toBeGreaterThanOrEqual(2);
+  await expect
+    .poll(async () => {
+      const settled = telemetryPackets.length;
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      return telemetryPackets.length === settled ? settled : -1;
+    })
     .toBeGreaterThan(beforeOffAutomaticFlush);
   const beforeDisabledEvents = telemetryPackets.length;
   await live.getByTestId("telemetry-usage").click();
   await live.getByTestId("telemetry-view").click();
   await live.getByTestId("telemetry-flush").click();
-  await expect.poll(() => telemetryPackets.length).toBeGreaterThan(
-    beforeDisabledEvents,
-  );
+  await expect
+    .poll(() =>
+      telemetryPackets
+        .slice(beforeDisabledEvents)
+        .some((packet) => packet.f?.["new-dashboard"]?.disabled),
+    )
+    .toBe(true);
+  await expect
+    .poll(async () => {
+      const settled = telemetryPackets.length;
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      return telemetryPackets.length === settled ? settled : -1;
+    })
+    .toBeGreaterThan(beforeDisabledEvents);
   const disabledEventPacket = telemetryPackets
     .slice(beforeDisabledEvents)
     .find((packet) => packet.f?.["new-dashboard"]?.disabled);
