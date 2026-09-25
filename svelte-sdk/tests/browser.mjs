@@ -301,16 +301,23 @@ try {
   assert.ok(variantFeature[0] > 0, "variant-service checks are automatic");
   assert.equal(variantPacket.u, "alice");
   // The compact wire packet is k/e/u/f/m only: identity attribution, never the
-  // raw groups/claims/entity payload the SDK evaluated against.
-  for (const packet of [mainPacket, variantPacket]) {
+  // raw groups/claims/entity payload the SDK evaluated against. Shared by the
+  // Alice checks here and the successful Alice -> Bob switch further below.
+  function assertCompactPacketShape(packet, label) {
     assert.deepEqual(
       Object.keys(packet).sort(),
       [...new Set(["e", "k", "u", ...(packet.f ? ["f"] : []), ...(packet.m ? ["m"] : [])])].sort(),
-      "packet body is limited to the documented k/e/u/f/m fields",
+      `${label} packet body is limited to the documented k/e/u/f/m fields`,
     );
-    assert.ok(!("groups" in packet), "packet omits groups");
-    assert.ok(!("claims" in packet), "packet omits claims");
-    assert.ok(!("i" in packet) || !("u" in packet), "packet uses at most one of instanceId/identity");
+    assert.ok(!("groups" in packet), `${label} packet omits groups`);
+    assert.ok(!("claims" in packet), `${label} packet omits claims`);
+    assert.ok(
+      !("i" in packet) || !("u" in packet),
+      `${label} packet uses at most one of instanceId/identity`,
+    );
+  }
+  for (const packet of [mainPacket, variantPacket]) {
+    assertCompactPacketShape(packet, "Alice's");
   }
   failRefresh = true;
   await live.getByTestId("nonmatching").click();
@@ -338,16 +345,63 @@ try {
   );
   await expect(live.getByTestId("telemetry-usage")).toBeEnabled();
   await expect(live.getByTestId("telemetry-view")).toBeEnabled();
-  // Refresh the same identity with the authoritative main client OFF while
-  // the separate variant client still returns its signed ON assignment.
+  // Drain Alice's automatic checks from the recovery refresh above so the
+  // next flush cannot mix a leftover Alice-context packet into Bob's.
+  const beforeBobSwitchDrain = telemetryPackets.length;
+  await live.getByTestId("telemetry-flush").click();
+  await expect
+    .poll(() => telemetryPackets.length)
+    .toBeGreaterThan(beforeBobSwitchDrain);
+
+  // Unlike the failed refresh above, this Alice -> Bob switch succeeds (the
+  // 503 stub is off), so Bob gets his own genuinely evaluated selection and
+  // his explicit events must be attributed to Bob, never merged into Alice's.
+  await live.getByTestId("nonmatching").click();
+  await expect(live.getByTestId("user-context")).toContainText(
+    '"identity": "bob"',
+  );
+  await expect(live.getByTestId("telemetry-result")).toContainText(
+    "new-dashboard: ON",
+  );
+  await expect(live.getByTestId("telemetry-usage")).toBeEnabled();
+  const beforeBobPackets = telemetryPackets.length;
+  await live.getByTestId("telemetry-usage").click();
+  await live.getByTestId("telemetry-view").click();
+  await live.getByTestId("telemetry-counter").click();
+  await live.getByTestId("telemetry-gauge").click();
+  await live.getByTestId("telemetry-flush").click();
+  await expect
+    .poll(() => telemetryPackets.length)
+    .toBeGreaterThan(beforeBobPackets);
+  const bobPackets = telemetryPackets.slice(beforeBobPackets);
+  assert.ok(
+    bobPackets.every((packet) => packet.u !== "alice"),
+    "the successful switch attributes no new packet back to Alice",
+  );
+  const bobPacket = bobPackets.find(
+    (packet) => packet.u === "bob" && packet.f?.["new-dashboard"],
+  );
+  assert.ok(
+    bobPacket,
+    "the successful Alice -> Bob switch flushes a Bob-attributed packet",
+  );
+  assertCompactPacketShape(bobPacket, "Bob's");
+
+  // Switch back to Alice with the authoritative main client OFF while the
+  // separate variant client still returns its signed ON assignment.
   mainEnabled = false;
   await live.getByTestId("matching").click();
   await expect(live.getByTestId("variant-name")).toContainText("signed");
   await expect(live.getByTestId("telemetry-result")).toContainText(
     "new-dashboard: OFF · variant disabled",
   );
+  // Drain the automatic OFF check into its own packet first, so the next
+  // flush's usage/view packet is not racily split from it (or merged with it).
+  const beforeOffAutomaticFlush = telemetryPackets.length;
   await live.getByTestId("telemetry-flush").click();
-  await expect.poll(() => telemetryPackets.length).toBeGreaterThan(3);
+  await expect
+    .poll(() => telemetryPackets.length)
+    .toBeGreaterThan(beforeOffAutomaticFlush);
   const beforeDisabledEvents = telemetryPackets.length;
   await live.getByTestId("telemetry-usage").click();
   await live.getByTestId("telemetry-view").click();
