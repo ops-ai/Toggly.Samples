@@ -16,7 +16,7 @@
     "@ops-ai/nextjs-toggly-core": "1.12.1",
     "@ops-ai/nextjs-toggly-edge": "1.6.0",
     "@ops-ai/nextjs-toggly-server": "1.8.0",
-    "next": "16.3.5",
+    "next": "16.3.6",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
@@ -26,7 +26,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.5",
+    "eslint-config-next": "16.3.6",
     "typescript": "^6",
     "vitest": "^5.0.1"
   }
