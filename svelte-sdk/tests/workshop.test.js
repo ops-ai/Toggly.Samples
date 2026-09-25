@@ -11,6 +11,7 @@ import { orderGate } from "../src/sample/catalog";
 
 let workshop;
 let wrapper;
+const stubbedSocketUrls = [];
 
 afterEach(() => {
   wrapper?.unmount();
@@ -19,11 +20,31 @@ afterEach(() => {
   togglyServiceStore.set(null);
   wrapper = undefined;
   workshop = undefined;
+  stubbedSocketUrls.length = 0;
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 
+function stubLiveUpdateWebSocket() {
+  // Match tests/browser.mjs: live-update sockets stay on the shipped path,
+  // but must not contact a real endpoint with the test-only App Key.
+  stubbedSocketUrls.length = 0;
+  vi.stubGlobal(
+    "WebSocket",
+    class {
+      readyState = 0;
+      constructor(url) {
+        stubbedSocketUrls.push(String(url ?? ""));
+      }
+      close() {}
+      send() {}
+      addEventListener() {}
+    },
+  );
+}
+
 async function mountWorkshop(env = {}) {
+  if ((env.VITE_TOGGLY_APP_KEY || "").trim()) stubLiveUpdateWebSocket();
   workshop = createWorkshop(env);
   await createToggly(workshop.options);
   await workshop.attach();
@@ -107,6 +128,8 @@ describe("real published Svelte createToggly and native surfaces", () => {
       VITE_TOGGLY_APP_KEY: "test-only-not-a-real-key",
       VITE_TOGGLY_METRICS_BASE_URL: "https://telemetry.test.invalid",
     });
+    expect(stubbedSocketUrls).toHaveLength(2);
+    expect(stubbedSocketUrls.every((url) => url.includes("/ws?"))).toBe(true);
     const main = workshop.mainService;
     const evaluate = vi.spyOn(main, "isFeatureOn").mockResolvedValue(false);
     const assignment = vi
