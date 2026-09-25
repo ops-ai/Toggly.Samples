@@ -32,6 +32,7 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Sample | Stack | Path | What it demos |
 |--------|-------|------|---------------|
 | SvelteKit SDK Showcase | Svelte5 + SvelteKit2 / Node | [`sveltekit-sdk/`](sveltekit-sdk/) | Request hooks, signed hydration, native gates, actions, entities, filter presets and lifecycle |
+| Svelte SDK Workshop | Svelte 5 + Vite | [`svelte-sdk/`](svelte-sdk/) | Native Feature/stores, session identity, Order context, variants, local gates and offline exercises with `@ops-ai/svelte-feature-flags-toggly` |
 | Vue SDK Workshop | Vue 3 + Vite | [`vue-sdk/`](vue-sdk/) | Native Feature/composables, user and Order context, variants, local gates, signed responses and offline exercises |
 | Astro SDK Sample | Astro 7 (SSG/SSR) + React/Vue/Svelte islands | [`astro-sdk/`](astro-sdk/) | Server Feature gates, middleware and x-feature page gate, request identity, Order VIP, filter matrix and mixed islands with `@ops-ai/astro-feature-flags-toggly` |
 | SolidJS SDK Workshop | SolidJS 1.9 + Vite | [`solidjs-sdk/`](solidjs-sdk/) | Native browser signals, signed definitions, provider-scoped targeting, Order context and local gates |

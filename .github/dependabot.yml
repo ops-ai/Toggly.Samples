@@ -202,6 +202,14 @@ updates:
     labels:
       - dependencies
   - package-ecosystem: npm
+    directory: /svelte-sdk
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+  - package-ecosystem: npm
     directory: /astro-sdk
     schedule:
       interval: weekly
