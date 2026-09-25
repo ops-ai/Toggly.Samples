@@ -183,7 +183,8 @@ Follow the [shared application setup guide](../docs/APP_SETUP.md)
 with the values below. Local tests do not provision an application or prove a
 live dashboard-to-SDK run.
 
-1. In workspace **Toggly Samples**, create **PHP WordPress SDK Sample**. Select
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can
+   manage (the one from signup is enough). Create **PHP WordPress SDK Sample**. Select
    **WordPress** (technology key `wordpress`), set **Application URL** to
    `http://localhost:8011`, and select/create **Production**. For a server-only
    application, Allowed Web Origins may be absent. Do not change technology to
