@@ -83,7 +83,7 @@ headers; selecting a preset deliberately overrides segment fields for repeatabil
 
 ## Create the Toggly application
 
-1. Sign into [Toggly](https://app.toggly.io), select the **Toggly Samples** workspace, and create **Node Koa SDK Sample** with the matching Koa/Node technology and **Production** environment. Allow `http://localhost:3000`.
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can manage (the one from signup is enough). Create **Node Koa SDK Sample** with the matching Koa/Node technology and **Production** environment. Allow `http://localhost:3000`.
 2. Create context kind **Order**: `Id` string/key, `Vip` boolean, `Total` number.
 3. Follow [FLAG_TEMPLATE.md](../docs/FLAG_TEMPLATE.md) exactly for the five baseline flags and eleven flags in the **Filters** category. `ExpressCheckout` and `filter-context-property` use `Order.Vip = true`.
 4. For segment/claims filters set rollout Percentage to **100%** (the published evaluator requires it); the dedicated `filter-percentage` flag remains **50%**. Targeting users: alice. Claim role=admin. Country US. Browser Chrome. Language en. Device Macintosh. OS Mac. Time window 2020-01-01 through 2099-12-31.

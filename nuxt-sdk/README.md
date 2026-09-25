@@ -80,7 +80,7 @@ package graph working in the browser without a local SDK source alias.
 No dashboard API or connected Toggly workspace tool is available to this build,
 so this app needs to be created manually:
 
-1. Sign in to [Toggly](https://app.toggly.io), choose the **Toggly Samples** workspace, and create an app named **Nuxt SDK Sample** using the Nuxt technology picker. Select the **Production** environment.
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can manage (the one from signup is enough). Create **Nuxt SDK Sample** using the Nuxt technology picker. Select the **Production** environment.
 2. Add `http://localhost:3000` under **Allowed Web Origins**.
 3. Create context kind **Order** with `Id` as the string key, `Vip` as boolean,
    and `Total` as number. `Total` is optional in demo data. Bind

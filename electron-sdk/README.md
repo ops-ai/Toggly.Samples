@@ -108,9 +108,9 @@ wire field is tracked separately from this sample verification.
 Dashboard provisioning could not be completed in this delivery: no Electron
 app, key, flags, contexts, or origins were created. Do not commit a real key.
 
-1. In [app.toggly.io](https://app.toggly.io), create **Electron SDK Sample** in
-   **Toggly Samples**. Select **Electron** and create/select environment
-   **Production**.
+1. Sign in at [app.toggly.io](https://app.toggly.io). Use a workspace you can
+   manage (the one from signup is enough). Create **Electron SDK Sample**.
+   Select **Electron** and create/select environment **Production**.
 2. Set local Application URL to `http://localhost:5173`. The renderer uses
    trusted main-process IPC for flag transport, so it does not need an Allowed
    Web Origin. If that control is shown, add `http://localhost:5173` only for
