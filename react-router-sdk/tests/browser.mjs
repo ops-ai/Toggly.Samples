@@ -18,12 +18,22 @@ async function start(port, appKey, telemetry = true) {
   process.env.VITE_TOGGLY_ENVIRONMENT = 'Production'
   process.env.VITE_TOGGLY_ENABLE_TELEMETRY = telemetry ? 'true' : 'false'
   process.env.VITE_TOGGLY_METRICS_BASE_URL = 'https://telemetry.test.invalid'
+  // Pre-bundle the published client and disable HMR. Otherwise Vite's first
+  // discovery of @ops-ai/react-router-toggly triggers "optimized dependencies
+  // changed. reloading", which remounts the provider mid-assertion and flakes
+  // identity/flag checks (seen on CI Linux and local cold node_modules/.vite).
   const server = await createServer({
     root,
     mode: 'test',
     envDir: false,
     clearScreen: false,
-    server: { host: '127.0.0.1', port, strictPort: true },
+    server: { host: '127.0.0.1', port, strictPort: true, hmr: false },
+    optimizeDeps: {
+      include: [
+        '@ops-ai/react-router-toggly/client',
+        '@ops-ai/react-router-toggly/server',
+      ],
+    },
   })
   await server.listen()
   servers.push(server)
