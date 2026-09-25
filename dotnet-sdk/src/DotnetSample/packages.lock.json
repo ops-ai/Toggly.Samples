@@ -38,9 +38,9 @@
       },
       "Toggly.FeatureManagement": {
         "type": "Direct",
-        "requested": "[3.8.0, )",
-        "resolved": "3.8.0",
-        "contentHash": "EJVMywqjqOaEIUDZdDXhfnpHRUbi0FhRvzV455Ycse82aZ9zm+CNfpXDB09HmIGHJ20BK7+I/vb3tPSNvPoxRQ==",
+        "requested": "[3.11.0, )",
+        "resolved": "3.11.0",
+        "contentHash": "x7NXXZLkC1em/kOVhIwChvZ7Um99LMOZ/8pPacG1r9NszLFEhjtL4W/Ii+AVmizmdJ1ivLy+knYiwrQcYsXqrg==",
         "dependencies": {
           "Azure.Messaging.WebPubSub": "1.6.0",
           "ConcurrentHashSet": "1.3.0",
@@ -75,16 +75,16 @@
       },
       "Toggly.FeatureManagement.NSwag": {
         "type": "Direct",
-        "requested": "[3.8.0, )",
-        "resolved": "3.8.0",
-        "contentHash": "hvMUT6FaGRB73pizrVPisIYJ5niFEmvWM5gbaM3fnogAw4vmeOiyEj5N6NSk519jHymMvvBfhvDANYw+WEjO2g==",
+        "requested": "[3.11.0, )",
+        "resolved": "3.11.0",
+        "contentHash": "Iy8djOFsB8oHm/t/q5swksfEgGGY2qGTaXLkMjBn7/Jvn6I9HSjIZQSpuqGy9Xeq+/clRQ2OC7F9b6pOegohmw==",
         "dependencies": {
           "Microsoft.FeatureManagement.AspNetCore": "4.0.0",
           "NSwag.AspNetCore": "14.6.3",
           "NSwag.Core": "14.6.3",
           "NSwag.Core.Yaml": "14.6.3",
           "NSwag.Generation.AspNetCore": "14.6.3",
-          "Toggly.FeatureManagement": "3.8.0"
+          "Toggly.FeatureManagement": "3.11.0"
         }
       },
       "Toggly.FeatureManagement.Web": {
