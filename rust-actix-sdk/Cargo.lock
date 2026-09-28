@@ -1753,7 +1753,7 @@ dependencies = [
  "serde_json",
  "sha1 0.10.7",
  "sha2",
- "toggly",
+ "toggly 0.8.0",
  "toggly-actix",
  "tokio",
 ]
@@ -2174,6 +2174,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "toggly"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "375cf948f2f4d8c7a937a7c86afe37d4cd0e9fcffaebf39cedf9ad232393e377"
+dependencies = [
+ "async-trait",
+ "base64 0.23.1",
+ "chrono",
+ "dashmap",
+ "ecdsa",
+ "futures-util",
+ "hex",
+ "p256",
+ "parking_lot",
+ "rand 0.8.8",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha1 0.10.7",
+ "sha2",
+ "thiserror 2.0.20",
+ "tokio",
+ "tokio-tungstenite",
+ "tracing",
+ "url",
+]
+
+[[package]]
 name = "toggly-actix"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2183,7 +2212,7 @@ dependencies = [
  "futures-util",
  "serde",
  "serde_json",
- "toggly",
+ "toggly 0.6.3",
  "tokio",
  "tracing",
 ]
