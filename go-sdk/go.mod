@@ -2,7 +2,7 @@ module github.com/ops-ai/Toggly.Samples/go-sdk
 
 go 1.27.1
 
-require github.com/ops-ai/Toggly.FeatureManagement/toggly-go v0.8.1
+require github.com/ops-ai/Toggly.FeatureManagement/toggly-go v0.10.0
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
