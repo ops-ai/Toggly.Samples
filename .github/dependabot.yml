@@ -1,4 +1,7 @@
 version: 2
+# Version updates for Toggly's own packages are ignored. Samples move
+# those versions in intentional upgrades that also rewrite pin files and
+# checksum inventories. Security updates are unaffected.
 
 updates:
   - package-ecosystem: npm
@@ -15,6 +18,8 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: npm
     directory: /sveltekit-sdk
@@ -22,6 +27,8 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     labels: [dependencies]
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: npm
     directory: /remix-sdk
@@ -37,6 +44,8 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: npm
     directory: /react-router-sdk
@@ -53,6 +62,7 @@ updates:
           - minor
           - patch
     ignore:
+      - dependency-name: "@ops-ai/*"
       - dependency-name: react-router
         update-types: ['version-update:semver-major']
       - dependency-name: '@react-router/*'
@@ -72,6 +82,8 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: composer
     directory: /php-laravel-sdk
@@ -81,6 +93,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly/*"
+
   - package-ecosystem: composer
     directory: /php-wordpress-sdk
     schedule:
@@ -89,6 +104,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly/*"
+
   - package-ecosystem: npm
     directory: /javascript-sdk
     schedule:
@@ -103,6 +121,8 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: npm
     directory: /react-sdk
@@ -118,6 +138,8 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: npm
     directory: /nextjs-server-sdk
@@ -133,6 +155,8 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: github-actions
     directory: /
@@ -151,6 +175,8 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: npm
     directory: /angular-sdk
@@ -160,6 +186,8 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: bundler
     directory: /ruby-rails-sdk
@@ -169,6 +197,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly"
+      - dependency-name: "toggly-*"
+
   - package-ecosystem: npm
     directory: /nodejs-express-sdk
     schedule:
@@ -177,6 +209,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
+
   - package-ecosystem: npm
     directory: /nodejs-hono-sdk
     schedule:
@@ -185,6 +220,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
+
   - package-ecosystem: npm
     directory: /nodejs-koa-sdk
     schedule:
@@ -193,6 +231,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
+
   - package-ecosystem: npm
     directory: /vue-sdk
     schedule:
@@ -201,6 +242,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
+
   - package-ecosystem: npm
     directory: /svelte-sdk
     schedule:
@@ -209,6 +253,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
+
   - package-ecosystem: npm
     directory: /astro-sdk
     schedule:
@@ -217,6 +264,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
+
   - package-ecosystem: npm
     directory: /docusaurus-sdk
     schedule:
@@ -225,6 +275,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
+
   - package-ecosystem: nuget
     directory: /dotnet-sdk
     schedule:
@@ -233,6 +286,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "Toggly.*"
+
   - package-ecosystem: maven
     directory: /java-servlet-sdk
     schedule:
@@ -241,6 +297,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "io.toggly:*"
+
   - package-ecosystem: maven
     directory: /java-spring-boot-sdk
     schedule:
@@ -249,6 +308,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "io.toggly:*"
+
   - package-ecosystem: maven
     directory: /java-spring-mvc-sdk
     schedule:
@@ -257,6 +319,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "io.toggly:*"
+
   - package-ecosystem: maven
     directory: /java-spring-webflux-sdk
     schedule:
@@ -265,6 +330,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "io.toggly:*"
+
   - package-ecosystem: pip
     directory: /python-django-sdk
     schedule:
@@ -273,6 +341,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly"
+      - dependency-name: "toggly-*"
+
   - package-ecosystem: pip
     directory: /python-flask-sdk
     schedule:
@@ -281,6 +353,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly"
+      - dependency-name: "toggly-*"
+
   - package-ecosystem: pip
     directory: /python-fastapi-sdk
     schedule:
@@ -289,6 +365,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly"
+      - dependency-name: "toggly-*"
+
   - package-ecosystem: bundler
     directory: /ruby-sdk
     schedule:
@@ -297,6 +377,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly"
+      - dependency-name: "toggly-*"
+
   - package-ecosystem: cargo
     directory: /rust-rocket-sdk
     schedule:
@@ -305,6 +389,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly"
+      - dependency-name: "toggly-*"
+
   - package-ecosystem: cargo
     directory: /rust-actix-sdk
     schedule:
@@ -313,6 +401,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly"
+      - dependency-name: "toggly-*"
+
   - package-ecosystem: cargo
     directory: /rust-axum-sdk
     schedule:
@@ -321,6 +413,10 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "toggly"
+      - dependency-name: "toggly-*"
+
   - package-ecosystem: gomod
     directory: /go-sdk
     schedule:
@@ -329,6 +425,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "github.com/ops-ai/Toggly.FeatureManagement/*"
+
   - package-ecosystem: nuget
     directory: /blazor-sdk/BlazorSample
     schedule:
@@ -337,6 +436,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "Toggly.*"
+
   - package-ecosystem: nuget
     directory: /blazor-sdk/BlazorSample.Client
     schedule:
@@ -345,6 +447,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "Toggly.*"
+
   - package-ecosystem: nuget
     directory: /blazor-sdk/tests/PublicTelemetryHost
     schedule:
@@ -353,6 +458,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "Toggly.*"
+
   - package-ecosystem: nuget
     directory: /blazor-sdk/tests/ServerTelemetrySilence
     schedule:
@@ -361,6 +469,9 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "Toggly.*"
+
   - package-ecosystem: npm
     directory: /blazor-sdk
     schedule:
@@ -369,12 +480,16 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: nuget
     directory: /dotnet-client-sdk
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "Toggly.*"
 
   - package-ecosystem: mix
     directory: /elixir-phoenix-sdk
@@ -382,18 +497,24 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "toggly*"
 
   - package-ecosystem: npm
     directory: /solidjs-sdk
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: npm
     directory: /solidstart-sdk
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "@ops-ai/*"
 
   - package-ecosystem: nuget
     directory: /dotnet-embedded-dashboard
@@ -402,12 +523,13 @@ updates:
       day: monday
     open-pull-requests-limit: 5
     labels: [dependencies]
-    groups:
-      toggly-packages:
-        patterns: ['Toggly.*']
+    ignore:
+      - dependency-name: "Toggly.*"
 
   - package-ecosystem: npm
     directory: /live-acceptance-js
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "@ops-ai/*"
