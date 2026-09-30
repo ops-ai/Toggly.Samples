@@ -191,7 +191,7 @@ GEM
       logger
       prism (>= 1.6.0)
       tsort
-    rdoc (8.0.0)
+    rdoc (8.1.0)
       erb
       prism (>= 1.6.0)
       rbs (>= 4.0.0)
@@ -202,9 +202,9 @@ GEM
     thor (1.5.0)
     timeout (0.6.1)
     toggly (0.5.2)
-    toggly-rails (0.3.1)
+    toggly-rails (0.4.0)
       railties (>= 7.0)
-      toggly (~> 0.1)
+      toggly (>= 0.1, < 2.0)
     tsort (0.2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -232,7 +232,7 @@ DEPENDENCIES
   puma
   rails (= 8.1.4)
   toggly (= 0.5.2)
-  toggly-rails (= 0.3.1)
+  toggly-rails (= 0.4.0)
 
 CHECKSUMS
   action_text-trix (2.1.19) sha256=7012f59421009cf284aa651294896414d653a61a2417c9b8714c8476d2f74009
@@ -297,13 +297,13 @@ CHECKSUMS
   railties (8.1.4) sha256=b5e7a8e8984e33114d68af62227971960aae1e6c02bd7c9d826ffad97fff583c
   rake (13.4.2) sha256=cb825b2bd5f1f8e91ca37bddb4b9aaf345551b4731da62949be002fa89283701
   rbs (4.2.0) sha256=51f7b886dcc05bc09e10b901daa6a81829f6adc03101d6ca9ea4aac6103e0674
-  rdoc (8.0.0) sha256=03bf8c08a9639658855a0cfd77c0abca8325c227693f7f33f82957811348c469
+  rdoc (8.1.0) sha256=befc37880a5cfd36dcb176c748b5fd5ee39dd3536a75e81824e4972ce230f60a
   reline (0.7.0) sha256=5b012d8e55dbf9d450f12bde2cf7d15ff546ae80b3f8f3b30e570d431815583d
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
   timeout (0.6.1) sha256=78f57368a7e7bbadec56971f78a3f5ecbcfb59b7fcbb0a3ed6ddc08a5094accb
   toggly (0.5.2) sha256=8efe45c21f0b9b542279b81e733414ea55f81aa668dfa260ca6e9576d9302f9e
-  toggly-rails (0.3.1) sha256=14d7ee55522912ba6839eec0ee4cbff61f533d59ac3bf8b8219afde3fa7fcbde
+  toggly-rails (0.4.0) sha256=0799971e6c26baa020987bafa9f5bbd8f6bddb6da1c12cb8115fab47b5db4f81
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
   uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
