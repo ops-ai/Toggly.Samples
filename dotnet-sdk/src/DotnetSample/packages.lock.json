@@ -40,7 +40,7 @@
         "type": "Direct",
         "requested": "[3.12.2, )",
         "resolved": "3.12.2",
-        "contentHash": "a5a1Db6w+bySZpZYzpPKGTHiBv0CcvtF0hsuZ/k32vtdrZHcn/FICvnF8qkxyI3RD13GgHme0vkzVIAnM78Apw==",
+        "contentHash": "LghJr/EfpToHqCzdVJm54EOrCVtoSjAz0InB1xXZEpPNp2jWEfSirioWEviTC+HQXhanMKkz0G4YbmVCbqAfBQ==",
         "dependencies": {
           "Azure.Core": "1.50.0",
           "Azure.Messaging.WebPubSub": "1.6.0",
@@ -78,7 +78,7 @@
         "type": "Direct",
         "requested": "[3.12.2, )",
         "resolved": "3.12.2",
-        "contentHash": "cwXkfQec8nntU/p1IDWZZ5fWfNWcMM9YTsdJQ3M84EEUQNbbYOBVNBcJ+mcjOOphsfh2BFf8LPLMGJRzOAK2aw==",
+        "contentHash": "A7mK/LJ6bDSbpcoe59DS1pwi8W/avP1IDfbACOinmBM4+sBX3skrE0XhpKOqUK6ndAPVdaOvqWNKi2tDMPd4CQ==",
         "dependencies": {
           "Microsoft.FeatureManagement.AspNetCore": "4.0.0",
           "NSwag.AspNetCore": "14.6.3",
