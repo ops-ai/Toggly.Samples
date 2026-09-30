@@ -1714,9 +1714,9 @@ dependencies = [
 
 [[package]]
 name = "toggly-axum"
-version = "0.6.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce218d85e2f2152e801ab34a7f88b9571658cd00a9beb61992403098f5c85cb0"
+checksum = "69fab0ebce00b00ac763318e368470af96d1749b894dcb05a16b08092fe5e9ca"
 dependencies = [
  "axum",
  "futures-util",

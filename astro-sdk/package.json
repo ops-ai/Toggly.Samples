@@ -12,17 +12,17 @@
   },
   "dependencies": {
     "@astrojs/node": "11.1.5",
-    "@astrojs/react": "6.0.6",
+    "@astrojs/react": "7.0.0",
     "@astrojs/svelte": "9.0.1",
     "@astrojs/vue": "7.0.3",
     "@nanostores/react": "2.0.1",
     "@nanostores/vue": "1.1.0",
     "@ops-ai/astro-feature-flags-toggly": "1.17.0",
-    "astro": "7.3.2",
+    "astro": "7.3.5",
     "nanostores": "1.5.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "svelte": "5.57.0",
+    "svelte": "5.57.1",
     "vue": "3.5.43"
   },
   "devDependencies": {
