@@ -22,12 +22,16 @@ export const nonMatchingPreset = {
   orderId: 'ord-standard', vip: false,
 }
 
-// Real keys load definitions for one application/environment, including variants.
+// Real keys load definitions for one application/environment.
 // Blank/CI keys instead use deterministic local booleans with no live connection.
 // persistCache controls flags/variants, not the SDK's stored identity/claims.
+// Keep enableVariants off for the root showcase: evaluated-variants-signed
+// collapses ContextProperty entity gates to entry.enabled (false without Order
+// on the wire), which breaks ExpressCheckout / filter-context-property.
+// Match the Angular workshop default; use a separate init if demoing variants.
 export function createTogglyConfig(appKey: string, flagDefaults: Record<string, boolean>, environment = 'Production', telemetryEnabled = true) {
   return appKey && appKey !== 'ci-placeholder'
-    ? { appKey, environment, enableVariants: true, enableTelemetry: telemetryEnabled }
+    ? { appKey, environment, enableVariants: false, enableTelemetry: telemetryEnabled }
     : { flagDefaults, enableLiveUpdates: false, persistCache: false, enableTelemetry: false }
 }
 
