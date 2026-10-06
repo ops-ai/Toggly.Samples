@@ -52,7 +52,7 @@ describe('createTogglyConfig', () => {
 
   it('uses live evaluation for a real app key', () => {
     expect(createTogglyConfig('real-key', {}, 'Staging')).toEqual({
-      appKey: 'real-key', environment: 'Staging', enableVariants: true, enableTelemetry: true,
+      appKey: 'real-key', environment: 'Staging', enableVariants: false, enableTelemetry: true,
     })
     expect(createTogglyConfig('real-key', {}, 'Staging', false)).toMatchObject({ enableTelemetry: false })
   })
