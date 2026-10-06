@@ -17,6 +17,10 @@ test('published provider emits explicit compact events and honors collection pol
     if (url.hostname === 'definitions.toggly.io' && url.pathname.includes('/evaluated-variants-signed/')) {
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ defs: { 'new-dashboard': { enabled: url.searchParams.get('userId') === 'alice', variant: url.searchParams.get('userId') === 'alice' ? 'enabled' : 'disabled' } } }) })
     }
+    if (url.hostname === 'definitions.toggly.io' && url.pathname.includes('/evaluated-signed/')) {
+      const identity = url.searchParams.get('u') ?? url.searchParams.get('userId')
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ defs: { 'new-dashboard': identity === 'alice' } }) })
+    }
     // Unexpected external requests remain blocked.
     return route.fulfill({ status: 403, body: '{}' })
   })
