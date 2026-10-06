@@ -62,8 +62,9 @@ async function contextHost() {
       bodies.push(JSON.parse(String(init?.body)))
       return new Response('{}', { status: 202 })
     }
-    const enabled = url.searchParams.get('userId') === 'alice' && aliceEnabled
-    return new Response(JSON.stringify({ defs: { 'new-dashboard': { enabled, variant: enabled ? 'enabled' : 'disabled' } } }), { status: 200 })
+    const identity = url.searchParams.get('userId') ?? url.searchParams.get('u')
+    const enabled = identity === 'alice' && aliceEnabled
+    return new Response(JSON.stringify({ defs: { 'new-dashboard': enabled } }), { status: 200 })
   }))
   const Provider = await createTogglyProvider({
     ...createProviderOptions('test-only', 'Production', 'alice', { metricsBaseUrl: 'https://metrics.test.invalid' }),

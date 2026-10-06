@@ -19,7 +19,7 @@ export function DeclarativeGates() {
     <div className="demo-grid">
       <Feature featureKey="new-dashboard"><p className="on">new-dashboard is on: render the new dashboard card.</p></Feature>
       <Feature featureKey="new-dashboard" negate><p className="off">new-dashboard is off: this is the explicit legacy branch.</p></Feature>
-      <Feature featureKey="new-dashboard" variant="treatment"><p className="on">Variant treatment: show this only when the assignment is treatment.</p></Feature>
+      <Feature featureKey="new-dashboard" variant="treatment"><p className="on">Variant treatment: show this only when the assignment is treatment (requires enableVariants on a dedicated init).</p></Feature>
       <Feature featureKeys={['new-dashboard', 'api-v2']} requirement="any"><p className="on">Multi-key any gate: one of new-dashboard or api-v2 is on.</p></Feature>
     </div>
     <p className="muted">Hook snapshot — new dashboard: <State enabled={dashboard.isEnabled} loading={dashboard.isLoading} />; any dashboard/API gate: <State enabled={eitherApi.isEnabled} loading={eitherApi.isLoading} />.</p>
