@@ -92,7 +92,10 @@ export function createProviderOptions(
     identity,
     enableTelemetry: Boolean(appKey) && telemetry.enableTelemetry !== false,
     metricsBaseUrl: telemetry.metricsBaseUrl,
-    enableVariants: true,
+    // Keep enableVariants off for the root showcase: evaluated-variants-signed
+    // collapses ContextProperty entity gates to entry.enabled (false without
+    // Order on the wire). Match the JS/Angular workshop default.
+    enableVariants: false,
     featureDefaults,
     onError: (message, error) => {
       // A sample should surface the error in DevTools without crashing its UI.

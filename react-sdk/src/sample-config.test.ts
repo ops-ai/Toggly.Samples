@@ -29,7 +29,7 @@ describe('sample configuration', () => {
       expect.objectContaining({
         appKey: 'sample-key',
         identity: 'session-alice',
-        enableVariants: true,
+        enableVariants: false,
         featureDefaults: expect.objectContaining({ 'api-v2': false }),
       }),
     )
