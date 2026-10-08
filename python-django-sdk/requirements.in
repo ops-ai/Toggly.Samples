@@ -5,5 +5,5 @@ toggly-django==0.4.1
 gunicorn==26.2.0
 python-dotenv==1.2.4
 # Used only by deterministic test fixtures to sign local definitions.
-cryptography==50.0.1
+cryptography==50.0.2
 whitenoise==6.12.0
