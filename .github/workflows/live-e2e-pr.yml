@@ -1,0 +1,338 @@
+name: Samples Live E2E (ADO)
+
+on:
+  pull_request:
+    branches: [develop]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: samples-live-e2e-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+env:
+  CHECK_NAME: Samples Live E2E (ADO)
+  COMMENT_MARKER: <!-- samples-live-e2e-ado -->
+
+jobs:
+  fork-notice:
+    if: github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip LiveE2E for fork pull requests
+        uses: actions/github-script@v7
+        env:
+          CHECK_NAME: ${{ env.CHECK_NAME }}
+          COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
+        with:
+          script: |
+            const marker = process.env.COMMENT_MARKER;
+            const body = `${marker}
+            ### ${process.env.CHECK_NAME}
+
+            LiveE2E is not queued for **fork** pull requests (ADO credentials stay on same-repo PRs only).
+            `;
+            const prNumber = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
+
+  live-e2e-pr:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      ADO_PAT: ${{ secrets.ADO_PAT }}
+      ADO_ORG: ${{ secrets.ADO_ORG }}
+      ADO_PROJECT: ${{ secrets.ADO_PROJECT }}
+      ADO_LIVEE2E_PIPELINE_ID: ${{ secrets.ADO_LIVEE2E_PIPELINE_ID }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Validate ADO configuration
+        id: ado_config
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in ADO_PAT ADO_ORG ADO_PROJECT ADO_LIVEE2E_PIPELINE_ID; do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("$name")
+            fi
+          done
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            {
+              echo "configured=false"
+              echo "missing=$(IFS=,; echo "${missing[*]}")"
+            } >>"$GITHUB_OUTPUT"
+            echo "::notice::LiveE2E ADO secrets are not configured (${missing[*]}). Skipping pipeline queue."
+            exit 0
+          fi
+          echo "configured=true" >>"$GITHUB_OUTPUT"
+
+      - name: Report skipped check (ADO secrets missing)
+        if: steps.ado_config.outputs.configured != 'true'
+        uses: actions/github-script@v7
+        env:
+          CHECK_NAME: ${{ env.CHECK_NAME }}
+          COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
+        with:
+          script: |
+            const missing = `${{ steps.ado_config.outputs.missing }}`;
+            const summary = `LiveE2E was not queued: configure repository secrets (${missing}).`;
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: process.env.CHECK_NAME,
+              head_sha: context.payload.pull_request.head.sha,
+              status: 'completed',
+              conclusion: 'skipped',
+              output: {
+                title: 'ADO secrets not configured',
+                summary,
+              },
+            });
+            const marker = process.env.COMMENT_MARKER;
+            const body = `${marker}
+            ### ${process.env.CHECK_NAME}
+
+            ${summary}
+            `;
+            const prNumber = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
+
+      - name: Resolve affected enrolled samples
+        if: steps.ado_config.outputs.configured == 'true'
+        id: samples
+        run: |
+          set -euo pipefail
+          chmod +x .github/scripts/resolve-livee2e-pr-samples.sh
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          git fetch --no-tags --depth=1 origin "$base"
+          ids="$(.github/scripts/resolve-livee2e-pr-samples.sh "$base" "$head" || true)"
+          if [[ -z "${ids:-}" ]]; then
+            echo "has_samples=false" >>"$GITHUB_OUTPUT"
+            echo "No enrolled sample folders changed on this PR." >>"$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "has_samples=true" >>"$GITHUB_OUTPUT"
+          echo "ids=$ids" >>"$GITHUB_OUTPUT"
+          echo "Queued sample ids: **$ids**" >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Report skipped check (no enrolled samples touched)
+        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples != 'true'
+        uses: actions/github-script@v7
+        env:
+          CHECK_NAME: ${{ env.CHECK_NAME }}
+        with:
+          script: |
+            const summary =
+              'No enrolled LiveE2E sample folders changed on this pull request; ADO pipeline was not queued.';
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: process.env.CHECK_NAME,
+              head_sha: context.payload.pull_request.head.sha,
+              status: 'completed',
+              conclusion: 'skipped',
+              output: { title: 'No affected samples', summary },
+            });
+
+      - name: Queue LiveE2E on Azure DevOps
+        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true'
+        id: queue
+        run: |
+          set -euo pipefail
+          samples_ref="${{ github.event.pull_request.head.sha }}"
+          pr_sample_ids="${{ steps.samples.outputs.ids }}"
+          pr_number="${{ github.event.pull_request.number }}"
+          pr_url="${{ github.event.pull_request.html_url }}"
+          body="$(jq -n \
+            --arg samplesRef "$samples_ref" \
+            --arg prSampleIds "$pr_sample_ids" \
+            --arg packTier "smoke" \
+            --arg prMode "true" \
+            --arg githubPrNumber "$pr_number" \
+            --arg githubPrUrl "$pr_url" \
+            '{
+              variables: {
+                samplesRef: { value: $samplesRef },
+                prSampleIds: { value: $prSampleIds },
+                packTier: { value: $packTier },
+                prMode: { value: $prMode },
+                githubPrNumber: { value: $githubPrNumber },
+                githubPrUrl: { value: $githubPrUrl }
+              }
+            }')"
+          url="https://dev.azure.com/${ADO_ORG}/${ADO_PROJECT}/_apis/pipelines/${ADO_LIVEE2E_PIPELINE_ID}/runs?api-version=7.1-preview.1"
+          response="$(curl -fsS -X POST -u ":${ADO_PAT}" -H "Content-Type: application/json" -d "$body" "$url")"
+          run_id="$(echo "$response" | jq -r '.id')"
+          run_url="$(echo "$response" | jq -r '._links.web.href // empty')"
+          if [[ -z "$run_id" || "$run_id" == "null" ]]; then
+            echo "Failed to queue ADO pipeline:" >&2
+            echo "$response" >&2
+            exit 1
+          fi
+          echo "run_id=$run_id" >>"$GITHUB_OUTPUT"
+          echo "run_url=$run_url" >>"$GITHUB_OUTPUT"
+
+      - name: Create in-progress check
+        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true'
+        id: check_start
+        uses: actions/github-script@v7
+        env:
+          CHECK_NAME: ${{ env.CHECK_NAME }}
+        with:
+          script: |
+            const runUrl = `${{ steps.queue.outputs.run_url }}`;
+            const ids = `${{ steps.samples.outputs.ids }}`;
+            const { data: check } = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: process.env.CHECK_NAME,
+              head_sha: context.payload.pull_request.head.sha,
+              status: 'in_progress',
+              details_url: runUrl || undefined,
+              output: {
+                title: 'LiveE2E smoke (ADO)',
+                summary: `Queued ADO run for \`${ids}\` at smoke tier.`,
+              },
+            });
+            core.setOutput('check_id', String(check.id));
+
+      - name: Poll ADO pipeline run
+        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true'
+        id: poll
+        run: |
+          set -euo pipefail
+          run_id="${{ steps.queue.outputs.run_id }}"
+          url="https://dev.azure.com/${ADO_ORG}/${ADO_PROJECT}/_apis/pipelines/${ADO_LIVEE2E_PIPELINE_ID}/runs/${run_id}?api-version=7.1-preview.1"
+          deadline=$(( $(date +%s) + 7200 ))
+          while true; do
+            response="$(curl -fsS -u ":${ADO_PAT}" "$url")"
+            state="$(echo "$response" | jq -r '.state')"
+            result="$(echo "$response" | jq -r '.result // empty')"
+            echo "ADO run $run_id state=$state result=${result:-pending}"
+            if [[ "$state" == "completed" ]]; then
+              echo "result=${result:-failed}" >>"$GITHUB_OUTPUT"
+              exit 0
+            fi
+            if [[ $(date +%s) -ge $deadline ]]; then
+              echo "Timed out waiting for ADO run $run_id" >&2
+              echo "result=timedOut" >>"$GITHUB_OUTPUT"
+              exit 1
+            fi
+            sleep 30
+          done
+
+      - name: Finish check and update PR comment
+        if: always() && steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.check_start.outputs.check_id != ''
+        uses: actions/github-script@v7
+        env:
+          CHECK_NAME: ${{ env.CHECK_NAME }}
+          COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
+          RUN_URL: ${{ steps.queue.outputs.run_url }}
+          SAMPLE_IDS: ${{ steps.samples.outputs.ids }}
+          ADO_RESULT: ${{ steps.poll.outputs.result || 'failed' }}
+        with:
+          script: |
+            const runUrl = process.env.RUN_URL;
+            const ids = process.env.SAMPLE_IDS;
+            const adoResult = process.env.ADO_RESULT;
+            const conclusion =
+              adoResult === 'succeeded' ? 'success' : adoResult === 'canceled' ? 'cancelled' : 'failure';
+            const summary = [
+              `ADO result: **${adoResult}**`,
+              runUrl ? `[Open ADO run](${runUrl})` : '',
+              `Samples: \`${ids}\``,
+              `samplesRef: \`${context.payload.pull_request.head.sha}\``,
+              'packTier: `smoke`',
+            ]
+              .filter(Boolean)
+              .join('\n\n');
+            await github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: Number(`${{ steps.check_start.outputs.check_id }}`),
+              status: 'completed',
+              conclusion,
+              details_url: runUrl || undefined,
+              output: { title: 'LiveE2E smoke (ADO)', summary },
+            });
+            const marker = process.env.COMMENT_MARKER;
+            const icon = conclusion === 'success' ? '✅' : conclusion === 'cancelled' ? '⚪' : '❌';
+            const body = `${marker}
+            ### ${process.env.CHECK_NAME} ${icon}
+
+            ${summary}
+            `;
+            const prNumber = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
+            if (conclusion !== 'success') {
+              core.setFailed(`LiveE2E ADO run finished with result: ${adoResult}`);
+            }
