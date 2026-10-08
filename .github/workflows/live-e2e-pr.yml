@@ -7,7 +7,7 @@ on:
 
 concurrency:
   group: samples-live-e2e-pr-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -60,7 +60,7 @@ jobs:
             }
 
   live-e2e-pr:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 150
     env:
@@ -154,7 +154,7 @@ jobs:
           base="${{ github.event.pull_request.base.sha }}"
           head="${{ github.event.pull_request.head.sha }}"
           git fetch --no-tags --depth=1 origin "$base"
-          ids="$(.github/scripts/resolve-livee2e-pr-samples.sh "$base" "$head" || true)"
+          ids="$(.github/scripts/resolve-livee2e-pr-samples.sh "$base" "$head")"
           if [[ -z "${ids:-}" ]]; then
             echo "has_samples=false" >>"$GITHUB_OUTPUT"
             echo "No enrolled sample folders changed on this PR." >>"$GITHUB_STEP_SUMMARY"
@@ -169,6 +169,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           CHECK_NAME: ${{ env.CHECK_NAME }}
+          COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
         with:
           script: |
             const summary =
@@ -182,6 +183,34 @@ jobs:
               conclusion: 'skipped',
               output: { title: 'No affected samples', summary },
             });
+            const marker = process.env.COMMENT_MARKER;
+            const body = `${marker}
+            ### ${process.env.CHECK_NAME}
+
+            ${summary}
+            `;
+            const prNumber = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
 
       - name: Queue LiveE2E on Azure DevOps
         if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true'

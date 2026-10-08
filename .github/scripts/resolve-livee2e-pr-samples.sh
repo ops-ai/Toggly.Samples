@@ -30,6 +30,8 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   enrolled["$line"]=1
 done <"$enrolled_file"
 
+merge_base="$(git merge-base "$base_sha" "$head_sha")"
+
 declare -A touched=()
 while IFS= read -r path; do
   [[ -z "$path" ]] && continue
@@ -37,7 +39,7 @@ while IFS= read -r path; do
   if [[ -n "${enrolled[$top]:-}" ]]; then
     touched["$top"]=1
   fi
-done < <(git diff --name-only "$base_sha" "$head_sha")
+done < <(git diff --name-only "$merge_base" "$head_sha")
 
 if [[ ${#touched[@]} -eq 0 ]]; then
   exit 0
