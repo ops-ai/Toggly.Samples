@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
- * Completes starter auto-configuration with the surfaces the published 1.6.0
+ * Completes starter auto-configuration with the surfaces the published 2.2.1
  * starter does not bind: signed definitions, a non-null HTTP provider, and the
  * {@link FeatureAspect} bean. This is ordinary Boot configuration against
  * published types, not a local jar or source substitution.

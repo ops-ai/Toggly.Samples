@@ -2,7 +2,7 @@
 <#-- features comes from sample FeaturesAdvice calling native evaluateAll on the request context. -->
 <#macro badge value><span class="badge ${value?then('on','off')}">${value?then('ON','OFF')}</span></#macro>
 <#macro presets><div class="presets"><form method="post" action="/context"><button name="preset" value="matching">Matching preset</button></form><form method="post" action="/context"><button name="preset" value="nonmatching">Non-matching preset</button></form></div></#macro>
-<#macro table keys><div class="table-wrap"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody><#list keys as key><tr data-flag="${key}"><td><code>${key}</code></td><td>${definitions?seq_contains(key)?then('Present','Absent')}</td><td><@badge value=(features[key])!false/><#if key == 'filter-device-type'> <small>Macintosh detection unsupported in core 1.6.0</small></#if></td></tr></#list></tbody></table></div></#macro>
+<#macro table keys><div class="table-wrap"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody><#list keys as key><tr data-flag="${key}"><td><code>${key}</code></td><td>${definitions?seq_contains(key)?then('Present','Absent')}</td><td><@badge value=(features[key])!false/><#if key == 'filter-device-type'> <small>Macintosh detection unsupported in 2.2.1</small></#if></td></tr></#list></tbody></table></div></#macro>
 <!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title} · Java Spring Boot SDK Sample</title><link rel="stylesheet" href="/style.css"><script src="/workshop.js" defer></script></head><body>
 <header><p class="eyebrow">TOGGLY / JAVA SPRING BOOT</p><a class="brand" href="/">Feature flag workshop</a><p>Learn the published Boot starter, one request at a time.</p></header>
 <nav aria-label="Sections"><#list paths as link><a href="${link}">${titles[link?index]}</a></#list></nav><main>
@@ -22,7 +22,7 @@
 <h2>Per-request template vs startup bean</h2>
 <#if (features['new-dashboard'])!false><p id="dashboard-content">New dashboard content is visible.</p><#else><p id="dashboard-content">Classic dashboard fallback is visible.</p></#if>
 <p>The sentence above follows this request. Startup bean copy: <strong>${startupCopy}</strong> — selected once by <code>@ConditionalOnFeature</code>.</p>
-<h2>Variants</h2><aside class="note">Native variant allocation is unsupported in io.toggly core/starter 1.6.0. No variant is fabricated. <code>getValue</code> selects between two caller-provided values using a Boolean flag; telemetry variant labels do not allocate experiments.</aside>
+<h2>Variants</h2><aside class="note">Catalog-local variant assignment is available in io.toggly 2.x via <code>getVariant</code> / <code>getVariantValue</code> from the same signed definitions payload (no <code>enableVariants</code> or second fetch). This workshop's sixteen fixture flags have no variant rules, so nothing is assigned here. <code>getValue</code> selects between two caller-provided values using a Boolean flag; telemetry variant labels do not allocate experiments.</aside>
 <#break>
 <#case '/programmatic'>
 <p>Use explicit immutable context for service code. Native <code>getValue</code> selects a Boolean branch, not a variant. <code>@FeatureEnabled</code> is the starter's method gate; HTTP status is sample composition.</p><pre>client.isEnabled("api-v2", context)
@@ -50,7 +50,7 @@ client.isEnabled("ExpressCheckout", context.withEntity(order));</pre><p>Never re
 <#case '/boot'>
 <h2>Native Boot pipeline</h2><ol><li>With a key, <code>toggly.enabled=true</code> activates starter <code>TogglyAutoConfiguration</code>.</li><li>This sample supplies <code>TogglyConfig</code> (signed, no WebSocket) and a Spring-owned <code>HttpSnapshotProvider</code>. The starter's null provider bean is not injectable on Boot 3.5.16.</li><li>Starter constructs <code>TogglyClient</code>. <code>FeatureAspect</code> is registered here; it is not an auto-config bean.</li><li><code>DemoContextFilter</code> installs request-scoped ContextHolder before AOP or controllers run, then clears it.</li><li><code>@FeatureEnabled</code> and <code>@ConditionalOnFeature</code> are the starter's annotations. HTTP 404/403 is sample translation.</li><li>Actuator exposes <code>/actuator/health</code> (toggly indicator) and <code>/actuator/toggly</code> using process default context, not this request.</li></ol>
 <p><a href="/gated/beta">Try beta-access AOP gate</a> · <a href="/native/argument">Try FeatureEnabled targeting</a></p>
-<p>This host is Spring Boot <strong>3.5.16</strong>, the version declared by published starter 1.6.0. Boot 4.1.1 fails native Actuator startup because <code>TogglyHealthIndicator</code> still implements the Boot 3 <code>org.springframework.boot.actuate.health.HealthIndicator</code> type.</p>
+<p>This host is Spring Boot <strong>3.5.16</strong>, the version declared by published starter 2.2.1. Boot 4.1.1 fails native Actuator startup because <code>TogglyHealthIndicator</code> still implements the Boot 3 <code>org.springframework.boot.actuate.health.HealthIndicator</code> type.</p>
 <p><a href="/actuator/health">Open /actuator/health</a> · <a href="/actuator/toggly">Open /actuator/toggly</a></p>
 <form data-native-refresh method="post" action="/api/refresh"><button>Request native definitions refresh</button></form><output id="refresh-result" aria-live="polite"></output>
 <h2>Thread lifetime</h2><p>ContextHolder is thread-local. This app uses synchronous MVC and eight Tomcat workers. Pass immutable EvaluationContext into executors; do not assume the holder flows off-thread.</p>
@@ -60,4 +60,4 @@ client.isEnabled("ExpressCheckout", context.withEntity(order));</pre><p>Never re
 <#break>
 <#case '/allowed'><p>The published FeatureAspect allowed the service method; the controller then rendered this page.</p><@table keys=flags/><#break>
 </#switch>
-</main><footer>Published io.toggly starter 1.6.0 · Spring Boot 3.5.16 · Java 17 · Actuator health + /actuator/toggly</footer></body></html>
+</main><footer>Published io.toggly starter 2.2.1 · Spring Boot 3.5.16 · Java 17 · Actuator health + /actuator/toggly</footer></body></html>

@@ -46,8 +46,8 @@ Official Maven Central metadata and published artifacts checked 2026-09-10:
 |---|---|
 | OpenJDK / compiler release | 26.0.2.1 / 26 |
 | Maven | 3.9.12 |
-| io.toggly:toggly-core | 1.5.1 |
-| io.toggly:toggly-spring-webflux | 1.5.1 |
+| io.toggly:toggly-core | 2.2.1 |
+| io.toggly:toggly-spring-webflux | 2.2.1 |
 | Spring Framework BOM / WebFlux | 7.0.9 |
 | Reactor BOM | 2025.0.7 |
 | reactor-core / reactor-test | 3.8.7 |
@@ -229,7 +229,7 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 With the recipe above, AlwaysOn and TimeWindow stay ON for both presets.
 Percentage is stable for the same user/flag, but its exact Alice/Bob outcome is
 not prescribed. The other seven supported rows turn ON for Matching and OFF for
-Non-matching. **DeviceType Macintosh is unsupported by the published 1.5.1
+Non-matching. **DeviceType Macintosh is unsupported by the published 2.2.1
 User-Agent parser**: it recognizes iPhone/iPad/iPod, but returns Other for
 desktop Macintosh. We retain the exact shared Macintosh rule and User-Agent;
 that row shows the real OFF result and an explicit capability note. No fallback
@@ -265,7 +265,8 @@ SDK to validate entity kind. The integration suite records this native limitatio
   check again before an action can run.
 - **Native core:** signed HTTP definitions/JWKS verification, local filters,
   false defaults, last-good retention, polling and lifecycle.
-- **Unsupported:** core/WebFlux 1.5.1 provides no native variant allocation.
+- **Variants (2.x):** `getVariant` / `getVariantValue` from catalog-local rules in
+  the definitions payload (no `enableVariants`). Fixture flags have no variant rules.
   `switchOn` selects one of two caller publishers using a Boolean result;
   telemetry variant labels do not allocate an experiment.
 
