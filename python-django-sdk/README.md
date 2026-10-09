@@ -129,16 +129,14 @@ so `new_dashboard` does not resolve `new-dashboard` on this processor surface.
 Do not use `request.toggly.flags` or `toggly.flags` as contextual results: they
 expose the process-default flag snapshot.
 
-**Variants use a separate explicit action.** The shared local client returns no
-variant assignment. On `POST /variant/` only, the live example creates one isolated
-core client loads the signed catalog, calls `init()` and passes `user_id` /
-`groups` into `get_variant` (toggly 1.x assigns locally). It then
-`get_variant('new-dashboard')`, then closes the client. It never registers this
-client globally. This reloads definitions for that action only; ordinary
-pages do not incur it. There is no native Django variant tag or per-call context
-argument on `get_variant`. The baseline recipe has no experiment configuration,
-so an absent assignment is normal. The fixture mode reports absence explicitly.
-Remote assignment checks and signed-definition verification are separate tests.
+**Variants use a separate explicit action.** The gates page calls
+`get_variant('new-dashboard', user_id=…, groups=…)` on the shared worker when the
+fixture catalog defines variants. On `POST /variant/` only, the live example
+creates one isolated client, loads the signed catalog, assigns locally for the
+current persona, then closes without mutating the worker identity. toggly 1.x
+removed `enable_variants` and remote evaluated-variant URLs; pass identity and
+groups into `get_variant` instead. There is no native Django variant tag.
+Offline mode has no variant configuration, so an absent assignment is normal.
 
 **Entity kind and device limitations.** The published Python ContextProperty
 evaluator checks entity properties without validating entity kind. The sample
@@ -293,7 +291,7 @@ startup/smoke. The smoke creates a temporary database and generated secret,
 starts two workers, exercises real cookies/CSRF/forms/denied routes/static CSS,
 then stops the host. Tests run without real keys or an external service, using
 public snapshots and generated ES256 loopback fixtures. They distinguish signed
-definition verification from remote variant assignment parsing.
+definition verification from catalog-local variant assignment.
 
 For a manual production-host walkthrough on local HTTP:
 
@@ -318,7 +316,7 @@ WhiteNoise serves collected CSS. Do not enable the local switch on a public orig
 - [ ] VIP Order is ON, ordinary/missing OFF; same-request `with_entity` results agree.
 - [ ] Both matrix presets show all eleven rows and the stated native limitations.
 - [ ] Native Any/All/negate, redirect and view-switch routes behave as explained.
-- [ ] Variant action reports absence unless a real remote assignment exists.
+- [ ] Variant action reports absence unless the catalog assigns one for this persona.
 - [ ] Gunicorn serves CSS, forms work with CSRF, and shutdown exits normally.
 - [ ] `.env`, SQLite files, collected assets and the virtual environment stay ignored.
 - [ ] Live provisioning, approvals and management-to-SDK results are verified separately.

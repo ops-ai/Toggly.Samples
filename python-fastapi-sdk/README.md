@@ -77,7 +77,7 @@ Feature flags are not an authorization system.
 2. [context.py](showcase/context.py): principal and Order placement before cached
    helper reads; explicit claims and simulated HTTP segment mapping.
 3. [routes.py](showcase/routes.py) and [templates](showcase/templates/): native
-   dependencies/decorators/router/switch, Jinja booleans, CSRF and remote variants.
+   dependencies/decorators/router/switch, Jinja booleans, CSRF and catalog-local variants.
 4. [catalog.py](showcase/catalog.py) and [offline.py](showcase/offline.py): shared
    rules and public snapshot data, never a replacement filter evaluator.
 5. [tests](tests/) and [scripts/smoke.py](scripts/smoke.py): real ASGI requests,
@@ -140,13 +140,12 @@ sample wrapper passes its Request to the **native switch**, which still chooses
 between the actual enabled/disabled handlers. OpenAPI shows the ordinary route
 shape, not current flag permissions.
 
-**Remote variants are an explicit action.** The native FastAPI helper does not
+**Catalog-local variants are an explicit action.** The native FastAPI helper does not
 provide a variant method. Only `POST /variant/` creates an isolated
-`AsyncTogglyClient`, sets identity/groups/claims in its initial `TogglyConfig`,
-awaits `init()` and `get_variant('new-dashboard')`, then closes in a shielded
-finally block. It never replaces the worker client. This avoids an anonymous
-initial assignment followed by a second identity update/fetch. Ordinary pages
-create no extra client or assignment request.
+`AsyncTogglyClient`, loads signed definitions, calls
+`get_variant('new-dashboard', user_id=…, groups=…)` with the session context, then
+closes in a shielded finally block. toggly 1.x removed `enable_variants` and
+remote evaluated-variant URLs. Ordinary pages create no extra client.
 
 A boolean flag need not have an experiment assignment; absence is normal.
 Offline mode reports absence. A configured experiment can show its actual name
@@ -342,7 +341,7 @@ Keep the local persona controls off public origins.
 - [ ] VIP/standard/missing and same-request copies show true/false/false.
 - [ ] Both presets expose actual native/explicit results and honest DeviceType/kind limitations.
 - [ ] Native dependency/router/decorator/switch routes and OpenAPI behave as described.
-- [ ] Explicit remote assignment shows an actual variant or absence; no fake named result.
+- [ ] Explicit local assignment shows an actual variant or absence; no fake named result.
 - [ ] Packaged two-worker Uvicorn serves CSS/forms and shuts down normally.
 - [ ] Local env, venv, caches, generated builds and secrets remain ignored.
 - [ ] Dedicated app creation, approvals and actual management-to-SDK behavior are verified separately.

@@ -129,13 +129,12 @@ is unavailable there. The sample does not fabricate metadata or silently replace
 the decorator.
 
 `POST /variant/` demonstrates the core's catalog-local `get_variant` API. Only
-this explicit action creates an isolated client with known identity, groups and
-claims in initial configuration, enables variants, initializes, reads the assigned
-name/configuration and closes. It never registers that client globally. This
-avoids an anonymous initialization followed by an identity update/refetch; normal
-pages do not create extra clients. The baseline flags have no experiment configured,
-so no assignment is normal. Offline mode reports absence. Remote assignment
-parsing and signed-definition verification are separate checks.
+this explicit action creates an isolated client, loads signed definitions, assigns
+with `user_id` and `groups` from the session context, then closes. It never
+registers that client globally. Normal pages do not create extra clients. The
+baseline flags have no experiment configured, so no assignment is normal. Offline
+mode reports absence. Variant assignment and signed-definition verification are
+separate checks.
 
 **Filter limitations remain visible.** The current Python device classifier
 reports `Other` for the shared Macintosh User-Agent; DeviceType stays OFF for both
@@ -263,7 +262,7 @@ Flask claims/country/browser/language/OS columns stay OFF without explicit mappi
 
 ## Versions and verification
 
-Latest stable runtime and published dependency checkpoint: **2026-09-10**.
+Latest stable runtime and published dependency checkpoint: **2026-10-09**.
 [Python](https://www.python.org/downloads/) 3.14.7,
 [Flask](https://pypi.org/project/Flask/) 3.1.3,
 [toggly](https://pypi.org/project/toggly/) 1.2.0,
@@ -324,7 +323,7 @@ does not create duplicate SDK clients.
 - [ ] VIP is ON, standard/missing OFF; same-request Order copies preserve identity.
 - [ ] Both presets expose eleven rows and the documented DeviceType/native-context gaps.
 - [ ] Blueprint gate, Any/All/negate, redirect, fallback and switch use native routes.
-- [ ] Native variant named-dispatch gap is visible; remote action reports actual assignment or absence.
+- [ ] Native variant named-dispatch gap is visible; variant action reports actual assignment or absence.
 - [ ] Production Gunicorn serves CSS; forms require CSRF and shutdown exits normally.
 - [ ] `.env`, virtual environments, caches and generated wheel files stay ignored.
 - [ ] Dedicated app setup, approvals and actual management-to-SDK results are verified separately.

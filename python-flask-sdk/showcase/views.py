@@ -241,7 +241,7 @@ def native_variant():
     # remote name, so named dispatch is unavailable. Keep the native path visible.
     return result(
         'Enabled; no named native variant',
-        message='Use the explicit remote assignment action on Declarative gates. The native decorator cannot read the assigned name from core metadata.',
+        message='Use the explicit variant action on Declarative gates. The native decorator cannot read the assigned name from core metadata.',
     )
 
 
