@@ -45,8 +45,10 @@ jobs:
               'LiveE2E is not queued for **fork** pull requests (ADO credentials stay on same-repo PRs only).';
             const explanation =
               `${summary} Fork \`pull_request\` workflows run with a read-only \`GITHUB_TOKEN\`; check and comment writes are best-effort.`;
-            core.summary.addRaw(`### ${process.env.CHECK_NAME}\n\n${explanation}\n`);
-            core.info(`::notice::${explanation}`);
+            await core.summary
+              .addRaw(`### ${process.env.CHECK_NAME}\n\n${explanation}\n`)
+              .write();
+            core.notice(explanation);
             try {
               await github.rest.checks.create({
                 owner: context.repo.owner,
@@ -55,7 +57,7 @@ jobs:
                 head_sha: context.payload.pull_request.head.sha,
                 status: 'completed',
                 conclusion: 'skipped',
-                output: { title: 'Fork pull request', summary },
+                output: { title: 'Fork pull request', summary: explanation },
               });
             } catch (error) {
               const message = error instanceof Error ? error.message : String(error);
@@ -67,7 +69,7 @@ jobs:
             const body = `${marker}
             ### ${process.env.CHECK_NAME}
 
-            ${summary}
+            ${explanation}
             `;
             try {
               await upsertPrComment(github, {
@@ -78,8 +80,15 @@ jobs:
                 body,
               });
             } catch (error) {
+              const status = error?.status ?? error?.response?.status;
               const message = error instanceof Error ? error.message : String(error);
-              core.warning(`Could not upsert fork PR comment: ${message}`);
+              if (status === 403) {
+                core.warning(
+                  'Cannot post LiveE2E fork notice comment (403 read-only token); see the job summary.',
+                );
+              } else {
+                core.warning(`Could not upsert fork PR comment: ${message}`);
+              }
             }
 
   live-e2e-pr:
