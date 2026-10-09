@@ -23,6 +23,12 @@ jobs:
     if: github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+
       - name: Skip LiveE2E for fork pull requests
         uses: actions/github-script@v7
         env:
@@ -30,51 +36,50 @@ jobs:
           COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
         with:
           script: |
+            const path = require('path');
+            const { upsertPrComment } = require(path.join(
+              process.env.GITHUB_WORKSPACE,
+              '.github/scripts/livee2e-pr-github.js',
+            ));
+            const summary =
+              'LiveE2E is not queued for **fork** pull requests (ADO credentials stay on same-repo PRs only).';
             const explanation =
-              'LiveE2E is not queued for **fork** pull requests (ADO credentials stay on same-repo PRs only). ' +
-              'Fork `pull_request` workflows run with a read-only `GITHUB_TOKEN`, so PR comments may not be posted.';
+              `${summary} Fork \`pull_request\` workflows run with a read-only \`GITHUB_TOKEN\`; check and comment writes are best-effort.`;
             core.summary.addRaw(`### ${process.env.CHECK_NAME}\n\n${explanation}\n`);
             core.info(`::notice::${explanation}`);
+            try {
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: process.env.CHECK_NAME,
+                head_sha: context.payload.pull_request.head.sha,
+                status: 'completed',
+                conclusion: 'skipped',
+                output: { title: 'Fork pull request', summary },
+              });
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              core.warning(
+                `Could not create fork skipped check (GITHUB_TOKEN is read-only on fork pull_request): ${message}`,
+              );
+            }
             const marker = process.env.COMMENT_MARKER;
             const body = `${marker}
             ### ${process.env.CHECK_NAME}
 
-            ${explanation}
+            ${summary}
             `;
-            const prNumber = context.payload.pull_request.number;
             try {
-              const comments = await github.paginate(github.rest.issues.listComments, {
+              await upsertPrComment(github, {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: prNumber,
-                per_page: 100,
+                issue_number: context.payload.pull_request.number,
+                marker,
+                body,
               });
-              const existing = comments.find((c) => c.body?.includes(marker));
-              if (existing) {
-                await github.rest.issues.updateComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: existing.id,
-                  body,
-                });
-              } else {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  body,
-                });
-              }
             } catch (error) {
-              const status = error?.status;
               const message = error instanceof Error ? error.message : String(error);
-              if (status === 403) {
-                core.warning(
-                  'Cannot post LiveE2E fork notice comment (403 read-only token); see the job summary.',
-                );
-              } else {
-                core.warning(`Failed to post LiveE2E fork notice comment: ${message}`);
-              }
+              core.warning(`Could not upsert fork PR comment: ${message}`);
             }
 
   live-e2e-pr:
