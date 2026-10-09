@@ -40,7 +40,7 @@ func main() {
 	case <-stopped.Done():
 	}
 	// Stop accepting requests and let active handlers finish before closing the
-	// shared definitions client and the two fixed-persona variant clients.
+	// shared definitions client.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {

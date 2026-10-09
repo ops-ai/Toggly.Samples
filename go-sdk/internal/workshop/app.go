@@ -30,7 +30,6 @@ type Config struct {
 }
 type App struct {
 	client    *toggly.Client
-	variants  map[string]*toggly.Client
 	fixture   *fixture.Server
 	template  *template.Template
 	handler   http.Handler
@@ -45,9 +44,9 @@ type Page struct {
 	Context                                            toggly.Context
 	Rows                                               []Row
 	Orders                                             []Row
-	// Variant is only the latest GetVariant assignment. VariantEnabled is a
-	// separate IsEnabled read. Published v0.8.1 has no atomic pair: VariantResult
-	// is {Name, ConfigurationValue}, and each call takes its own snapshot.
+	// Variant is catalog-local assignment from the shared definitions client.
+	// VariantEnabled is the separate filter-based IsEnabled read (not
+	// VariantResult.Enabled, which applies StatusOverride semantics).
 	Variant                                            *toggly.VariantResult
 	VariantEnabled                                     bool
 	All, Any, Negated                                  bool
@@ -79,7 +78,7 @@ func New(cfg Config) (*App, error) {
 	if cfg.RefreshInterval == 0 {
 		cfg.RefreshInterval = 30 * time.Second
 	}
-	a := &App{variants: map[string]*toggly.Client{}}
+	a := &App{}
 	// No key means no client and no network. Offline practice is an explicit
 	// opt-in with a labelled local service, not a fabricated dashboard app key.
 	key := cfg.AppKey
@@ -113,29 +112,6 @@ func New(cfg Config) (*App, error) {
 		if err != nil {
 			a.Close()
 			return nil, err
-		}
-		// Server-evaluated variants are a DIFFERENT endpoint and cache. Fix each
-		// client's identity, groups, and claims before its first request; never
-		// call SetVariantIdentity on a client shared by HTTP requests. There are
-		// exactly two demo clients. v0.8.1 copies VariantGroups/VariantClaims
-		// into the first evaluated-variants-signed query.
-		for _, identity := range []string{"alice", "bob"} {
-			role := "user"
-			if identity == "alice" {
-				role = "admin"
-			}
-			variantCfg := sdkCfg
-			variantCfg.EnableVariants = true
-			variantCfg.VariantIdentity = identity
-			variantCfg.VariantGroups = []string{"sample-users"}
-			variantCfg.VariantClaims = map[string]string{"role": role}
-			variantCfg.SessionStore = nil
-			v, err := toggly.NewClient(variantCfg)
-			if err != nil {
-				a.Close()
-				return nil, err
-			}
-			a.variants[identity] = v
 		}
 	}
 	// Avoid a typed-nil evaluator: a nil *Client inside an interface is non-nil.
@@ -188,9 +164,6 @@ func New(cfg Config) (*App, error) {
 func (a *App) Handler() http.Handler { return a.handler }
 func (a *App) Close() {
 	a.closeOnce.Do(func() {
-		for _, v := range a.variants {
-			_ = v.Close()
-		}
 		if a.client != nil {
 			_ = a.client.Close()
 		}
@@ -225,20 +198,8 @@ func (a *App) view(r *http.Request) Page {
 		}
 		// Never expose ProviderDebugInfo wholesale: it contains the app key and
 		// raw network errors may contain credential-bearing request URLs.
-		if v := a.variants[ec.Identity]; v != nil {
-			// Independent published-package reads. GetVariant and IsEnabled each
-			// take their own provider snapshot; do not present them as one result.
-			p.Variant = v.GetVariant("new-dashboard")
-			p.VariantEnabled, _ = v.IsEnabled(r.Context(), "new-dashboard", ec)
-			vi := v.ProviderDebugInfo()
-			p.VariantStatus = "Variant definitions are loading."
-			if vi.LastRefresh != nil {
-				p.VariantStatus = "Variant client last successful refresh: " + vi.LastRefresh.UTC().Format(time.RFC3339)
-			}
-			if vi.LastErrorTime != nil {
-				p.VariantStatus += ". A historical variant refresh error was recorded; the last accepted assignment is retained."
-			}
-		}
+		p.Variant, _ = a.client.GetVariant(r.Context(), "new-dashboard", ec)
+		p.VariantEnabled, _ = a.client.IsEnabled(r.Context(), "new-dashboard", ec)
 		p.All, _ = a.client.EvaluateGate(r.Context(), []string{"new-dashboard", "api-v2"}, toggly.RequirementAll, ec, false)
 		p.Any, _ = a.client.EvaluateGate(r.Context(), []string{"new-dashboard", "api-v2"}, toggly.RequirementAny, ec, false)
 		p.Negated, _ = a.client.EvaluateGate(r.Context(), []string{"new-dashboard", "api-v2"}, toggly.RequirementAny, ec, true)

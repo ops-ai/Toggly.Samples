@@ -85,7 +85,7 @@ Samples.
 | `filter-os` | OperatingSystem `Mac`, percentage 100 |
 | `filter-context-property` | ContextProperty on **Order**, `Vip` equals `true`, boolean |
 
-6. For the variant section, configure `new-dashboard` variants named **compact** and **control**, with JSON configuration `{"layout":"compact"}` and `{"layout":"control"}`. Assign alice to compact and bob to control using your variant targeting rules. The UI displays whatever the server actually assigns; it does not manufacture a missing variant. The baseline boolean flag and variant assignment are separate concepts, and the published package has no API that returns both as one snapshot.
+6. For the variant section, configure `new-dashboard` variants named **compact** and **control**, with JSON configuration `{"layout":"compact"}` and `{"layout":"control"}`, plus allocation rules (user targeting for alice → compact, default when enabled for bob → control). The UI displays catalog-local assignment from `GetVariant`; filter-based `IsEnabled` is labeled separately.
 7. Put this app's key only in `.env.local`, start the app, and walk the checklist below. `TOGGLY_APP_KEY` is read by Go on the server; no browser-build prefix is needed.
 
 The canonical [shared flag recipe](../docs/FLAG_TEMPLATE.md) applies unchanged. Matching uses alice/admin/US, `en-US,en;q=0.9`, VIP `ord-vip`, and:
@@ -121,7 +121,7 @@ The shared demo group is `sample-users`. Header fields are deliberately syntheti
 
 1. [`cmd/showcase/main.go`](cmd/showcase/main.go): environment configuration, HTTP server timeouts, graceful shutdown and client ownership.
 2. [`internal/workshop/context.go`](internal/workshop/context.go): schema registration, a fresh context for each request, bounded persona cookie and entity mapping.
-3. [`internal/workshop/app.go`](internal/workshop/app.go): shared definitions client, fixed-identity variant clients, native middleware, gates and per-call evaluation. Comments explain why context is explicit.
+3. [`internal/workshop/app.go`](internal/workshop/app.go): shared definitions client, catalog-local `GetVariant`, native middleware, gates and per-call evaluation. Comments explain why context is explicit.
 4. [`templates/page.html`](internal/workshop/templates/page.html): native helpers receive page data implementing `TogglyContext()`. Normal Go template conditionals supply negation. Assignment and enabled are labeled as independent reads; compact/control layout follows the assignment name only.
 5. [`internal/fixture/server.go`](internal/fixture/server.go): explicitly offline definitions only. You do not need this service in a real integration.
 6. [`internal/workshop/app_test.go`](internal/workshop/app_test.go): real published clients tested through HTTP, templates, concurrency, signature failures and lifecycle.
@@ -138,39 +138,38 @@ explicitly. Template data implements `TogglyContext()`. The sample never mutates
 a shared client identity from request handling. The persona selector is sample
 code, not a native authentication API.
 
-Variants use a different server-evaluated endpoint. This sample has exactly two
-extra clients, initialized with `VariantIdentity`, `VariantGroups`, and
-`VariantClaims` for alice/admin and bob/user. v0.8.1 copies those values into
-the first `evaluated-variants-signed` query. They cannot leak assignments by
-changing shared identity. They live until shutdown, so there is no per-request
-client creation or unbounded identity cache. In a real server, design a bounded
-per-identity lifetime if you need arbitrary identities. Do not call
-`SetVariantIdentity` on a client shared by concurrent HTTP requests.
+Variants are assigned locally from the same cached definitions catalog as boolean
+flags. Call `GetVariant(r.Context(), key, evalCtx)` with the request's identity
+and groups (from middleware or an explicit `evalCtx`). When the feature filter is
+OFF, allocation uses `DefaultWhenDisabled` only; when ON, User → Group →
+Percentile → `DefaultWhenEnabled` (Microsoft.FeatureManagement parity). One
+shared client is enough for concurrent personas — pass a fresh `evalCtx` per
+request instead of mutating client identity from handlers.
 
 ## Behavior and SDK boundaries
 
-- **Loading and refresh:** `NewClient` returns before the first response. Unknown/unloaded flags are false. The page displays the last successful refresh timestamp, and snapshots reevaluate on every request. No browser auto-refresh or public manual SDK Refresh method is assumed. An error retains last accepted definitions; the SDK's historical error timestamp remains visible even after a later success. Variant clients have their own refresh status.
-- **Variant assignment vs enabled (split reads):** Published `toggly-go` v0.8.1 has no atomic variant+enabled API. `VariantResult` is only `{Name, ConfigurationValue}`. The server envelope also carries an `enabled` field, but `GetVariant` does not expose it. `GetVariant` and `IsEnabled` each take their own provider snapshot, so a background refresh can land between the two calls and pair a stale assignment with a newer enabled state. This sample renders assignment and enabled independently; compact/control layout follows the assignment name only and is not gated on the separate enabled read.
+- **Loading and refresh:** `NewClient` returns before the first response. Unknown/unloaded flags are false. The page displays the last successful refresh timestamp, and snapshots reevaluate on every request. No browser auto-refresh or public manual SDK Refresh method is assumed. An error retains last accepted definitions; the SDK's historical error timestamp remains visible even after a later success.
+- **Variant assignment vs filter enabled:** Published `toggly-go` v0.12.0 assigns variants locally via `GetVariant(ctx, key, evalCtx)`. `VariantResult.Enabled` reflects effective enabled state after `StatusOverride`; `IsEnabled` remains filter-based only. This sample labels those reads separately; compact/control layout follows the assignment name only and is not gated on `IsEnabled`.
 - **Filter expectations:** Matching turns on targeting, claims, country, browser, language, OS, and VIP context. Non-matching turns those off. AlwaysOn and TimeWindow stay on in both presets; 50% rollout results are stable for an identity, not prescribed as on/off by the preset.
 - **DeviceType parser gap:** the published Go parser reports `Other` for the exact Macintosh desktop user agent, so `filter-device-type` remains off even under Matching. The sample does not rename the shared Macintosh rule to make it pass.
 - **Entity kind limitation:** the published ContextProperty evaluator checks entity attributes but does not enforce `ContextKind` against `Entity.Kind`. The sample always maps the correct Order type and demonstrates absent entity as false. A kind name is not an access-control boundary.
 - **Negate:** native `EvaluateGate(..., negate=true)` negates each flag before Any/All combination. Template `not (feature ...)` negates a single result.
-- **Signed definitions:** all clients set `UseSignedDefinitions: true`; the local fixture supplies real ES256 signatures and protocol key IDs. Main definitions reject invalid signatures. The published variant path verifies when both signature and key ID exist, but accepts an envelope omitting those fields. Do not treat that option as strict enforcement for that path. The tests characterize missing-signature acceptance separately from tampered-signature rejection. Do not use variant assignments as authorization.
+- **Signed definitions:** the client sets `UseSignedDefinitions: true`; the local fixture supplies real ES256 signatures and protocol key IDs. Invalid signatures are rejected; tampered responses retain the last accepted catalog. Do not use variant assignments as authorization.
 - **Cancellation:** the HTTP boundary stops already-canceled requests, and programmatic checks pass `r.Context()`. Native local evaluation does not itself check cancellation. Native template helpers internally use `context.Background()` and suppress evaluation errors. Their output is presentation; protected actions use a server gate.
 - **Lifecycle:** HTTP shutdown precedes closing each client. The app wraps Close in `sync.Once` because native Close is not idempotent. Refresh requests already in progress are bounded by the configured three-second HTTP timeout.
 - **Other surfaces:** `session.NewMemoryStore()` is a native optional session store. Stable-identity Percentage is already deterministic. The package also provides `SnapshotProvider`, `RegisterFilter`, `RecordUsage` and `MetricsClient`. `RecordUsage` is exercised after the gated sample action but sending is disabled; enabling usage/metrics starts external gRPC clients, which this sample intentionally leaves unconfigured. No Redis, MongoDB, live telemetry or persisted definitions are required.
 
 ## Package versions and verification
 
-Verified at refresh time on 2026-09-17 against the Go module proxy and
-`go.dev/dl`. Published `toggly-go` v0.8.1 requires Go 1.25 or later and
+Verified at refresh time on 2026-10-09 against the Go module proxy and
+`go.dev/dl`. Published `toggly-go` v0.12.0 requires Go 1.25 or later and
 compiles with current `golang.org/x/crypto` and `golang.org/x/net`. This
 sample keeps the Go 1.27.1 toolchain.
 
 | Dependency | Version |
 | --- | --- |
 | Go stable toolchain | 1.27.1 |
-| `github.com/ops-ai/Toggly.FeatureManagement/toggly-go` | v0.8.1 |
+| `github.com/ops-ai/Toggly.FeatureManagement/toggly-go` | v0.12.0 |
 | Host framework | Go standard library `net/http` + `html/template` |
 
 `go.mod` and `go.sum` resolve the published module normally; there is no local SDK replacement. Subpackages `toggly`, `togglyctx`, `togglyhttp` and `togglytemplate` come from that module.
