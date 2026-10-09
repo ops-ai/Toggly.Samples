@@ -17,7 +17,7 @@ const hosts = [
 ]
 
 if (!tarball || !existsSync(tarball)) {
-  throw new Error('TOGGLY_ELECTRON_SDK_TARBALL must name the packed 1.1.0 SDK artifact')
+  throw new Error('TOGGLY_ELECTRON_SDK_TARBALL must name the packed 1.2.2 SDK artifact')
 }
 
 function run(command, args, cwd) {
