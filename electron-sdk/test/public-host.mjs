@@ -10,7 +10,7 @@ const sample = dirname(dirname(fileURLToPath(import.meta.url)))
 const require = createRequire(join(sample, 'package.json'))
 const lock = JSON.parse(readFileSync(join(sample, 'package-lock.json'), 'utf8'))
 const sdk = lock.packages['node_modules/@ops-ai/electron-feature-flags-toggly']
-assert.equal(sdk.version, '1.1.0')
+assert.equal(sdk.version, '1.2.2')
 assert.match(sdk.resolved, /^https:\/\/registry\.npmjs\.org\//)
 assert.match(sdk.integrity, /^sha512-/)
 const executable = realpathSync(require('electron'))
