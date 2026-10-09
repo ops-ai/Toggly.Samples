@@ -12,7 +12,7 @@
     "test:browser": "node tests/browser.mjs"
   },
   "dependencies": {
-    "@ops-ai/vue-feature-flags-toggly": "1.10.0",
+    "@ops-ai/vue-feature-flags-toggly": "1.11.2",
     "vue": "^3.5.43"
   },
   "devDependencies": {
