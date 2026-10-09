@@ -148,7 +148,7 @@ class NativeIntegrationTest {
             String orders = get(http, app, "/orders?preset=matching").body();
             assertTrue(orders.contains("ord-vip · Vip=true"));
             assertTrue(orders.contains("ord-standard · Vip=false"));
-            assertTrue(get(http, app, "/gates").body().contains("Native variant allocation is unsupported"));
+            assertTrue(get(http, app, "/gates").body().contains("Catalog-local variant assignment"));
             var health = get(http, app, "/actuator/health");
             assertEquals(200, health.statusCode());
             assertTrue(health.body().contains("\"toggly\"") || health.body().contains("toggly"), health.body());
