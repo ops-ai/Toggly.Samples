@@ -56,5 +56,5 @@ checks.any?</code></pre>
 <section class="card limitation">
   <p class="eyebrow">VARIANTS / NATIVE LIMIT</p>
   <h2>Boolean flags, no variant allocation</h2>
-  <p>Toggly Ruby 0.5.0 does not expose a native variant allocation API. This sample does not assign a substitute variant. Telemetry’s <code>variant:</code> argument labels an event supplied by your application; it does not choose an experimental treatment.</p>
+  <p>Toggly Ruby 1.0+ assigns catalog-local variants through <code>get_variant</code> when a feature defines them. The shared baseline flags have no variant configuration, so this page does not call allocation. Telemetry’s <code>variant:</code> argument labels an event supplied by your application; it is not <code>get_variant</code>.</p>
 </section>
