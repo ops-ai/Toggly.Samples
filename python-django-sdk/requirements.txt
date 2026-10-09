@@ -189,15 +189,15 @@ sqlparse==0.6.0 \
     --hash=sha256:113c35c75365ab9cc9c7231d68c6428fb11c085fc8e9eb1ad659b7ddbf6cd2b9 \
     --hash=sha256:b861c0288ce2fa56209a9a6412d2e066ac664b3873b89c26c9d8415e8e32996f
     # via django
-toggly==0.7.2 \
-    --hash=sha256:1a49c3d3f0862b87ad701c937dfa796b659156ab79887ee815c37cf517cb87d2 \
-    --hash=sha256:74a7b090d42a75b95a7b3bd4d7a9f96b5251f7fbb98a24e0f508412f81ffcb15
+toggly==1.2.0 \
+    --hash=sha256:8abb2ca84a79ec3e5e55302ea8fc855719e45bc42278df53c6d18f335919c2fa \
+    --hash=sha256:9130a948442c52e81da81a09977b83eeb78aa41a17ac8839c8bf74fb0f81e305
     # via
     #   -r requirements.in
     #   toggly-django
-toggly-django==0.4.1 \
-    --hash=sha256:4194a0ea74703b81a6b16efa27418cea5cd954b42b69dae293c41d425493919e \
-    --hash=sha256:f4b5fb86d6bc634a380143eaab88be248f207824dc87bd08327a4cbca3643f9f
+toggly-django==0.5.0 \
+    --hash=sha256:16723e404bf054812a17829349289d9ee9eda5e7cb36c70e7ad3a9f8af9e9355 \
+    --hash=sha256:95c9c99f0440a7183e1c80d4e8f1e4a25ea426acf578607dd5a2894e52f20077
     # via -r requirements.in
 whitenoise==6.12.0 \
     --hash=sha256:f723ebb76a112e98816ff80fcea0a6c9b8ecde835f8ddda25df7a30a3c2db6ad \

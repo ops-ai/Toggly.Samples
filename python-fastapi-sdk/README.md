@@ -57,7 +57,7 @@ can generate an ephemeral in-memory secret. Never commit either secret.
 | Contract section | Route | Try this |
 |---|---|---|
 | Home | `/` | Section map, sixteen-key checklist, contextual snapshot and refresh |
-| Declarative gates | `/gates/` | Native helper, disabled/negate, Any/All, remote variant name/configuration |
+| Declarative gates | `/gates/` | Native helper, disabled/negate, Any/All, local variant assignment |
 | Programmatic API | `/programmatic/` | Boolean dependency, helper and explicit core context; guarded POST |
 | Identity | `/identity/` | Signed-session Alice/Bob/clear, ContextDep and native Targeting route |
 | Entity context | `/orders/` | VIP/standard/missing Order and same-request with_entity copies |
@@ -77,7 +77,7 @@ Feature flags are not an authorization system.
 2. [context.py](showcase/context.py): principal and Order placement before cached
    helper reads; explicit claims and simulated HTTP segment mapping.
 3. [routes.py](showcase/routes.py) and [templates](showcase/templates/): native
-   dependencies/decorators/router/switch, Jinja booleans, CSRF and remote variants.
+   dependencies/decorators/router/switch, Jinja booleans, CSRF and catalog-local variants.
 4. [catalog.py](showcase/catalog.py) and [offline.py](showcase/offline.py): shared
    rules and public snapshot data, never a replacement filter evaluator.
 5. [tests](tests/) and [scripts/smoke.py](scripts/smoke.py): real ASGI requests,
@@ -140,13 +140,12 @@ sample wrapper passes its Request to the **native switch**, which still chooses
 between the actual enabled/disabled handlers. OpenAPI shows the ordinary route
 shape, not current flag permissions.
 
-**Remote variants are an explicit action.** The native FastAPI helper does not
+**Catalog-local variants are an explicit action.** The native FastAPI helper does not
 provide a variant method. Only `POST /variant/` creates an isolated
-`AsyncTogglyClient`, sets identity/groups/claims in its initial `TogglyConfig`,
-awaits `init()` and `get_variant('new-dashboard')`, then closes in a shielded
-finally block. It never replaces the worker client. This avoids an anonymous
-initial assignment followed by a second identity update/fetch. Ordinary pages
-create no extra client or assignment request.
+`AsyncTogglyClient`, loads signed definitions, calls
+`get_variant('new-dashboard', user_id=…, groups=…)` with the session context, then
+closes in a shielded finally block. toggly 1.x removed `enable_variants` and
+remote evaluated-variant URLs. Ordinary pages create no extra client.
 
 A boolean flag need not have an experiment assignment; absence is normal.
 Offline mode reports absence. A configured experiment can show its actual name
@@ -280,11 +279,11 @@ FastAPI claims/country/browser/language/OS columns stay OFF without explicit map
 
 ## Versions and verification
 
-Latest stable/published checkpoint: **2026-09-10**.
+Latest stable/published checkpoint: **2026-10-09**.
 [Python](https://www.python.org/downloads/) 3.14.7,
 [FastAPI](https://pypi.org/project/fastapi/) 0.141.1,
-[toggly](https://pypi.org/project/toggly/) 0.7.1,
-[toggly-fastapi](https://pypi.org/project/toggly-fastapi/) 0.3.1.
+[toggly](https://pypi.org/project/toggly/) 1.2.0,
+[toggly-fastapi](https://pypi.org/project/toggly-fastapi/) 0.4.0.
 Live mode reports definition cache hits on the usage pipeline; offline,
 missing-key, fixture, and `ci-placeholder` runs do not upload usage.
 `python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
@@ -342,7 +341,7 @@ Keep the local persona controls off public origins.
 - [ ] VIP/standard/missing and same-request copies show true/false/false.
 - [ ] Both presets expose actual native/explicit results and honest DeviceType/kind limitations.
 - [ ] Native dependency/router/decorator/switch routes and OpenAPI behave as described.
-- [ ] Explicit remote assignment shows an actual variant or absence; no fake named result.
+- [ ] Explicit local assignment shows an actual variant or absence; no fake named result.
 - [ ] Packaged two-worker Uvicorn serves CSS/forms and shuts down normally.
 - [ ] Local env, venv, caches, generated builds and secrets remain ignored.
 - [ ] Dedicated app creation, approvals and actual management-to-SDK behavior are verified separately.

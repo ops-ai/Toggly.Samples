@@ -25,8 +25,8 @@
   <p>TogglyDep provides the same request helper; ContextDep exposes its cached
     context. Do not pass AsyncTogglyClient to these helpers: they call synchronous
     methods without awaiting. One sync client serves local evaluations per worker;
-    startup/refresh/close run off the event loop. Remote variants use an explicitly
-    isolated async client only for their action.</p>
+    startup/refresh/close run off the event loop. Catalog-local variant assignment
+    uses an explicitly isolated async client only for the variant action.</p>
   <p>feature_switch returns a generic callable. The sample's typed wrapper passes
     Request to that native switch, rather than exposing *args/**kwargs as query
     parameters. with_feature_context creates a narrower context that drops entity;

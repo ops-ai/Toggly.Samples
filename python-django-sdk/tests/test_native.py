@@ -120,7 +120,6 @@ class NativeShowcaseTests(TransactionTestCase):
     def test_variant_action_uses_native_client_with_current_persona_and_closes(self):
         from django.test import override_settings
         from unittest.mock import patch
-        from urllib.parse import parse_qs, urlparse
         from toggly import TogglyClient
         from tests.definitions_server import DefinitionsServer
         browser = self.persona('alice')
@@ -130,8 +129,9 @@ class NativeShowcaseTests(TransactionTestCase):
             with patch.object(TogglyClient, 'close', autospec=True, side_effect=original_close) as closed:
                 self.assertContains(browser.post('/variant/'), 'compact')
                 self.assertEqual(closed.call_count, 1)
-            query = parse_qs(urlparse(server.calls[0][0]).query)
-            self.assertEqual(query['userId'], ['alice'])
-            self.assertIn('admin', server.calls[0][0])
-            self.assertEqual(len(server.calls), 1)
+            self.assertFalse(any(
+                path.startswith('/evaluated-variants-signed/')
+                for path, _ in server.calls
+            ))
+            self.assertTrue(any('/definitions-signed/' in path for path, _ in server.calls))
             self.assertIsNone(get_client().current_identity)

@@ -56,7 +56,6 @@ TOGGLY = {} if MANAGEMENT else {
     'ENVIRONMENT': os.getenv('TOGGLY_ENVIRONMENT', 'Production'),
     'BASE_URL': BASE_URL,
     'USE_SIGNED_DEFINITIONS': True,
-    'ENABLE_VARIANTS': False,  # Shared client evaluates local definitions per request.
     'FEATURE_DEFAULTS': {},  # An absent flag defaults OFF.
     'REFRESH_INTERVAL': float(os.getenv('TOGGLY_REFRESH_INTERVAL', '30')),
     'DISABLE_BACKGROUND_REFRESH': OFFLINE,

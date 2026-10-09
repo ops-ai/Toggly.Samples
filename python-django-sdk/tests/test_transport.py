@@ -5,7 +5,6 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
 from unittest import TestCase
 from toggly import TogglyClient, TogglyConfig, EvaluationContext
 from toggly.enums import LoadStatus
@@ -80,15 +79,15 @@ print('NATIVE_APPCONFIG_OK')'''
                 self.assertEqual(run.returncode, 0, run.stderr)
             self.assertEqual(len(server.calls), count)
 
-    def test_variant_context_exists_on_first_request(self):
-        # Endpoint/name/config consumption proof, separate from signed-definition
-        # verification. Do not infer variant cryptographic verification from this.
+    def test_variant_assigns_locally_from_signed_catalog(self):
+        # toggly 1.x assigns variants from the definition catalog (no remote variants URL).
         with DefinitionsServer() as server, TogglyClient(self.config(server,
-            enable_variants=True, identity='alice', variant_groups=['premium'],
-            variant_claims={'role': 'admin'}, disable_background_refresh=True)) as client:
+            disable_background_refresh=True)) as client:
             client.init()
-            self.assertEqual(client.get_variant('new-dashboard').name, 'compact')
-            query = parse_qs(urlparse(server.calls[0][0]).query)
-            self.assertEqual(query['userId'], ['alice'])
-            self.assertIn('premium', server.calls[0][0])
-            self.assertIn('admin', server.calls[0][0])
+            assigned = client.get_variant('new-dashboard', user_id='alice')
+            self.assertIsNotNone(assigned)
+            self.assertEqual(assigned.name, 'compact')
+            self.assertFalse(any(
+                path.startswith('/evaluated-variants-signed/')
+                for path, _ in server.calls
+            ))

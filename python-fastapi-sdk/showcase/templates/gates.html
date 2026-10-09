@@ -34,23 +34,22 @@ toggly.evaluate_gate(['new-dashboard', 'api-v2'], negate=True)</pre>
   <h3>Variant name and configuration</h3>
   <p>A boolean answers whether a feature is enabled. An experiment can also assign
     a named variant and configuration. Baseline flags need not have an assignment.</p>
-  <p>This explicit action creates an isolated async client with known user context
-    before initialization, reads get_variant, then closes it. Ordinary pages share
-    the worker client. The FastAPI helper itself has no variant API.</p>
+  <p>This explicit action creates an isolated async client, loads the signed catalog,
+    assigns locally with <code>user_id</code> and <code>groups</code> from
+    <code>request.state.sample_context</code>, then closes. Ordinary pages share the
+    worker client. The FastAPI helper itself has no variant API.</p>
   <form method="post" action="/variant/">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <button>Fetch this session's remote assignment</button>
+    <button>Assign this session's variant</button>
   </form>
-  <pre>config = TogglyConfig(
-    app_key=app_key, environment='Production',
-    enable_variants=True, identity=context.identity,
-    variant_groups=context.groups, variant_claims=context.claims,
-    disable_background_refresh=True,
-)
-client = AsyncTogglyClient(config)
+  <pre>client = AsyncTogglyClient(TogglyConfig(app_key=app_key, ...))
 try:
     await client.init()
-    assigned = await client.get_variant('new-dashboard')
+    assigned = await client.get_variant(
+        'new-dashboard',
+        user_id=context.identity,
+        groups=context.groups,
+    )
 finally:
     with anyio.CancelScope(shield=True):
         await client.close()</pre>

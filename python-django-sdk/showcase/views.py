@@ -35,7 +35,12 @@ def home(request):
 
 
 def gates(request):
-    return render(request, 'showcase/gates.html', {'variant': get_client().get_variant('new-dashboard')})
+    context = request.sample_context
+    return render(request, 'showcase/gates.html', {
+        'variant': get_client().get_variant(
+            'new-dashboard', user_id=context.identity, groups=context.groups,
+        ),
+    })
 
 
 def programmatic(request):
@@ -166,17 +171,17 @@ def variant(request):
     if settings.OFFLINE:
         return result(request, 'No variant assigned in the offline definition fixture')
     context = request.sample_context
-    # ONLY this explicit action needs an identity-specific remote variants client.
-    # Known context is present before its first signed fetch; ordinary page requests
-    # share local definitions and never update global identity. Always close it.
+    # Isolated client: assign from the same signed catalog as the worker without
+    # mutating its identity. toggly 1.x evaluates variants locally via get_variant.
     config = TogglyConfig(app_key=settings.APP_KEY, environment=settings.TOGGLY['ENVIRONMENT'],
-        base_url=settings.TOGGLY['BASE_URL'], enable_variants=True,
-        identity=context.identity, variant_groups=context.groups, variant_claims=context.claims,
+        base_url=settings.TOGGLY['BASE_URL'], use_signed_definitions=True,
         disable_background_refresh=True, enable_live_updates=False,
         enable_usage_tracking=False, register_contexts_on_startup=False,
         connect_timeout=2, request_timeout=3)
     with TogglyClient(config) as client:
         client.init()
-        assigned = client.get_variant('new-dashboard')
-        return render(request, 'showcase/result.html', {'title': 'Native remote variant',
+        assigned = client.get_variant(
+            'new-dashboard', user_id=context.identity, groups=context.groups,
+        )
+        return render(request, 'showcase/result.html', {'title': 'Native local variant',
             'variant': asdict(assigned) if assigned else None})

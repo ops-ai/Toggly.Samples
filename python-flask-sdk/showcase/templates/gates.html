@@ -40,15 +40,14 @@
     enabled-view and disabled fallback, but the current core's feature-state metadata does not
     include the assigned variant name. Named dispatch is unavailable on this decorator; the sample
     does not invent metadata.</p>
-    <p>The explicit action below uses native <code>get_variant</code> on one isolated remote client
-    with the selected user's context present before initialization, then closes it. Ordinary pages
+    <p>The explicit action below uses native <code>get_variant</code> on one isolated client that
+    loads the signed catalog, assigns locally for the selected user, then closes. Ordinary pages
     share local definitions. Baseline flags and offline fixtures have no experiment assignment.</p>
-    {# Remote assignment is an explicit POST, not part of ordinary rendering.
-    The action configures known user context before its isolated client initializes
-    and always closes that client. Offline mode reports that no assignment exists. #}
+    {# Local assignment is an explicit POST, not part of ordinary rendering.
+    The action passes user_id/groups into get_variant and always closes its client. #}
     <form method="post" action="/variant/">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button>Fetch this user's remote assignment</button>
+      <button>Assign this user's variant</button>
     </form>
   </section>
 {% endblock %}

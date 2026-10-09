@@ -303,15 +303,15 @@ python-dotenv==1.2.3 \
     --hash=sha256:904552145e8bfed22162c09dab1c2b9b54fefa7b23ba780f4f26ca0316b0f0d9 \
     --hash=sha256:a20a594dabeaa385725aa239d5244871c143ecb356add8a20fcf23773a6c3a35
     # via -r requirements.in
-toggly==0.7.1 \
-    --hash=sha256:64caf6af7c4c1dd8b8c0fa1e2efd3cd3cda798a00e7305a7096b6e10c5508e24 \
-    --hash=sha256:c300091f6c63279c3e465110f9cbb05933d43a9ee5374c30a56f6447dfdd6e66
+toggly==1.2.0 \
+    --hash=sha256:8abb2ca84a79ec3e5e55302ea8fc855719e45bc42278df53c6d18f335919c2fa \
+    --hash=sha256:9130a948442c52e81da81a09977b83eeb78aa41a17ac8839c8bf74fb0f81e305
     # via
     #   -r requirements.in
     #   toggly-flask
-toggly-flask==0.3.1 \
-    --hash=sha256:1bf669f1d73071bee4ea89b04fb8bf7cf750112beb6d7504be91eb3d303740d1 \
-    --hash=sha256:8dbf1e8262ad334e19035c37c40268dcd802f0d7a323b176d3159225f04ee2c5
+toggly-flask==0.4.0 \
+    --hash=sha256:97f708fef285c33471f908aa5fcb8d987cfaeee392d7049412fcd88633f1bc90 \
+    --hash=sha256:a7949535b7e127ab4fadfcf8d92afc1a984e915a1d5b721f327f197b1a1142df
     # via -r requirements.in
 werkzeug==3.1.8 \
     --hash=sha256:63a77fb8892bf28ebc3178683445222aa500e48ebad5ec77b0ad80f8726b1f50 \

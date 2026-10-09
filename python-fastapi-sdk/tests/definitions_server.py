@@ -49,15 +49,22 @@ class DefinitionsServer:
                 pass
 
             def do_GET(self):
-                if self.path.startswith('/evaluated-variants-signed/'):
-                    owner.variant_started.set()
-                    time.sleep(owner.variant_delay)
-
                 with owner.lock:
                     owner.calls.append((
                         self.path,
                         self.headers.get('If-None-Match'),
                     ))
+                    definition_fetches = sum(
+                        1 for path, _ in owner.calls if '/definitions-signed/' in path
+                    )
+                if (
+                    owner.variant_delay
+                    and '/definitions-signed/' in self.path
+                    and definition_fetches > 1
+                ):
+                    owner.variant_started.set()
+                    time.sleep(owner.variant_delay)
+                with owner.lock:
                     if self.path == '/.well-known/jwks':
                         body, status = json.dumps(owner.jwks).encode(), 200
                     elif owner.mode == 'error':
@@ -65,20 +72,8 @@ class DefinitionsServer:
                     elif self.headers.get('If-None-Match') == f'"{owner.revision}"':
                         body, status = b'', 304
                     else:
-                        if self.path.startswith('/evaluated-variants-signed/'):
-                            data = {
-                                'new-dashboard': {
-                                    'enabled': True,
-                                    'variant': 'compact',
-                                    'configuration': {
-                                        'value': {
-                                            'density': 'compact',
-                                        },
-                                    },
-                                },
-                            }
-                        else:
-                            data = [row.to_dict() for row in definitions()]
+                        data = [row.to_dict() for row in definitions()]
+                        if data:
                             data[0]['filters'] = [
                                 {
                                     'name': (
