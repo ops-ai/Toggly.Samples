@@ -2,7 +2,6 @@
 import re
 import time
 import unittest
-from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 from toggly import TogglyClient, TogglyConfig, get_default_client
 from toggly.enums import LoadStatus
@@ -79,10 +78,8 @@ class TransportTests(unittest.TestCase):
                 self.assertIn('compact',response.text)
                 self.assertEqual(len(closed),1);self.assertIsNot(closed[0],client)
                 self.assertIs(get_default_client(),client)
-                variants=[path for path,_ in server.calls if path.startswith('/evaluated-variants-signed/')]
-                self.assertEqual(len(variants),1)
-                query=parse_qs(urlparse(variants[0]).query)
-                self.assertEqual(query['userId'],['alice']);self.assertIn('admin',variants[0])
+                self.assertFalse(any(path.startswith('/evaluated-variants-signed/') for path,_ in server.calls))
+                self.assertTrue(any('/definitions-signed/' in path for path,_ in server.calls))
                 server.change(dashboard=False)
                 self.assertIn('fetched',post('/refresh/',{}).text)
                 self.assertIn('Classic dashboard fallback',http.get('/gates/').text)

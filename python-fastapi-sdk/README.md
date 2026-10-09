@@ -57,7 +57,7 @@ can generate an ephemeral in-memory secret. Never commit either secret.
 | Contract section | Route | Try this |
 |---|---|---|
 | Home | `/` | Section map, sixteen-key checklist, contextual snapshot and refresh |
-| Declarative gates | `/gates/` | Native helper, disabled/negate, Any/All, remote variant name/configuration |
+| Declarative gates | `/gates/` | Native helper, disabled/negate, Any/All, local variant assignment |
 | Programmatic API | `/programmatic/` | Boolean dependency, helper and explicit core context; guarded POST |
 | Identity | `/identity/` | Signed-session Alice/Bob/clear, ContextDep and native Targeting route |
 | Entity context | `/orders/` | VIP/standard/missing Order and same-request with_entity copies |
@@ -280,11 +280,11 @@ FastAPI claims/country/browser/language/OS columns stay OFF without explicit map
 
 ## Versions and verification
 
-Latest stable/published checkpoint: **2026-09-10**.
+Latest stable/published checkpoint: **2026-10-09**.
 [Python](https://www.python.org/downloads/) 3.14.7,
 [FastAPI](https://pypi.org/project/fastapi/) 0.141.1,
-[toggly](https://pypi.org/project/toggly/) 0.7.1,
-[toggly-fastapi](https://pypi.org/project/toggly-fastapi/) 0.3.1.
+[toggly](https://pypi.org/project/toggly/) 1.2.0,
+[toggly-fastapi](https://pypi.org/project/toggly-fastapi/) 0.4.0.
 Live mode reports definition cache hits on the usage pipeline; offline,
 missing-key, fixture, and `ci-placeholder` runs do not upload usage.
 `python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.

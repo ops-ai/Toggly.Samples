@@ -259,18 +259,12 @@ def variant():
     if current_app.config['OFFLINE']:
         return result('No variant assigned in offline fixture mode')
     context = g.sample_context
-    # Only this explicit action fetches remote assignments. Set known context
-    # BEFORE init, avoid an anonymous fetch followed by set_identity/refetch.
-    # Never register this short-lived client as the process default.
+    # Isolated client: same signed catalog as the worker; assign locally and close.
     config = TogglyConfig(
         app_key=current_app.config['TOGGLY_APP_KEY'],
         environment=current_app.config['TOGGLY_ENVIRONMENT'],
         base_url=current_app.config['TOGGLY_BASE_URL'],
         use_signed_definitions=True,
-        enable_variants=True,
-        identity=context.identity,
-        variant_groups=context.groups,
-        variant_claims=context.claims,
         disable_background_refresh=True,
         enable_live_updates=False,
         enable_usage_tracking=False,
@@ -278,13 +272,13 @@ def variant():
         connect_timeout=2,
         request_timeout=3,
     )
-    # The context manager owns cleanup even if loading or rendering raises.
-    # Ordinary page requests continue to use the shared worker client.
     with TogglyClient(config) as client:
         loaded = client.init()
-        assigned = client.get_variant('new-dashboard')
+        assigned = client.get_variant(
+            'new-dashboard', user_id=context.identity, groups=context.groups,
+        )
         return result(
-            'Native remote assignment',
+            'Native local assignment',
             variant=asdict(assigned) if assigned else None,
-            message=f'Load status: {loaded.status.value}. Baseline flags have no experiment assignment.',
+            message=f'Load status: {loaded.status.value}. Variants are assigned from the definition catalog.',
         )

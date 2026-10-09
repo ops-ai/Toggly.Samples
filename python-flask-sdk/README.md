@@ -128,7 +128,7 @@ The published core does not put a variant name in that metadata, so named dispat
 is unavailable there. The sample does not fabricate metadata or silently replace
 the decorator.
 
-`POST /variant/` demonstrates the core's actual remote `get_variant` API. Only
+`POST /variant/` demonstrates the core's catalog-local `get_variant` API. Only
 this explicit action creates an isolated client with known identity, groups and
 claims in initial configuration, enables variants, initializes, reads the assigned
 name/configuration and closes. It never registers that client globally. This
@@ -266,8 +266,8 @@ Flask claims/country/browser/language/OS columns stay OFF without explicit mappi
 Latest stable runtime and published dependency checkpoint: **2026-09-10**.
 [Python](https://www.python.org/downloads/) 3.14.7,
 [Flask](https://pypi.org/project/Flask/) 3.1.3,
-[toggly](https://pypi.org/project/toggly/) 0.7.1,
-[toggly-flask](https://pypi.org/project/toggly-flask/) 0.3.1.
+[toggly](https://pypi.org/project/toggly/) 1.2.0,
+[toggly-flask](https://pypi.org/project/toggly-flask/) 0.4.0.
 Live mode reports definition cache hits on the usage pipeline; offline,
 missing-key, fixture, and `ci-placeholder` runs do not upload usage.
 `python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.

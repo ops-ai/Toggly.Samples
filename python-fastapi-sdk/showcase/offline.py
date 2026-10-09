@@ -1,8 +1,21 @@
 """Labeled offline data using the public snapshot API and real SDK evaluator."""
 from toggly import TogglyClient, TogglyConfig
-from toggly.models import FeatureDefinition, FeatureFilter
+from toggly.models import (
+    Allocation, FeatureDefinition, FeatureFilter, UserAllocation, Variant,
+)
 from toggly.providers import DefinitionsSnapshot, MemorySnapshotProvider
 from .catalog import FILTERS, ORDER_RULE
+
+
+DASHBOARD_VARIANTS = [
+    Variant('compact', {'value': {'density': 'compact'}}),
+    Variant('classic', {'value': {'density': 'classic'}}),
+]
+DASHBOARD_ALLOCATION = Allocation(
+    default_when_enabled='classic',
+    default_when_disabled='classic',
+    user=[UserAllocation(variant='compact', users=['alice'])],
+)
 
 
 def definitions():
@@ -13,9 +26,15 @@ def definitions():
         ('enhanced-submit', True),
         ('beta-access', True),
     ]:
-        rows.append(FeatureDefinition(
-            key, [FeatureFilter('AlwaysOn' if enabled else 'AlwaysOff')]
-        ))
+        if key == 'new-dashboard':
+            rows.append(FeatureDefinition(
+                key, [FeatureFilter('AlwaysOn' if enabled else 'AlwaysOff')],
+                variants=DASHBOARD_VARIANTS, allocation=DASHBOARD_ALLOCATION,
+            ))
+        else:
+            rows.append(FeatureDefinition(
+                key, [FeatureFilter('AlwaysOn' if enabled else 'AlwaysOff')],
+            ))
     rows.append(FeatureDefinition(
         'ExpressCheckout', [FeatureFilter('ContextProperty', ORDER_RULE)],
         context_kind='Order',

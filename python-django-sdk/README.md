@@ -131,10 +131,10 @@ expose the process-default flag snapshot.
 
 **Variants use a separate explicit action.** The shared local client returns no
 variant assignment. On `POST /variant/` only, the live example creates one isolated
-core client with known `identity`, `variant_groups` and `variant_claims` in its
-initial configuration, enables remote variants, calls `init()` and
+core client loads the signed catalog, calls `init()` and passes `user_id` /
+`groups` into `get_variant` (toggly 1.x assigns locally). It then
 `get_variant('new-dashboard')`, then closes the client. It never registers this
-client globally. This incurs a remote assignment fetch for that action; ordinary
+client globally. This reloads definitions for that action only; ordinary
 pages do not incur it. There is no native Django variant tag or per-call context
 argument on `get_variant`. The baseline recipe has no experiment configuration,
 so an absent assignment is normal. The fixture mode reports absence explicitly.
@@ -259,11 +259,11 @@ Django claims/country/browser/language/OS columns stay OFF without explicit mapp
 
 ## Versions and verification
 
-Registry checkpoint: **2026-09-16**. Latest stable
+Registry checkpoint: **2026-10-09**. Latest stable
 [Python](https://www.python.org/downloads/) 3.14.7 and published PyPI
 [Django](https://pypi.org/project/Django/) 6.1.1,
-[toggly](https://pypi.org/project/toggly/) 0.7.1 and
-[toggly-django](https://pypi.org/project/toggly-django/) 0.4.1.
+[toggly](https://pypi.org/project/toggly/) 1.2.0 and
+[toggly-django](https://pypi.org/project/toggly-django/) 0.5.0.
 Live mode reports definition cache hits on the usage pipeline; offline,
 missing-key, fixture, and `ci-placeholder` runs do not upload usage.
 `python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
