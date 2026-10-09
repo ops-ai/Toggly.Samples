@@ -120,7 +120,8 @@ defmodule Showcase.Live do
           <p id="any-disabled">Any gate: both features are off.</p>
         </.feature>
         <p class="muted">
-          Variant surface: boolean enabled/disabled branches only. This SDK does not assign multivariate experiments.
+          This page demonstrates boolean gates only. Catalog-local variant assignment is available via
+          <code>Toggly.get_variant/4</code> and <code>Toggly.Phoenix.Plug.get_variant/2</code>.
         </p>
       </section>
       <section id="api">
