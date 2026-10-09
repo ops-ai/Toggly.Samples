@@ -17,6 +17,10 @@ async function findStickyComment(github, { owner, repo, issue_number, marker }) 
 /**
  * @param {import('@octokit/rest').Octokit} github
  */
+function buildPrCommentBody(marker, heading, content) {
+  return [marker, heading, '', content].join('\n');
+}
+
 async function upsertPrComment(github, { owner, repo, issue_number, marker, body }) {
   const existing = await findStickyComment(github, {
     owner,
@@ -41,4 +45,4 @@ async function upsertPrComment(github, { owner, repo, issue_number, marker, body
   });
 }
 
-module.exports = { findStickyComment, upsertPrComment };
+module.exports = { findStickyComment, upsertPrComment, buildPrCommentBody };

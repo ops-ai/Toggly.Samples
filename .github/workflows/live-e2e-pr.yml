@@ -37,7 +37,7 @@ jobs:
         with:
           script: |
             const path = require('path');
-            const { upsertPrComment } = require(path.join(
+            const { upsertPrComment, buildPrCommentBody } = require(path.join(
               process.env.GITHUB_WORKSPACE,
               '.github/scripts/livee2e-pr-github.js',
             ));
@@ -66,11 +66,11 @@ jobs:
               );
             }
             const marker = process.env.COMMENT_MARKER;
-            const body = `${marker}
-            ### ${process.env.CHECK_NAME}
-
-            ${explanation}
-            `;
+            const body = buildPrCommentBody(
+              marker,
+              `### ${process.env.CHECK_NAME}`,
+              explanation,
+            );
             try {
               await upsertPrComment(github, {
                 owner: context.repo.owner,
@@ -135,7 +135,7 @@ jobs:
         with:
           script: |
             const path = require('path');
-            const { upsertPrComment } = require(path.join(
+            const { upsertPrComment, buildPrCommentBody } = require(path.join(
               process.env.GITHUB_WORKSPACE,
               '.github/scripts/livee2e-pr-github.js',
             ));
@@ -154,11 +154,11 @@ jobs:
               },
             });
             const marker = process.env.COMMENT_MARKER;
-            const body = `${marker}
-            ### ${process.env.CHECK_NAME}
-
-            ${summary}
-            `;
+            const body = buildPrCommentBody(
+              marker,
+              `### ${process.env.CHECK_NAME}`,
+              summary,
+            );
             await upsertPrComment(github, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -197,7 +197,7 @@ jobs:
         with:
           script: |
             const path = require('path');
-            const { upsertPrComment } = require(path.join(
+            const { upsertPrComment, buildPrCommentBody } = require(path.join(
               process.env.GITHUB_WORKSPACE,
               '.github/scripts/livee2e-pr-github.js',
             ));
@@ -213,11 +213,11 @@ jobs:
               output: { title: 'No affected samples', summary },
             });
             const marker = process.env.COMMENT_MARKER;
-            const body = `${marker}
-            ### ${process.env.CHECK_NAME}
-
-            ${summary}
-            `;
+            const body = buildPrCommentBody(
+              marker,
+              `### ${process.env.CHECK_NAME}`,
+              summary,
+            );
             await upsertPrComment(github, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -329,7 +329,7 @@ jobs:
         with:
           script: |
             const path = require('path');
-            const { upsertPrComment } = require(path.join(
+            const { upsertPrComment, buildPrCommentBody } = require(path.join(
               process.env.GITHUB_WORKSPACE,
               '.github/scripts/livee2e-pr-github.js',
             ));
@@ -371,11 +371,11 @@ jobs:
             }
             const marker = process.env.COMMENT_MARKER;
             const icon = conclusion === 'success' ? '✅' : conclusion === 'cancelled' ? '⚪' : '❌';
-            const body = `${marker}
-            ### ${process.env.CHECK_NAME} ${icon}
-
-            ${summary}
-            `;
+            const body = buildPrCommentBody(
+              marker,
+              `### ${process.env.CHECK_NAME} ${icon}`,
+              summary,
+            );
             try {
               await upsertPrComment(github, {
                 owner: context.repo.owner,
