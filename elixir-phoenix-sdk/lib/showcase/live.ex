@@ -121,7 +121,8 @@ defmodule Showcase.Live do
         </.feature>
         <p class="muted">
           This page demonstrates boolean gates only. Catalog-local variant assignment is available via
-          <code>Toggly.get_variant/4</code> and <code>Toggly.Phoenix.Plug.get_variant/2</code>.
+          <code>Toggly.get_variant/4</code>
+          and <code>Toggly.Phoenix.Plug.get_variant/2</code>.
         </p>
       </section>
       <section id="api">
