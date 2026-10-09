@@ -50,7 +50,7 @@ In connected mode, enable `new-dashboard` with **Always On** and save. Within th
 
 Each enabled/disabled pair uses two feature blocks with the same flags, keys, requirement and default. The disabled block sets `negate={true}`; negation reverses the combined all/any result. Both blocks use ordinary child content.
 
-A **key** is the exact name used in code. A **definition** contains that key's conditions for an **environment**. **Evaluation** combines those conditions with the current context into a boolean. These branches are not multivariate experiment assignments; this package family does not expose a variant-assignment API.
+A **key** is the exact name used in code. A **definition** contains that key's conditions for an **environment**. **Evaluation** combines those conditions with the current context into a boolean. This showcase focuses on boolean gates (`enabled?/4`, Plug route gates, and LiveView `<.feature>` blocks). The SDK also exposes catalog-local variant assignment via `Toggly.get_variant/4` and `Toggly.Phoenix.Plug.get_variant/2`; see the [Elixir SDK docs](https://docs.toggly.io/sdks/elixir).
 
 With the key still empty, changing the dashboard cannot affect the sample. To practice offline, change the `new-dashboard` fixture's filters from `[{"name":"AlwaysOn","parameters":{}}]` to `[]` in `priv/offline-definitions.json`, restart, and observe the same enabled/disabled expectations. Restore the fixture afterward.
 
@@ -59,7 +59,7 @@ With the key still empty, changing the dashboard cannot affect the sample. To pr
 | Contract section | Where | What to try |
 | --- | --- | --- |
 | Home | `#home` | Navigation, all sixteen keys, evaluated snapshot |
-| Declarative gates | `#declarative` | Paired Feature/negate blocks, all and any; variant limitation explained |
+| Declarative gates | `#declarative` | Paired Feature/negate blocks, all and any; boolean gates (variants documented in SDK) |
 | Programmatic API | `#api` | Server-side enhanced-submit handler; records usage when work runs |
 | Identity | `#identity` | Open two tabs, select Alice and Bob independently |
 | Entity context | `#entity` | VIP order versus standard order for ExpressCheckout |
