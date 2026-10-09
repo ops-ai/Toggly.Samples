@@ -80,7 +80,8 @@ class NativeSdkTest < Minitest::Test
     assert_equal 1, outcomes.uniq.size
     assert_equal 1, @fixture.fetches.size, 'evaluations must not fetch'
     assert_equal 16, @client.feature_keys.size
-    assert_empty @client.public_methods.grep(/variant/)
+    assert_equal %i[get_variant get_variant_value].sort, @client.public_methods.grep(/variant/).sort
+    assert_nil @client.get_variant('new-dashboard', context: @alice)
   end
 
   def test_same_user_different_orders_and_concurrent_contexts
