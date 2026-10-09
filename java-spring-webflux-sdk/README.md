@@ -400,7 +400,7 @@ are expected only in deliberate rejection tests.
 - [ ] Compare VIP/standard/missing Orders without changing user identity.
 - [ ] Delayed native result and enabledFeatures agree with the API and template snapshot.
 - [ ] Request refresh, reload Home, and distinguish attempt completion from new accepted definitions.
-- [ ] Variants remain labeled unsupported; switchOn is Boolean publisher selection.
+- [ ] Confirm catalog-local variants (2.x) are described; switchOn is Boolean publisher selection.
 - [ ] Ctrl-C exits; no local .env is tracked.
 
 See [Sample Contract](../docs/SAMPLE_CONTRACT.md), [flag template](../docs/FLAG_TEMPLATE.md)
