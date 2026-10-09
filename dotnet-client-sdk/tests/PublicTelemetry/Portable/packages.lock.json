@@ -4,17 +4,17 @@
     "net10.0": {
       "Toggly.FeatureManagement.Client": {
         "type": "Direct",
-        "requested": "[3.10.0, )",
-        "resolved": "3.10.0",
-        "contentHash": "N4tYlEv5D4dB3uiqTTofshaTRU8ZFH6fjtzE/aOp2OHaAeS2nKxW8TsoD7OsUM4ndQC1Dj50Y+K7jZW/oxcb3w=="
+        "requested": "[3.13.3, )",
+        "resolved": "3.13.3",
+        "contentHash": "gqPCEKlynBAtf+YO8ArGqtjm58AJPWjOg24qNcsVaOdRkYOv/IOSZrtedrJI7Hn5vYsFE7Ek/2w7CgHee6OeNw=="
       }
     },
     "net8.0": {
       "Toggly.FeatureManagement.Client": {
         "type": "Direct",
-        "requested": "[3.10.0, )",
-        "resolved": "3.10.0",
-        "contentHash": "N4tYlEv5D4dB3uiqTTofshaTRU8ZFH6fjtzE/aOp2OHaAeS2nKxW8TsoD7OsUM4ndQC1Dj50Y+K7jZW/oxcb3w=="
+        "requested": "[3.13.3, )",
+        "resolved": "3.13.3",
+        "contentHash": "gqPCEKlynBAtf+YO8ArGqtjm58AJPWjOg24qNcsVaOdRkYOv/IOSZrtedrJI7Hn5vYsFE7Ek/2w7CgHee6OeNw=="
       }
     }
   }
