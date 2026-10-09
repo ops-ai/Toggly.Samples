@@ -302,7 +302,13 @@ jobs:
             const ids = process.env.SAMPLE_IDS;
             const adoResult = process.env.ADO_RESULT;
             const conclusion =
-              adoResult === 'succeeded' ? 'success' : adoResult === 'canceled' ? 'cancelled' : 'failure';
+              adoResult === 'succeeded'
+                ? 'success'
+                : adoResult === 'canceled'
+                  ? 'cancelled'
+                  : adoResult === 'timedOut'
+                    ? 'timed_out'
+                    : 'failure';
             const summary = [
               `ADO result: **${adoResult}**`,
               runUrl ? `[Open ADO run](${runUrl})` : '',
