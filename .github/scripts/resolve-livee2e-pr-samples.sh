@@ -30,7 +30,14 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   enrolled["$line"]=1
 done <"$enrolled_file"
 
-merge_base="$(git merge-base "$base_sha" "$head_sha")"
+if ! merge_base="$(git merge-base "$base_sha" "$head_sha")"; then
+  echo "git merge-base failed between $base_sha and $head_sha (check that both commits exist in this clone)." >&2
+  exit 1
+fi
+if [[ -z "$merge_base" ]]; then
+  echo "git merge-base returned empty for $base_sha and $head_sha" >&2
+  exit 1
+fi
 
 declare -A touched=()
 while IFS= read -r path; do

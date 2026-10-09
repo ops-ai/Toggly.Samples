@@ -153,7 +153,9 @@ jobs:
           chmod +x .github/scripts/resolve-livee2e-pr-samples.sh
           base="${{ github.event.pull_request.base.sha }}"
           head="${{ github.event.pull_request.head.sha }}"
-          git fetch --no-tags --depth=1 origin "$base"
+          if ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            git fetch --no-tags origin "$base"
+          fi
           ids="$(.github/scripts/resolve-livee2e-pr-samples.sh "$base" "$head")"
           if [[ -z "${ids:-}" ]]; then
             echo "has_samples=false" >>"$GITHUB_OUTPUT"
@@ -165,7 +167,7 @@ jobs:
           echo "Queued sample ids: **$ids**" >>"$GITHUB_STEP_SUMMARY"
 
       - name: Report skipped check (no enrolled samples touched)
-        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples != 'true'
+        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outcome == 'success' && steps.samples.outputs.has_samples != 'true'
         uses: actions/github-script@v7
         env:
           CHECK_NAME: ${{ env.CHECK_NAME }}
@@ -251,7 +253,7 @@ jobs:
           echo "run_url=$run_url" >>"$GITHUB_OUTPUT"
 
       - name: Create in-progress check
-        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true'
+        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.queue.outcome == 'success'
         id: check_start
         uses: actions/github-script@v7
         env:
@@ -275,11 +277,15 @@ jobs:
             core.setOutput('check_id', String(check.id));
 
       - name: Poll ADO pipeline run
-        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true'
+        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.queue.outcome == 'success'
         id: poll
         run: |
           set -euo pipefail
           run_id="${{ steps.queue.outputs.run_id }}"
+          if [[ -z "$run_id" || "$run_id" == "null" ]]; then
+            echo "Missing ADO run_id; queue step did not produce a run to poll." >&2
+            exit 1
+          fi
           url="https://dev.azure.com/${ADO_ORG}/${ADO_PROJECT}/_apis/pipelines/${ADO_LIVEE2E_PIPELINE_ID}/runs/${run_id}?api-version=7.1-preview.1"
           deadline=$(( $(date +%s) + 7200 ))
           while true; do
