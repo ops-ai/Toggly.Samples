@@ -141,31 +141,41 @@ jobs:
             ));
             const missing = `${{ steps.ado_config.outputs.missing }}`;
             const summary = `LiveE2E was not queued: configure repository secrets (${missing}).`;
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: process.env.CHECK_NAME,
-              head_sha: context.payload.pull_request.head.sha,
-              status: 'completed',
-              conclusion: 'skipped',
-              output: {
-                title: 'ADO secrets not configured',
-                summary,
-              },
-            });
+            try {
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: process.env.CHECK_NAME,
+                head_sha: context.payload.pull_request.head.sha,
+                status: 'completed',
+                conclusion: 'skipped',
+                output: {
+                  title: 'ADO secrets not configured',
+                  summary,
+                },
+              });
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              core.warning(`Could not create skipped check (ADO secrets missing): ${message}`);
+            }
             const marker = process.env.COMMENT_MARKER;
             const body = buildPrCommentBody(
               marker,
               `### ${process.env.CHECK_NAME}`,
               summary,
             );
-            await upsertPrComment(github, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              marker,
-              body,
-            });
+            try {
+              await upsertPrComment(github, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                marker,
+                body,
+              });
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              core.warning(`Could not upsert LiveE2E PR comment (ADO secrets missing): ${message}`);
+            }
 
       - name: Resolve affected enrolled samples
         if: steps.ado_config.outputs.configured == 'true'
@@ -203,28 +213,38 @@ jobs:
             ));
             const summary =
               'No enrolled LiveE2E sample folders changed on this pull request; ADO pipeline was not queued.';
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: process.env.CHECK_NAME,
-              head_sha: context.payload.pull_request.head.sha,
-              status: 'completed',
-              conclusion: 'skipped',
-              output: { title: 'No affected samples', summary },
-            });
+            try {
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: process.env.CHECK_NAME,
+                head_sha: context.payload.pull_request.head.sha,
+                status: 'completed',
+                conclusion: 'skipped',
+                output: { title: 'No affected samples', summary },
+              });
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              core.warning(`Could not create skipped check (no affected samples): ${message}`);
+            }
             const marker = process.env.COMMENT_MARKER;
             const body = buildPrCommentBody(
               marker,
               `### ${process.env.CHECK_NAME}`,
               summary,
             );
-            await upsertPrComment(github, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              marker,
-              body,
-            });
+            try {
+              await upsertPrComment(github, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                marker,
+                body,
+              });
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              core.warning(`Could not upsert LiveE2E PR comment (no affected samples): ${message}`);
+            }
 
       - name: Queue LiveE2E on Azure DevOps
         if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true'
