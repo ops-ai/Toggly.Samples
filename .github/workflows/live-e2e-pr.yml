@@ -289,7 +289,7 @@ jobs:
             core.setOutput('check_id', String(check.id));
 
       - name: Poll ADO pipeline run
-        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.queue.outcome == 'success'
+        if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.queue.outcome == 'success' && steps.check_start.outcome == 'success'
         id: poll
         run: |
           set -euo pipefail

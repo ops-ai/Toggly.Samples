@@ -46,7 +46,7 @@ while IFS= read -r path; do
   if [[ -n "${enrolled[$top]:-}" ]]; then
     touched["$top"]=1
   fi
-done < <(git diff --name-only "$merge_base" "$head_sha")
+done < <(git diff --no-renames --name-only "$merge_base" "$head_sha")
 
 if [[ ${#touched[@]} -eq 0 ]]; then
   exit 0
