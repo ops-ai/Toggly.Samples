@@ -11,8 +11,8 @@
     "@docusaurus/core": "3.10.2",
     "@docusaurus/preset-classic": "3.10.2",
     "@mdx-js/react": "^3.1.1",
-    "@ops-ai/toggly-client-core": "0.5.1",
-    "@ops-ai/toggly-docusaurus-plugin": "0.10.0",
+    "@ops-ai/toggly-client-core": "0.5.2",
+    "@ops-ai/toggly-docusaurus-plugin": "0.10.2",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
