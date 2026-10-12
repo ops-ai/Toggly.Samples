@@ -40,37 +40,44 @@ signed loopback definitions service and do not require your `.env`.
 
 ## Versions and reproducibility
 
-Verified against official registries on 2026-09-16:
+Verified against official registries on 2026-10-12:
 
 | Component | Version |
 |---|---|
-| OpenJDK, compiler release | 17.0.17, release 17 |
+| OpenJDK, compiler release | 17.0.17, release 17 (CI); agent also built with 21 |
 | Maven | 3.9.12 |
 | `io.toggly:toggly-spring-boot-starter` | 2.2.1 (Maven Central latest) |
 | `io.toggly:toggly-core` (transitive) | 2.2.1 |
-| Spring Boot parent / Actuator / Web / AOP / FreeMarker | **3.5.16** |
-| Embedded Tomcat (Boot 3.5.16) | 10.1.55 |
+| Spring Boot parent / Actuator / Web MVC / AspectJ / FreeMarker | **4.1.1** |
+| Embedded Tomcat (Boot 4.1.1) | 11.0.24 |
 
-**Host choice.** Published starter 2.2.1 declares `spring-boot.version` 3.5.16.
-Latest stable Boot is 4.1.1 (4.2.0-M1 is a milestone). A Boot 4.1.1 host with
-Actuator on the classpath fails when a `TogglyClient` exists (workshop /
-`TOGGLY_APP_KEY` path):
+**Host choice.** This sample follows the
+[Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide):
+parent **4.1.1**, `spring-boot-starter-webmvc` (replaces deprecated
+`spring-boot-starter-web`), and `spring-boot-starter-aspectj` (replaces
+`spring-boot-starter-aop`). Java **17** remains the compiler release.
+
+**SDK blocker (starter 2.2.1).** Published `io.toggly:toggly-spring-boot-starter`
+2.2.1 still implements `org.springframework.boot.actuate.health.HealthIndicator`.
+Spring Boot 4.1.1 removed that type from `spring-boot-actuator`; health contributors
+live in `org.springframework.boot.health.contributor.HealthIndicator`. With Actuator
+on the classpath and `toggly.enabled=true` (workshop / `TOGGLY_APP_KEY` path),
+context startup fails while registering `TogglyActuatorAutoConfiguration`:
+
 `ClassNotFoundException: org.springframework.boot.actuate.health.HealthIndicator`.
-Published `TogglyHealthIndicator` implements that Boot 3 type; Boot 4.1.1 moved it
-to `org.springframework.boot.health.contributor.HealthIndicator` and removed the
-old class from `spring-boot-actuator`. A missing-key Boot 4 process can start,
-but `/actuator/health` has no `toggly` component and `/actuator/toggly` is 404 —
-that is not a working Actuator host. Excluding Actuator would drop the starter's
-health indicator and `/actuator/toggly`.
 
-Boot 4.1.1 also dropped `spring-boot-starter-aop` from the BOM (no 4.1.1
-artifact; the replacement is `spring-boot-starter-aspectj`). Pinning AOP 3.5.16
-unblocks Maven only. Native Actuator still fails once the client is created.
+The missing-key shell (`toggly.enabled=false`) still starts; that path does not
+construct `TogglyClient` or load the broken health bean. It is not a substitute
+for the signed workshop and `NativeIntegrationTest` coverage. This sample does
+**not** exclude Actuator or patch the starter locally.
 
-This sample therefore stays on the starter's declared **3.5.16** host. A Boot 4
-host needs a published starter that implements Boot 4 health and Actuator.
+`mvn verify` today: `ShowcaseTest` (missing key) passes; all six
+`NativeIntegrationTest` cases fail until a starter release targets Boot 4 Actuator.
+**`SUPPORT_MATRIX.md`** in `ops-ai/Toggly.FeatureManagement` should treat Spring
+Boot **4.x** as unsupported for starter **2.2.1** (or document a forthcoming
+starter version once published).
 
-The starter's `snapshotProvider()` bean returns null. Boot 3.5.16 will not inject
+The starter's `snapshotProvider()` bean returns null. Spring Boot will not inject
 that null into `togglyClient`. `TogglySampleConfiguration` supplies a
 Spring-owned `HttpSnapshotProvider` so the **starter** still creates
 `TogglyClient`. That is documented host configuration, not a local jar.
@@ -218,7 +225,7 @@ the definition kind: an Unknown entity with Vip=true can still match.
 - **Native:** `@FeatureEnabled` + `FeatureAspect` (sample registers the aspect bean).
 - **Native:** `@ConditionalOnFeature` / `OnFeatureCondition` at bean creation time.
 - **Native:** `TogglyHealthIndicator` and `TogglyEndpoint` when Actuator is on the
-  classpath (Boot 3.5.16 only for this published starter).
+  classpath (blocked on Boot 4.1.1 for published starter 2.2.1 — see **Host choice**).
 - **Native core:** signed HTTP definitions, local evaluation, defaults, last-valid
   snapshot retention, polling and explicit-context calls.
 - **Sample composition:** `HttpSnapshotProvider` bean, signed `TogglyConfig`
@@ -288,7 +295,7 @@ no live Toggly service, app credentials or external database.
 - [ ] Open two browser profiles, save Alice/Bob independently, and verify neither session overwrites the other.
 - [ ] VIP and standard Orders yield different ExpressCheckout results; missing entity is OFF.
 - [ ] `/actuator/health` includes toggly; `/actuator/toggly` lists features. Those endpoints are not request-scoped.
-- [ ] Confirm catalog-local variants (2.x) are described and Boot 4 Actuator incompatibility is described.
+- [ ] Confirm catalog-local variants (2.x) are described and Boot 4.1.1 + starter 2.2.1 Actuator blocker is documented.
 - [ ] Interrupt the process and confirm shutdown exits; real `.env` remains ignored.
 
 See the shared [Sample Contract](../docs/SAMPLE_CONTRACT.md) and

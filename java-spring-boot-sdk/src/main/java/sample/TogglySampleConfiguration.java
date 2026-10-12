@@ -73,7 +73,7 @@ public class TogglySampleConfiguration {
 
     @Bean(destroyMethod = "close")
     public SnapshotProvider snapshotProvider(TogglyConfig config) {
-        // Starter snapshotProvider() returns null. Boot 3.5 then refuses to inject
+        // Starter snapshotProvider() returns null. Spring Boot then refuses to inject
         // it into togglyClient, so the auto-configured client never starts.
         // A Spring-owned HttpSnapshotProvider is the published workaround; the
         // starter client still constructs TogglyClient(config, provider).
