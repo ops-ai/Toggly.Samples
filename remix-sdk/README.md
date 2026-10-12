@@ -1,8 +1,11 @@
-# Remix SDK Sample
+# Remix SDK Sample (React Router 8)
 
-A full Toggly feature-flag showcase for Remix 2.17. It uses the published
-`@ops-ai/remix-toggly-core`, `@ops-ai/remix-toggly-server`, and
-`@ops-ai/remix-toggly-client` packages; it never uses a local tarball.
+A full Toggly feature-flag showcase that lives in the `remix-sdk` folder but runs on
+**React Router 8** and **React 19** after migrating from Remix 2.17 using the
+[official Remix → React Router upgrade path](https://reactrouter.com/upgrading/remix).
+
+The sample uses the published `@ops-ai/react-router-toggly` package (the Remix-specific
+`@ops-ai/remix-toggly-*` packages target `@remix-run/*` 2.x and React 18 peers only).
 
 ## Try your first toggle
 
@@ -27,7 +30,7 @@ an entity such as an Order.
 ```bash
 cd remix-sdk
 cp .env.example .env
-# Set TOGGLY_APP_KEY and REMIX_PUBLIC_TOGGLY_APP_KEY to your application's key.
+# Set TOGGLY_APP_KEY and VITE_TOGGLY_APP_KEY to your application's key.
 npm ci
 npm run dev
 ```
@@ -38,7 +41,7 @@ keys: it shows a banner and safely treats unknown flags as off.
 ## Configure your Toggly application
 
 1. At [app.toggly.io](https://app.toggly.io), create **Remix SDK Sample** in a
-   workspace you manage. Choose the Remix technology and Production environment.
+   workspace you manage. Choose the React Router technology and Production environment.
    Use `http://localhost:5173` as the local URL and allowed browser origin.
 2. Create context kind **Order**, with `Id` (string, key), `Vip` (boolean), and
    `Total` (number). Bind `ExpressCheckout` and `filter-context-property` to it.
@@ -55,11 +58,11 @@ from the picker.
 
 ## Environment variables and browser boundary
 
-`TOGGLY_APP_KEY` is read by loaders and actions. `REMIX_PUBLIC_TOGGLY_APP_KEY`
-is serialized into browser JavaScript for `RemixTogglyProvider`; it must be an
-application key, never a management token or another secret. Vite substitutes
-browser values while building, so restart development or rebuild production
-assets after changing it. `TOGGLY_ENVIRONMENT` defaults to `Production`.
+`TOGGLY_APP_KEY` is read by loaders and actions. `VITE_TOGGLY_APP_KEY` is inlined
+into browser JavaScript for `RouterTogglyProvider`; it must be an application key,
+never a management token or another secret. Vite substitutes browser values while
+building, so restart development or rebuild production assets after changing it.
+`TOGGLY_ENVIRONMENT` defaults to `Production`.
 
 ## Read the source in this order
 
@@ -67,7 +70,7 @@ assets after changing it. `TOGGLY_ENVIRONMENT` defaults to `Production`.
 |---|---|
 | `app/lib/toggly.server.ts`, `app/root.tsx` | config, hydration, local evaluation, safe missing-key fallback |
 | `/gates`, `app/components/client-gates.tsx` | declarative feature, negate, multi-key, and browser hooks |
-| `/programmatic` | `createTogglyLoader` and `createTogglyAction` surfaces |
+| `/programmatic` | `createTogglyLoader` and `createFeatureGatedAction` surfaces |
 | `/identity` | cookie to request-scoped async evaluation context |
 | `/orders` | domain Order to `Order.Vip` mapper and entity gate |
 | `/filters` | every shared filter row evaluated using matching/non-matching inputs |
@@ -77,19 +80,17 @@ assets after changing it. `TOGGLY_ENVIRONMENT` defaults to `Production`.
 | Route | Package surface | What it demonstrates |
 |---|---|---|
 | `/` | client provider | map, checklist, and live hydrated snapshot |
-| `/gates` | `remix-toggly-client` | Feature, negate, FeatureSwitch, FeatureGate, hooks |
-| `/programmatic` | `remix-toggly-server` | loader/action helpers and raw client checks |
-| `/identity` | `remix-toggly-server` | request-only identity, claims, and request headers |
+| `/gates` | `react-router-toggly` client | Feature, negate, multi-key, hooks, browser telemetry |
+| `/programmatic` | `react-router-toggly` server | loader helpers and `createFeatureGatedAction` |
+| `/identity` | `react-router-toggly` server | request-only identity, claims, and request headers |
 | `/orders` | core + server | registered `Order` entity context for ExpressCheckout |
 | `/filters` | core + server | all eleven contract filter rows and both presets |
 
 ## Package versions
 
-- `@remix-run/dev`, `@remix-run/node`, `@remix-run/react`, `@remix-run/serve` `2.17.5`
-- `react`, `react-dom` `18.3.1` (required by the published client peer range)
-- `@ops-ai/remix-toggly-core` `1.9.1`
-- `@ops-ai/remix-toggly-server` `1.10.0`
-- `@ops-ai/remix-toggly-client` `1.4.0`
+- `react-router`, `@react-router/dev`, `@react-router/node`, `@react-router/serve` `8.4.0`
+- `react`, `react-dom` `19.3.0`
+- `@ops-ai/react-router-toggly` `1.1.0`
 
 ## Evaluation, refresh, cache, and limitations
 
@@ -100,7 +101,7 @@ hydrate the server snapshot and refresh browser flags. A refresh failure can
 leave an earlier snapshot visible; inspect the configured key and network error,
 not merely an on/off result.
 
-`Feature` and `FeatureGate` change presentation. They are not authorization.
+`Feature` and multi-key gates change presentation. They are not authorization.
 The action page therefore demonstrates a second server-side evaluation but still
 does not represent a production authorization policy.
 
@@ -116,8 +117,8 @@ browser request, configured rule, and connected dashboard app.
 
 - [ ] Blank server/public keys show a banner and every route stays reachable.
 - [ ] `/` shows the route map, baseline checklist, and a hydrated snapshot.
-- [ ] `/gates` shows Feature, negate, FeatureSwitch, and all-of-two gate after
-      turning on `new-dashboard` and `api-v2`.
+- [ ] `/gates` shows Feature, negate, and all-of-two gate after turning on
+      `new-dashboard` and `api-v2`.
 - [ ] `/programmatic` reflects `new-dashboard` and action behavior reflects
       `enhanced-submit`.
 - [ ] `/identity` sets `alice` without leaking that identity into another

@@ -3,32 +3,32 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Remix SDK showcase for the published Toggly Remix packages",
+  "description": "React Router 8 showcase (remix-sdk folder) for the published @ops-ai/react-router-toggly package",
   "scripts": {
-    "dev": "remix vite:dev",
-    "build": "remix vite:build",
-    "start": "remix-serve ./build/server/index.js",
-    "test": "node --test tests/*.test.mjs",
+    "dev": "react-router dev",
+    "build": "react-router build",
+    "start": "react-router-serve ./build/server/index.js",
+    "test": "node --test tests/*.test.mjs && npm run test:browser",
+    "test:browser": "node tests/browser.mjs",
     "smoke": "node scripts/configured-runtime-smoke.mjs"
   },
   "dependencies": {
-    "@ops-ai/remix-toggly-client": "1.4.0",
-    "@ops-ai/remix-toggly-core": "1.9.1",
-    "@ops-ai/remix-toggly-server": "1.10.0",
-    "@remix-run/node": "2.17.5",
-    "@remix-run/react": "2.17.5",
-    "@remix-run/serve": "2.17.5",
+    "@ops-ai/react-router-toggly": "1.1.0",
+    "@react-router/node": "8.4.0",
+    "@react-router/serve": "8.4.0",
     "isbot": "5.2.2",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-router": "8.4.0"
   },
   "devDependencies": {
-    "@remix-run/dev": "2.17.5",
+    "@playwright/test": "^1.63.0",
+    "@react-router/dev": "8.4.0",
     "@types/node": "26.6.4",
-    "@types/react": "18.3.27",
-    "@types/react-dom": "18.3.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "typescript": "5.9.3",
-    "vite": "6.4.3"
+    "vite": "8.3.2"
   },
   "engines": {
     "node": ">=20.0.0"
