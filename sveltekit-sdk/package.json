@@ -15,7 +15,7 @@
     "prebuild": "npm run format:check"
   },
   "dependencies": {
-    "@ops-ai/toggly-sveltekit": "0.4.2"
+    "@ops-ai/toggly-sveltekit": "0.5.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
@@ -31,8 +31,5 @@
   },
   "engines": {
     "node": ">=22.12.0"
-  },
-  "overrides": {
-    "@ops-ai/toggly-node-core": "0.11.3"
   }
 }
