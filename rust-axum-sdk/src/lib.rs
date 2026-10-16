@@ -24,7 +24,7 @@ use std::{
     time::Duration,
 };
 use toggly::{TogglyClient, TogglyConfig};
-use toggly_axum::{TogglyLayer, TogglyState};
+use toggly_axum08::{TogglyLayer, TogglyState};
 
 #[derive(Clone)]
 pub struct Mode {

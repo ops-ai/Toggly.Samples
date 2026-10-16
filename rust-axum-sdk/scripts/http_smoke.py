@@ -174,8 +174,8 @@ def run(output: Path):
                 native = json.load(response)
             assert native["identity"] == "alice" and native["enabled"]
             result = {
-                "production_host": "Axum 0.7.9 / Rust 1.98.1",
-                "published_crates": "toggly 0.6.0 / toggly-axum 0.6.0",
+                "production_host": "Axum 0.8.9 / Rust 1.98.1",
+                "published_crates": "toggly 0.6.3 / toggly-axum08 0.1.0",
                 "workers": 8,
                 "private_cookie_jars": 8,
                 "sections": list(SECTIONS),
