@@ -1,9 +1,5 @@
-import type { IdentityContext } from '@ops-ai/remix-toggly-core'
-import {
-  createTogglyAction,
-  createTogglyLoader,
-  type TogglyLoaderOptions,
-} from '@ops-ai/remix-toggly-server'
+import type { IdentityContext, ServerFeatureContext, TogglyLoaderOptions } from '@ops-ai/react-router-toggly/server'
+import { createTogglyAction, createTogglyLoader } from '@ops-ai/react-router-toggly/server'
 
 export const APP_KEY = process.env.TOGGLY_APP_KEY
 export const ENVIRONMENT = process.env.TOGGLY_ENVIRONMENT || 'Production'
@@ -40,7 +36,7 @@ function decodeIdentityCookie(value: string | undefined): string | undefined {
   }
 }
 
-/** The documented Remix server surface, configured for local rule evaluation. */
+/** The documented React Router server surface, configured for local rule evaluation. */
 export function sampleLoader() {
   return createTogglyLoader(sampleOptions())
 }
@@ -49,17 +45,26 @@ export function sampleAction() {
   return createTogglyAction(sampleOptions())
 }
 
-function sampleOptions(): TogglyLoaderOptions {
+export function sampleOptions(): TogglyLoaderOptions {
   return {
     appKey: APP_KEY,
     environment: ENVIRONMENT,
     evaluationMode: 'local',
+    timeout: 4000,
     getContext: requestContext,
     // Sample output should explain a failed refresh rather than crash a route.
     onError: (message: string) => console.warn(`[Remix SDK sample] ${message}`),
+    // Avoid attaching process signal handlers on every request-scoped client.
+    telemetryAttachProcessHandlers: false,
   }
 }
 
 export function hasServerKey(): boolean {
   return Boolean(APP_KEY)
+}
+
+/** Drop the server app key before any payload is serialized into HTML. */
+export function publicServerContext(context: ServerFeatureContext): ServerFeatureContext {
+  const { appKey: _appKey, ...safe } = context
+  return safe
 }

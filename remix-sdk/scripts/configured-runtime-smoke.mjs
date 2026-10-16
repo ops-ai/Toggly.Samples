@@ -5,16 +5,21 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 
 const port = '4317'
-const serveCli = fileURLToPath(new URL('../node_modules/@remix-run/serve/dist/cli.js', import.meta.url))
+const serveCli = fileURLToPath(new URL('../node_modules/@react-router/serve/dist/cli.js', import.meta.url))
 const serverOnlyKey = 'ci-server-only-placeholder'
+const env = {
+  ...process.env,
+  NODE_ENV: 'production',
+  PORT: port,
+  TOGGLY_APP_KEY: serverOnlyKey,
+  // Keep this configured-key smoke isolated from live telemetry ingestion.
+  TOGGLY_DISABLE_TELEMETRY: '1',
+  VITE_TOGGLY_APP_KEY: 'ci-public-placeholder',
+  TOGGLY_ENVIRONMENT: 'Production',
+}
+delete env.HOST
 const server = spawn(process.execPath, [serveCli, './build/server/index.js'], {
-  env: {
-    ...process.env,
-    PORT: port,
-    TOGGLY_APP_KEY: serverOnlyKey,
-    REMIX_PUBLIC_TOGGLY_APP_KEY: 'ci-public-placeholder',
-    TOGGLY_ENVIRONMENT: 'Production',
-  },
+  env,
   stdio: ['ignore', 'pipe', 'pipe'],
 })
 const serverExit = once(server, 'exit')
@@ -23,11 +28,17 @@ let output = ''
 server.stdout.on('data', (chunk) => { output += chunk })
 server.stderr.on('data', (chunk) => { output += chunk })
 
+const watchdog = setTimeout(() => {
+  server.kill('SIGKILL')
+  console.error(`Smoke timed out.\n${output}`)
+  process.exit(1)
+}, 25000)
+
 try {
   let response
   for (let attempt = 0; attempt < 40; attempt += 1) {
     try {
-      response = await fetch(`http://127.0.0.1:${port}/`)
+      response = await fetch(`http://127.0.0.1:${port}/`, { signal: AbortSignal.timeout(2000) })
       if (response.ok) break
     } catch {
       // The server is still starting; retry within the short bounded window.
@@ -43,15 +54,24 @@ try {
 
   const validIdentity = await fetch(`http://127.0.0.1:${port}/identity`, {
     headers: { cookie: 'session=a; toggly-identity=alice' },
+    signal: AbortSignal.timeout(5000),
   })
   assert.equal(validIdentity.status, 200, `Valid multi-cookie identity must not return 500.\n${output}`)
-  assert.match(await validIdentity.text(), /"identity":\s*"alice"/)
+  const identityHtml = (await validIdentity.text()).replaceAll('&quot;', '"')
+  assert.match(identityHtml, /"identity":\s*"alice"/)
 
   const malformedIdentity = await fetch(`http://127.0.0.1:${port}/identity`, {
     headers: { cookie: 'session=a; toggly-identity=%' },
+    signal: AbortSignal.timeout(5000),
   })
   assert.equal(malformedIdentity.status, 200, `Malformed identity cookie must not return 500.\n${output}`)
 } finally {
-  if (!server.killed) server.kill('SIGTERM')
+  clearTimeout(watchdog)
+  server.kill('SIGTERM')
+  const forceKill = setTimeout(() => {
+    // Toggly live-update sockets can keep the serve process alive after SIGTERM.
+    server.kill('SIGKILL')
+  }, 1500)
   await serverExit
+  clearTimeout(forceKill)
 }
