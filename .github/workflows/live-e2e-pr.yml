@@ -253,36 +253,110 @@ jobs:
           set -euo pipefail
           samples_ref="${{ github.event.pull_request.head.sha }}"
           pr_sample_ids="${{ steps.samples.outputs.ids }}"
-          pr_number="${{ github.event.pull_request.number }}"
-          pr_url="${{ github.event.pull_request.html_url }}"
           body="$(jq -n \
             --arg samplesRef "$samples_ref" \
             --arg prSampleIds "$pr_sample_ids" \
             --arg packTier "smoke" \
-            --arg prMode "true" \
-            --arg githubPrNumber "$pr_number" \
-            --arg githubPrUrl "$pr_url" \
             '{
-              variables: {
-                samplesRef: { value: $samplesRef },
-                prSampleIds: { value: $prSampleIds },
-                packTier: { value: $packTier },
-                prMode: { value: $prMode },
-                githubPrNumber: { value: $githubPrNumber },
-                githubPrUrl: { value: $githubPrUrl }
+              templateParameters: {
+                samplesRef: $samplesRef,
+                prSampleIds: $prSampleIds,
+                packTier: $packTier
               }
             }')"
+          echo "ADO queue request body (no secrets):" >>"$GITHUB_STEP_SUMMARY"
+          echo '```json' >>"$GITHUB_STEP_SUMMARY"
+          echo "$body" >>"$GITHUB_STEP_SUMMARY"
+          echo '```' >>"$GITHUB_STEP_SUMMARY"
           url="https://dev.azure.com/${ADO_ORG}/${ADO_PROJECT}/_apis/pipelines/${ADO_LIVEE2E_PIPELINE_ID}/runs?api-version=7.1-preview.1"
-          response="$(curl -fsS -X POST -u ":${ADO_PAT}" -H "Content-Type: application/json" -d "$body" "$url")"
+          response_file="$(mktemp)"
+          http_code="$(
+            curl -sS -w "%{http_code}" -o "$response_file" -X POST \
+              -u ":${ADO_PAT}" \
+              -H "Content-Type: application/json" \
+              -d "$body" \
+              "$url"
+          )"
+          response="$(cat "$response_file")"
+          rm -f "$response_file"
+          if [[ "$http_code" != 2* ]]; then
+            {
+              echo "### ADO pipeline queue failed"
+              echo ""
+              echo "HTTP status: **${http_code}**"
+              echo ""
+              echo '```'
+              echo "$response"
+              echo '```'
+            } >>"$GITHUB_STEP_SUMMARY"
+            echo "Failed to queue ADO pipeline (HTTP ${http_code}):" >&2
+            echo "$response" >&2
+            exit 1
+          fi
           run_id="$(echo "$response" | jq -r '.id')"
           run_url="$(echo "$response" | jq -r '._links.web.href // empty')"
           if [[ -z "$run_id" || "$run_id" == "null" ]]; then
-            echo "Failed to queue ADO pipeline:" >&2
+            echo "ADO returned HTTP ${http_code} but no run id:" >&2
             echo "$response" >&2
             exit 1
           fi
           echo "run_id=$run_id" >>"$GITHUB_OUTPUT"
           echo "run_url=$run_url" >>"$GITHUB_OUTPUT"
+
+      - name: Report failed check (ADO queue rejected)
+        if: failure() && steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.queue.outcome == 'failure'
+        uses: actions/github-script@v7
+        env:
+          CHECK_NAME: ${{ env.CHECK_NAME }}
+          COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
+          SAMPLE_IDS: ${{ steps.samples.outputs.ids }}
+        with:
+          script: |
+            const path = require('path');
+            const { upsertPrComment, buildPrCommentBody } = require(path.join(
+              process.env.GITHUB_WORKSPACE,
+              '.github/scripts/livee2e-pr-github.js',
+            ));
+            const ids = process.env.SAMPLE_IDS;
+            const summary = [
+              'Could not queue the LiveE2E ADO pipeline (see the **Queue LiveE2E on Azure DevOps** step log and job summary for HTTP status and ADO response body).',
+              `Samples: \`${ids}\``,
+              `samplesRef: \`${context.payload.pull_request.head.sha}\``,
+              'packTier: `smoke`',
+            ].join('\n\n');
+            try {
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: process.env.CHECK_NAME,
+                head_sha: context.payload.pull_request.head.sha,
+                status: 'completed',
+                conclusion: 'failure',
+                output: { title: 'ADO queue rejected', summary },
+              });
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              core.warning(`Could not create failed check (ADO queue rejected): ${message}`);
+            }
+            const marker = process.env.COMMENT_MARKER;
+            const body = buildPrCommentBody(
+              marker,
+              `### ${process.env.CHECK_NAME} ❌`,
+              summary,
+            );
+            try {
+              await upsertPrComment(github, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                marker,
+                body,
+              });
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              core.warning(`Could not upsert LiveE2E PR comment (ADO queue rejected): ${message}`);
+            }
+            core.setFailed('LiveE2E ADO pipeline was not queued.');
 
       - name: Create in-progress check
         if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.queue.outcome == 'success'
