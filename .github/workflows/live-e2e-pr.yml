@@ -30,7 +30,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Skip LiveE2E for fork pull requests
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           CHECK_NAME: ${{ env.CHECK_NAME }}
           COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
@@ -128,7 +128,7 @@ jobs:
 
       - name: Report skipped check (ADO secrets missing)
         if: steps.ado_config.outputs.configured != 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           CHECK_NAME: ${{ env.CHECK_NAME }}
           COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
@@ -200,7 +200,7 @@ jobs:
 
       - name: Report skipped check (no enrolled samples touched)
         if: steps.ado_config.outputs.configured == 'true' && steps.samples.outcome == 'success' && steps.samples.outputs.has_samples != 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           CHECK_NAME: ${{ env.CHECK_NAME }}
           COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
@@ -361,7 +361,7 @@ jobs:
       - name: Create in-progress check
         if: steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.queue.outcome == 'success'
         id: check_start
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           CHECK_NAME: ${{ env.CHECK_NAME }}
         with:
@@ -413,7 +413,7 @@ jobs:
 
       - name: Finish check and update PR comment
         if: always() && steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.check_start.outputs.check_id != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           CHECK_NAME: ${{ env.CHECK_NAME }}
           COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
