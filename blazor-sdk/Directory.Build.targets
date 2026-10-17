@@ -1,6 +1,15 @@
 <Project>
   <!-- Keep the SDK-injected WebAssembly pack aligned with the committed
        net10 lockfiles across machines with different workload manifests. -->
+  <Target Name="PinNet8WebAssemblyPack" BeforeTargets="ProcessFrameworkReferences"
+          Condition="'$(TargetFramework)' == 'net8.0'">
+    <ItemGroup>
+      <KnownWebAssemblySdkPack Update="Microsoft.NET.Sdk.WebAssembly.Pack"
+                               Condition="'%(KnownWebAssemblySdkPack.TargetFramework)' == 'net8.0'">
+        <WebAssemblySdkPackVersion>8.0.32</WebAssemblySdkPackVersion>
+      </KnownWebAssemblySdkPack>
+    </ItemGroup>
+  </Target>
   <Target Name="PinNet10WebAssemblyPack" BeforeTargets="ProcessFrameworkReferences"
           Condition="'$(TargetFramework)' == 'net10.0'">
     <ItemGroup>

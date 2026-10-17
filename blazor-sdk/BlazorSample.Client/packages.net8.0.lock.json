@@ -23,9 +23,9 @@
       },
       "Microsoft.NET.Sdk.WebAssembly.Pack": {
         "type": "Direct",
-        "requested": "[8.0.31, )",
-        "resolved": "8.0.31",
-        "contentHash": "2lpN4OyUAuaUliPm3KJ/BKJstSo0W4saQfxG4kba2jBWovFNnEPlO4RMLN0M7B3mVhkoOvSFReFrxA+vHLggyg=="
+        "requested": "[8.0.32, )",
+        "resolved": "8.0.32",
+        "contentHash": "4u4XPAOK3yASlRbqeIWrQQdgaGGMoeQ8kbSdilntnnXw3TIniLM4FiLsKOtXZcrVXj2M7jbe8c0XdLF7aFZ43w=="
       },
       "Toggly.FeatureManagement.Blazor": {
         "type": "Direct",
