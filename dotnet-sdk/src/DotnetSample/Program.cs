@@ -11,7 +11,7 @@ using Toggly.FeatureManagement.NSwag.Configuration;
 using Toggly.FeatureManagement.Web.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
-var key = builder.Configuration["TOGGLY_APP_KEY"];
+var key = builder.Configuration["TOGGLY_APP_KEY"]?.Trim();
 var offline = TogglyPracticeMode.IsOffline(key);
 builder.Services.AddSingleton(new SampleMode(offline));
 builder.Services.AddControllersWithViews();
