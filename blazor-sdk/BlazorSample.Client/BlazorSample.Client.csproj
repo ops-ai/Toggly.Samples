@@ -6,7 +6,7 @@
     <DisableImplicitLibraryPacksFolder>true</DisableImplicitLibraryPacksFolder>
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
     <NuGetLockFilePath>packages.$(TargetFramework).lock.json</NuGetLockFilePath>
-    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == ''">8.0.31</AspNetCoreVersion>
+    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == ''">8.0.32</AspNetCoreVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
