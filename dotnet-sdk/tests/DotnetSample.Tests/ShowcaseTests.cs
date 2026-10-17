@@ -17,8 +17,11 @@ namespace DotnetSample.Tests;
 public sealed class SampleFactory(Dictionary<string, string?>? settings = null) : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder) => builder.ConfigureAppConfiguration((_, config) =>
-        config.AddInMemoryCollection(new Dictionary<string, string?> { ["TOGGLY_APP_KEY"] = "", ["TOGGLY_ENVIRONMENT"] = "Production" }
-            .Concat(settings ?? [])));
+    {
+        var values = new Dictionary<string, string?> { ["TOGGLY_APP_KEY"] = "", ["TOGGLY_ENVIRONMENT"] = "Production" };
+        foreach (var pair in settings ?? []) values[pair.Key] = pair.Value;
+        config.AddInMemoryCollection(values);
+    });
 }
 
 public class ShowcaseTests
@@ -36,6 +39,21 @@ public class ShowcaseTests
         }
         Assert.IsType<TogglyFeatureProvider>(app.Services.GetRequiredService<IFeatureDefinitionProvider>());
         Assert.IsType<TogglyFeatureManager>(app.Services.GetRequiredService<IFeatureManager>());
+    }
+
+    [Theory]
+    [InlineData("ci-placeholder")]
+    [InlineData("telemetry-test-only")]
+    [InlineData("offline-test-placeholder")]
+    public async Task Automation_placeholder_keys_stay_offline_and_respond_quickly(string appKey)
+    {
+        await using var app = new SampleFactory(new() { ["TOGGLY_APP_KEY"] = appKey });
+        using var client = app.CreateClient();
+        var started = Environment.TickCount64;
+        var response = await client.GetAsync("/");
+        Assert.True(Environment.TickCount64 - started < 15_000, "placeholder keys must not block on live definition retries");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Offline practice", await response.Content.ReadAsStringAsync());
     }
 
     [Fact]

@@ -12,7 +12,7 @@ using Toggly.FeatureManagement.Web.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 var key = builder.Configuration["TOGGLY_APP_KEY"];
-var offline = string.IsNullOrWhiteSpace(key) || key == "ci-placeholder";
+var offline = TogglyPracticeMode.IsOffline(key);
 builder.Services.AddSingleton(new SampleMode(offline));
 builder.Services.AddControllersWithViews();
 
