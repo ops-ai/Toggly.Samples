@@ -15,7 +15,7 @@
     "prebuild": "npm run format:check"
   },
   "dependencies": {
-    "@ops-ai/solid-feature-flags-toggly": "0.5.1",
+    "@ops-ai/solid-feature-flags-toggly": "0.5.2",
     "@solidjs/router": "1.0.0",
     "@solidjs/start": "2.0.6",
     "solid-js": "^1.9.17"
@@ -29,8 +29,5 @@
   },
   "engines": {
     "node": ">=24"
-  },
-  "overrides": {
-    "@ops-ai/toggly-node-core": "0.11.3"
   }
 }

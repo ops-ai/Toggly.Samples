@@ -12,7 +12,7 @@
     "prebuild": "npm run format:check"
   },
   "dependencies": {
-    "@ops-ai/solid-feature-flags-toggly": "0.5.1",
+    "@ops-ai/solid-feature-flags-toggly": "0.5.2",
     "solid-js": "^1.9.17"
   },
   "devDependencies": {
@@ -25,8 +25,5 @@
   },
   "engines": {
     "node": ">=22.12.0"
-  },
-  "overrides": {
-    "@ops-ai/toggly-node-core": "0.11.3"
   }
 }
