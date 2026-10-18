@@ -2,7 +2,6 @@
 import asyncio
 import time
 import unittest
-from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 import httpx
 from toggly import TogglyClient, TogglyConfig, AsyncTogglyClient, get_default_client
@@ -95,11 +94,11 @@ class AppTransportTests(unittest.IsolatedAsyncioTestCase):
                     self.assertIn('compact', response.text)
                     self.assertEqual(len(closed), 1)
                     self.assertIs(get_default_client(), client)
-                    variants = [p for p, _ in server.calls if p.startswith('/evaluated-variants-signed/')]
-                    self.assertEqual(len(variants), 1)
-                    query = parse_qs(urlparse(variants[0]).query)
-                    self.assertEqual(query['userId'], ['alice'])
-                    self.assertIn('admin', variants[0])
+                    self.assertFalse(any(
+                        p.startswith('/evaluated-variants-signed/')
+                        for p, _ in server.calls
+                    ))
+                    self.assertTrue(any('/definitions-signed/' in p for p, _ in server.calls))
                     server.change(dashboard=False)
                     self.assertIn('fetched', (await post(http, '/refresh/')).text)
                     self.assertIn('Classic dashboard fallback', (await http.get('/gates/')).text)
@@ -133,6 +132,7 @@ class AppTransportTests(unittest.IsolatedAsyncioTestCase):
                         await original(client)
 
                     with patch.object(AsyncTogglyClient, 'close', observe_close):
+                        server.variant_started.clear()
                         task = asyncio.create_task(post(http, '/variant/'))
                         deadline = time.monotonic() + 3
                         while not server.variant_started.is_set():

@@ -7,7 +7,7 @@
     <DefineConstants>$(DefineConstants);DESKTOP_HOST</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Toggly.FeatureManagement.Client.Desktop" Version="3.10.0" />
+    <PackageReference Include="Toggly.FeatureManagement.Client.Desktop" Version="3.13.3" />
     <Compile Include="../Shared/Program.cs" Link="Program.cs" />
   </ItemGroup>
 </Project>
