@@ -62,16 +62,13 @@ an app key.
 |---|---|
 | Rust stable | 1.98.1 |
 | Axum | 0.8.9 |
-| `toggly` | 0.6.3 |
-| `toggly-axum08` | 0.1.0 |
+| `toggly` | 0.9.1 |
+| `toggly-axum08` | 0.1.1 |
 
 Versions are pinned in `Cargo.toml` and locked in `Cargo.lock`.
 
 This sample uses published `toggly-axum08` on Axum 0.8. `toggly-axum` remains
-the Axum 0.7 adapter. Published `toggly-axum08` 0.1.0 currently resolves
-`toggly` 0.6.x only, so this workshop pins `toggly` 0.6.3 until a crates.io
-release widens that dependency to match `toggly-axum` 0.9.x (`>=0.6.3,
-<0.10.0`).
+the Axum 0.7 adapter on the other Rust framework samples.
 
 What this release supports:
 

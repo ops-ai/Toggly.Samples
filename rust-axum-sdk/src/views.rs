@@ -110,7 +110,7 @@ pub async fn page(
 <header>
     <div class="eyebrow">TOGGLY / RUST + AXUM 0.8</div>
     <h1>Feature flags, one request at a time.</h1>
-    <p>A hands-on workshop using published toggly 0.6.3, toggly-axum08 0.1.0 and Axum 0.8.9.</p>
+    <p>A hands-on workshop using published toggly 0.9.1, toggly-axum08 0.1.1 and Axum 0.8.9.</p>
 </header>
 <nav aria-label="Workshop sections">
 {nav}</nav>

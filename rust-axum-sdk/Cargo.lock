@@ -1682,9 +1682,9 @@ checksum = "fd3ca314f692efd6c868f8408f53fe444634a845f96c028b97d35f6a1f79f0ee"
 
 [[package]]
 name = "toggly"
-version = "0.6.3"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1054fdded5e49350c7524629af26fce63973c24cec9e58c4a40f4ea738ba50a"
+checksum = "6409dd19d03b778ee4026733bcfc343714a27821c0b69762adfb68d9ea0c2bd6"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
@@ -1711,9 +1711,9 @@ dependencies = [
 
 [[package]]
 name = "toggly-axum08"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48c03dca43dc7a326f06a3f12424035f605ee807ea9925848631b996f5c73744"
+checksum = "787a032f7416acc5da28ec1bd1e5be2b8656c56b1d30ab8393178c992101ca14"
 dependencies = [
  "axum",
  "futures-util",
