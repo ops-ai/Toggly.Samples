@@ -84,12 +84,6 @@ func (s *Server) serve(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case strings.HasPrefix(r.URL.Path, "/definitions-signed/"):
 		payload = Definitions(s.dashboard)
-	case strings.HasPrefix(r.URL.Path, "/evaluated-variants-signed/"):
-		name := "control"
-		if r.URL.Query().Get("userId") == "alice" {
-			name = "compact"
-		}
-		payload = map[string]definitions.EvaluatedVariantDef{"new-dashboard": {Enabled: s.dashboard, Variant: name, ConfigurationValue: map[string]any{"layout": name}}}
 	default:
 		http.NotFound(w, r)
 		return
@@ -127,8 +121,10 @@ func Definitions(dashboard bool) []definitions.FeatureDefinitionModel {
 	if dashboard {
 		on = "AlwaysOn"
 	}
+	compact, control := "compact", "control"
 	defs := []definitions.FeatureDefinitionModel{
-		makeFlag("new-dashboard", on, nil), makeFlag("api-v2", "AlwaysOn", nil), makeFlag("enhanced-submit", "AlwaysOn", nil), makeFlag("beta-access", "AlwaysOn", nil),
+		dashboardWithVariants(on, compact, control),
+		makeFlag("api-v2", "AlwaysOn", nil), makeFlag("enhanced-submit", "AlwaysOn", nil), makeFlag("beta-access", "AlwaysOn", nil),
 		makeFlag("filter-always-on", "AlwaysOn", nil), makeFlag("filter-percentage", "Percentage", map[string]any{"Value": 50}),
 		makeFlag("filter-targeting", "Targeting", map[string]any{"Audience.Users:0": "alice"}),
 		makeFlag("filter-user-claims", "UserClaims", map[string]any{"Percentage": 100, "Claim": "role", "Value": "admin"}),
@@ -143,4 +139,20 @@ func Definitions(dashboard bool) []definitions.FeatureDefinitionModel {
 		defs = append(defs, d)
 	}
 	return defs
+}
+
+func dashboardWithVariants(filterName, compact, control string) definitions.FeatureDefinitionModel {
+	return definitions.FeatureDefinitionModel{
+		FeatureKey: "new-dashboard",
+		Filters:    []definitions.FeatureFilter{{Name: filterName, Parameters: nil}},
+		Variants: []definitions.VariantDefinition{
+			{Name: compact, ConfigurationValue: map[string]any{"layout": compact}},
+			{Name: control, ConfigurationValue: map[string]any{"layout": control}},
+		},
+		Allocation: &definitions.AllocationDefinition{
+			DefaultWhenEnabled:  &control,
+			DefaultWhenDisabled: &compact,
+			User:                []definitions.UserAllocation{{Variant: compact, Users: []string{"alice"}}},
+		},
+	}
 }

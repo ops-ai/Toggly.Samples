@@ -270,24 +270,22 @@ async def variant(request: Request):
     if settings['offline']:
         return result(request, 'No variant assigned in offline fixture mode')
     context = request.state.sample_context
-    # Only this explicit action fetches remote assignments. Known identity,
-    # groups and claims go into INITIAL config, avoiding anonymous init/refetch.
-    # Do not register this async client with the synchronous FastAPI helpers.
+    # Isolated async client: load the signed catalog once, assign locally, close.
     client = AsyncTogglyClient(TogglyConfig(
         app_key=settings['app_key'], environment=settings['environment'],
         base_url=settings['base_url'], use_signed_definitions=True,
-        enable_variants=True, identity=context.identity,
-        variant_groups=context.groups, variant_claims=context.claims,
         disable_background_refresh=True, enable_live_updates=False,
         enable_usage_tracking=False, enable_metrics=False,
         register_contexts_on_startup=False, connect_timeout=2, request_timeout=3,
     ))
     try:
         loaded = await client.init()
-        assigned = await client.get_variant('new-dashboard')  # Async API, cached data.
-        return result(request, 'Native async remote assignment',
+        assigned = await client.get_variant(
+            'new-dashboard', user_id=context.identity, groups=context.groups,
+        )
+        return result(request, 'Native async local assignment',
                       variant=asdict(assigned) if assigned else None,
-                      message=f'Load status: {loaded.status.value}; baseline flags have no experiment assignment.')
+                      message=f'Load status: {loaded.status.value}; variants come from the definition catalog.')
     finally:
         with anyio.CancelScope(shield=True):
             await client.close()

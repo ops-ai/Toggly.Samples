@@ -40,11 +40,11 @@ class DefinitionsServer:
                     elif self.headers.get('If-None-Match') == f'"{owner.revision}"':
                         body, status = b'', 304
                     else:
-                        if self.path.startswith('/evaluated-variants-signed/'):
-                            data = {'new-dashboard': {'enabled': True, 'variant': 'compact', 'configuration': {'value': {'density': 'compact'}}}}
-                        else:
-                            data = [row.to_dict() for row in definitions()]
-                            data[0]['filters'] = [{'name': 'AlwaysOn' if owner.dashboard else 'AlwaysOff', 'parameters': {}}]
+                        data = [row.to_dict() for row in definitions()]
+                        if data:
+                            data[0]['filters'] = [
+                                {'name': 'AlwaysOn' if owner.dashboard else 'AlwaysOff', 'parameters': {}},
+                            ]
                         raw = json.dumps(data, separators=(',', ':'))
                         timestamp = int(time.time()) + owner.revision
                         digest = hashlib.sha256(hashlib.sha256(f'{raw}|{timestamp}'.encode()).digest()).digest()
