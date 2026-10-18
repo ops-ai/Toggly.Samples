@@ -1,7 +1,6 @@
 package workshop
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"github.com/ops-ai/Toggly.FeatureManagement/toggly-go/toggly"
@@ -10,10 +9,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"net/http/httputil"
-	"net/url"
 	"slices"
-	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -121,16 +117,15 @@ func TestNativeTemplatesGatesAndAction(t *testing.T) {
 	}
 }
 
-// Published v0.8.1 has no atomic variant+enabled API. The workshop must render
-// GetVariant and IsEnabled as independent reads, not one consistent pair.
+// Catalog-local GetVariant vs filter-based IsEnabled use different semantics.
 func TestAssignmentAndEnabledAreRenderedIndependently(t *testing.T) {
 	app := offlineApp(t)
 	on := request(app, "GET", "/gates", nil).Body.String()
 	if !strings.Contains(on, `id="variant">compact`) || !strings.Contains(on, `id="compact-variant"`) || !strings.Contains(on, `id="variant-enabled"`) {
 		t.Fatal("expected independently labeled assignment, compact layout, and enabled reads")
 	}
-	if !strings.Contains(on, "no atomic variant+enabled API") || !strings.Contains(on, "own provider snapshot") {
-		t.Fatal("expected honest split-read copy")
+	if !strings.Contains(on, "filter-based") || !strings.Contains(on, "DefaultWhenDisabled") {
+		t.Fatal("expected honest catalog-local vs filter-based copy")
 	}
 	page := readSnapshot(t, app, "/api/snapshot")
 	if page.Variant == nil || page.Variant.Name != "compact" || !page.VariantEnabled {
@@ -200,7 +195,7 @@ func TestConcurrentRequestsKeepIdentityClaimsAndOrderIsolated(t *testing.T) {
 	wg.Wait()
 }
 
-func TestVariantIdentityIsOnFirstRequestAndLocalContextNeedsNoFetch(t *testing.T) {
+func TestLocalContextChangeNeedsNoExtraDefinitionsFetch(t *testing.T) {
 	// Long interval makes the lack of request-triggered refresh observable.
 	app, err := New(Config{Offline: true, RefreshInterval: time.Hour})
 	if err != nil {
@@ -214,37 +209,9 @@ func TestVariantIdentityIsOnFirstRequestAndLocalContextNeedsNoFetch(t *testing.T
 	if len(app.fixture.Requests()) != before {
 		t.Fatal("local context change triggered an API request")
 	}
-	seen := map[string]int{}
 	for _, path := range app.fixture.Requests() {
 		if strings.Contains(path, "evaluated-variants-signed") {
-			u, err := url.Parse(path)
-			if err != nil {
-				t.Fatal(err)
-			}
-			seen[u.Query().Get("userId")]++
-		}
-	}
-	if seen["alice"] != 1 || seen["bob"] != 1 || len(seen) != 2 {
-		t.Fatalf("variant identities missing from initial fetch: %v", seen)
-	}
-	for _, path := range app.fixture.Requests() {
-		if !strings.Contains(path, "evaluated-variants-signed") {
-			continue
-		}
-		u, err := url.Parse(path)
-		if err != nil {
-			t.Fatal(err)
-		}
-		id := u.Query().Get("userId")
-		if got := u.Query()["g"]; len(got) != 1 || got[0] != "sample-users" {
-			t.Fatalf("%s initial variant groups: %v", id, got)
-		}
-		wantRole := "admin"
-		if id == "bob" {
-			wantRole = "user"
-		}
-		if got := u.Query().Get("claim.role"); got != wantRole {
-			t.Fatalf("%s initial variant claim.role = %q, want %q", id, got, wantRole)
+			t.Fatalf("catalog-local variants should not call server-evaluated endpoint: %s", path)
 		}
 	}
 }
@@ -256,13 +223,6 @@ func TestSignedRefreshRejectsTamperingAndRecovers(t *testing.T) {
 	eventually(t, func() bool { return app.client.ProviderDebugInfo().LastErrorTime != nil })
 	if !app.evaluate(context.Background(), "new-dashboard", toggly.Context{}) {
 		t.Fatal("tampered payload replaced last accepted flags")
-	}
-	for _, v := range app.variants {
-		eventually(t, func() bool { return v.ProviderDebugInfo().LastErrorTime != nil })
-		on, err := v.IsEnabled(context.Background(), "new-dashboard", toggly.Context{})
-		if err != nil || !on {
-			t.Fatal("tampered signed variant replaced accepted state")
-		}
 	}
 	if !strings.Contains(request(app, "GET", "/", nil).Body.String(), "historical") {
 		t.Fatal("historical error status missing")
@@ -423,11 +383,7 @@ func (a *App) WaitLoaded(ctx context.Context) error {
 	ticker := time.NewTicker(10 * time.Millisecond)
 	defer ticker.Stop()
 	for {
-		loaded := a.client.ProviderDebugInfo().LastRefresh != nil
-		for _, v := range a.variants {
-			loaded = loaded && v.ProviderDebugInfo().LastRefresh != nil
-		}
-		if loaded {
+		if a.client.ProviderDebugInfo().LastRefresh != nil {
 			return nil
 		}
 		select {
@@ -476,50 +432,3 @@ func TestCanceledActionDoesNotRun(t *testing.T) {
 	}
 }
 
-// This characterization names a published artifact limitation. It keeps the
-// README's security boundary honest; it does not patch or bypass the SDK.
-func TestPublishedVariantPathAcceptsEnvelopeWithoutSignature(t *testing.T) {
-	f, err := fixture.New()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-	target, err := url.Parse(f.URL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	proxy := httputil.NewSingleHostReverseProxy(target)
-	proxy.ModifyResponse = func(resp *http.Response) error {
-		if !strings.Contains(resp.Request.URL.Path, "evaluated-variants-signed") {
-			return nil
-		}
-		var envelope map[string]any
-		if err := json.NewDecoder(resp.Body).Decode(&envelope); err != nil {
-			return err
-		}
-		resp.Body.Close()
-		delete(envelope, "signature")
-		delete(envelope, "kid")
-		body, err := json.Marshal(envelope)
-		if err != nil {
-			return err
-		}
-		resp.Body = io.NopCloser(bytes.NewReader(body))
-		resp.ContentLength = int64(len(body))
-		resp.Header.Set("Content-Length", strconv.Itoa(len(body)))
-		return nil
-	}
-	server := httptest.NewServer(proxy)
-	defer server.Close()
-	app, err := New(Config{AppKey: "fixture-only", DefinitionsURL: server.URL + "/", RefreshInterval: time.Hour})
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer app.Close()
-	waitLoaded(t, app)
-	for identity, client := range app.variants {
-		if client.GetVariant("new-dashboard") == nil {
-			t.Fatalf("published behavior changed for %s; recheck documented signature limitation", identity)
-		}
-	}
-}

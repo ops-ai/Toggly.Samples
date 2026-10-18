@@ -69,7 +69,7 @@ Official Ruby downloads and RubyGems metadata checked September 17, 2026:
 |---|---|
 | Ruby | 4.0.6 |
 | Rails | 8.1.3.1 |
-| `toggly-rails` / `toggly` | 0.3.1 / 0.5.1 |
+| `toggly-rails` / `toggly` | 0.4.0 / 1.3.0 |
 | Puma / Rack | 8.0.2 / 3.2.7 |
 | Propshaft | 1.3.2 |
 | JSON | 2.21.2, explicit `>= 2, < 3` |
@@ -168,8 +168,9 @@ and reports definition cache hits on the usage pipeline. Offline, fixture, and
 `ci-placeholder` set `TOGGLY_DISABLE_TELEMETRY=1` so nothing is uploaded.
 `bundle exec ruby script/soak.rb` waits for refresh + flush when a real
 `TOGGLY_APP_KEY` is set. The optional WebSocket dependency is
-not installed. There is no native variant allocation or public browser
-subscription API in this sample's packages.
+not installed. Catalog-local `get_variant` exists in core 1.0+, but the shared
+baseline flags have no variant configuration and this sample does not call it.
+There is no public browser subscription API in these packages.
 
 ## Dedicated Toggly application
 

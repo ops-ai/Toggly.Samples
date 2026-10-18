@@ -460,15 +460,15 @@ starlette==1.6.0 \
     # via
     #   -r requirements.in
     #   fastapi
-toggly==0.7.1 \
-    --hash=sha256:64caf6af7c4c1dd8b8c0fa1e2efd3cd3cda798a00e7305a7096b6e10c5508e24 \
-    --hash=sha256:c300091f6c63279c3e465110f9cbb05933d43a9ee5374c30a56f6447dfdd6e66
+toggly==1.2.0 \
+    --hash=sha256:8abb2ca84a79ec3e5e55302ea8fc855719e45bc42278df53c6d18f335919c2fa \
+    --hash=sha256:9130a948442c52e81da81a09977b83eeb78aa41a17ac8839c8bf74fb0f81e305
     # via
     #   -r requirements.in
     #   toggly-fastapi
-toggly-fastapi==0.3.1 \
-    --hash=sha256:610cae26944a4c5f4136bd6293130322b6df9ed033a6324d5650d14e1c931b8a \
-    --hash=sha256:8c3500fa721eaaca0fecc7c90a8ca725e93444cc9d7a2729530038e873016fa3
+toggly-fastapi==0.4.0 \
+    --hash=sha256:c54b32bb428c677d51006e3dd77235d4f0cde1a82818f9fb118d7f2c680249f8 \
+    --hash=sha256:db29a5819aef436c8fcc09bb3ff8ea5aa5b6e9febebef9fd9c3cc3e1c85cc49c
     # via -r requirements.in
 typing-extensions==4.16.0 \
     --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8 \
