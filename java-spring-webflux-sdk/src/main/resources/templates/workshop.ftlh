@@ -3,7 +3,7 @@
      The empty map is used only by the visibly unconfigured setup shell. -->
 <#macro badge value><span class="badge ${value?then('on','off')}">${value?then('ON','OFF')}</span></#macro>
 <#macro presets><div class="presets"><form method="post" action="/context"><button name="preset" value="matching">Matching preset</button></form><form method="post" action="/context"><button name="preset" value="nonmatching">Non-matching preset</button></form></div></#macro>
-<#macro table keys><div class="table-wrap"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody><#list keys as key><tr data-flag="${key}"><td><code>${key}</code></td><td>${definitions?seq_contains(key)?then('Present','Absent')}</td><td><@badge value=(features[key])!false/><#if key == 'filter-device-type'> <small>Macintosh detection unsupported in 1.5.1</small></#if></td></tr></#list></tbody></table></div></#macro>
+<#macro table keys><div class="table-wrap"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody><#list keys as key><tr data-flag="${key}"><td><code>${key}</code></td><td>${definitions?seq_contains(key)?then('Present','Absent')}</td><td><@badge value=(features[key])!false/><#if key == 'filter-device-type'> <small>Macintosh detection unsupported in 2.2.1</small></#if></td></tr></#list></tbody></table></div></#macro>
 <!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title} · Java Spring WebFlux SDK Sample</title><link rel="stylesheet" href="/style.css"><script src="/workshop.js" defer></script></head><body>
 <header><p class="eyebrow">TOGGLY / JAVA SPRING WEBFLUX</p><a class="brand" href="/">Feature flag workshop</a><p>Learn native Spring WebFlux, one request at a time.</p></header>
 <nav aria-label="Sections"><#list paths as link><a href="${link}">${titles[link?index]}</a></#list></nav><main>
@@ -24,7 +24,7 @@
 <#-- FreeMarker branches use the actual native reactive client's features map, not a sample evaluator. -->
 <#if (features['new-dashboard'])!false><p id="dashboard-content">New dashboard content is visible.</p><#else><p id="dashboard-content">Classic dashboard fallback is visible.</p></#if>
 <p>The controller awaits <code>ReactiveTogglyClient.evaluateAll()</code> and supplies <code>features</code>. This FreeMarker condition is ordinary view composition; the SDK owns the evaluation. Hiding HTML is not an access-control boundary: the native route gate checks again before the action.</p>
-<h2>Variants</h2><aside class="note">Native variant allocation is unsupported in io.toggly core/WebFlux 1.5.1. No variant is fabricated. <code>switchOn</code> selects between two caller-provided publishers using a Boolean flag; telemetry variant labels do not allocate experiments.</aside>
+<h2>Variants</h2><aside class="note">Catalog-local variant assignment is available in io.toggly 2.x via <code>getVariant</code> / <code>getVariantValue</code> from the same signed definitions payload (no <code>enableVariants</code> or second fetch). This workshop's sixteen fixture flags have no variant rules, so nothing is assigned here. <code>switchOn</code> selects between two caller-provided publishers using a Boolean flag; telemetry variant labels do not allocate experiments.</aside>
 <#break>
 <#case '/programmatic'>
 <p>Native publishers read subscription-local Reactor context. Offload each potentially cold call, including after an async boundary; the wrapper delegates to the synchronous core.</p><pre>Mono.defer(() -&gt; reactive.isEnabled("api-v2"))
@@ -63,4 +63,4 @@ reactive.isEnabled("ExpressCheckout", context.withEntity(order))
 <#break>
 <#case '/allowed'><p>The published FeatureGateFilter allowed this request before the controller ran.</p><@table keys=flags/><#break>
 </#switch>
-</main><footer>Published io.toggly 1.5.1 · Spring WebFlux 7.0.9 · FreeMarker 2.3.35 · Reactor Netty 1.3.7 · Java 26</footer></body></html>
+</main><footer>Published io.toggly 2.2.1 · Spring WebFlux 7.0.9 · FreeMarker 2.3.35 · Reactor Netty 1.3.7 · Java 26</footer></body></html>

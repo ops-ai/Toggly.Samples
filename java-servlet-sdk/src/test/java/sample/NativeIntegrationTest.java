@@ -58,7 +58,7 @@ class NativeIntegrationTest {
             assertTrue(get(http, app, "/api/evaluate?preset=matching&order=standard").body().contains("\"ExpressCheckout\":false"));
             String orders = get(http, app, "/orders?preset=matching").body();
             assertTrue(orders.contains("ord-vip · Vip=true")); assertTrue(orders.contains("ord-standard · Vip=false"));
-            assertTrue(get(http, app, "/gates").body().contains("Native variant allocation is unsupported"));
+            assertTrue(get(http, app, "/gates").body().contains("Catalog-local variant assignment"));
             defs.envelope = defs.signed(DefinitionsServer.definitions(true).replace(
                     "\"featureKey\":\"api-v2\",\"filters\":[{\"name\":\"AlwaysOff\"",
                     "\"featureKey\":\"api-v2\",\"filters\":[{\"name\":\"AlwaysOn\""), ++defs.timestamp);

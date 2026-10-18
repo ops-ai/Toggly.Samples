@@ -4,33 +4,33 @@
     "net10.0": {
       "Toggly.FeatureManagement.Client.Desktop": {
         "type": "Direct",
-        "requested": "[3.10.0, )",
-        "resolved": "3.10.0",
-        "contentHash": "xYm2iw7H21RRE96kNYWM3jgxfYLhYSimL5ajj2o8k9s634edpH24ZPy+YhuH086VaO2m48oiuiAH1dx1EmZlsg==",
+        "requested": "[3.13.3, )",
+        "resolved": "3.13.3",
+        "contentHash": "Tk5+4Nm8Ds4JpqjlKUplQstLlPPAQsfHU2KHdjAOc/E9QzomEaZvv+Ect1PFXTedA///EpumskISKYLnf0neQQ==",
         "dependencies": {
-          "Toggly.FeatureManagement.Client": "3.10.0"
+          "Toggly.FeatureManagement.Client": "3.13.3"
         }
       },
       "Toggly.FeatureManagement.Client": {
         "type": "Transitive",
-        "resolved": "3.10.0",
-        "contentHash": "N4tYlEv5D4dB3uiqTTofshaTRU8ZFH6fjtzE/aOp2OHaAeS2nKxW8TsoD7OsUM4ndQC1Dj50Y+K7jZW/oxcb3w=="
+        "resolved": "3.13.3",
+        "contentHash": "gqPCEKlynBAtf+YO8ArGqtjm58AJPWjOg24qNcsVaOdRkYOv/IOSZrtedrJI7Hn5vYsFE7Ek/2w7CgHee6OeNw=="
       }
     },
     "net8.0": {
       "Toggly.FeatureManagement.Client.Desktop": {
         "type": "Direct",
-        "requested": "[3.10.0, )",
-        "resolved": "3.10.0",
-        "contentHash": "xYm2iw7H21RRE96kNYWM3jgxfYLhYSimL5ajj2o8k9s634edpH24ZPy+YhuH086VaO2m48oiuiAH1dx1EmZlsg==",
+        "requested": "[3.13.3, )",
+        "resolved": "3.13.3",
+        "contentHash": "Tk5+4Nm8Ds4JpqjlKUplQstLlPPAQsfHU2KHdjAOc/E9QzomEaZvv+Ect1PFXTedA///EpumskISKYLnf0neQQ==",
         "dependencies": {
-          "Toggly.FeatureManagement.Client": "3.10.0"
+          "Toggly.FeatureManagement.Client": "3.13.3"
         }
       },
       "Toggly.FeatureManagement.Client": {
         "type": "Transitive",
-        "resolved": "3.10.0",
-        "contentHash": "N4tYlEv5D4dB3uiqTTofshaTRU8ZFH6fjtzE/aOp2OHaAeS2nKxW8TsoD7OsUM4ndQC1Dj50Y+K7jZW/oxcb3w=="
+        "resolved": "3.13.3",
+        "contentHash": "gqPCEKlynBAtf+YO8ArGqtjm58AJPWjOg24qNcsVaOdRkYOv/IOSZrtedrJI7Hn5vYsFE7Ek/2w7CgHee6OeNw=="
       }
     }
   }

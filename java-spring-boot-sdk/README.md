@@ -46,12 +46,12 @@ Verified against official registries on 2026-09-16:
 |---|---|
 | OpenJDK, compiler release | 17.0.17, release 17 |
 | Maven | 3.9.12 |
-| `io.toggly:toggly-spring-boot-starter` | 1.6.0 (Maven Central latest) |
-| `io.toggly:toggly-core` (transitive) | 1.6.0 |
+| `io.toggly:toggly-spring-boot-starter` | 2.2.1 (Maven Central latest) |
+| `io.toggly:toggly-core` (transitive) | 2.2.1 |
 | Spring Boot parent / Actuator / Web / AOP / FreeMarker | **3.5.16** |
 | Embedded Tomcat (Boot 3.5.16) | 10.1.55 |
 
-**Host choice.** Published starter 1.6.0 declares `spring-boot.version` 3.5.16.
+**Host choice.** Published starter 2.2.1 declares `spring-boot.version` 3.5.16.
 Latest stable Boot is 4.1.1 (4.2.0-M1 is a milestone). A Boot 4.1.1 host with
 Actuator on the classpath fails when a `TogglyClient` exists (workshop /
 `TOGGLY_APP_KEY` path):
@@ -201,7 +201,7 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 With the recipe above, AlwaysOn and TimeWindow stay ON for both presets.
 Percentage is stable for the same user/flag, but its exact Alice/Bob outcome is
 not prescribed. The other seven supported rows turn ON for Matching and OFF for
-Non-matching. **DeviceType Macintosh is unsupported by the published 1.6.0
+Non-matching. **DeviceType Macintosh is unsupported by the published 2.2.1
 User-Agent parser**: it recognizes iPhone/iPad/iPod, but returns Other for
 desktop Macintosh. We retain the exact shared Macintosh rule; that row shows
 the real OFF result. `?preset=matching` affects only that request; POST preset
@@ -224,7 +224,8 @@ the definition kind: an Unknown entity with Vip=true can still match.
 - **Sample composition:** `HttpSnapshotProvider` bean, signed `TogglyConfig`
   (properties omit `useSignedDefinitions`), `DemoContextFilter`, HTTP 404/403
   translation, FreeMarker workshop, session controls, and the missing-key guard.
-- **Unsupported:** core/starter 1.6.0 has no variant allocation API.
+- **Variants (2.x):** `getVariant` / `getVariantValue` from catalog-local rules in
+  the definitions payload (no `enableVariants`). Fixture flags have no variant rules.
   `@FeatureEnabled` has no negate or HTTP status. The starter has no MVC
   interceptor, argument resolver, or model advice.
 
@@ -287,7 +288,7 @@ no live Toggly service, app credentials or external database.
 - [ ] Open two browser profiles, save Alice/Bob independently, and verify neither session overwrites the other.
 - [ ] VIP and standard Orders yield different ExpressCheckout results; missing entity is OFF.
 - [ ] `/actuator/health` includes toggly; `/actuator/toggly` lists features. Those endpoints are not request-scoped.
-- [ ] Confirm variants are marked unsupported and Boot 4 Actuator incompatibility is described.
+- [ ] Confirm catalog-local variants (2.x) are described and Boot 4 Actuator incompatibility is described.
 - [ ] Interrupt the process and confirm shutdown exits; real `.env` remains ignored.
 
 See the shared [Sample Contract](../docs/SAMPLE_CONTRACT.md) and
