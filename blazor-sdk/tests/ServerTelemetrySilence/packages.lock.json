@@ -4,22 +4,22 @@
     "net10.0": {
       "Toggly.FeatureManagement.Blazor.Server": {
         "type": "Direct",
-        "requested": "[3.11.0, )",
-        "resolved": "3.11.0",
-        "contentHash": "3f1AFooKJpmloyKKmQVJnDE4+Zor9VV3XRNAZL6b3Axw0OKFl12KVK8fpuSZWDafgyrGZSTResmgUaCYA956Mg==",
+        "requested": "[3.13.3, )",
+        "resolved": "3.13.3",
+        "contentHash": "2yjAqV1HleENTg4RHg73VWuETn/KqkOit3gG3RVWUZLi+TvSvxALgngHHKppOJs0HUrvX4hWS1aP80O/7oswFw==",
         "dependencies": {
-          "Toggly.FeatureManagement": "3.11.0",
-          "Toggly.FeatureManagement.Blazor": "3.11.0"
+          "Toggly.FeatureManagement": "3.13.3",
+          "Toggly.FeatureManagement.Blazor": "3.13.3"
         }
       },
       "Azure.Core": {
         "type": "Transitive",
-        "resolved": "1.46.0",
-        "contentHash": "MNFRFDHqUBZkeViSrDX6bPfQhXsydKJXu64AntycIzSG+nemh39XCkhDvjES0uisJlHsVex/tmkfA2ZQt913DQ==",
+        "resolved": "1.50.0",
+        "contentHash": "GBNKZEhdIbTXxedvD3R7I/yDVFX9jJJEz02kCziFSJxspSQ5RMHc3GktulJ1s7+ffXaXD7kMgrtdQTaggyInLw==",
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "8.0.0",
-          "System.ClientModel": "1.4.0",
-          "System.Memory.Data": "6.0.1"
+          "System.ClientModel": "1.8.0",
+          "System.Memory.Data": "8.0.1"
         }
       },
       "Azure.Messaging.WebPubSub": {
@@ -81,8 +81,8 @@
       },
       "Microsoft.Extensions.Http.Polly": {
         "type": "Transitive",
-        "resolved": "9.0.0",
-        "contentHash": "c9cq28bSsycDoHzeIrNODdnZap/Un1B6A7M2QVRlPaIaWAtKcswkDDelhco9NwOdhhkFeVDqk5MrmAbYdfgBTw==",
+        "resolved": "10.0.0",
+        "contentHash": "Jzb6e7kQc/iKDlMt8q8p9Q0rkUi75L/ZFHHTGM4mM6dJBn64YRUgW9k2/Zx7VnsIuu61r5Fhoa6075GTFYo5kg==",
         "dependencies": {
           "Polly": "7.2.4",
           "Polly.Extensions.Http": "3.0.0"
@@ -118,16 +118,16 @@
       },
       "System.ClientModel": {
         "type": "Transitive",
-        "resolved": "1.4.0",
-        "contentHash": "UIAc1qwbgjXksmpVk7obZbnzPqlpWPzbfkh0LdDnI8+7rXu1zmNNrcpWof8DFUytVgNcMFwFY1lT6lGxxovARw==",
+        "resolved": "1.8.0",
+        "contentHash": "AqRzhn0v29GGGLj/Z6gKq4lGNtvPHT4nHdG5PDJh9IfVjv/nYUVmX11hwwws1vDFeIAzrvmn0dPu8IjLtu6fAw==",
         "dependencies": {
-          "System.Memory.Data": "6.0.1"
+          "System.Memory.Data": "8.0.1"
         }
       },
       "System.Memory.Data": {
         "type": "Transitive",
-        "resolved": "6.0.1",
-        "contentHash": "yliDgLh9S9Mcy5hBIdZmX6yphYIW3NH+3HN1kV1m7V1e0s7LNTw/tHNjJP4U9nSMEgl3w1TzYv/KA1Tg9NYy6w=="
+        "resolved": "8.0.1",
+        "contentHash": "BVYuec3jV23EMRDeR7Dr1/qhx7369dZzJ9IWy2xylvb4YfXsrUxspWc4UWYid/tj4zZK58uGZqn2WQiaDMhmAg=="
       },
       "System.Reactive": {
         "type": "Transitive",
@@ -136,16 +136,17 @@
       },
       "Toggly.FeatureManagement": {
         "type": "Transitive",
-        "resolved": "3.11.0",
-        "contentHash": "x7NXXZLkC1em/kOVhIwChvZ7Um99LMOZ/8pPacG1r9NszLFEhjtL4W/Ii+AVmizmdJ1ivLy+knYiwrQcYsXqrg==",
+        "resolved": "3.13.3",
+        "contentHash": "a2PtiKTjMZ1mNKojVBtU8QafyQaTCpjJrrrRRoeHVrqjlBXxchRZzfHak2CPQs6UEguyMQhBTTeX6URVzXOumA==",
         "dependencies": {
+          "Azure.Core": "1.50.0",
           "Azure.Messaging.WebPubSub": "1.6.0",
           "ConcurrentHashSet": "1.3.0",
           "Google.Protobuf": "3.25.0",
           "Grpc.Net.Client": "2.60.0",
           "Grpc.Net.Client.Web": "2.60.0",
           "Grpc.Net.ClientFactory": "2.60.0",
-          "Microsoft.Extensions.Http.Polly": "9.0.0",
+          "Microsoft.Extensions.Http.Polly": "10.0.0",
           "Microsoft.FeatureManagement": "4.7.0",
           "Newtonsoft.Json": "13.0.3",
           "Websocket.Client": "5.5.0"
@@ -153,16 +154,16 @@
       },
       "Toggly.FeatureManagement.Blazor": {
         "type": "Transitive",
-        "resolved": "3.11.0",
-        "contentHash": "rj4mlAk5FDzkuAmquCLXOi6UEx8Dzp+vXzzo8RIOwwH6PH0UrQMV31+zc+ZxUr0/gz23f/0oDgJQBQyfYAaUMQ==",
+        "resolved": "3.13.3",
+        "contentHash": "1eqodghTyi7qjAVxm5JI1nenHf3jl9LbZR2n1YRm6f9tzQ8pjDZhVtoYQ8WZRd5dYhp3z4cnlu9DRHDOzcG4uQ==",
         "dependencies": {
-          "Toggly.FeatureManagement.Client": "3.11.0"
+          "Toggly.FeatureManagement.Client": "3.13.3"
         }
       },
       "Toggly.FeatureManagement.Client": {
         "type": "Transitive",
-        "resolved": "3.11.0",
-        "contentHash": "bVmhblfML8APjvzj2axWjKp4G1PyzWCYn5I2bAzVrzXQwtwDuBqq0ReLkx67ElskKefsM66udnJsaW3YipTTfg=="
+        "resolved": "3.13.3",
+        "contentHash": "gqPCEKlynBAtf+YO8ArGqtjm58AJPWjOg24qNcsVaOdRkYOv/IOSZrtedrJI7Hn5vYsFE7Ek/2w7CgHee6OeNw=="
       },
       "Websocket.Client": {
         "type": "Transitive",

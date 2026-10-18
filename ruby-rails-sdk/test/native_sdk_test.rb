@@ -22,7 +22,8 @@ class NativeSdkTest < ActiveSupport::TestCase
     end
     assert_equal 1, 20.times.map { Toggly.client.enabled?('filter-percentage', context: alice) }.uniq.length
     assert_equal 16, Toggly.client.feature_keys.length
-    assert_empty Toggly.client.public_methods.grep(/variant/)
+    assert_equal %i[get_variant get_variant_value].sort, Toggly.client.public_methods.grep(/variant/).sort
+    assert_nil Toggly.client.get_variant('new-dashboard', context: alice)
     refute Toggly.client.enabled?('missing-demo-flag', context: alice)
     assert Toggly.client.disabled?('missing-demo-flag', context: alice)
   end

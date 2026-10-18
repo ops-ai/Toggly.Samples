@@ -32,7 +32,7 @@ keys.all? { |key| feature_enabled?(key) }</code></pre>
   </section>
   <section class="card">
     <h2>Variants & unknown keys</h2>
-    <p><strong>No native variant allocation API.</strong> This package exposes boolean decisions. No fabricated variant is assigned here.</p>
+    <p><strong>Boolean gates only on this page.</strong> Core <code>get_variant</code> assigns catalog-local variants when configured; the shared baseline flags have none, so nothing is allocated here.</p>
     <p>Unknown key: <%= state_badge(feature_enabled?('missing-demo-flag')) %></p>
     <p>Negated unknown: <%= state_badge(feature_disabled?('missing-demo-flag')) %></p>
     <p>The sample leaves <code>enable_undefined_in_dev</code> false in every environment.</p>

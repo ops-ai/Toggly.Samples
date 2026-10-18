@@ -15,13 +15,13 @@
   },
   "dependencies": {
     "@ops-ai/nuxt-toggly": "1.4.0",
-    "@ops-ai/nuxt-toggly-client": "1.4.0",
-    "@ops-ai/nuxt-toggly-core": "1.14.0",
-    "@ops-ai/nuxt-toggly-server": "1.8.0",
-    "nuxt": "4.5.2"
+    "@ops-ai/nuxt-toggly-client": "1.5.0",
+    "@ops-ai/nuxt-toggly-core": "1.15.2",
+    "@ops-ai/nuxt-toggly-server": "1.9.0",
+    "nuxt": "4.6.0"
   },
   "devDependencies": {
-    "playwright": "1.63.0",
+    "playwright": "1.64.0",
     "typescript": "7.0.2",
     "vitest": "5.0.3"
   }

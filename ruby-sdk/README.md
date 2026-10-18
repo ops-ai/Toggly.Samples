@@ -69,7 +69,7 @@ September 10, 2026 (September 11 UTC):
 | Component | Locked version |
 |---|---|
 | Ruby | 4.0.6 |
-| Toggly core (`toggly`) | 0.5.0 |
+| Toggly core (`toggly`) | 1.3.0 |
 | Rack / Rackup | 3.2.7 / 2.3.1 |
 | Puma | 8.0.2 |
 | Rack Session | 2.1.2 |
@@ -159,9 +159,10 @@ that actual status. SIGKILL/crash cleanup and clustered deployment are not claim
 - ERB conditions, Any/All, HTTP gates and CSRF are sample composition. Core Ruby
   has no Rack middleware or template tag API. All multi-key checks are evaluated
   before combining them, avoiding short-circuited usage reporting.
-- **No native variant allocation API exists in core0.5.0.** The variant section
-  explains this openly. The `variant:` telemetry parameter is caller-supplied
-  labeling, not assignment; no substitute allocation is invented.
+- **Catalog-local `get_variant` exists from core 1.0.0**, but the shared baseline
+  flags have no variant configuration. The variant section explains that honestly.
+  The `variant:` telemetry parameter is caller-supplied labeling, not
+  `get_variant` assignment; no substitute allocation is invented.
 - `SnapshotProviders::File.new(path: ...)` atomically saves native definitions.
   Default storage under ignored `tmp/` is namespaced by a hash of app/environment.
   Restored values can evaluate while native `ready` is **false** after a failed
