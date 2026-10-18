@@ -12,7 +12,11 @@ internal static class TogglyEvaluationDegraded
     public static void MarkDegraded(HttpContext? context, Exception exception, ILogger logger)
     {
         if (context is null)
+        {
+            logger.LogError(exception,
+                "Toggly feature evaluation failed outside an HTTP request; continuing with defaults OFF");
             return;
+        }
 
         if (context.Items[HttpContextItemKey] is true)
             return;
