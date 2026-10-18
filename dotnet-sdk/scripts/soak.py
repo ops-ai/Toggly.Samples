@@ -12,7 +12,10 @@ KEY = os.environ.get('TOGGLY_APP_KEY', '').strip()
 
 
 def main() -> int:
-    if not KEY or KEY == 'ci-placeholder':
+    if not KEY or KEY in {
+        'ci-placeholder', 'telemetry-test-only', 'offline-test-placeholder',
+        'placeholder', 'YOUR_APP_KEY', 'your-app-key',
+    }:
         print('soak skipped: no live TOGGLY_APP_KEY')
         return 0
     refresh = float(os.environ.get('TOGGLY_REFRESH_INTERVAL', '30'))

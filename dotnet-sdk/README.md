@@ -18,8 +18,9 @@ dotnet test -c Release --no-restore
 dotnet run --project src/DotnetSample --urls http://localhost:5000
 ```
 
-Open [localhost:5000](http://localhost:5000). Missing `TOGGLY_APP_KEY` (or the CI
-value `ci-placeholder`) selects **Offline practice**, visibly labelled on every
+Open [localhost:5000](http://localhost:5000). Missing `TOGGLY_APP_KEY` (or CI /
+LiveE2E placeholders such as `ci-placeholder` and `telemetry-test-only`) selects
+**Offline practice**, visibly labelled on every
 page. The sample supplies fixture definitions through an HTTP handler; the real
 NuGet definition provider, native filters, tag helpers and integrations evaluate
 them. This is not evidence of a connection to your Toggly app. Unknown flags

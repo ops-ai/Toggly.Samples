@@ -11,6 +11,7 @@
 @if (Model.Offline) { <aside class="banner" role="status"><strong>Offline practice — missing Toggly app key.</strong>
 These are local fixture definitions evaluated by the real SDK. Add TOGGLY_APP_KEY in your shell to connect your app; see README. No live Toggly service is contacted.</aside> }
 else { <aside class="banner live">Connected configuration · signed definitions · refresh this page after changing a flag. A configured key alone does not prove definitions have loaded.</aside> }
+@if (Model.EvaluationDegraded) { <aside class="banner warn" id="toggly-evaluation-degraded" role="alert"><strong>Live evaluation degraded.</strong> Feature checks could not complete; results default OFF. See server logs and response header @TogglyEvaluationDegraded.ResponseHeaderName.</aside> }
 <div class="context"><span>Persona: <strong>@(Model.Persona.Name.Length == 0 ? "anonymous" : Model.Persona.Name)</strong></span>
 <span>Order: @Model.Persona.Order.Id</span><span>Definitions: @(Model.Loaded ? "loaded" : "not loaded; defaults OFF")</span></div>
 @RenderBody()
