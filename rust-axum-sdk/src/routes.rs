@@ -13,7 +13,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use toggly::{EvalContext, TogglyClient};
-use toggly_axum::{Feature, TogglyExtractor, TogglyState};
+use toggly_axum08::{Feature, TogglyExtractor, TogglyState};
 
 #[derive(Serialize, Deserialize)]
 pub struct Decision {

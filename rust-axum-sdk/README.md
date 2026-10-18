@@ -61,14 +61,14 @@ an app key.
 | Component | Selected release |
 |---|---|
 | Rust stable | 1.98.1 |
-| Axum | 0.7.9 |
-| `toggly` | 0.6.0 |
-| `toggly-axum` | 0.6.0 |
+| Axum | 0.8.9 |
+| `toggly` | 0.9.1 |
+| `toggly-axum08` | 0.1.1 |
 
 Versions are pinned in `Cargo.toml` and locked in `Cargo.lock`.
 
-This sample uses published `toggly` and `toggly-axum` 0.6.x on Axum 0.7
-because the Axum 0.8 adapter is not published. Stay on this stack.
+This sample uses published `toggly-axum08` on Axum 0.8. `toggly-axum` remains
+the Axum 0.7 adapter on the other Rust framework samples.
 
 What this release supports:
 
