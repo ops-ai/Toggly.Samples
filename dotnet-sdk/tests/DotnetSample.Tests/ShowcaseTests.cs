@@ -16,12 +16,13 @@ namespace DotnetSample.Tests;
 // Tests substitute transport data, never IFeatureManager or the feature helper.
 public sealed class SampleFactory(Dictionary<string, string?>? settings = null) : WebApplicationFactory<Program>
 {
-    protected override void ConfigureWebHost(IWebHostBuilder builder) => builder.ConfigureAppConfiguration((_, config) =>
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         var values = new Dictionary<string, string?> { ["TOGGLY_APP_KEY"] = "", ["TOGGLY_ENVIRONMENT"] = "Production" };
         foreach (var pair in settings ?? []) values[pair.Key] = pair.Value;
-        config.AddInMemoryCollection(values);
-    });
+        foreach (var pair in values)
+            builder.UseSetting(pair.Key, pair.Value ?? "");
+    }
 }
 
 public class ShowcaseTests
@@ -38,7 +39,7 @@ public class ShowcaseTests
             Assert.Contains("Offline practice", await response.Content.ReadAsStringAsync());
         }
         Assert.IsType<TogglyFeatureProvider>(app.Services.GetRequiredService<IFeatureDefinitionProvider>());
-        Assert.IsType<TogglyFeatureManager>(app.Services.GetRequiredService<IFeatureManager>());
+        Assert.IsType<ResilientFeatureManager>(app.Services.GetRequiredService<IFeatureManager>());
     }
 
     [Theory]

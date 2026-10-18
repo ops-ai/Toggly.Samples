@@ -35,6 +35,7 @@ builder.Services.AddTogglyWeb(options =>
     else
         ApplyLiveTogglyUrls(options, builder.Configuration);
 }).WithTogglyTargeting<RequestTargetingAccessor>();
+builder.Services.AddResilientTogglyFeatureEvaluation();
 
 builder.Services.AddTogglyEntityContext<Order>("Order", order => order.Id, schema => schema
     .KeyProperty("Id").Property("Vip", "boolean").Property("Total", "number")

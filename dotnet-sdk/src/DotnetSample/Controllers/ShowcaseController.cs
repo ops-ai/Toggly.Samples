@@ -17,35 +17,30 @@ public sealed class ShowcaseController(IFeatureManager features, IVariantFeature
     // background browser cache, so refresh the page after a dashboard change.
     private async Task<ShowcaseModel> Snapshot()
     {
+        var persona = SamplePersonas.Current(HttpContext);
+        var values = new Dictionary<string, bool>();
+        // Sequential calls also keep request-local usage tracking deterministic.
+        foreach (var key in FeatureFlags.Demo.Concat(FeatureFlags.Filters))
+            values[key] = key is FeatureFlags.Express or "filter-context-property"
+                ? await features.IsEnabledAsync(key, persona.Order) : await features.IsEnabledAsync(key);
+        var variant = await variants.GetVariantAsync(FeatureFlags.Dashboard, persona.Targeting);
+        var debug = diagnostics.GetDebugInfo();
+        IReadOnlyList<string> jobIds = [];
         try
         {
-            var persona = SamplePersonas.Current(HttpContext);
-            var values = new Dictionary<string, bool>();
-            // Sequential calls also keep request-local usage tracking deterministic.
-            foreach (var key in FeatureFlags.Demo.Concat(FeatureFlags.Filters))
-                values[key] = key is FeatureFlags.Express or "filter-context-property"
-                    ? await features.IsEnabledAsync(key, persona.Order) : await features.IsEnabledAsync(key);
-            var variant = await variants.GetVariantAsync(FeatureFlags.Dashboard, persona.Targeting);
-            var debug = diagnostics.GetDebugInfo();
             using var connection = jobs.GetConnection();
-            return new(persona, mode.Offline, values, variant?.Name, variant?.Configuration?["title"],
-                await features.IsEnabledAsync(FeatureFlags.Express),
-                await features.IsEnabledAsync(FeatureFlags.Express, new { Id = "unknown", Vip = true }),
-                debug.LastDefinitionsCheck, debug.Loaded, debug.WebsocketClientRunning,
-                connection.GetRecurringJobs().Select(job => job.Id).ToArray());
+            jobIds = connection.GetRecurringJobs().Select(job => job.Id).ToArray();
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Toggly evaluation failed for {Path}; returning a degraded snapshot", HttpContext.Request.Path);
-            return DegradedSnapshot();
+            logger.LogWarning(ex, "Hangfire job listing failed for {Path}", HttpContext.Request.Path);
         }
-    }
 
-    private ShowcaseModel DegradedSnapshot()
-    {
-        var persona = SamplePersonas.Current(HttpContext);
-        var values = FeatureFlags.Demo.Concat(FeatureFlags.Filters).ToDictionary(key => key, _ => false);
-        return new(persona, mode.Offline, values, null, "unavailable", false, false, null, false, false, []);
+        return new(persona, mode.Offline, values, variant?.Name, variant?.Configuration?["title"],
+            await features.IsEnabledAsync(FeatureFlags.Express),
+            await features.IsEnabledAsync(FeatureFlags.Express, new { Id = "unknown", Vip = true }),
+            debug.LastDefinitionsCheck, debug.Loaded, debug.WebsocketClientRunning, jobIds,
+            TogglyEvaluationDegraded.IsDegraded(HttpContext));
     }
 
     public async Task<IActionResult> Index() => View(await Snapshot());
