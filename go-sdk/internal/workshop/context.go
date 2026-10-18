@@ -45,8 +45,8 @@ func contextForRequest(r *http.Request) toggly.Context {
 		id, role, country, lang, ua = "bob", "user", "CA", "fr-FR,fr;q=0.9", nonmatchingUA
 		order = Order{"ord-standard", false, 125}
 	}
-	// Controls stay bounded to two demo personas so variant clients can be
-	// constructed once with matching VariantIdentity/Groups/Claims. MiddlewareWith
+	// Controls stay bounded to two demo personas for predictable catalog-local
+	// variant allocation in the offline fixture. MiddlewareWith
 	// still merges missing request fields from headers; these values are set so
 	// a browser UA cannot override the shared Matching/Non-matching recipe.
 	return toggly.Context{Identity: id, Groups: []string{"sample-users"}, Claims: map[string]string{"role": role}, Request: &toggly.RequestContext{UserAgent: ua, AcceptLanguage: lang, Country: country}, Entity: toggly.MapEntity("Order", order)}

@@ -50,8 +50,8 @@ Verified against official registries on 2026-09-10:
 |---|---|
 | OpenJDK, compiler release | 26.0.2.1, release 26 |
 | Maven | 3.9.12 |
-| `io.toggly:toggly-core` | 1.5.1 |
-| `io.toggly:toggly-spring-mvc` | 1.5.1 |
+| `io.toggly:toggly-core` | 2.2.1 |
+| `io.toggly:toggly-spring-mvc` | 2.2.1 |
 | `org.apache.tomcat.embed:tomcat-embed-core` | 11.0.26 |
 | Jakarta Servlet API supplied by Tomcat | 6.1 |
 | Spring Framework BOM / spring-webmvc / spring-context-support | 7.0.9 |
@@ -197,7 +197,7 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 With the recipe above, AlwaysOn and TimeWindow stay ON for both presets.
 Percentage is stable for the same user/flag, but its exact Alice/Bob outcome is
 not prescribed. The other seven supported rows turn ON for Matching and OFF for
-Non-matching. **DeviceType Macintosh is unsupported by the published 1.5.1
+Non-matching. **DeviceType Macintosh is unsupported by the published 2.2.1
 User-Agent parser**: it recognizes iPhone/iPad/iPod, but returns Other for
 desktop Macintosh. We retain the exact shared Macintosh rule and User-Agent;
 that row shows the real OFF result and an explicit capability note. No fallback
@@ -233,7 +233,8 @@ SDK to validate entity kind. The integration suite records this native limitatio
   FreeMarker view integration, session controls, JSON endpoints, status banners,
   and the explicit order 1 missing-key guard. The native client owns its default
   provider; SampleRuntime owns and closes that client after host shutdown.
-- **Unsupported:** core/MVC 1.5.1 has no variant allocation/getVariant API.
+- **Variants (2.x):** `getVariant` / `getVariantValue` from catalog-local rules in
+  the definitions payload (no `enableVariants`). Fixture flags have no variant rules.
   `getValue` picks one of two caller values from a Boolean result. Telemetry
   variant labels are not experiment allocation. No experiment is synthesized.
 
@@ -313,7 +314,7 @@ suppress those warnings or weaken the native request cleanup assertions.
 - [ ] Customize/clear identity; the next native/API evaluation sees the new context.
 - [ ] VIP and standard Orders yield different ExpressCheckout results in the same page; missing entity is OFF.
 - [ ] Native argument injection and model-driven template agree with current filter-targeting; sample JSON agrees with Home. Request refresh, then reload.
-- [ ] Confirm variants are marked unsupported and getValue is described as Boolean value selection.
+- [ ] Confirm catalog-local variants (2.x) are described and getValue is Boolean value selection.
 - [ ] Interrupt the process and confirm shutdown exits; real `.env` remains ignored.
 
 See the shared [Sample Contract](../docs/SAMPLE_CONTRACT.md) and
