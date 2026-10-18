@@ -8,13 +8,8 @@ const root = fileURLToPath(new URL('../', import.meta.url))
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_EXECUTABLE || undefined })
 const servers = []
 
-async function waitForReactHydration(page, testId) {
-  // Hydration detection relies on React DOM internals (__reactFiber / __reactProps).
-  await page.waitForFunction((id) => {
-    const element = document.querySelector(`[data-testid="${id}"]`)
-    if (!element) return false
-    return Object.keys(element).some((key) => key.startsWith('__reactFiber') || key.startsWith('__reactProps'))
-  }, testId)
+async function waitForClientGatesHydrated(page) {
+  await expect(page.getByTestId('client-gates-hydrated')).toHaveText('ready')
 }
 
 async function start(port, appKey, telemetry = true) {
@@ -223,7 +218,7 @@ try {
     })
     await silentPage.goto(`${await start(port, appKey, telemetry)}/gates`)
     await expect(silentPage.getByTestId('new-dashboard-result')).toHaveText(expected)
-    await waitForReactHydration(silentPage, 'identify-bob')
+    await waitForClientGatesHydrated(silentPage)
     await silentPage.getByTestId('identify-bob').click()
     await expect(silentPage.getByTestId('client-identity')).toHaveText('bob')
     await silentPage.getByTestId('record-telemetry').click()
