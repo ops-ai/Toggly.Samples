@@ -17,7 +17,7 @@
   "dependencies": {
     "@ops-ai/solid-feature-flags-toggly": "0.5.1",
     "@solidjs/router": "1.0.0",
-    "@solidjs/start": "2.0.5",
+    "@solidjs/start": "2.0.6",
     "solid-js": "^1.9.15"
   },
   "devDependencies": {
