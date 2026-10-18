@@ -411,6 +411,9 @@ jobs:
             sleep 30
           done
 
+      - name: Validate LiveE2E PR script helpers
+        run: node --test .github/scripts/livee2e-pr-github.test.mjs
+
       - name: Finish check and update PR comment
         if: always() && steps.ado_config.outputs.configured == 'true' && steps.samples.outputs.has_samples == 'true' && steps.check_start.outputs.check_id != ''
         uses: actions/github-script@v7
@@ -418,12 +421,20 @@ jobs:
           CHECK_NAME: ${{ env.CHECK_NAME }}
           COMMENT_MARKER: ${{ env.COMMENT_MARKER }}
           RUN_URL: ${{ steps.queue.outputs.run_url }}
+          RUN_ID: ${{ steps.queue.outputs.run_id }}
           SAMPLE_IDS: ${{ steps.samples.outputs.ids }}
           ADO_RESULT: ${{ steps.poll.outputs.result || 'failed' }}
+          ADO_PAT: ${{ secrets.ADO_PAT }}
+          ADO_ORG: ${{ secrets.ADO_ORG }}
+          ADO_PROJECT: ${{ secrets.ADO_PROJECT }}
         with:
           script: |
             const path = require('path');
-            const { upsertPrComment, buildPrCommentBody } = require(path.join(
+            const {
+              upsertPrComment,
+              buildPrCommentBody,
+              reportAdoFailedTimelineDiagnostics,
+            } = require(path.join(
               process.env.GITHUB_WORKSPACE,
               '.github/scripts/livee2e-pr-github.js',
             ));
@@ -438,12 +449,28 @@ jobs:
                   : adoResult === 'timedOut'
                     ? 'timed_out'
                     : 'failure';
+            let timelineDiagnostics = '';
+            if (adoResult === 'failed' || adoResult === 'canceled') {
+              const diagnostics = await reportAdoFailedTimelineDiagnostics({
+                org: process.env.ADO_ORG,
+                project: process.env.ADO_PROJECT,
+                buildId: process.env.RUN_ID,
+                pat: process.env.ADO_PAT,
+                log: (message) => core.info(message),
+                warn: (message) => core.warning(message),
+              });
+              if (diagnostics.markdown) {
+                timelineDiagnostics = diagnostics.markdown;
+                await core.summary.addRaw(`\n\n${diagnostics.markdown}\n`).write();
+              }
+            }
             const summary = [
               `ADO result: **${adoResult}**`,
               runUrl ? `[Open ADO run](${runUrl})` : '',
               `Samples: \`${ids}\``,
               `samplesRef: \`${context.payload.pull_request.head.sha}\``,
               'packTier: `smoke`',
+              timelineDiagnostics,
             ]
               .filter(Boolean)
               .join('\n\n');

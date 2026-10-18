@@ -66,18 +66,18 @@
       },
       "Microsoft.AspNetCore.Components.WebAssembly": {
         "type": "Transitive",
-        "resolved": "10.0.11",
-        "contentHash": "OaZ+pEJzfejOtCkmepeJYYItNu3PA6Y2EajBwS8vr30mUjCOZWjVCr2sCqUOVw7D6+wmJwpNKtHqyzbtX/F7qQ==",
+        "resolved": "10.0.13",
+        "contentHash": "w3V2ij4WptDXOLLu78o3/SIqHIVoW6uzCjKZzSr4hTJFKvv8/79YhwRyyGonktM+qP8hrFvBVNCQa51ZpoJ6Cw==",
         "dependencies": {
-          "Microsoft.JSInterop.WebAssembly": "10.0.11"
+          "Microsoft.JSInterop.WebAssembly": "10.0.13"
         }
       },
       "Microsoft.AspNetCore.Components.WebAssembly.Server": {
         "type": "Transitive",
-        "resolved": "10.0.11",
-        "contentHash": "El0lkzjqwWVKmFC4tS0orMxysMNwElGNM1lLNYyqBh8SLsP5c+EDDrZS4FAv0bcqc+t1nxosnzqrd0ob+XASPQ==",
+        "resolved": "10.0.13",
+        "contentHash": "EeFVBmuxdbvNcjty7Jkvck9LG1hGjFnRaJUKDrGfoMKmHJF7iRXcp4rx85Qhm+JmRKKIm4vZMUdv2i2KNsR5JQ==",
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.11"
+          "Microsoft.AspNetCore.Components.WebAssembly": "10.0.13"
         }
       },
       "Microsoft.Bcl.AsyncInterfaces": {
@@ -106,8 +106,8 @@
       },
       "Microsoft.JSInterop.WebAssembly": {
         "type": "Transitive",
-        "resolved": "10.0.11",
-        "contentHash": "WtlvldXFOdft4tFW4Y3lTnRqZfGYebOBPMXZAy9Yp3gv0A88rNbDtXcuoppvqsVWe4cIG95iEXFmXB+nvuEN3Q=="
+        "resolved": "10.0.13",
+        "contentHash": "kh68RQ3KmgKSsIpkQetbuHxxLEsIkjaJ+GfJhGn7NQCgrT067JXGmbCzXM42uiPcdXW5dJ8S5AKwJcyRDJFWzQ=="
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
@@ -198,14 +198,14 @@
         "type": "Project",
         "dependencies": {
           "BlazorSample.Client": "[1.0.0, )",
-          "Microsoft.AspNetCore.Components.WebAssembly.Server": "[10.0.11, )",
+          "Microsoft.AspNetCore.Components.WebAssembly.Server": "[10.0.13, )",
           "Toggly.FeatureManagement.Blazor.Server": "[3.13.3, )"
         }
       },
       "blazorsample.client": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.AspNetCore.Components.WebAssembly": "[10.0.11, )",
+          "Microsoft.AspNetCore.Components.WebAssembly": "[10.0.13, )",
           "Toggly.FeatureManagement.Blazor": "[3.13.3, )"
         }
       }
