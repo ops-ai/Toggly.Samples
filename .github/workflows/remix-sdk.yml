@@ -17,16 +17,17 @@ jobs:
         working-directory: remix-sdk
     env:
       TOGGLY_APP_KEY: ci-placeholder
-      REMIX_PUBLIC_TOGGLY_APP_KEY: ci-placeholder
+      VITE_TOGGLY_APP_KEY: ci-placeholder
       TOGGLY_ENVIRONMENT: Production
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.23.2'
           cache: npm
           cache-dependency-path: remix-sdk/package-lock.json
       - run: npm ci
+      - run: npx playwright install --with-deps chromium
       - run: npm test
       - run: npm run build
       - run: npm run smoke
