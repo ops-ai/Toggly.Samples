@@ -313,9 +313,9 @@ toggly-flask==0.4.0 \
     --hash=sha256:97f708fef285c33471f908aa5fcb8d987cfaeee392d7049412fcd88633f1bc90 \
     --hash=sha256:a7949535b7e127ab4fadfcf8d92afc1a984e915a1d5b721f327f197b1a1142df
     # via -r requirements.in
-werkzeug==3.1.8 \
-    --hash=sha256:63a77fb8892bf28ebc3178683445222aa500e48ebad5ec77b0ad80f8726b1f50 \
-    --hash=sha256:9bad61a4268dac112f1c5cd4630a56ede601b6ed420300677a869083d70a4c44
+werkzeug==3.1.9 \
+    --hash=sha256:55ca7c70a75689be937aa27f8ff4b018f06ff4838fc73045560bf0f5a1291060 \
+    --hash=sha256:6392e50c78460ba618e5b21f08a71f59c99ce99cdc6cf6e3dd7e6ccca8754fab
     # via
     #   flask
     #   flask-login
