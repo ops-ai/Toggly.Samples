@@ -46,10 +46,10 @@ jobs:
         include:
           - sdk: "8.0.425"
             framework: net8.0
-            aspnet: "8.0.31"
+            aspnet: "8.0.32"
           - sdk: "10.0.400"
             framework: net10.0
-            aspnet: "10.0.11"
+            aspnet: "10.0.13"
     defaults:
       run:
         working-directory: blazor-sdk
@@ -67,6 +67,9 @@ jobs:
           node-version: "24"
           cache: npm
           cache-dependency-path: blazor-sdk/package-lock.json
+      - name: Locked restore matches LiveE2E (no MSBuild properties)
+        if: matrix.framework == 'net8.0'
+        run: dotnet restore BlazorSample.sln --locked-mode --source https://api.nuget.org/v3/index.json
       - run: dotnet restore BlazorSample.sln --locked-mode --source https://api.nuget.org/v3/index.json -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }}
       - run: dotnet publish BlazorSample --no-restore -c Release -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -o ./published
       - name: Check trusted filesystem snapshots
