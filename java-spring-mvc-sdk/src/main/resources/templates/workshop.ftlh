@@ -3,7 +3,7 @@
      The empty map is used only by the visibly unconfigured setup shell. -->
 <#macro badge value><span class="badge ${value?then('on','off')}">${value?then('ON','OFF')}</span></#macro>
 <#macro presets><div class="presets"><form method="post" action="/context"><button name="preset" value="matching">Matching preset</button></form><form method="post" action="/context"><button name="preset" value="nonmatching">Non-matching preset</button></form></div></#macro>
-<#macro table keys><div class="table-wrap"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody><#list keys as key><tr data-flag="${key}"><td><code>${key}</code></td><td>${definitions?seq_contains(key)?then('Present','Absent')}</td><td><@badge value=(features[key])!false/><#if key == 'filter-device-type'> <small>Macintosh detection unsupported in 2.2.1</small></#if></td></tr></#list></tbody></table></div></#macro>
+<#macro table keys><div class="table-wrap"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody><#list keys as key><tr data-flag="${key}"><td><code>${key}</code></td><td>${definitions?seq_contains(key)?then('Present','Absent')}</td><td><@badge value=(features[key])!false/><#if key == 'filter-device-type'> <small>Macintosh detection unsupported in 2.3.1</small></#if></td></tr></#list></tbody></table></div></#macro>
 <!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title} · Java Spring MVC SDK Sample</title><link rel="stylesheet" href="/style.css"><script src="/workshop.js" defer></script></head><body>
 <header><p class="eyebrow">TOGGLY / JAVA SPRING MVC</p><a class="brand" href="/">Feature flag workshop</a><p>Learn native Spring MVC, one request at a time.</p></header>
 <nav aria-label="Sections"><#list paths as link><a href="${link}">${titles[link?index]}</a></#list></nav><main>
@@ -60,4 +60,4 @@ public String argument(
 <#break>
 <#case '/allowed'><p>The published FeatureGateInterceptor allowed this request before the controller ran.</p><@table keys=flags/><#break>
 </#switch>
-</main><footer>Published io.toggly 2.2.1 · Spring MVC 7.0.9 · FreeMarker 2.3.35 · Tomcat 11 · Java 26</footer></body></html>
+</main><footer>Published io.toggly 2.3.1 · Spring MVC 7.0.9 · FreeMarker 2.3.35 · Tomcat 11 · Java 26</footer></body></html>

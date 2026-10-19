@@ -1,6 +1,6 @@
 {
-  "io/toggly/toggly-core/2.2.1/toggly-core-2.2.1.jar": "944c3b9f48cc810cc8a56e2b4b563330a73a39b485d2fa77055bd9a77fb5d2b3",
-  "io/toggly/toggly-servlet/2.2.1/toggly-servlet-2.2.1.jar": "cd2963332460544d48b85461c67b86ac8158744b334c88a545f1f5974d69f926",
+  "io/toggly/toggly-core/2.3.1/toggly-core-2.3.1.jar": "c0c217abbf5a4d293150b394d0d670fffdc5dabdae972bb8e37c6731cc13b407",
+  "io/toggly/toggly-servlet/2.3.1/toggly-servlet-2.3.1.jar": "09675c42be01ed5c0540b702acb3d19bb55d3e3d48bed3dc9e7a5bf19661a27f",
   "org/apache/tomcat/embed/tomcat-embed-core/11.0.26/tomcat-embed-core-11.0.26.jar": "062cf4191139c08aef678673039e41ed9d69b6c1b9b30b44820e5a83d0c09cb6",
   "org/apache/tomcat/tomcat-annotations-api/11.0.26/tomcat-annotations-api-11.0.26.jar": "5a7b02d0d6bc0c2635f3da841b937485da719e855df4a81b0807e158ecf6caac",
   "org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",

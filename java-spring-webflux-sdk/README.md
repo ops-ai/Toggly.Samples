@@ -40,14 +40,14 @@ keyless mode. Test fixtures run only under test sources with ephemeral keys.
 
 ## Versions and reproducibility
 
-Official Maven Central metadata and published artifacts checked 2026-09-10:
+Official Maven Central metadata and published artifacts checked 2026-10-19:
 
 | Component | Version |
 |---|---|
 | OpenJDK / compiler release | 26.0.2.1 / 26 |
 | Maven | 3.9.12 |
-| io.toggly:toggly-core | 2.2.1 |
-| io.toggly:toggly-spring-webflux | 2.2.1 |
+| io.toggly:toggly-core | 2.3.1 |
+| io.toggly:toggly-spring-webflux | 2.3.1 |
 | Spring Framework BOM / WebFlux | 7.0.9 |
 | Reactor BOM | 2025.0.7 |
 | reactor-core / reactor-test | 3.8.7 |
@@ -229,7 +229,7 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 With the recipe above, AlwaysOn and TimeWindow stay ON for both presets.
 Percentage is stable for the same user/flag, but its exact Alice/Bob outcome is
 not prescribed. The other seven supported rows turn ON for Matching and OFF for
-Non-matching. **DeviceType Macintosh is unsupported by the published 2.2.1
+Non-matching. **DeviceType Macintosh is unsupported by the published 2.3.1
 User-Agent parser**: it recognizes iPhone/iPad/iPod, but returns Other for
 desktop Macintosh. We retain the exact shared Macintosh rule and User-Agent;
 that row shows the real OFF result and an explicit capability note. No fallback
