@@ -18,6 +18,6 @@
   "dependencies": {
     "@ops-ai/toggly-express": "0.3.0",
     "@ops-ai/toggly-node-core": "0.11.3",
-    "express": "5.2.1"
+    "express": "5.3.0"
   }
 }
