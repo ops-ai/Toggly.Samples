@@ -11,8 +11,8 @@ Live mode reports definition cache hits on the usage pipeline; offline and
 
 ## Quick start
 
-Install **OpenJDK 26.0.2.1**, **Maven 3.9.12**, and Python 3. Set `JAVA_HOME`
-and put its `bin` on `PATH`. JDK downloads: [jdk.java.net/26](https://jdk.java.net/26/).
+Install **OpenJDK 27** (GA build **27+35**), **Maven 3.9.12**, and Python 3. Set `JAVA_HOME`
+and put its `bin` on `PATH`. JDK downloads: [jdk.java.net/27](https://jdk.java.net/27/).
 
 ```sh
 cd java-spring-webflux-sdk
@@ -40,11 +40,11 @@ keyless mode. Test fixtures run only under test sources with ephemeral keys.
 
 ## Versions and reproducibility
 
-Official Maven Central metadata and published artifacts checked 2026-09-10:
+Official Maven Central metadata and published artifacts checked 2026-10-19:
 
 | Component | Version |
 |---|---|
-| OpenJDK / compiler release | 26.0.2.1 / 26 |
+| OpenJDK / compiler release | 27+35 (GA) / 27 |
 | Maven | 3.9.12 |
 | io.toggly:toggly-core | 2.2.1 |
 | io.toggly:toggly-spring-webflux | 2.2.1 |

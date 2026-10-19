@@ -33,10 +33,14 @@ jobs:
       TOGGLY_ENVIRONMENT: Production
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: '17'
+      # Spring Boot 4.1.1 supports Java through 26; match the other Java samples' pinned OpenJDK GA build.
+      - name: Install OpenJDK 26.0.2.1
+        run: |
+          curl --fail --location --output "$RUNNER_TEMP/jdk.tar.gz" https://download.java.net/java/GA/jdk26.0.2.1/3b8e6c7ec6274148a7aa15e7e7dfb53c/1/GPL/openjdk-26.0.2.1_linux-x64_bin.tar.gz
+          echo "a1489256029b389ce6ee52da0de1d01496c5df1776d6870241fe4823b998ea61  $RUNNER_TEMP/jdk.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/jdk.tar.gz" -C "$RUNNER_TEMP"
+          echo "JAVA_HOME=$RUNNER_TEMP/jdk-26.0.2.1" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/jdk-26.0.2.1/bin" >> "$GITHUB_PATH"
       - name: Install Maven 3.9.12
         run: |
           curl --fail --location --output "$RUNNER_TEMP/maven.tar.gz" https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.12/apache-maven-3.9.12-bin.tar.gz

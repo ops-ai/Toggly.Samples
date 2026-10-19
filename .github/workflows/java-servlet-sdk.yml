@@ -34,13 +34,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       # Use the official OpenJDK patch also used by the local native compatibility check.
-      - name: Install OpenJDK 26.0.2.1
+      - name: Install OpenJDK 27
         run: |
-          curl --fail --location --output "$RUNNER_TEMP/jdk.tar.gz" https://download.java.net/java/GA/jdk26.0.2.1/3b8e6c7ec6274148a7aa15e7e7dfb53c/1/GPL/openjdk-26.0.2.1_linux-x64_bin.tar.gz
-          echo "a1489256029b389ce6ee52da0de1d01496c5df1776d6870241fe4823b998ea61  $RUNNER_TEMP/jdk.tar.gz" | sha256sum --check
+          curl --fail --location --output "$RUNNER_TEMP/jdk.tar.gz" https://download.java.net/java/GA/jdk27/55ce5470a6294008af0057ff4626d0e5/35/GPL/openjdk-27_linux-x64_bin.tar.gz
+          echo "95fc37eb3a18a27a26d5904c2d89d52bace8dafa9a078ca27f4747fbc4bf070  $RUNNER_TEMP/jdk.tar.gz" | sha256sum --check
           tar -xzf "$RUNNER_TEMP/jdk.tar.gz" -C "$RUNNER_TEMP"
-          echo "JAVA_HOME=$RUNNER_TEMP/jdk-26.0.2.1" >> "$GITHUB_ENV"
-          echo "$RUNNER_TEMP/jdk-26.0.2.1/bin" >> "$GITHUB_PATH"
+          echo "JAVA_HOME=$RUNNER_TEMP/jdk-27" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/jdk-27/bin" >> "$GITHUB_PATH"
       - name: Install Maven 3.9.12
         run: |
           curl --fail --location --output "$RUNNER_TEMP/maven.tar.gz" https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.12/apache-maven-3.9.12-bin.tar.gz
