@@ -1,6 +1,13 @@
 // Child-only environment inputs. Provider errors/URLs never cross IPC or stdout.
 import 'reflect-metadata';
+import { access } from 'node:fs/promises';
+import { join } from 'node:path';
 import { WebSocket } from 'ws';
+
+function definitionsCacheFile(basePath) {
+  const safeKey = 'toggly:definitions'.replace(/[^a-zA-Z0-9-_]/g, '_');
+  return join(basePath, `${safeKey}.json`);
+}
 const config = JSON.parse(process.env.LIVE_CHILD_CONFIG);
 let sequence = 0,
   frame = 0,
@@ -150,11 +157,26 @@ process.on('message', async (message) => {
     }
     if (message.command === 'sync') {
       const deadline = Date.now() + (config.timeout ?? 15000);
-      while (client.state.loading && Date.now() < deadline) {
+      const cacheFile = definitionsCacheFile(config.cachePath);
+      const ready = async () => {
+        if (client.state.loading) return false;
+        try {
+          await access(cacheFile);
+          return true;
+        } catch {
+          return false;
+        }
+      };
+      while (Date.now() < deadline) {
+        if (await ready()) break;
         await new Promise((resolve) => setTimeout(resolve, 20));
       }
-      if (client.state.loading) {
-        throw new Error('Backend refresh did not settle');
+      if (!(await ready())) {
+        throw new Error(
+          client.state.loading
+            ? 'Backend refresh did not settle'
+            : 'Backend definitions cache file not ready',
+        );
       }
       process.send({ id: message.id, result: true });
       return;
