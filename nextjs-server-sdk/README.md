@@ -111,10 +111,10 @@ Legacy paths (`/dashboard`, `/actions`, `/api-demo`, `/orders`) redirect under `
 
 Published npm packages:
 
-- `@ops-ai/nextjs-toggly-core` `^1.10.0`
-- `@ops-ai/nextjs-toggly-server` `^1.7.0`
-- `@ops-ai/nextjs-toggly-client` `^1.4.1`
-- `@ops-ai/nextjs-toggly-edge` `^1.5.0`
+- `@ops-ai/nextjs-toggly-core` `1.16.1`
+- `@ops-ai/nextjs-toggly-server` `1.9.0`
+- `@ops-ai/nextjs-toggly-client` `1.7.0`
+- `@ops-ai/nextjs-toggly-edge` `1.6.0`
 
 `next.config.ts` sets `serverExternalPackages: ['ws']` so Turbopack does not
 rewrite the WebSocket client. Do **not** externalize `@ops-ai/nextjs-toggly-server`

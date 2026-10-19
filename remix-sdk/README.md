@@ -89,8 +89,8 @@ building, so restart development or rebuild production assets after changing it.
 ## Package versions
 
 - `react-router`, `@react-router/dev`, `@react-router/node`, `@react-router/serve` `8.4.0`
-- `react`, `react-dom` `19.3.0`
-- `@ops-ai/react-router-toggly` `1.1.0`
+- `react`, `react-dom` `19.3.1`
+- `@ops-ai/react-router-toggly` `1.5.1`
 
 ## Evaluation, refresh, cache, and limitations
 
