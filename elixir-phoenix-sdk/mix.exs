@@ -7,7 +7,7 @@ defmodule TogglyShowcase.MixProject do
       version: "0.1.0",
       elixir: "~> 1.20",
       deps: [
-        {:toggly, "~> 0.6.0"},
+        {:toggly, "~> 0.7.1"},
         {:toggly_phoenix, "~> 0.3.0"},
         {:toggly_live_view, "~> 0.1.1"},
         {:phoenix, "~> 1.8"},
