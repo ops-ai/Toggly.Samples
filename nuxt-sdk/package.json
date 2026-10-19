@@ -18,11 +18,11 @@
     "@ops-ai/nuxt-toggly-client": "1.5.0",
     "@ops-ai/nuxt-toggly-core": "1.15.2",
     "@ops-ai/nuxt-toggly-server": "1.9.0",
-    "nuxt": "4.6.0"
+    "nuxt": "4.6.1"
   },
   "devDependencies": {
-    "playwright": "1.64.0",
+    "playwright": "1.64.1",
     "typescript": "7.0.2",
-    "vitest": "5.0.3"
+    "vitest": "5.0.5"
   }
 }
