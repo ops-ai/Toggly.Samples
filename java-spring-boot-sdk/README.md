@@ -40,14 +40,14 @@ signed loopback definitions service and do not require your `.env`.
 
 ## Versions and reproducibility
 
-Verified against official registries on 2026-10-12:
+Verified against official registries on 2026-10-19:
 
 | Component | Version |
 |---|---|
 | OpenJDK, compiler release | 17.0.17, release 17 |
 | Maven | 3.9.12 |
-| `io.toggly:toggly-spring-boot4-starter` | 2.2.2 |
-| `io.toggly:toggly-core` (transitive) | 2.2.2 |
+| `io.toggly:toggly-spring-boot4-starter` | 2.3.1 |
+| `io.toggly:toggly-core` (transitive) | 2.3.1 |
 | Spring Boot parent / Actuator / Web MVC / AspectJ / FreeMarker | **4.1.1** |
 | Embedded Tomcat (Boot 4.1.1) | 11.0.24 |
 
@@ -188,7 +188,7 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 With the recipe above, AlwaysOn and TimeWindow stay ON for both presets.
 Percentage is stable for the same user/flag, but its exact Alice/Bob outcome is
 not prescribed. The other seven supported rows turn ON for Matching and OFF for
-Non-matching. **DeviceType Macintosh is unsupported by the published 2.2.2
+Non-matching. **DeviceType Macintosh is unsupported by the published 2.3.1
 User-Agent parser**: it recognizes iPhone/iPad/iPod, but returns Other for
 desktop Macintosh. We retain the exact shared Macintosh rule; that row shows
 the real OFF result. `?preset=matching` affects only that request; POST preset
