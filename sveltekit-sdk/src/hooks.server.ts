@@ -5,7 +5,7 @@ import { defaults, filters, preset } from '#lib/catalog.js';
 // Definitions are shared; identity is supplied per request below, never assigned to this client.
 const client = createTogglyClient({
   appKey: TOGGLY_APP_KEY,
-  environment: TOGGLY_ENVIRONMENT ?? 'Production',
+  environment: TOGGLY_ENVIRONMENT,
   verifySignatures: true,
   featureDefaults: defaults,
   enableUsageTracking: false,
@@ -41,7 +41,7 @@ export const handle = createTogglyHandle({
   // Error reporting is observational; a failed fetch still returns exposed defaults.
   frontend: {
     appKey: PUBLIC_TOGGLY_APP_KEY,
-    environment: PUBLIC_TOGGLY_ENVIRONMENT ?? 'Production',
+    environment: PUBLIC_TOGGLY_ENVIRONMENT,
     expose: [...Object.keys(defaults), 'ExpressCheckout'],
     featureDefaults: defaults,
     onError: (error) => console.error('Frontend snapshot unavailable', error),

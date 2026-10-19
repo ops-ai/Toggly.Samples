@@ -21,7 +21,7 @@ export const load: LayoutServerLoad = async (event) => {
     // event.locals.toggly would expose an inappropriate server-only object.
     toggly: await loadToggly(event),
     publicKey: PUBLIC_TOGGLY_APP_KEY ?? '',
-    environment: PUBLIC_TOGGLY_ENVIRONMENT ?? 'Production',
+    environment: PUBLIC_TOGGLY_ENVIRONMENT,
     telemetryEnabled: PUBLIC_TOGGLY_ENABLE_TELEMETRY !== 'false',
     offline: !TOGGLY_APP_KEY || !PUBLIC_TOGGLY_APP_KEY,
     matching,
