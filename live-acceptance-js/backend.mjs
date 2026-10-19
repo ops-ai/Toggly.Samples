@@ -1,6 +1,13 @@
 // Child-only environment inputs. Provider errors/URLs never cross IPC or stdout.
 import 'reflect-metadata';
+import { access } from 'node:fs/promises';
+import { join } from 'node:path';
 import { WebSocket } from 'ws';
+
+function definitionsCacheFile(basePath) {
+  const safeKey = 'toggly:definitions'.replace(/[^a-zA-Z0-9-_]/g, '_');
+  return join(basePath, `${safeKey}.json`);
+}
 const config = JSON.parse(process.env.LIVE_CHILD_CONFIG);
 let sequence = 0,
   frame = 0,
@@ -128,6 +135,14 @@ async function scope(identity) {
 }
 process.on('message', async (message) => {
   try {
+    if (config.harnessTestMode && message.command === 'harness-delay') {
+      await new Promise((resolve) => setTimeout(resolve, config.harnessDelayMs ?? 0));
+      process.send({ id: message.id, result: true });
+      return;
+    }
+    if (config.harnessTestMode && message.command === 'harness-throw') {
+      throw new Error(config.harnessErrorMessage ?? 'harness-throw');
+    }
     if (message.command === 'close') {
       await (app ? app.close() : client.close());
       process.send({ id: message.id, result: true });
@@ -137,6 +152,32 @@ process.on('message', async (message) => {
     if (message.command === 'reset') {
       frame = 0;
       fetched = 0;
+      process.send({ id: message.id, result: true });
+      return;
+    }
+    if (message.command === 'sync') {
+      const deadline = Date.now() + (config.timeout ?? 15000);
+      const cacheFile = definitionsCacheFile(config.cachePath);
+      const ready = async () => {
+        if (client.state.loading) return false;
+        try {
+          await access(cacheFile);
+          return true;
+        } catch {
+          return false;
+        }
+      };
+      while (Date.now() < deadline) {
+        if (await ready()) break;
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      if (!(await ready())) {
+        throw new Error(
+          client.state.loading
+            ? 'Backend refresh did not settle'
+            : 'Backend definitions cache file not ready',
+        );
+      }
       process.send({ id: message.id, result: true });
       return;
     }
@@ -170,10 +211,12 @@ process.on('message', async (message) => {
     } finally {
       s.dispose();
     }
-  } catch {
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
     process.send({
       id: message.id,
-      error: 'Backend acceptance command failed',
+      error: err.message,
+      stack: err.stack,
     });
   }
 });
