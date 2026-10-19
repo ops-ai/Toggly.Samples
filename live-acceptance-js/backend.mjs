@@ -141,8 +141,7 @@ process.on('message', async (message) => {
       return;
     }
     if (message.command === 'sync') {
-      await client.refresh();
-      const deadline = Date.now() + 5000;
+      const deadline = Date.now() + (config.timeout ?? 15000);
       while (client.state.loading && Date.now() < deadline) {
         await new Promise((resolve) => setTimeout(resolve, 20));
       }
