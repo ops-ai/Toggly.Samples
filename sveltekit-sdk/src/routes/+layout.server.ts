@@ -1,7 +1,13 @@
 import { loadToggly } from '@ops-ai/toggly-sveltekit/server';
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
-import { filters, preset, vip, standard } from '$lib/catalog';
+import { TOGGLY_APP_KEY } from '$app/env/private';
+
+import {
+  PUBLIC_TOGGLY_APP_KEY,
+  PUBLIC_TOGGLY_ENVIRONMENT,
+  PUBLIC_TOGGLY_ENABLE_TELEMETRY,
+} from '$app/env/public';
+
+import { filters, preset, vip, standard } from '#lib/catalog.js';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {
@@ -14,10 +20,10 @@ export const load: LayoutServerLoad = async (event) => {
     // Serialize only the verified, allowlisted frontend snapshot. Returning
     // event.locals.toggly would expose an inappropriate server-only object.
     toggly: await loadToggly(event),
-    publicKey: publicEnv.PUBLIC_TOGGLY_APP_KEY ?? '',
-    environment: publicEnv.PUBLIC_TOGGLY_ENVIRONMENT ?? 'Production',
-    telemetryEnabled: publicEnv.PUBLIC_TOGGLY_ENABLE_TELEMETRY !== 'false',
-    offline: !env.TOGGLY_APP_KEY || !publicEnv.PUBLIC_TOGGLY_APP_KEY,
+    publicKey: PUBLIC_TOGGLY_APP_KEY ?? '',
+    environment: PUBLIC_TOGGLY_ENVIRONMENT,
+    telemetryEnabled: PUBLIC_TOGGLY_ENABLE_TELEMETRY !== 'false',
+    offline: !TOGGLY_APP_KEY || !PUBLIC_TOGGLY_APP_KEY,
     matching,
     // This is public demo input for teaching, never private session data.
     context: preset(matching),

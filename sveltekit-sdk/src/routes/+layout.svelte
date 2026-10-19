@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy, setContext } from 'svelte';
   import { createToggly } from '@ops-ai/toggly-sveltekit';
-  import { sections } from '$lib/catalog';
-  import TelemetryControls from '$lib/TelemetryControls.svelte';
+  import { sections } from '#lib/catalog.js';
+  import TelemetryControls from '#lib/TelemetryControls.svelte';
   import type { LayoutData } from './$types';
   export let data: LayoutData;
   // Synchronous SSR seed avoids a disabled branch flashing before hydration; each layout owns its store.

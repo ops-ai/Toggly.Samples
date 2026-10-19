@@ -233,6 +233,30 @@ func TestSignedRefreshRejectsTamperingAndRecovers(t *testing.T) {
 	eventually(t, func() bool { return app.evaluate(context.Background(), "new-dashboard", toggly.Context{}) })
 }
 
+func TestLiveDashboardClientUsesShortPollFallback(t *testing.T) {
+	f, err := fixture.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	app, err := New(Config{AppKey: "fixture-only", DefinitionsURL: f.URL + "/", RefreshInterval: 20 * time.Millisecond})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer app.Close()
+	waitLoaded(t, app)
+	if app.client.ProviderDebugInfo().LiveUpdatesEnabled {
+		t.Fatal("live dashboard sample should not enable WebSocket live updates")
+	}
+	// Observe via fixture toggle + background refresh without waiting an hour.
+	before := len(f.Requests())
+	f.SetDashboard(false)
+	eventually(t, func() bool { return !app.evaluate(context.Background(), "new-dashboard", toggly.Context{}) })
+	if len(f.Requests()) <= before {
+		t.Fatal("expected background refresh after fixture change")
+	}
+}
+
 func TestColdTamperedDefinitionsFailClosed(t *testing.T) {
 	f, err := fixture.New()
 	if err != nil {

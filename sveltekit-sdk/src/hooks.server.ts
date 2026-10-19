@@ -1,11 +1,11 @@
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
+import { TOGGLY_APP_KEY, TOGGLY_ENVIRONMENT } from '$app/env/private';
+import { PUBLIC_TOGGLY_APP_KEY, PUBLIC_TOGGLY_ENVIRONMENT } from '$app/env/public';
 import { createTogglyClient, createTogglyHandle } from '@ops-ai/toggly-sveltekit/server';
-import { defaults, filters, preset } from '$lib/catalog';
+import { defaults, filters, preset } from '#lib/catalog.js';
 // Definitions are shared; identity is supplied per request below, never assigned to this client.
 const client = createTogglyClient({
-  appKey: env.TOGGLY_APP_KEY,
-  environment: env.TOGGLY_ENVIRONMENT ?? 'Production',
+  appKey: TOGGLY_APP_KEY,
+  environment: TOGGLY_ENVIRONMENT,
   verifySignatures: true,
   featureDefaults: defaults,
   enableUsageTracking: false,
@@ -14,7 +14,7 @@ const client = createTogglyClient({
 // Initialization fetches/verifies backend definitions before hooks evaluate them.
 // The shared client owns definitions and transport resources, never the current user.
 await client.init();
-if (!env.TOGGLY_APP_KEY) {
+if (!TOGGLY_APP_KEY) {
   // Offline fixtures exercise the actual evaluator without pretending to be dashboard configuration.
   for (const definition of filters) client.state.definitions.set(definition.featureKey, definition);
   client.state.definitions.set('ExpressCheckout', {
@@ -40,8 +40,8 @@ export const handle = createTogglyHandle({
   // allowlist: only these keys may cross the server-load serialization boundary.
   // Error reporting is observational; a failed fetch still returns exposed defaults.
   frontend: {
-    appKey: publicEnv.PUBLIC_TOGGLY_APP_KEY,
-    environment: publicEnv.PUBLIC_TOGGLY_ENVIRONMENT ?? 'Production',
+    appKey: PUBLIC_TOGGLY_APP_KEY,
+    environment: PUBLIC_TOGGLY_ENVIRONMENT,
     expose: [...Object.keys(defaults), 'ExpressCheckout'],
     featureDefaults: defaults,
     onError: (error) => console.error('Frontend snapshot unavailable', error),

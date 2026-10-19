@@ -20,7 +20,7 @@ def terminal_case(dotnet, name, inputs):
     if pid == 0:
         os.environ["TOGGLY_APP_KEY"] = ""
         os.environ["TOGGLY_SNAPSHOT_DIRECTORY"] = ""
-        os.execvp(dotnet, [dotnet, "Console/bin/Release/net8.0/Console.dll"])
+        os.execvp(dotnet, [dotnet, "Console/bin/Release/net10.0/Console.dll"])
 
     output = bytearray()
     reaped = False
