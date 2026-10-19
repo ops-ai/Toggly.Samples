@@ -64,6 +64,24 @@ test('backend IPC surfaces child error message and stack', async () => {
   }
 });
 
+test('backend IPC rejects when child error message is empty', async () => {
+  const service = await fixture();
+  const { server } = await nestBackend(service, {
+    timeout: 15000,
+    harnessTestMode: true,
+    harnessErrorMessage: '',
+  });
+  try {
+    await assert.rejects(server.call('harness-throw'), (error) => {
+      assert.equal(error.message, '');
+      return true;
+    });
+  } finally {
+    await server.close();
+    await service.close();
+  }
+});
+
 test('backend sync waits for on-disk definitions cache', async () => {
   const service = await fixture();
   const { server, cachePath } = await nestBackend(service, { timeout: 15000 });

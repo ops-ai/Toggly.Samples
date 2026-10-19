@@ -45,7 +45,7 @@ export async function backend(config) {
       const p = pending.get(m.id);
       pending.delete(m.id);
       clearTimeout(p.timer);
-      m.error ? p.reject(backendIpcError(m)) : p.resolve(m.result);
+      m.error !== undefined ? p.reject(backendIpcError(m)) : p.resolve(m.result);
     }
   });
   child.on('exit', () => {
