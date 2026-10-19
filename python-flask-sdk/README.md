@@ -265,7 +265,7 @@ Flask claims/country/browser/language/OS columns stay OFF without explicit mappi
 Latest stable runtime and published dependency checkpoint: **2026-10-09**.
 [Python](https://www.python.org/downloads/) 3.14.7,
 [Flask](https://pypi.org/project/Flask/) 3.1.3,
-[toggly](https://pypi.org/project/toggly/) 1.2.0,
+[toggly](https://pypi.org/project/toggly/) 1.3.2,
 [toggly-flask](https://pypi.org/project/toggly-flask/) 0.4.0.
 Live mode reports definition cache hits on the usage pipeline; offline,
 missing-key, fixture, and `ci-placeholder` runs do not upload usage.
