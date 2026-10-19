@@ -156,7 +156,9 @@ export async function createApp({
         environment,
         baseUrl: fixtureUrl,
         verifySignatures: !offline,
-        enableStreaming: configured && !offline && telemetry,
+        // Match other Node HTTP samples: poll definitions on an interval instead of
+        // WebSocket streaming so LiveE2E edge-vs-mgmt can observe CDN revisions reliably.
+        enableStreaming: false,
         refreshInterval:
           configured && !offline ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
         timeout: 3000,
