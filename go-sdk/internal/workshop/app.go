@@ -102,6 +102,11 @@ func New(cfg Config) (*App, error) {
 			DisableEntityContextRegistration: true,
 			SessionStore:                     session.NewMemoryStore(),
 		}
+		// Dashboard apps use the definitions worker WebSocket for invalidation;
+		// polling alone can miss Live E2E windows when RefreshInterval is tens of seconds.
+		if a.fixture == nil {
+			sdkCfg.EnableLiveUpdates = true
+		}
 		// Dashboard schema creation is documented manually, so merely running this
 		// teaching app never writes schema metadata to a remote application.
 		if a.fixture != nil {
