@@ -76,7 +76,15 @@ func New(cfg Config) (*App, error) {
 		cfg.Environment = "Production"
 	}
 	if cfg.RefreshInterval == 0 {
-		cfg.RefreshInterval = 30 * time.Second
+		switch {
+		case cfg.Offline:
+			cfg.RefreshInterval = 30 * time.Second
+		case cfg.AppKey != "":
+			// Live dashboard sample: short poll fallback when WebSocket invalidation is unavailable.
+			cfg.RefreshInterval = 5 * time.Second
+		default:
+			cfg.RefreshInterval = 30 * time.Second
+		}
 	}
 	a := &App{}
 	// No key means no client and no network. Offline practice is an explicit
