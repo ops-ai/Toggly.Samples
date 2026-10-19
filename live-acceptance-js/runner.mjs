@@ -224,17 +224,26 @@ export async function acceptance(config, stage = async () => {}) {
           'backend frame/signed refetch/decision',
         );
       }
+      // Probe fetch counters advance when definitions-signed HTTP completes, before
+      // node-core finishes persisting the parsed models to fileCachePath.
+      await server.call('sync');
       await server.close();
       server = await backend({ ...config, offline: true });
-      const cached = await server.call('probe', 'alice');
-      assert.ok(
-        cached.value &&
-          cached.targeted &&
-          cached.vip &&
-          !cached.standard &&
-          cached.denied > 0 &&
-          cached.fetch === 0 &&
-          !cached.ws,
+      const cached = await wait(
+        async () => {
+          const probe = await server.call('probe', 'alice');
+          return (
+            probe.value &&
+            probe.targeted &&
+            probe.vip &&
+            !probe.standard &&
+            probe.denied > 0 &&
+            probe.fetch === 0 &&
+            !probe.ws &&
+            probe
+          );
+        },
+        config.timeout,
         'Cold parsed backend cache required',
       );
       assert.equal((await server.call('probe', 'bob')).targeted, false);

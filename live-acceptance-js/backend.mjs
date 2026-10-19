@@ -140,6 +140,18 @@ process.on('message', async (message) => {
       process.send({ id: message.id, result: true });
       return;
     }
+    if (message.command === 'sync') {
+      await client.refresh();
+      const deadline = Date.now() + 5000;
+      while (client.state.loading && Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      if (client.state.loading) {
+        throw new Error('Backend refresh did not settle');
+      }
+      process.send({ id: message.id, result: true });
+      return;
+    }
     const s = await scope(message.identity || 'alice');
     try {
       const result =

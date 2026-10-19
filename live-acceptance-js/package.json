@@ -27,6 +27,9 @@
     "svelte": "5.57.1",
     "ws": "8.22.0"
   },
+  "overrides": {
+    "@ops-ai/toggly-node-core": "0.13.1"
+  },
   "devDependencies": {
     "esbuild": "0.28.2",
     "playwright": "1.64.0",
