@@ -40,7 +40,7 @@ keyless mode. Test fixtures run only under test sources with ephemeral keys.
 
 ## Versions and reproducibility
 
-Official Maven Central metadata and published artifacts checked 2026-09-10:
+Official Maven Central metadata and published artifacts checked 2026-10-19:
 
 | Component | Version |
 |---|---|
