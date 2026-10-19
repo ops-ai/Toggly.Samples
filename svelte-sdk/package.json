@@ -12,7 +12,7 @@
     "test:browser": "node tests/browser.mjs"
   },
   "dependencies": {
-    "@ops-ai/svelte-feature-flags-toggly": "1.12.1",
+    "@ops-ai/svelte-feature-flags-toggly": "1.13.0",
     "svelte": "^5.57.2"
   },
   "devDependencies": {
