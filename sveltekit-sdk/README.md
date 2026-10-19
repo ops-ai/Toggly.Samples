@@ -1,6 +1,8 @@
 # SvelteKit SDK Sample
 
-A complete feature flag walkthrough using `@ops-ai/toggly-sveltekit` 0.1.x, Svelte5, SvelteKit2 and adapter-node on Node22.12+. The server uses Node core for request evaluation; the browser hydrates an explicitly exposed frontend snapshot and receives signed updates. The committed lockfile installs published registry packages, including adapter **0.1.0** and Node core **0.9.1**.
+A complete feature flag walkthrough using `@ops-ai/toggly-sveltekit` **0.5.3**, Svelte 5, SvelteKit 3, and adapter-node on Node 22.17+. The server uses Node core for request evaluation; the browser hydrates an explicitly exposed frontend snapshot and receives signed updates. The committed lockfile installs published registry packages.
+
+**Platform (this sample):** SvelteKit 3.x, Vite 8.x, TypeScript 6.x (`@sveltejs/kit` peers TypeScript ^6; TypeScript 7 is not yet accepted by `svelte-check` / Kit peers). **SDK:** `@ops-ai/toggly-sveltekit` 0.5.3 peers `@sveltejs/kit` `^2.0.0 || ^3.0.0` (see [Toggly.FeatureManagement SUPPORT_MATRIX](https://github.com/ops-ai/Toggly.FeatureManagement/blob/main/SUPPORT_MATRIX.md)).
 
 ## Quick start
 
@@ -54,12 +56,14 @@ The filter presets use the exact Chrome/macOS and Firefox/Windows strings from F
 | File                                     | Why it matters                                                                                            |
 | ---------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `.env.example`                           | Public versus private keys, environment and offline fallback                                              |
+| `src/env.ts`                             | Explicit `$app/env` variable schemas (Kit 3)                                                              |
 | `src/lib/catalog.ts`                     | Exact flags, native filter parameter names, identity presets, mapped Order entities                       |
 | `src/hooks.server.ts`                    | Initializes Node core, supplies one context per request, projects public targeting and closes at shutdown |
 | `src/routes/+layout.server.ts`           | Uses loadToggly, computes request-bound server results and tracks preset navigation                       |
 | `src/routes/+layout.svelte`              | Synchronous hydration, layout context ownership, browser mount and disposal                               |
 | `src/routes/[[section]]/+page.svelte`    | Actual Feature, negate, all/any/default and entity callsites                                              |
 | `src/routes/[[section]]/+page.server.ts` | Rechecks enhanced-submit before an action                                                                 |
+| `vite.config.ts`                         | SvelteKit 3 plugin config (adapter, CSRF trusted origins for browser tests)                               |
 | `tests/catalog.test.ts`                  | Runs every matching/nonmatching filter through the actual Node evaluator                                  |
 | `tests/browser/showcase.spec.ts`         | Adapter-node SSR, hydration, context navigation, concurrency and action smoke                             |
 
