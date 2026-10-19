@@ -6,7 +6,13 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createServer } from 'node:http';
 import { chromium } from 'playwright';
-import { until, transition } from './protocol.mjs';
+import { until, transition, backendCommandDeadlineMs } from './protocol.mjs';
+
+function backendIpcError(message) {
+  const err = new Error(message.error);
+  if (message.stack) err.stack = message.stack;
+  return err;
+}
 const childEnvironment = () =>
   Object.fromEntries(
     ['PATH', 'HOME', 'TMPDIR', 'TEMP', 'SystemRoot', 'DISPLAY', 'XDG_RUNTIME_DIR']
@@ -24,7 +30,8 @@ export async function stop(child) {
     await until(() => child.exitCode !== null || child.signalCode !== null, 3000, 'child kill');
   }
 }
-async function backend(config) {
+export async function backend(config) {
+  const commandDeadlineMs = backendCommandDeadlineMs(config.timeout);
   const child = fork(join(directory, 'backend.mjs'), {
     env: { ...childEnvironment(), LIVE_CHILD_CONFIG: JSON.stringify(config) },
     stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
@@ -38,7 +45,7 @@ async function backend(config) {
       const p = pending.get(m.id);
       pending.delete(m.id);
       clearTimeout(p.timer);
-      m.error ? p.reject(new Error(m.error)) : p.resolve(m.result);
+      m.error ? p.reject(backendIpcError(m)) : p.resolve(m.result);
     }
   });
   child.on('exit', () => {
@@ -54,7 +61,7 @@ async function backend(config) {
         if (child.exitCode !== null) throw new Error('Backend initialization failed');
         return ready;
       },
-      15000,
+      commandDeadlineMs,
       'backend initialization',
     );
   } catch (e) {
@@ -66,8 +73,12 @@ async function backend(config) {
       const n = ++id;
       const timer = setTimeout(() => {
         pending.delete(n);
-        reject(new Error('Backend command deadline'));
-      }, 10000);
+        reject(
+          new Error(
+            `Backend command deadline (${commandDeadlineMs}ms exceeded waiting for "${command}")`,
+          ),
+        );
+      }, commandDeadlineMs);
       pending.set(n, { resolve, reject, timer });
       child.send({ id: n, command, identity });
     });

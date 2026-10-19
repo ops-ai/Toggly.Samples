@@ -128,6 +128,14 @@ async function scope(identity) {
 }
 process.on('message', async (message) => {
   try {
+    if (config.harnessTestMode && message.command === 'harness-delay') {
+      await new Promise((resolve) => setTimeout(resolve, config.harnessDelayMs ?? 0));
+      process.send({ id: message.id, result: true });
+      return;
+    }
+    if (config.harnessTestMode && message.command === 'harness-throw') {
+      throw new Error(config.harnessErrorMessage ?? 'harness-throw');
+    }
     if (message.command === 'close') {
       await (app ? app.close() : client.close());
       process.send({ id: message.id, result: true });
@@ -181,10 +189,12 @@ process.on('message', async (message) => {
     } finally {
       s.dispose();
     }
-  } catch {
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
     process.send({
       id: message.id,
-      error: 'Backend acceptance command failed',
+      error: err.message,
+      stack: err.stack,
     });
   }
 });
