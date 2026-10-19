@@ -10,7 +10,8 @@ namespace DotnetSample.Controllers;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 public sealed class ShowcaseController(IFeatureManager features, IVariantFeatureManager variants,
-    IFeatureProviderDebug diagnostics, SampleMode mode, JobStorage jobs) : Controller
+    IFeatureProviderDebug diagnostics, SampleMode mode, JobStorage jobs,
+    ILogger<ShowcaseController> logger) : Controller
 {
     // Each page evaluates current SDK state on this request. There is no sample
     // background browser cache, so refresh the page after a dashboard change.
@@ -24,13 +25,24 @@ public sealed class ShowcaseController(IFeatureManager features, IVariantFeature
                 ? await features.IsEnabledAsync(key, persona.Order) : await features.IsEnabledAsync(key);
         var variant = await variants.GetVariantAsync(FeatureFlags.Dashboard, persona.Targeting);
         var debug = diagnostics.GetDebugInfo();
-        using var connection = jobs.GetConnection();
+        IReadOnlyList<string> jobIds = [];
+        try
+        {
+            using var connection = jobs.GetConnection();
+            jobIds = connection.GetRecurringJobs().Select(job => job.Id).ToArray();
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Hangfire job listing failed for {Path}", HttpContext.Request.Path);
+        }
+
         return new(persona, mode.Offline, values, variant?.Name, variant?.Configuration?["title"],
             await features.IsEnabledAsync(FeatureFlags.Express),
             await features.IsEnabledAsync(FeatureFlags.Express, new { Id = "unknown", Vip = true }),
-            debug.LastDefinitionsCheck, debug.Loaded, debug.WebsocketClientRunning,
-            connection.GetRecurringJobs().Select(job => job.Id).ToArray());
+            debug.LastDefinitionsCheck, debug.Loaded, debug.WebsocketClientRunning, jobIds,
+            TogglyEvaluationDegraded.IsDegraded(HttpContext));
     }
+
     public async Task<IActionResult> Index() => View(await Snapshot());
     [HttpGet("/gates")] public async Task<IActionResult> Gates() => View(await Snapshot());
     [HttpGet("/programmatic")] public async Task<IActionResult> Programmatic() => View(await Snapshot());

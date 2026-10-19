@@ -1,5 +1,5 @@
 import { Feature, useABTest, useFeature, useToggly } from '@ops-ai/react-router-toggly/client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export function ClientGates() {
   const direct = useFeature('new-dashboard', false)
@@ -27,6 +27,10 @@ export function ClientGates() {
 function ClientTelemetryDemo({ enabled }: { enabled: boolean }) {
   const toggly = useToggly()
   const [actionStatus, setActionStatus] = useState('No explicit telemetry sent yet.')
+  const [hydrated, setHydrated] = useState(false)
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
 
   return (
     <section aria-labelledby="browser-telemetry-heading">
@@ -50,6 +54,7 @@ function ClientTelemetryDemo({ enabled }: { enabled: boolean }) {
         <button data-testid="flush-browser-telemetry" onClick={() => void toggly.flushTelemetry()}>Flush browser telemetry</button>
       </div>
       <p role="status" data-testid="telemetry-status">{actionStatus}</p>
+      <span data-testid="client-gates-hydrated" hidden>{hydrated ? 'ready' : ''}</span>
     </section>
   )
 }

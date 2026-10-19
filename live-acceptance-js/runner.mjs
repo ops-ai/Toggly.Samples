@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { fork, spawn } from 'node:child_process';
+import { fork } from 'node:child_process';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -119,11 +119,12 @@ function observe() {
   };
 }
 async function browser(profile, origin, offline) {
+  // launchPersistentContext flushes localStorage to user-data-dir on close; raw
+  // Chromium + connectOverCDP stopped persisting across restarts in PW 1.64.
   await rm(join(profile, 'DevToolsActivePort'), { force: true });
-  const child = spawn(
-    chromium.executablePath(),
-    [
-      '--headless',
+  const context = await chromium.launchPersistentContext(profile, {
+    headless: true,
+    args: [
       '--no-sandbox',
       '--use-mock-keychain',
       '--password-store=basic',
@@ -131,69 +132,29 @@ async function browser(profile, origin, offline) {
       '--no-first-run',
       '--no-default-browser-check',
       '--disable-background-networking',
-      '--remote-debugging-port=0',
-      `--user-data-dir=${profile}`,
-      'about:blank',
     ],
-    { stdio: 'ignore', env: childEnvironment() },
-  );
-  let connection;
-  try {
-    let port;
-    await until(
-      async () => {
-        if (child.exitCode !== null) throw new Error('Browser exited');
-        try {
-          port = (await readFile(join(profile, 'DevToolsActivePort'), 'utf8')).split('\n')[0];
-          return /^\d+$/.test(port);
-        } catch {
-          return false;
-        }
-      },
-      15000,
-      'browser process',
+    env: childEnvironment(),
+  });
+  await context.addInitScript(observe);
+  if (offline) {
+    await context.route('**/*', (route) =>
+      new URL(route.request().url()).origin === origin
+        ? route.continue()
+        : route.abort('internetdisconnected'),
     );
-    await until(
-      async () => {
-        try {
-          connection = await chromium.connectOverCDP(`http://127.0.0.1:${port}`, { timeout: 1000 });
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      10000,
-      'browser CDP listener',
-    );
-    const context = connection.contexts()[0];
-    await context.addInitScript(observe);
-    if (offline) {
-      await context.route('**/*', (route) =>
-        new URL(route.request().url()).origin === origin
-          ? route.continue()
-          : route.abort('internetdisconnected'),
-      );
-      await context.routeWebSocket('**/*', (socket) => socket.close());
-    }
-    return {
-      context,
-      async close() {
-        try {
-          await Promise.race([
-            connection.close(),
-            new Promise((_, reject) =>
-              setTimeout(() => reject(new Error('Browser close deadline')), 3000),
-            ),
-          ]);
-        } finally {
-          await stop(child);
-        }
-      },
-    };
-  } catch (e) {
-    await stop(child);
-    throw e;
+    await context.routeWebSocket('**/*', (socket) => socket.close());
   }
+  return {
+    context,
+    async close() {
+      await Promise.race([
+        context.close(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Browser close deadline')), 10000),
+        ),
+      ]);
+    },
+  };
 }
 async function probePage(context, origin, config, identity, seed) {
   const page = await context.newPage();

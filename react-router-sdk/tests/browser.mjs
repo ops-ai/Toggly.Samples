@@ -8,6 +8,10 @@ const root = fileURLToPath(new URL('../', import.meta.url))
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_EXECUTABLE || undefined })
 const servers = []
 
+async function waitForClientGatesHydrated(page) {
+  await expect(page.getByTestId('client-gates-hydrated')).toHaveText('ready')
+}
+
 async function start(port, appKey, telemetry = true) {
   // This browser proof exercises only the published app-owned client. Keep the
   // server SDK unconfigured so neither definitions nor server telemetry can
@@ -22,11 +26,14 @@ async function start(port, appKey, telemetry = true) {
   // discovery of @ops-ai/react-router-toggly triggers "optimized dependencies
   // changed. reloading", which remounts the provider mid-assertion and flakes
   // identity/flag checks (seen on CI Linux and local cold node_modules/.vite).
+  // Each hosted port also gets its own cache directory so concurrent servers with
+  // different VITE_TOGGLY_* values cannot invalidate each other's optimized deps.
   const server = await createServer({
     root,
     mode: 'test',
     envDir: false,
     clearScreen: false,
+    cacheDir: `${root}/node_modules/.vite-browser-${port}`,
     server: { host: '127.0.0.1', port, strictPort: true, hmr: false },
     optimizeDeps: {
       include: [
@@ -211,6 +218,7 @@ try {
     })
     await silentPage.goto(`${await start(port, appKey, telemetry)}/gates`)
     await expect(silentPage.getByTestId('new-dashboard-result')).toHaveText(expected)
+    await waitForClientGatesHydrated(silentPage)
     await silentPage.getByTestId('identify-bob').click()
     await expect(silentPage.getByTestId('client-identity')).toHaveText('bob')
     await silentPage.getByTestId('record-telemetry').click()

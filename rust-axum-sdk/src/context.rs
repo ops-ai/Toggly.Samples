@@ -1,6 +1,5 @@
 //! Request-local teaching personas are not authentication or authorization.
 use axum::{
-    async_trait,
     extract::FromRequestParts,
     http::{StatusCode, request::Parts},
 };
@@ -187,7 +186,6 @@ pub struct WorkshopContext {
     pub csrf: String,
 }
 
-#[async_trait]
 impl<S> FromRequestParts<S> for WorkshopContext
 where
     S: Send + Sync,
@@ -202,7 +200,6 @@ where
     }
 }
 
-#[async_trait]
 impl<S> FromRequestParts<S> for CookieJarHandle
 where
     S: Send + Sync,

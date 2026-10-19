@@ -108,9 +108,9 @@ pub async fn page(
 <body>
 <a class="skip" href="#content">Skip to content</a>
 <header>
-    <div class="eyebrow">TOGGLY / RUST + AXUM 0.7</div>
+    <div class="eyebrow">TOGGLY / RUST + AXUM 0.8</div>
     <h1>Feature flags, one request at a time.</h1>
-    <p>A hands-on workshop using published toggly 0.6.0, toggly-axum 0.6.0 and Axum 0.7.9. This is not an Axum 0.8 sample.</p>
+    <p>A hands-on workshop using published toggly 0.9.1, toggly-axum08 0.1.1 and Axum 0.8.9.</p>
 </header>
 <nav aria-label="Workshop sections">
 {nav}</nav>
@@ -394,7 +394,7 @@ async fn orders(context: &WorkshopContext, client: Option<&TogglyClient>) -> Str
 fn surfaces() -> String {
     r##"<section class="card">
     <h3>Native Axum Feature extractor</h3>
-    <pre><code>async fn native(feature: toggly_axum::Feature) {
+    <pre><code>async fn native(feature: toggly_axum08::Feature) {
     let enabled = feature.is_enabled("beta-access").await;
     // feature.context() and feature.client() expose the native context/client.
 }</code></pre>
@@ -407,7 +407,7 @@ fn surfaces() -> String {
     <h3>Full-context denial route: sample composition</h3>
     <p><a href="/beta">Open the beta route</a>. Workshop middleware assembles context, the native core evaluates beta-access, and the route returns 404 when disabled or 503 on error.</p>
     <h3>Published Axum version</h3>
-    <p>This sample uses published <code>toggly</code> and <code>toggly-axum</code> 0.6.x on Axum 0.7 because the Axum 0.8 adapter is not published. Stay on Axum 0.7.9 with these crates.</p>
+    <p>This sample uses published <code>toggly-axum08</code> on Axum 0.8. <code>toggly-axum</code> remains the Axum 0.7 adapter. The split crates share the same layer, extractor and state APIs but different crate names.</p>
     <h3>Lifetime and cache</h3>
     <p>The process owns one <code>Arc&lt;TogglyClient&gt;</code>. Axum's graceful shutdown calls <code>close</code> once. No per-request client, identity mutation, definition refresh or cache clear occurs. The default 60-second evaluation key omits Order, claims and request metadata. This workshop uses public <code>cache_ttl(Duration::ZERO)</code> so those edits expire immediately. Entries are still created; this is not a structural cache-disable switch.</p>
 </section>"##.into()

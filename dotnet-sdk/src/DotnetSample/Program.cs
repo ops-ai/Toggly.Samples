@@ -11,8 +11,8 @@ using Toggly.FeatureManagement.NSwag.Configuration;
 using Toggly.FeatureManagement.Web.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
-var key = builder.Configuration["TOGGLY_APP_KEY"];
-var offline = string.IsNullOrWhiteSpace(key) || key == "ci-placeholder";
+var key = builder.Configuration["TOGGLY_APP_KEY"]?.Trim();
+var offline = TogglyPracticeMode.IsOffline(key);
 builder.Services.AddSingleton(new SampleMode(offline));
 builder.Services.AddControllersWithViews();
 
@@ -32,7 +32,10 @@ builder.Services.AddTogglyWeb(options =>
         options.DefinitionsBaseUrl = "http://127.0.0.1:1/";
         options.BaseUrl = "http://127.0.0.1:1/";
     }
+    else
+        ApplyLiveTogglyUrls(options, builder.Configuration);
 }).WithTogglyTargeting<RequestTargetingAccessor>();
+builder.Services.AddResilientTogglyFeatureEvaluation();
 
 builder.Services.AddTogglyEntityContext<Order>("Order", order => order.Id, schema => schema
     .KeyProperty("Id").Property("Vip", "boolean").Property("Total", "number")
@@ -62,6 +65,17 @@ builder.Services.AddOpenApiDocument((document, services) =>
 });
 
 var app = builder.Build();
+app.UseExceptionHandler(handler =>
+{
+    handler.Run(async context =>
+    {
+        var error = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>()?.Error;
+        if (error is not null)
+            app.Logger.LogError(error, "Unhandled exception for {Method} {Path}", context.Request.Method, context.Request.Path);
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        await context.Response.WriteAsync("An unexpected error occurred. See server logs for details.");
+    });
+});
 app.UseStaticFiles();
 app.UseRouting();
 app.Use(SamplePersonas.Apply);
@@ -74,9 +88,36 @@ app.MapHealthChecks("/health/toggly");
 
 // Job scheduling follows environment-level flag state (AlwaysOn), NOT an
 // individual user's targeting. A request must never reschedule a global job.
-app.Services.GetRequiredService<IFeatureStateService>().AddOrUpdateJob<PracticeJob>(
-    app.Services, FeatureFlags.Submit, "enhanced-submit-practice", job => job.RunAsync(), Cron.Minutely());
+try
+{
+    app.Services.GetRequiredService<IFeatureStateService>().AddOrUpdateJob<PracticeJob>(
+        app.Services, FeatureFlags.Submit, "enhanced-submit-practice", job => job.RunAsync(), Cron.Minutely());
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "Hangfire practice job registration failed; the sample will continue without enhanced-submit scheduling");
+}
 app.Run();
+
+static void ApplyLiveTogglyUrls(TogglySettings options, IConfiguration configuration)
+{
+    static string? Normalize(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim().TrimEnd('/') + "/";
+
+    var definitions = Normalize(configuration["TOGGLY_DEFINITIONS_URL"])
+        ?? Normalize(configuration["TOGGLY_BASE_URL"]);
+    if (definitions is not null)
+        options.DefinitionsBaseUrl = definitions;
+
+    var management = Normalize(configuration["TOGGLY_MGMT_BASE_URL"])
+        ?? Normalize(configuration["TOGGLY_APP_BASE_URL"]);
+    if (management is not null)
+        options.BaseUrl = management;
+
+    var metrics = Normalize(configuration["TOGGLY_METRICS_BASE_URL"]);
+    if (metrics is not null)
+        options.MetricsBaseUrl = metrics;
+}
 
 // WebApplicationFactory starts this same app with real published integrations.
 public partial class Program;
