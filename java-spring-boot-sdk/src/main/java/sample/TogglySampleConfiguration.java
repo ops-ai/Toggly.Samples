@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 /**
- * Completes starter auto-configuration with the surfaces the published 2.2.1
+ * Completes starter auto-configuration with the surfaces the published 2.2.2
  * starter does not bind: signed definitions, a non-null HTTP provider, and the
  * {@link FeatureAspect} bean. This is ordinary Boot configuration against
  * published types, not a local jar or source substitution.
@@ -73,7 +73,7 @@ public class TogglySampleConfiguration {
 
     @Bean(destroyMethod = "close")
     public SnapshotProvider snapshotProvider(TogglyConfig config) {
-        // Starter snapshotProvider() returns null. Boot 3.5 then refuses to inject
+        // Starter snapshotProvider() returns null. Spring Boot then refuses to inject
         // it into togglyClient, so the auto-configured client never starts.
         // A Spring-owned HttpSnapshotProvider is the published workaround; the
         // starter client still constructs TogglyClient(config, provider).
