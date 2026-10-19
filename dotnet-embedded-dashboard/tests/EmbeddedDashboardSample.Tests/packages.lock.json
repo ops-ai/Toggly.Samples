@@ -630,8 +630,8 @@
       },
       "Toggly.FeatureManagement": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "a2PtiKTjMZ1mNKojVBtU8QafyQaTCpjJrrrRRoeHVrqjlBXxchRZzfHak2CPQs6UEguyMQhBTTeX6URVzXOumA==",
+        "resolved": "3.14.1",
+        "contentHash": "QtXGSnuDVZoJadOfi2F5z37T43qDBKNtTkl6hj3OpfZr2kunQa963TGnwzwKK8b/DRb/iCVNn72qz57I7AqO9w==",
         "dependencies": {
           "Azure.Core": "1.50.0",
           "Azure.Messaging.WebPubSub": "1.6.0",
@@ -649,44 +649,44 @@
       },
       "Toggly.FeatureManagement.Catalog": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "HSdZXS0ZHMMlDvQaSpxpyp5ZG8ybXexFVz2O8ufMz4bKQZA9feDeUJas26GLi6cg649LNzHShpq3JRTKdAP3MA=="
+        "resolved": "3.14.1",
+        "contentHash": "7RyG+DEgPCH91xWIRiZWv55mfqBqIbBBH9q3jAP8+CVPk2Dzt7o03GajzTzEUFTG4DYKJ28jMGcyoIfp9NSVRA=="
       },
       "Toggly.FeatureManagement.Dashboard": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "3lNIddWQM3Q/YyhaZSYvlCLRmlY5N6D+DACOIZFpsdi9eLQWMfvMBsSpCKkFktSMd6W7/mHKdUACOMHeWyRS6g==",
+        "resolved": "3.14.1",
+        "contentHash": "3FkHhZXhjZnCqWtKpe47D/7lMKn3l7dGrJr9pJANftl4m/MeZ7EvDJArkxRO9DktMGHHrl0CjtzqFzm6hfC51Q==",
         "dependencies": {
-          "Toggly.FeatureManagement.Embedded": "3.13.3",
-          "Toggly.FeatureManagement.Web": "3.13.3"
+          "Toggly.FeatureManagement.Embedded": "3.14.1",
+          "Toggly.FeatureManagement.Web": "3.14.1"
         }
       },
       "Toggly.FeatureManagement.Embedded": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "hs/SrizPzjsQYUYwNlf0yR9vmgMhz4T2+Gq+f+A38VF5ZPLQ6cGtVn0auKkIzxI2631fX2C4XaBJEyU+rIv/Dw==",
+        "resolved": "3.14.1",
+        "contentHash": "i+ucQK7gEXtunP6ENrZ8nwo+y1C+JkMI6nIZfmusFGGF9BpaVUYAFjwwpAPNipMpliRIdMeR/oZc80IwyVv7Zw==",
         "dependencies": {
-          "Toggly.FeatureManagement": "3.13.3",
-          "Toggly.FeatureManagement.Catalog": "3.13.3"
+          "Toggly.FeatureManagement": "3.14.1",
+          "Toggly.FeatureManagement.Catalog": "3.14.1"
         }
       },
       "Toggly.FeatureManagement.Storage.EntityFramework": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "+IjtrPwS4WB2Mn5XYTwW24zc7zTDe8Rr/jvNiJZUbOSgu/FO5fFum9nXcAdrdFzrEoh6f+k9yvcnmnQmQ5t6Wg==",
+        "resolved": "3.14.1",
+        "contentHash": "C425cPVg9K3ISYZWwQKy2+pAMKSkAS0qt/ccpJJGLgOtqZtrd/jiZcG4fVjU6H3MuLs610Kq1HYdwBY8CpXXjw==",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "10.0.0",
           "Microsoft.EntityFrameworkCore.Relational": "10.0.0",
-          "Toggly.FeatureManagement": "3.13.3",
-          "Toggly.FeatureManagement.Catalog": "3.13.3"
+          "Toggly.FeatureManagement": "3.14.1",
+          "Toggly.FeatureManagement.Catalog": "3.14.1"
         }
       },
       "Toggly.FeatureManagement.Web": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "DgLchW9anA+K1v9pfiPTnH381Mat4fbNqJqBS7dCKZl2LgfT7VcDbEvpMdsS/pvmM9nUDCBMGL+FgR0YYM9ZJQ==",
+        "resolved": "3.14.1",
+        "contentHash": "OxpPquyZFAgVN3qpYFaE/c3fm8jCwXxS5ZbfmL0b1ODG8la/vpsA2IZgXtr9pVBVnZoVsUKumFA+5AiQm9L1qg==",
         "dependencies": {
-          "Toggly.FeatureManagement": "3.13.3",
+          "Toggly.FeatureManagement": "3.14.1",
           "UAParser": "3.1.47"
         }
       },
@@ -751,8 +751,8 @@
           "Microsoft.EntityFrameworkCore.Sqlite": "[10.0.12, )",
           "Microsoft.FeatureManagement.AspNetCore": "[4.7.0, )",
           "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.5, )",
-          "Toggly.FeatureManagement.Dashboard": "[3.13.3, )",
-          "Toggly.FeatureManagement.Storage.EntityFramework": "[3.13.3, )"
+          "Toggly.FeatureManagement.Dashboard": "[3.14.1, )",
+          "Toggly.FeatureManagement.Storage.EntityFramework": "[3.14.1, )"
         }
       }
     },
@@ -1387,8 +1387,8 @@
       },
       "Toggly.FeatureManagement": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "a2PtiKTjMZ1mNKojVBtU8QafyQaTCpjJrrrRRoeHVrqjlBXxchRZzfHak2CPQs6UEguyMQhBTTeX6URVzXOumA==",
+        "resolved": "3.14.1",
+        "contentHash": "QtXGSnuDVZoJadOfi2F5z37T43qDBKNtTkl6hj3OpfZr2kunQa963TGnwzwKK8b/DRb/iCVNn72qz57I7AqO9w==",
         "dependencies": {
           "Azure.Core": "1.50.0",
           "Azure.Messaging.WebPubSub": "1.6.0",
@@ -1406,44 +1406,44 @@
       },
       "Toggly.FeatureManagement.Catalog": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "HSdZXS0ZHMMlDvQaSpxpyp5ZG8ybXexFVz2O8ufMz4bKQZA9feDeUJas26GLi6cg649LNzHShpq3JRTKdAP3MA=="
+        "resolved": "3.14.1",
+        "contentHash": "7RyG+DEgPCH91xWIRiZWv55mfqBqIbBBH9q3jAP8+CVPk2Dzt7o03GajzTzEUFTG4DYKJ28jMGcyoIfp9NSVRA=="
       },
       "Toggly.FeatureManagement.Dashboard": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "3lNIddWQM3Q/YyhaZSYvlCLRmlY5N6D+DACOIZFpsdi9eLQWMfvMBsSpCKkFktSMd6W7/mHKdUACOMHeWyRS6g==",
+        "resolved": "3.14.1",
+        "contentHash": "3FkHhZXhjZnCqWtKpe47D/7lMKn3l7dGrJr9pJANftl4m/MeZ7EvDJArkxRO9DktMGHHrl0CjtzqFzm6hfC51Q==",
         "dependencies": {
-          "Toggly.FeatureManagement.Embedded": "3.13.3",
-          "Toggly.FeatureManagement.Web": "3.13.3"
+          "Toggly.FeatureManagement.Embedded": "3.14.1",
+          "Toggly.FeatureManagement.Web": "3.14.1"
         }
       },
       "Toggly.FeatureManagement.Embedded": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "hs/SrizPzjsQYUYwNlf0yR9vmgMhz4T2+Gq+f+A38VF5ZPLQ6cGtVn0auKkIzxI2631fX2C4XaBJEyU+rIv/Dw==",
+        "resolved": "3.14.1",
+        "contentHash": "i+ucQK7gEXtunP6ENrZ8nwo+y1C+JkMI6nIZfmusFGGF9BpaVUYAFjwwpAPNipMpliRIdMeR/oZc80IwyVv7Zw==",
         "dependencies": {
-          "Toggly.FeatureManagement": "3.13.3",
-          "Toggly.FeatureManagement.Catalog": "3.13.3"
+          "Toggly.FeatureManagement": "3.14.1",
+          "Toggly.FeatureManagement.Catalog": "3.14.1"
         }
       },
       "Toggly.FeatureManagement.Storage.EntityFramework": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "+IjtrPwS4WB2Mn5XYTwW24zc7zTDe8Rr/jvNiJZUbOSgu/FO5fFum9nXcAdrdFzrEoh6f+k9yvcnmnQmQ5t6Wg==",
+        "resolved": "3.14.1",
+        "contentHash": "C425cPVg9K3ISYZWwQKy2+pAMKSkAS0qt/ccpJJGLgOtqZtrd/jiZcG4fVjU6H3MuLs610Kq1HYdwBY8CpXXjw==",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "8.0.0",
           "Microsoft.EntityFrameworkCore.Relational": "8.0.0",
-          "Toggly.FeatureManagement": "3.13.3",
-          "Toggly.FeatureManagement.Catalog": "3.13.3"
+          "Toggly.FeatureManagement": "3.14.1",
+          "Toggly.FeatureManagement.Catalog": "3.14.1"
         }
       },
       "Toggly.FeatureManagement.Web": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "DgLchW9anA+K1v9pfiPTnH381Mat4fbNqJqBS7dCKZl2LgfT7VcDbEvpMdsS/pvmM9nUDCBMGL+FgR0YYM9ZJQ==",
+        "resolved": "3.14.1",
+        "contentHash": "OxpPquyZFAgVN3qpYFaE/c3fm8jCwXxS5ZbfmL0b1ODG8la/vpsA2IZgXtr9pVBVnZoVsUKumFA+5AiQm9L1qg==",
         "dependencies": {
-          "Toggly.FeatureManagement": "3.13.3",
+          "Toggly.FeatureManagement": "3.14.1",
           "UAParser": "3.1.47"
         }
       },
@@ -1508,8 +1508,8 @@
           "Microsoft.EntityFrameworkCore.Sqlite": "[8.0.31, )",
           "Microsoft.FeatureManagement.AspNetCore": "[4.7.0, )",
           "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.5, )",
-          "Toggly.FeatureManagement.Dashboard": "[3.13.3, )",
-          "Toggly.FeatureManagement.Storage.EntityFramework": "[3.13.3, )"
+          "Toggly.FeatureManagement.Dashboard": "[3.14.1, )",
+          "Toggly.FeatureManagement.Storage.EntityFramework": "[3.14.1, )"
         }
       }
     }
