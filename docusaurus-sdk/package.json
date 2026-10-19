@@ -14,7 +14,7 @@
     "@ops-ai/toggly-client-core": "0.5.2",
     "@ops-ai/toggly-docusaurus-plugin": "0.10.2",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.1"
   },
   "engines": {
     "node": ">=22.23.2"
