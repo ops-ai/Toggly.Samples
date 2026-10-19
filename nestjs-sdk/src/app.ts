@@ -15,6 +15,8 @@ import { page } from './view.js';
 export interface SampleOptions {
   appKey?: string;
   environment?: string;
+  /** Live definitions base (defaults to core `https://definitions.toggly.io`). */
+  definitionsBaseUrl?: string;
   fixtureUrl?: string;
   hooks?: Hook[];
   telemetry?: boolean;
@@ -23,6 +25,7 @@ export interface SampleOptions {
 export async function createApp({
   appKey = '',
   environment = 'Production',
+  definitionsBaseUrl,
   fixtureUrl,
   hooks = [],
   telemetry = true,
@@ -154,7 +157,7 @@ export async function createApp({
         // No fake live credentials: fixture marker is sent only to the loopback server.
         appKey: offline ? 'offline-fixture' : configured ? appKey : undefined,
         environment,
-        baseUrl: fixtureUrl,
+        baseUrl: offline ? fixtureUrl : definitionsBaseUrl,
         verifySignatures: !offline,
         // Match other Node HTTP samples: poll definitions on an interval instead of
         // WebSocket streaming so LiveE2E edge-vs-mgmt can observe CDN revisions reliably.
