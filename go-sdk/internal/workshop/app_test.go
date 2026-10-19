@@ -233,27 +233,27 @@ func TestSignedRefreshRejectsTamperingAndRecovers(t *testing.T) {
 	eventually(t, func() bool { return app.evaluate(context.Background(), "new-dashboard", toggly.Context{}) })
 }
 
-func TestConfiguredRemoteClientEnablesLiveUpdates(t *testing.T) {
+func TestLiveDashboardClientUsesShortPollFallback(t *testing.T) {
 	f, err := fixture.New()
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer f.Close()
-	app, err := New(Config{AppKey: "fixture-only", DefinitionsURL: f.URL + "/", RefreshInterval: time.Hour})
+	app, err := New(Config{AppKey: "fixture-only", DefinitionsURL: f.URL + "/", RefreshInterval: 20 * time.Millisecond})
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer app.Close()
 	waitLoaded(t, app)
-	if !app.client.ProviderDebugInfo().LiveUpdatesEnabled {
-		t.Fatal("dashboard client should enable WebSocket live updates")
-	}
-}
-
-func TestOfflinePracticeDoesNotEnableLiveUpdates(t *testing.T) {
-	app := offlineApp(t)
 	if app.client.ProviderDebugInfo().LiveUpdatesEnabled {
-		t.Fatal("offline fixture should not enable live updates")
+		t.Fatal("live dashboard sample should not enable WebSocket live updates")
+	}
+	// Observe via fixture toggle + background refresh without waiting an hour.
+	before := len(f.Requests())
+	f.SetDashboard(false)
+	eventually(t, func() bool { return !app.evaluate(context.Background(), "new-dashboard", toggly.Context{}) })
+	if len(f.Requests()) <= before {
+		t.Fatal("expected background refresh after fixture change")
 	}
 }
 
