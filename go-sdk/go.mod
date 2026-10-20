@@ -7,7 +7,7 @@ require github.com/ops-ai/Toggly.FeatureManagement/toggly-go v0.13.2
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/klauspost/compress v1.16.7 // indirect
+	github.com/klauspost/compress v1.18.7 // indirect
 	github.com/mileusna/useragent v1.3.5 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/redis/go-redis/v9 v9.22.0 // indirect
