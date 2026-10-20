@@ -86,8 +86,8 @@ export async function createApp({
         context: await this.toggly.context(),
         order: inputs(req).order,
         flags,
-        // LiveE2E in-process probes read `features`; keep `flags` for other Node samples parity.
-        features: flags,
+        // LiveE2E in-process edge-vs-mgmt probes read the shared snapshot field name.
+        features: this.provider.state.features,
       };
     }
     @Post('api/refresh')
