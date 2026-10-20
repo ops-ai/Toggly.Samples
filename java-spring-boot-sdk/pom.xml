@@ -13,7 +13,7 @@
   <name>Java Spring Boot SDK Sample</name>
   <description>Full Sample Contract workshop for the published Toggly Spring Boot starter</description>
   <properties>
-    <java.version>17</java.version>
+    <java.version>26</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputTimestamp>2026-09-16T00:00:00Z</project.build.outputTimestamp>
   </properties>

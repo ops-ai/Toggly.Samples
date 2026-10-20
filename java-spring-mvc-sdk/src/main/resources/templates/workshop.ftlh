@@ -60,4 +60,4 @@ public String argument(
 <#break>
 <#case '/allowed'><p>The published FeatureGateInterceptor allowed this request before the controller ran.</p><@table keys=flags/><#break>
 </#switch>
-</main><footer>Published io.toggly 2.3.1 · Spring MVC 7.0.9 · FreeMarker 2.3.35 · Tomcat 11 · Java 26</footer></body></html>
+</main><footer>Published io.toggly 2.3.1 · Spring MVC 7.0.9 · FreeMarker 2.3.35 · Tomcat 11 · Java 27</footer></body></html>

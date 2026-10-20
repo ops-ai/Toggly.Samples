@@ -2,7 +2,7 @@
 
 A complete feature flag walkthrough using `@ops-ai/toggly-sveltekit` **0.5.3**, Svelte 5, SvelteKit 3, and adapter-node on Node 22.17+. The server uses Node core for request evaluation; the browser hydrates an explicitly exposed frontend snapshot and receives signed updates. The committed lockfile installs published registry packages.
 
-**Platform (this sample):** SvelteKit 3.x, Vite 8.x, TypeScript 6.x (`@sveltejs/kit` peers TypeScript ^6; TypeScript 7 is not yet accepted by `svelte-check` / Kit peers). **SDK:** `@ops-ai/toggly-sveltekit` 0.5.3 peers `@sveltejs/kit` `^2.0.0 || ^3.0.0` (see [Toggly.FeatureManagement SUPPORT_MATRIX](https://github.com/ops-ai/Toggly.FeatureManagement/blob/main/SUPPORT_MATRIX.md)).
+**Platform (this sample):** SvelteKit 3.x, Vite 8.x, TypeScript 6.x (`@sveltejs/kit` peers TypeScript ^6; TypeScript 7 is not yet accepted by `svelte-check` / Kit peers). **SDK:** `@ops-ai/toggly-sveltekit` 0.5.3 peers `@sveltejs/kit` `^2.0.0 || ^3.0.0` (see [Toggly.FeatureManagement SUPPORT_MATRIX](https://github.com/ops-ai/Toggly.FeatureManagement/blob/develop/SUPPORT_MATRIX.md)).
 
 ## Quick start
 
