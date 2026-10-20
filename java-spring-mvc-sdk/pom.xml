@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.toggly.samples</groupId><artifactId>java-spring-mvc-sdk</artifactId><version>1.0.0</version>
   <properties>
-    <maven.compiler.release>26</maven.compiler.release>
+    <maven.compiler.release>27</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputTimestamp>2026-09-10T00:00:00Z</project.build.outputTimestamp>
   </properties>

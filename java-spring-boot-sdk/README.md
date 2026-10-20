@@ -11,8 +11,10 @@ This is **not** the Spring MVC adapter sample. It does not register
 
 ## Quick start
 
-Install **OpenJDK 17** or newer (verified **17.0.17**), **Maven 3.9.12**, and
-Python 3. Set `JAVA_HOME` and add its `bin` to `PATH`.
+Install **OpenJDK 26.0.2.1** (Spring Boot **4.1.1** supports Java **17** through **26**;
+see [system requirements](https://docs.spring.io/spring-boot/system-requirements.html)),
+**Maven 3.9.12**, and Python 3. Set `JAVA_HOME` and add its `bin` to `PATH`.
+Downloads: [jdk.java.net/26](https://jdk.java.net/26/).
 
 ```sh
 cd java-spring-boot-sdk
@@ -44,7 +46,7 @@ Verified against official registries on 2026-10-19:
 
 | Component | Version |
 |---|---|
-| OpenJDK, compiler release | 17.0.17, release 17 |
+| OpenJDK, compiler release | 26.0.2.1, release 26 |
 | Maven | 3.9.12 |
 | `io.toggly:toggly-spring-boot4-starter` | 2.3.1 |
 | `io.toggly:toggly-core` (transitive) | 2.3.1 |
@@ -55,7 +57,7 @@ Verified against official registries on 2026-10-19:
 [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide):
 parent **4.1.1**, `spring-boot-starter-webmvc` (replaces deprecated
 `spring-boot-starter-web`), and `spring-boot-starter-aspectj` (replaces
-`spring-boot-starter-aop`). Java **17** remains the compiler release.
+`spring-boot-starter-aop`). Java **26** is the compiler release (Boot 4.1.x cap).
 
 The starter's `snapshotProvider()` bean returns null. Spring Boot will not inject
 that null into `togglyClient`. `TogglySampleConfiguration` supplies a

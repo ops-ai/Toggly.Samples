@@ -60,4 +60,4 @@ client.isEnabled("ExpressCheckout", context.withEntity(order));</pre><p>Never re
 <#break>
 <#case '/allowed'><p>The published FeatureAspect allowed the service method; the controller then rendered this page.</p><@table keys=flags/><#break>
 </#switch>
-</main><footer>Published io.toggly boot4 starter 2.3.1 · Spring Boot 4.1.1 · Java 17 · Actuator health + /actuator/toggly</footer></body></html>
+</main><footer>Published io.toggly boot4 starter 2.3.1 · Spring Boot 4.1.1 · Java 26 · Actuator health + /actuator/toggly</footer></body></html>

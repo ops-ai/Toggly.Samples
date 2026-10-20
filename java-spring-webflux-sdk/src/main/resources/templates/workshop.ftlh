@@ -63,4 +63,4 @@ reactive.isEnabled("ExpressCheckout", context.withEntity(order))
 <#break>
 <#case '/allowed'><p>The published FeatureGateFilter allowed this request before the controller ran.</p><@table keys=flags/><#break>
 </#switch>
-</main><footer>Published io.toggly 2.3.1 · Spring WebFlux 7.0.9 · FreeMarker 2.3.35 · Reactor Netty 1.3.7 · Java 26</footer></body></html>
+</main><footer>Published io.toggly 2.3.1 · Spring WebFlux 7.0.9 · FreeMarker 2.3.35 · Reactor Netty 1.3.7 · Java 27</footer></body></html>
