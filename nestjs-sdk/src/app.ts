@@ -22,6 +22,15 @@ import {
 } from '@ops-ai/toggly-nestjs';
 import { inputs, keys, filters } from './catalog.js';
 import { page } from './view.js';
+
+/** LiveE2E often sets `TOGGLY_REFRESH_INTERVAL_MS=0` when streaming was enabled; with streaming off, poll instead. */
+function liveRefreshIntervalMs(): number {
+  const raw = process.env.TOGGLY_REFRESH_INTERVAL_MS;
+  const parsed = raw !== undefined && raw !== '' ? Number(raw) : 5000;
+  if (!Number.isFinite(parsed) || parsed < 0) return 5000;
+  return parsed > 0 ? parsed : 5000;
+}
+
 export interface SampleOptions {
   appKey?: string;
   environment?: string;
@@ -182,10 +191,7 @@ export async function createApp({
         // Match other Node HTTP samples: poll definitions on an interval instead of
         // WebSocket streaming so LiveE2E edge-vs-mgmt can observe CDN revisions reliably.
         enableStreaming: false,
-        // LiveE2E in-process probes wait up to 60s after management toggles; default
-        // 10s polling (override with TOGGLY_REFRESH_INTERVAL_MS for slower production demos).
-        refreshInterval:
-          configured && !offline ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 10000) : 0,
+        refreshInterval: configured && !offline ? liveRefreshIntervalMs() : 0,
         timeout: 3000,
         registerContextsOnStartup: false,
         hooks,
