@@ -80,7 +80,7 @@ func New(cfg Config) (*App, error) {
 		case cfg.Offline:
 			cfg.RefreshInterval = 30 * time.Second
 		case cfg.AppKey != "":
-			// Live dashboard sample: short poll fallback when WebSocket invalidation is unavailable.
+			// Live dashboard sample: short background poll for definitions refresh.
 			cfg.RefreshInterval = 5 * time.Second
 		default:
 			cfg.RefreshInterval = 30 * time.Second
