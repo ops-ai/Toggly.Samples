@@ -110,10 +110,10 @@ func New(cfg Config) (*App, error) {
 			DisableEntityContextRegistration: true,
 			SessionStore:                     session.NewMemoryStore(),
 		}
-		// Do not enable EnableLiveUpdates here: a connected WebSocket suppresses
-		// background polling for up to 20 minutes in toggly-go while invalidation
-		// may not arrive (see provider.shouldSkipRefresh). Rely on a short poll
-		// interval for this SSR sample instead.
+		// Leave EnableLiveUpdates off: this SSR workshop demonstrates scheduled
+		// RefreshInterval polling and per-request snapshots, not push invalidation.
+		// Production apps may enable live updates; toggly-go v0.13.2+ still polls
+		// on RefreshInterval while a WebSocket is connected but idle.
 		// Dashboard schema creation is documented manually, so merely running this
 		// teaching app never writes schema metadata to a remote application.
 		if a.fixture != nil {
