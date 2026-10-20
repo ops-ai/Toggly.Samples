@@ -2125,9 +2125,9 @@ checksum = "fd3ca314f692efd6c868f8408f53fe444634a845f96c028b97d35f6a1f79f0ee"
 
 [[package]]
 name = "toggly"
-version = "0.9.1"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6409dd19d03b778ee4026733bcfc343714a27821c0b69762adfb68d9ea0c2bd6"
+checksum = "df3cdf1255d918d82eb9a990448de4510aef02e7420734a0fea7a65480d6859a"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
@@ -2154,9 +2154,9 @@ dependencies = [
 
 [[package]]
 name = "toggly-actix"
-version = "0.9.1"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36633e9945174d54889f64ae923146e52bf9332f11b84ad934bea51488556f68"
+checksum = "00e1f1152b779858176724fc271c8d78a69b29ca73ae0e2cc80d03685a1aefd8"
 dependencies = [
  "actix-web",
  "futures-util",

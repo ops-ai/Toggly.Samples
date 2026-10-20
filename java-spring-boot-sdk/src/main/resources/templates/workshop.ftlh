@@ -2,7 +2,7 @@
 <#-- features comes from sample FeaturesAdvice calling native evaluateAll on the request context. -->
 <#macro badge value><span class="badge ${value?then('on','off')}">${value?then('ON','OFF')}</span></#macro>
 <#macro presets><div class="presets"><form method="post" action="/context"><button name="preset" value="matching">Matching preset</button></form><form method="post" action="/context"><button name="preset" value="nonmatching">Non-matching preset</button></form></div></#macro>
-<#macro table keys><div class="table-wrap"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody><#list keys as key><tr data-flag="${key}"><td><code>${key}</code></td><td>${definitions?seq_contains(key)?then('Present','Absent')}</td><td><@badge value=(features[key])!false/><#if key == 'filter-device-type'> <small>Macintosh detection unsupported in 2.2.2</small></#if></td></tr></#list></tbody></table></div></#macro>
+<#macro table keys><div class="table-wrap"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody><#list keys as key><tr data-flag="${key}"><td><code>${key}</code></td><td>${definitions?seq_contains(key)?then('Present','Absent')}</td><td><@badge value=(features[key])!false/><#if key == 'filter-device-type'> <small>Macintosh detection unsupported in 2.3.1</small></#if></td></tr></#list></tbody></table></div></#macro>
 <!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title} · Java Spring Boot SDK Sample</title><link rel="stylesheet" href="/style.css"><script src="/workshop.js" defer></script></head><body>
 <header><p class="eyebrow">TOGGLY / JAVA SPRING BOOT</p><a class="brand" href="/">Feature flag workshop</a><p>Learn the published Boot starter, one request at a time.</p></header>
 <nav aria-label="Sections"><#list paths as link><a href="${link}">${titles[link?index]}</a></#list></nav><main>
@@ -50,7 +50,7 @@ client.isEnabled("ExpressCheckout", context.withEntity(order));</pre><p>Never re
 <#case '/boot'>
 <h2>Native Boot pipeline</h2><ol><li>With a key, <code>toggly.enabled=true</code> activates starter <code>TogglyAutoConfiguration</code>.</li><li>This sample supplies <code>TogglyConfig</code> (signed, no WebSocket) and a Spring-owned <code>HttpSnapshotProvider</code>. The starter's null provider bean is not injectable on this Spring Boot host.</li><li>Starter constructs <code>TogglyClient</code>. <code>FeatureAspect</code> is registered here; it is not an auto-config bean.</li><li><code>DemoContextFilter</code> installs request-scoped ContextHolder before AOP or controllers run, then clears it.</li><li><code>@FeatureEnabled</code> and <code>@ConditionalOnFeature</code> are the starter's annotations. HTTP 404/403 is sample translation.</li><li>Actuator exposes <code>/actuator/health</code> (toggly indicator) and <code>/actuator/toggly</code> using process default context, not this request.</li></ol>
 <p><a href="/gated/beta">Try beta-access AOP gate</a> · <a href="/native/argument">Try FeatureEnabled targeting</a></p>
-<p>This host is Spring Boot <strong>4.1.1</strong> with published <code>toggly-spring-boot4-starter</code> <strong>2.2.2</strong> (Boot 4 Actuator health APIs).</p>
+<p>This host is Spring Boot <strong>4.1.1</strong> with published <code>toggly-spring-boot4-starter</code> <strong>2.3.1</strong> (Boot 4 Actuator health APIs).</p>
 <p><a href="/actuator/health">Open /actuator/health</a> · <a href="/actuator/toggly">Open /actuator/toggly</a></p>
 <form data-native-refresh method="post" action="/api/refresh"><button>Request native definitions refresh</button></form><output id="refresh-result" aria-live="polite"></output>
 <h2>Thread lifetime</h2><p>ContextHolder is thread-local. This app uses synchronous MVC and eight Tomcat workers. Pass immutable EvaluationContext into executors; do not assume the holder flows off-thread.</p>
@@ -60,4 +60,4 @@ client.isEnabled("ExpressCheckout", context.withEntity(order));</pre><p>Never re
 <#break>
 <#case '/allowed'><p>The published FeatureAspect allowed the service method; the controller then rendered this page.</p><@table keys=flags/><#break>
 </#switch>
-</main><footer>Published io.toggly boot4 starter 2.2.2 · Spring Boot 4.1.1 · Java 17 · Actuator health + /actuator/toggly</footer></body></html>
+</main><footer>Published io.toggly boot4 starter 2.3.1 · Spring Boot 4.1.1 · Java 17 · Actuator health + /actuator/toggly</footer></body></html>

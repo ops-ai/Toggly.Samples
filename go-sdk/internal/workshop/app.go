@@ -76,7 +76,15 @@ func New(cfg Config) (*App, error) {
 		cfg.Environment = "Production"
 	}
 	if cfg.RefreshInterval == 0 {
-		cfg.RefreshInterval = 30 * time.Second
+		switch {
+		case cfg.Offline:
+			cfg.RefreshInterval = 30 * time.Second
+		case cfg.AppKey != "":
+			// Live dashboard sample: short poll fallback when WebSocket invalidation is unavailable.
+			cfg.RefreshInterval = 5 * time.Second
+		default:
+			cfg.RefreshInterval = 30 * time.Second
+		}
 	}
 	a := &App{}
 	// No key means no client and no network. Offline practice is an explicit
@@ -102,6 +110,10 @@ func New(cfg Config) (*App, error) {
 			DisableEntityContextRegistration: true,
 			SessionStore:                     session.NewMemoryStore(),
 		}
+		// Do not enable EnableLiveUpdates here: a connected WebSocket suppresses
+		// background polling for up to 20 minutes in toggly-go while invalidation
+		// may not arrive (see provider.shouldSkipRefresh). Rely on a short poll
+		// interval for this SSR sample instead.
 		// Dashboard schema creation is documented manually, so merely running this
 		// teaching app never writes schema metadata to a remote application.
 		if a.fixture != nil {

@@ -40,14 +40,14 @@ isolated, signed loopback definitions service and do not require your `.env`.
 
 ## Versions and reproducibility
 
-Verified against official registries on 2026-09-10:
+Verified against official registries on 2026-10-19:
 
 | Component | Version |
 |---|---|
 | OpenJDK, compiler release | 26.0.2.1, release 26 |
 | Maven | 3.9.12 |
-| `io.toggly:toggly-core` | 2.2.1 |
-| `io.toggly:toggly-servlet` | 2.2.1 |
+| `io.toggly:toggly-core` | 2.3.1 |
+| `io.toggly:toggly-servlet` | 2.3.1 |
 | `org.apache.tomcat.embed:tomcat-embed-core` | 11.0.26 |
 | Jakarta Servlet API supplied by Tomcat | 6.1 |
 | JUnit Jupiter | 6.0.3 |
@@ -184,7 +184,7 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 With the recipe above, AlwaysOn and TimeWindow stay ON for both presets.
 Percentage is stable for the same user/flag, but its exact Alice/Bob outcome is
 not prescribed. The other seven supported rows turn ON for Matching and OFF for
-Non-matching. **DeviceType Macintosh is unsupported by the published 2.2.1
+Non-matching. **DeviceType Macintosh is unsupported by the published 2.3.1
 User-Agent parser**: it recognizes iPhone/iPad/iPod, but returns Other for
 desktop Macintosh. We retain the exact shared Macintosh rule and User-Agent;
 that row shows the real OFF result and an explicit capability note. No fallback

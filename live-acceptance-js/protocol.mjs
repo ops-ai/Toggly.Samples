@@ -38,6 +38,15 @@ export function configuration(env) {
     timeout,
   };
 }
+/** Child backend commands may run up to config.timeout; parent IPC waits slightly longer. */
+export const BACKEND_IPC_DEADLINE_MARGIN_MS = 5000;
+export function backendCommandDeadlineMs(timeout = 15000) {
+  const bounded = Number(timeout);
+  if (!Number.isFinite(bounded) || bounded < 1000) {
+    return 15000 + BACKEND_IPC_DEADLINE_MARGIN_MS;
+  }
+  return bounded + BACKEND_IPC_DEADLINE_MARGIN_MS;
+}
 export function transition(s, expected) {
   return (
     s.value === expected && s.frame > 0 && s.fetch > s.frame && s.decision > s.fetch && !s.error

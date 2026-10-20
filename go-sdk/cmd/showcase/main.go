@@ -9,14 +9,30 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
 	"github.com/ops-ai/Toggly.Samples/go-sdk/internal/workshop"
 )
 
+func refreshIntervalFromEnv() time.Duration {
+	if raw := os.Getenv("TOGGLY_REFRESH_INTERVAL_MS"); raw != "" {
+		ms, err := strconv.Atoi(raw)
+		if err == nil && ms > 0 {
+			return time.Duration(ms) * time.Millisecond
+		}
+	}
+	return 0
+}
+
 func main() {
-	app, err := workshop.New(workshop.Config{AppKey: os.Getenv("TOGGLY_APP_KEY"), Environment: os.Getenv("TOGGLY_ENVIRONMENT"), Offline: os.Getenv("TOGGLY_OFFLINE") == "true"})
+	app, err := workshop.New(workshop.Config{
+		AppKey:          os.Getenv("TOGGLY_APP_KEY"),
+		Environment:     os.Getenv("TOGGLY_ENVIRONMENT"),
+		Offline:         os.Getenv("TOGGLY_OFFLINE") == "true",
+		RefreshInterval: refreshIntervalFromEnv(),
+	})
 	if err != nil {
 		log.Fatal("Could not initialize the workshop")
 	}

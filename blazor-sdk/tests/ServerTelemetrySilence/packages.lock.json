@@ -4,12 +4,12 @@
     "net10.0": {
       "Toggly.FeatureManagement.Blazor.Server": {
         "type": "Direct",
-        "requested": "[3.13.3, )",
-        "resolved": "3.13.3",
-        "contentHash": "2yjAqV1HleENTg4RHg73VWuETn/KqkOit3gG3RVWUZLi+TvSvxALgngHHKppOJs0HUrvX4hWS1aP80O/7oswFw==",
+        "requested": "[3.14.1, )",
+        "resolved": "3.14.1",
+        "contentHash": "3kWt2MH3FQ9AAqsoqge7QkaQU966uoJkM9C4ugAEjXG99zD50YgXef12wohyMnWFiOnRmCc0qrM6uknkUFYnpw==",
         "dependencies": {
-          "Toggly.FeatureManagement": "3.13.3",
-          "Toggly.FeatureManagement.Blazor": "3.13.3"
+          "Toggly.FeatureManagement": "3.14.1",
+          "Toggly.FeatureManagement.Blazor": "3.14.1"
         }
       },
       "Azure.Core": {
@@ -136,8 +136,8 @@
       },
       "Toggly.FeatureManagement": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "a2PtiKTjMZ1mNKojVBtU8QafyQaTCpjJrrrRRoeHVrqjlBXxchRZzfHak2CPQs6UEguyMQhBTTeX6URVzXOumA==",
+        "resolved": "3.14.1",
+        "contentHash": "QtXGSnuDVZoJadOfi2F5z37T43qDBKNtTkl6hj3OpfZr2kunQa963TGnwzwKK8b/DRb/iCVNn72qz57I7AqO9w==",
         "dependencies": {
           "Azure.Core": "1.50.0",
           "Azure.Messaging.WebPubSub": "1.6.0",
@@ -154,16 +154,16 @@
       },
       "Toggly.FeatureManagement.Blazor": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "1eqodghTyi7qjAVxm5JI1nenHf3jl9LbZR2n1YRm6f9tzQ8pjDZhVtoYQ8WZRd5dYhp3z4cnlu9DRHDOzcG4uQ==",
+        "resolved": "3.14.1",
+        "contentHash": "nDTExuy/+cNaAqlhkWunB/O7x+gVoiXnIwco6gwIa8zcGBGOIpOY+NsfOm+XoPw8n2DbnBeD2ePtA6hTQyP1vg==",
         "dependencies": {
-          "Toggly.FeatureManagement.Client": "3.13.3"
+          "Toggly.FeatureManagement.Client": "3.14.1"
         }
       },
       "Toggly.FeatureManagement.Client": {
         "type": "Transitive",
-        "resolved": "3.13.3",
-        "contentHash": "gqPCEKlynBAtf+YO8ArGqtjm58AJPWjOg24qNcsVaOdRkYOv/IOSZrtedrJI7Hn5vYsFE7Ek/2w7CgHee6OeNw=="
+        "resolved": "3.14.1",
+        "contentHash": "wT1zA2nPd4uHbJs+ifAnDonylRCY5UT9CGxsAMiKBVjnFELc+FlEW7EirL/Q3ds7d1JA5GAlwbBCSSz8CmCTuw=="
       },
       "Websocket.Client": {
         "type": "Transitive",

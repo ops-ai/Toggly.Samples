@@ -282,7 +282,7 @@ FastAPI claims/country/browser/language/OS columns stay OFF without explicit map
 Latest stable/published checkpoint: **2026-10-09**.
 [Python](https://www.python.org/downloads/) 3.14.7,
 [FastAPI](https://pypi.org/project/fastapi/) 0.141.1,
-[toggly](https://pypi.org/project/toggly/) 1.2.0,
+[toggly](https://pypi.org/project/toggly/) 1.3.2,
 [toggly-fastapi](https://pypi.org/project/toggly-fastapi/) 0.4.0.
 Live mode reports definition cache hits on the usage pipeline; offline,
 missing-key, fixture, and `ci-placeholder` runs do not upload usage.
