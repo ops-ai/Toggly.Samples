@@ -1,5 +1,15 @@
 import 'reflect-metadata';
-import { Controller, Get, Header, Inject, Module, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  HttpCode,
+  Inject,
+  Module,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   TogglyModule,
@@ -72,6 +82,7 @@ export async function createApp({
       };
     }
     @Post('api/refresh')
+    @HttpCode(200)
     @Header('Cache-Control', 'no-store')
     async refreshDefinitions() {
       await this.provider.client.refresh();
