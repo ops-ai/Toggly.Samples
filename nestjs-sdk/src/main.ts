@@ -3,7 +3,11 @@ import { startFixture } from './fixture.js';
 // The loopback fixture supplies definitions only; the installed SDK still evaluates them.
 const fixture = process.argv.includes('--offline') ? await startFixture() : undefined;
 const definitionsBaseUrl =
-  process.env.TOGGLY_DEFINITIONS_URL?.trim() || process.env.TOGGLY_BASE_URL?.trim() || undefined;
+  process.env.TOGGLY_DEFINITIONS_URL?.trim() ||
+  process.env.TOGGLY_DEFINITIONS_BASE_URI?.trim() ||
+  process.env.TOGGLY_BASE_URL?.trim() ||
+  process.env.TOGGLY_BASE_URI?.trim() ||
+  undefined;
 const app = await createApp({
   appKey: process.env.TOGGLY_APP_KEY,
   environment: process.env.TOGGLY_ENVIRONMENT,

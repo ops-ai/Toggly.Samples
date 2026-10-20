@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Controller, Get, Header, Inject, Module, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Header, Inject, Module, Post, Req, UseGuards } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   TogglyModule,
@@ -61,12 +61,21 @@ export async function createApp({
     @Get('api/evaluate')
     @Header('Cache-Control', 'no-store')
     async evaluated(@Req() req: any) {
+      const flags = await this.evaluate(req);
       return {
         source: this.source(),
         context: await this.toggly.context(),
         order: inputs(req).order,
-        flags: await this.evaluate(req),
+        flags,
+        // LiveE2E in-process probes read `features`; keep `flags` for other Node samples parity.
+        features: flags,
       };
+    }
+    @Post('api/refresh')
+    @Header('Cache-Control', 'no-store')
+    async refreshDefinitions() {
+      await this.provider.client.refresh();
+      return { attemptCompleted: true };
     }
     @Get('api/override')
     @Header('Cache-Control', 'no-store')
@@ -162,8 +171,10 @@ export async function createApp({
         // Match other Node HTTP samples: poll definitions on an interval instead of
         // WebSocket streaming so LiveE2E edge-vs-mgmt can observe CDN revisions reliably.
         enableStreaming: false,
+        // LiveE2E in-process probes wait up to 60s after management toggles; default
+        // 10s polling (override with TOGGLY_REFRESH_INTERVAL_MS for slower production demos).
         refreshInterval:
-          configured && !offline ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
+          configured && !offline ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 10000) : 0,
         timeout: 3000,
         registerContextsOnStartup: false,
         hooks,
