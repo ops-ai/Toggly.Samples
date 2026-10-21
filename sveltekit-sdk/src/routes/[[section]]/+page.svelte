@@ -167,7 +167,9 @@
         <thead><tr><th>Flag</th><th>Evaluated result</th></tr></thead><tbody
           >{#each data.matrix as row}<tr
               ><td><code>{row.key}</code></td><td class:on={row.enabled} class:off={!row.enabled}
-                ><span data-toggly-state={row.enabled ? 'on' : 'off'}>{row.enabled ? 'ON' : 'OFF'}</span></td
+                ><span data-toggly-state={row.enabled ? 'on' : 'off'}
+                  >{row.enabled ? 'ON' : 'OFF'}</span
+                ></td
               ></tr
             >{/each}</tbody
         >
