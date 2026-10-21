@@ -73,9 +73,15 @@ export default function Home() {
                   ? "See Order"
                   : !isReady
                     ? "Loading"
-                    : flags[key] === true
-                      ? "ON"
-                      : "OFF"}
+                    : (
+                        <span
+                          data-toggly-state={
+                            flags[key] === true ? "on" : "off"
+                          }
+                        >
+                          {flags[key] === true ? "ON" : "OFF"}
+                        </span>
+                      )}
               </button>
             ))}
           </div>
