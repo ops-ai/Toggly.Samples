@@ -1,6 +1,6 @@
 # Node Hono SDK Sample
 
-Eight navigable sections backed by the actual published Hono adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-16: Hono **4.13.7**, `@hono/node-server` **2.1.1**, `@ops-ai/toggly-hono` **0.3.1**, `@ops-ai/toggly-node-core` **0.9.1** (exact pins + lockfile). Live mode reports definition cache hits on the usage pipeline; offline, missing-key, and `ci-placeholder` runs do not upload usage. `npm run soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
+Eight navigable sections backed by the actual published Hono adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-10-21: Hono **4.13.13**, `@hono/node-server` **2.1.5**, `@ops-ai/toggly-hono` **0.4.0**, `@ops-ai/toggly-node-core` **0.13.1** (exact pins + lockfile). Live mode reports definition cache hits on the usage pipeline; offline, missing-key, and `ci-placeholder` runs do not upload usage. `npm run soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 ```sh
 npm ci
@@ -81,7 +81,7 @@ curl -i 'http://localhost:3000/gates/all'
 
 ## Published capability boundaries
 
-Hono adapter 0.3.0 binds ambient context to `c.get('toggly').isFeatureOn`, `isFeatureOff`, and `evaluateFeatureGate`; their installed signatures **do not accept per-call overrides or entities**. This sample calls `c.get('toggly').client.isFeatureOn(key, context, entity)` from core 0.9.0 for those operations, preserving ambient context with an explicit spread for overrides. No request changes global identity. The adapter owns a process singleton: run one configured app per process, and call `closeHonoToggly()` on shutdown; tests close between app instances.
+Hono adapter 0.4.0 binds ambient context to `c.get('toggly').isFeatureOn`, `isFeatureOff`, and `evaluateFeatureGate`; their installed signatures **do not accept per-call overrides or entities**. This sample calls `c.get('toggly').client.isFeatureOn(key, context, entity)` from core 0.13.1 for those operations, preserving ambient context with an explicit spread for overrides. No request changes global identity. The adapter owns a process singleton: run one configured app per process, and call `closeHonoToggly()` on shutdown; tests close between app instances.
 
 `featuresHandler` is a handler value, registered as `app.get('/api/features', featuresHandler)`, not called as a factory. It returns the shared SDK boolean snapshot alongside the **current request identity**. Those flags were not evaluated for that identity or its request claims/entities; the response identity does not make the snapshot user-specific. Use `/api/evaluate` for request-evaluated results and provenance. Boolean content branches demonstrate variants; these packages expose no experiment-assignment API. All eleven template filters are supported by the installed core evaluator. AlwaysOn/open TimeWindow remain on in both presets; Percentage is identity-sticky and has no prescribed matching outcome.
 
@@ -100,6 +100,6 @@ Hono adapter 0.3.0 binds ambient context to `c.get('toggly').isFeatureOn`, `isFe
 
 Native Hono `app.request` tests plus an actual Node listener/fetch smoke cover rendered section/navigation output, real gates, both filter presets, 30 concurrent identities/claims/headers/entities across asynchronous context extraction, override isolation, sticky percentage, startup/refresh failures and missing/placeholder configuration. They do not prove hosted app configuration or signed live transport.
 
-The installed Hono 0.3.0 runtime and types accept only a key on `isFeatureOn`/`isFeatureOff`: extra arguments are ignored. The core-client override shown here follows the installed artifact. `featuresHandler` is a handler value, not a factory. `featureRoutes` supports method filtering; GET `/unique/route` is gated while POST demonstrates the explicit GET-only policy. `getHonoToggly()` exposes the singleton for lifecycle diagnostics/tests, never request identity mutation.
+The installed Hono adapter 0.4.0 runtime and types accept only a key on `isFeatureOn`/`isFeatureOff`: extra arguments are ignored. The core-client override shown here follows the installed artifact. `featuresHandler` is a handler value, not a factory. `featureRoutes` supports method filtering; GET `/unique/route` is gated while POST demonstrates the explicit GET-only policy. `getHonoToggly()` exposes the singleton for lifecycle diagnostics/tests, never request identity mutation.
 
 See the [Hono SDK guide](https://docs.toggly.io/sdks/nodejs/hono) for adapter configuration and the [Samples catalog](../README.md) for other frameworks and their availability.

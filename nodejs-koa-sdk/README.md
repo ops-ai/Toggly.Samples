@@ -1,6 +1,6 @@
 # Node Koa SDK Sample
 
-Eight navigable sections backed by the actual published Koa adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-09-16: Koa **3.2.1**, `@koa/router` **15.7.0**, `@ops-ai/toggly-koa` **0.4.0**, and `@ops-ai/toggly-node-core` **0.9.1** (adapter/core have exact pins; the router accepts compatible updates through its lockfile). Live mode reports definition cache hits on the usage pipeline; offline, missing-key, and `ci-placeholder` runs do not upload usage. `npm run soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
+Eight navigable sections backed by the actual published Koa adapter and Node core. Requires Node 22+. Latest stable registry versions checked 2026-10-21: Koa **3.2.1**, `@koa/router` **15.7.0**, `@ops-ai/toggly-koa` **0.5.0**, and `@ops-ai/toggly-node-core` **0.13.1** (adapter/core have exact pins; the router accepts compatible updates through its lockfile). Live mode reports definition cache hits on the usage pipeline; offline, missing-key, and `ci-placeholder` runs do not upload usage. `npm run soak` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
 ```sh
 npm ci
@@ -114,7 +114,7 @@ curl -i 'http://localhost:3000/gates/all'
 
 ## Published capability boundaries
 
-Koa adapter 0.4.0 binds ambient context to `ctx.state.toggly.isFeatureOn`, `isFeatureOff`, and `evaluateFeatureGate`; their installed signatures **do not accept per-call overrides or entities**. This sample calls `ctx.state.toggly.client.isFeatureOn(key, context, entity)` from core 0.9.1 for those operations, preserving ambient context with an explicit spread for overrides. No request changes global identity. The adapter owns a process singleton: run one configured app per process, and call `closeKoaToggly()` on shutdown; tests close between app instances.
+Koa adapter 0.5.0 binds ambient context to `ctx.state.toggly.isFeatureOn`, `isFeatureOff`, and `evaluateFeatureGate`; their installed signatures **do not accept per-call overrides or entities**. This sample calls `ctx.state.toggly.client.isFeatureOn(key, context, entity)` from core 0.13.1 for those operations, preserving ambient context with an explicit spread for overrides. No request changes global identity. The adapter owns a process singleton: run one configured app per process, and call `closeKoaToggly()` on shutdown; tests close between app instances.
 
 `featuresHandler()` returns a global SDK boolean snapshot alongside the **request identity**; that snapshot does not represent request claims/entities. Use `/api/evaluate` for request-evaluated results and provenance. Boolean content branches demonstrate variants; these packages expose no experiment-assignment API. All eleven template filters are supported by the installed core evaluator. AlwaysOn/open TimeWindow remain on in both presets; Percentage is identity-sticky and has no prescribed matching outcome.
 
