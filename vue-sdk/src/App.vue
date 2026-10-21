@@ -80,7 +80,10 @@ const sections = [
           :data-testid="`toggle-${key}`"
         >
           <code>{{ key }}</code
-          ><span :class="state.snapshot[key] ? 'on' : 'off'">{{
+          ><span
+            :class="state.snapshot[key] ? 'on' : 'off'"
+            :data-toggly-state="state.snapshot[key] ? 'on' : 'off'"
+          >{{
             state.snapshot[key] ? "ON" : "OFF"
           }}</span>
         </button>

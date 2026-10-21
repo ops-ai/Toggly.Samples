@@ -48,7 +48,10 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
                   <code>{row.key}</code>
                 </td>
                 <td>
-                  <span className={`pill ${value ? 'on' : 'off'}`}>
+                  <span
+                    className={`pill ${value ? 'on' : 'off'}`}
+                    data-toggly-state={value ? 'on' : 'off'}
+                  >
                     {String(value)}
                   </span>
                 </td>
@@ -81,7 +84,10 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
                 <code>{key}</code>
               </td>
               <td>
-                <span className={`pill ${value ? 'on' : 'off'}`}>
+                <span
+                  className={`pill ${value ? 'on' : 'off'}`}
+                  data-toggly-state={value ? 'on' : 'off'}
+                >
                   {String(value)}
                 </span>
               </td>

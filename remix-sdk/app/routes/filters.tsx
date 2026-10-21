@@ -53,7 +53,15 @@ export default function Filters() {
               <td><code>{key}</code></td>
               <td>{rule}</td>
               <td>{inputs}</td>
-              <td>{page.results[key]}</td>
+              <td>
+                {page.results[key] === 'true' || page.results[key] === 'false' ? (
+                  <span data-toggly-state={page.results[key] === 'true' ? 'on' : 'off'}>
+                    {page.results[key]}
+                  </span>
+                ) : (
+                  page.results[key]
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

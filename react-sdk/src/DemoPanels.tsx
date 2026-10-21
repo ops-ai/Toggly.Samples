@@ -7,7 +7,14 @@ import { setSampleContext, useProgrammaticFlag, useTogglyService } from './toggl
 const snapshotFlags = ['new-dashboard', 'api-v2', 'enhanced-submit', 'ExpressCheckout', 'beta-access']
 
 function State({ enabled, loading }: { enabled: boolean; loading: boolean }) {
-  return <span className={enabled ? 'on' : 'off'}>{loading ? 'loading…' : enabled ? 'on' : 'off'}</span>
+  return (
+    <span
+      className={enabled ? 'on' : 'off'}
+      data-toggly-state={loading ? undefined : enabled ? 'on' : 'off'}
+    >
+      {loading ? 'loading…' : enabled ? 'on' : 'off'}
+    </span>
+  )
 }
 
 export function DeclarativeGates() {

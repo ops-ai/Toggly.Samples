@@ -29,7 +29,7 @@ export function mountSample(root: Element, sdk: SampleSdk, options: Options) {
   const errorMessage = () => sdk.lastError || runtimeError
   let status = options.configured ? (errorMessage() ? `Live evaluation unavailable or cached: ${errorMessage()}` : 'Live definitions loaded.') : 'Offline placeholder mode. No Toggly network request is made.'
   const text = (selector: string, value: unknown) => { const node = root.querySelector(selector); if (node) node.textContent = String(value) }
-  const flag = (selector: string, enabled: boolean) => { const node = root.querySelector(selector); if (node) { node.textContent = enabled ? 'ON' : 'OFF'; node.className = enabled ? 'on' : 'off' } }
+  const flag = (selector: string, enabled: boolean) => { const node = root.querySelector(selector); if (node) { node.textContent = enabled ? 'ON' : 'OFF'; node.className = enabled ? 'on' : 'off'; node.setAttribute('data-toggly-state', enabled ? 'on' : 'off') } }
 
   // setContext changes the user used by worker evaluation and awaits a reload.
   // It patches supplied fields, so omitted groups remain in the SDK context.
@@ -89,7 +89,7 @@ export function mountSample(root: Element, sdk: SampleSdk, options: Options) {
     // Targeting/claims/percentage/time/request filters need live definitions;
     // country, browser, language, device and OS follow the real request context.
     const grid = root.querySelector('#flag-grid')!
-    for (const key of keys) { const card = document.createElement('div'); card.className = 'card'; const code = document.createElement('code'); code.textContent = key; const value = document.createElement('strong'); value.dataset.flag = key; const enabled = key === 'filter-context-property' ? entityFilter : sdk.isFeatureOn(key); value.textContent = enabled ? 'ON' : 'OFF'; value.className = enabled ? 'on' : 'off'; card.append(code, document.createElement('br'), value); grid.append(card) }
+    for (const key of keys) { const card = document.createElement('div'); card.className = 'card'; const code = document.createElement('code'); code.textContent = key; const value = document.createElement('strong'); value.dataset.flag = key; const enabled = key === 'filter-context-property' ? entityFilter : sdk.isFeatureOn(key); value.textContent = enabled ? 'ON' : 'OFF'; value.className = enabled ? 'on' : 'off'; value.setAttribute('data-toggly-state', enabled ? 'on' : 'off'); card.append(code, document.createElement('br'), value); grid.append(card) }
     text('#feature-content', snapshot.newDashboard ? 'New dashboard content is visible.' : 'New dashboard content is hidden.'); text('#negated-content', snapshot.dashboardNegated ? 'Classic dashboard fallback is visible.' : 'Classic dashboard fallback is hidden.')
     text('#variant-content', variant ? `Variant “${variant.name}” content: ${JSON.stringify(variant.configurationValue ?? 'no configuration')}` : 'No variant assigned; default dashboard content is shown.')
     flag('#all-gate', snapshot.allGate); flag('#any-gate', snapshot.anyGate)
