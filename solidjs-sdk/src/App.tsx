@@ -194,7 +194,15 @@ function Workshop(props: { configured: boolean }) {
               {(key) => (
                 <tr>
                   <td>{key}</td>
-                  <td>{String(toggly.evaluate([key], 'all', false, order(vip())))}</td>
+                  <td>
+                    <span
+                      data-toggly-state={
+                        toggly.evaluate([key], 'all', false, order(vip())) ? 'on' : 'off'
+                      }
+                    >
+                      {String(toggly.evaluate([key], 'all', false, order(vip())))}
+                    </span>
+                  </td>
                   <td>
                     {key === 'filter-context-property'
                       ? 'Order.Vip'

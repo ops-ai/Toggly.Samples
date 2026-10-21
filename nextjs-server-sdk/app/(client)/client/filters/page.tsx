@@ -62,7 +62,9 @@ export default async function ClientFiltersPage() {
         <div className="card" key={entry.key}>
           <h3>
             <code>{entry.key}</code>{' '}
-            <span className={on ? 'on' : 'off'}>{on ? 'ON' : 'OFF'}</span>
+            <span className={on ? 'on' : 'off'} data-toggly-state={on ? 'on' : 'off'}>
+              {on ? 'ON' : 'OFF'}
+            </span>
           </h3>
           <p>
             <strong>{entry.title}</strong> — {entry.filter}

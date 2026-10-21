@@ -1,7 +1,7 @@
 <#ftl output_format="HTML" auto_esc=true>
 <#-- These feature values come from native ReactiveTogglyClient.evaluateAll().
      The empty map is used only by the visibly unconfigured setup shell. -->
-<#macro badge value><span class="badge ${value?then('on','off')}">${value?then('ON','OFF')}</span></#macro>
+<#macro badge value><span class="badge ${value?then('on','off')}" data-toggly-state="${value?then('on','off')}">${value?then('ON','OFF')}</span></#macro>
 <#macro presets><div class="presets"><form method="post" action="/context"><button name="preset" value="matching">Matching preset</button></form><form method="post" action="/context"><button name="preset" value="nonmatching">Non-matching preset</button></form></div></#macro>
 <#macro table keys><div class="table-wrap"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody><#list keys as key><tr data-flag="${key}"><td><code>${key}</code></td><td>${definitions?seq_contains(key)?then('Present','Absent')}</td><td><@badge value=(features[key])!false/><#if key == 'filter-device-type'> <small>Macintosh detection unsupported in 2.3.1</small></#if></td></tr></#list></tbody></table></div></#macro>
 <!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title} · Java Spring WebFlux SDK Sample</title><link rel="stylesheet" href="/style.css"><script src="/workshop.js" defer></script></head><body>

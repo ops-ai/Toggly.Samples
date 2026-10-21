@@ -38,7 +38,8 @@ module RubyShowcase
     end
 
     def state_badge(enabled)
-      "<span class=\"badge #{enabled ? 'on' : 'off'}\">#{enabled ? 'ON' : 'OFF'}</span>"
+      state = enabled ? 'on' : 'off'
+      "<span class=\"badge #{state}\" data-toggly-state=\"#{state}\">#{enabled ? 'ON' : 'OFF'}</span>"
     end
 
     def csrf_field

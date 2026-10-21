@@ -1,6 +1,7 @@
 module ShowcaseHelper
   def state_badge(value)
-    tag.span(value ? 'ON' : 'OFF', class: "badge #{value ? 'on' : 'off'}")
+    state = value ? 'on' : 'off'
+    tag.span(value ? 'ON' : 'OFF', class: "badge #{state}", data: { toggly_state: state })
   end
 
   def section_title

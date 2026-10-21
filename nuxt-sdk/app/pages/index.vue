@@ -74,7 +74,10 @@ function choosePreset(next: DemoPreset) {
       <ul class="checklist">
         <li v-for="flag in allFlagKeys" :key="flag">
           <code>{{ flag }}</code>
-          <strong :class="snapshot?.flags?.[flag] ? 'on-text' : 'off-text'">{{ snapshot?.flags?.[flag] ? 'on' : 'off' }}</strong>
+          <strong
+            :class="snapshot?.flags?.[flag] ? 'on-text' : 'off-text'"
+            :data-toggly-state="snapshot?.flags?.[flag] ? 'on' : 'off'"
+          >{{ snapshot?.flags?.[flag] ? 'on' : 'off' }}</strong>
         </li>
       </ul>
     </section>
@@ -104,7 +107,12 @@ function choosePreset(next: DemoPreset) {
           <tr v-for="flag in filterFlags" :key="flag">
             <td><code>{{ flag }}</code></td>
             <td>{{ snapshot?.filterDescriptions?.[flag] }}</td>
-            <td><strong :class="snapshot?.flags?.[flag] ? 'on-text' : 'off-text'">{{ snapshot?.flags?.[flag] ? 'on' : 'off' }}</strong></td>
+            <td>
+              <strong
+                :class="snapshot?.flags?.[flag] ? 'on-text' : 'off-text'"
+                :data-toggly-state="snapshot?.flags?.[flag] ? 'on' : 'off'"
+              >{{ snapshot?.flags?.[flag] ? 'on' : 'off' }}</strong>
+            </td>
           </tr>
         </tbody>
       </table>

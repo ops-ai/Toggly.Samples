@@ -80,7 +80,10 @@ final class Views {
     private static String presets() { return "<div class=\"presets\"><form method=\"post\" action=\"/context\"><button name=\"preset\" value=\"matching\">Matching preset</button></form><form method=\"post\" action=\"/context\"><button name=\"preset\" value=\"nonmatching\">Non-matching preset</button></form></div>"; }
     private static String input(String label, String name, String value) { return "<label>" + label + "<input name=\"" + name + "\" maxlength=\"512\" value=\"" + escape(value) + "\"></label>"; }
     private static String card(String label, boolean value, String path) { return "<article class=\"card\"><h2>" + escape(label) + "</h2>" + badge(value) + "<p><a href=\"" + path + "\">Try this route</a></p></article>"; }
-    private static String badge(boolean enabled) { return "<span class=\"badge " + (enabled ? "on" : "off") + "\">" + (enabled ? "ON" : "OFF") + "</span>"; }
+    private static String badge(boolean enabled) {
+        String state = enabled ? "on" : "off";
+        return "<span class=\"badge " + state + "\" data-toggly-state=\"" + state + "\">" + (enabled ? "ON" : "OFF") + "</span>";
+    }
     private static String table(TogglyClient c, EvaluationContext ctx, List<String> keys) {
         StringBuilder out = new StringBuilder("<div class=\"table-wrap\"><table><thead><tr><th>Flag key</th><th>Definition</th><th>This request</th></tr></thead><tbody>");
         for (String key : keys) out.append("<tr><td><code>").append(key).append("</code></td><td>").append(c != null && c.getFeatureDefinition(key) != null ? "Present" : "Absent").append("</td><td>").append(badge(ShowcaseServlet.enabled(c, key, ctx))).append(key.equals("filter-device-type") ? " <small>Macintosh detection unsupported in 2.3.1</small>" : "").append("</td></tr>");

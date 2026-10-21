@@ -33,7 +33,7 @@
       <tbody>
         {% for key, enabled in snapshot.flags.items() %}
           <tr><td><code>{{ key }}</code></td>
-            <td class="{{ 'on' if enabled else 'off' }}">{{ 'ON' if enabled else 'OFF' }}</td></tr>
+            <td class="{{ 'on' if enabled else 'off' }}"><span data-toggly-state="{{ 'on' if enabled else 'off' }}">{{ 'ON' if enabled else 'OFF' }}</span></td></tr>
         {% endfor %}
       </tbody>
     </table>

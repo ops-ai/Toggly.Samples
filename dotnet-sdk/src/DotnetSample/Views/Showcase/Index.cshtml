@@ -15,6 +15,6 @@
 <a href="/integrations"><strong>Connect native integrations</strong><span>Hangfire, HealthChecks and NSwag</span></a></div></section>
 <section><h2>Flag checklist + current request snapshot</h2><p>These values come from the SDK on this request. An unknown flag is OFF; it is not proof that your dashboard flag is configured correctly.</p>
 <table><thead><tr><th>Required key</th><th>Result</th></tr></thead><tbody>
-@foreach (var flag in Model.Flags) { <tr><td><code>@flag.Key</code></td><td><span class="@(flag.Value ? "on" : "off")">@(flag.Value ? "ON" : "OFF")</span></td></tr> }
+@foreach (var flag in Model.Flags) { <tr><td><code>@flag.Key</code></td><td><span class="@(flag.Value ? "on" : "off")" data-toggly-state="@(flag.Value ? "on" : "off")">@(flag.Value ? "ON" : "OFF")</span></td></tr> }
 </tbody></table><p>Last definitions check: @(Model.LastDefinitionsCheck?.ToString("u") ?? "none"). WebSocket: @(Model.Connected ? "connected" : "disconnected").</p>
 <a href="/api/snapshot">Read this snapshot as JSON</a></section>

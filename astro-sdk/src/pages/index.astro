@@ -450,7 +450,10 @@ const bobHref = '/?identity=bob&role=user&order=ord-standard';
                       row.value === null ? (
                         <span class="pill gap">unsupported</span>
                       ) : (
-                        <span class:list={['pill', row.value ? 'on' : 'off']}>
+                        <span
+                          class:list={['pill', row.value ? 'on' : 'off']}
+                          data-toggly-state={row.value ? 'on' : 'off'}
+                        >
                           {String(row.value)}
                         </span>
                       )

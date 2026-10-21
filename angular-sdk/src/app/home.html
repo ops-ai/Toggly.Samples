@@ -38,7 +38,10 @@
         [disabled]="!w.offline || w.busy || key==='ExpressCheckout'"
         (click)="w.toggle(key)"
       >
-        {{key}}: {{flags[key] ? 'ON' : 'OFF'}}</button
+        {{key }}:
+        <span [attr.data-toggly-state]="flags[key] ? 'on' : 'off'">{{
+          flags[key] ? "ON" : "OFF"
+        }}</span></button
       >}
     </div>
     }@else{

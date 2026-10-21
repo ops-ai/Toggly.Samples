@@ -52,7 +52,10 @@ const { state } = inject(workshopKey);
             </td>
             <td>{{ filter.rule }}</td>
             <td>
-              <span :class="state.snapshot[filter.key] ? 'on' : 'off'">{{
+              <span
+                :class="state.snapshot[filter.key] ? 'on' : 'off'"
+                :data-toggly-state="state.snapshot[filter.key] ? 'on' : 'off'"
+              >{{
                 state.snapshot[filter.key] ? "ON" : "OFF"
               }}</span>
             </td>

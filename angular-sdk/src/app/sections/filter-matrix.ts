@@ -37,7 +37,11 @@ import { filters, httpPresets } from "../sample/catalog";
                 ><br />{{ f.name }}
               </td>
               <td>{{ f.rule }}</td>
-              <td>{{ flags[f.key] ? "ON" : "OFF" }}</td>
+              <td>
+                <span [attr.data-toggly-state]="flags[f.key] ? 'on' : 'off'">{{
+                  flags[f.key] ? "ON" : "OFF"
+                }}</span>
+              </td>
             </tr>
           }
         </tbody>

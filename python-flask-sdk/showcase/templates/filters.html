@@ -25,7 +25,7 @@
         {% for row in rows %}
           <tr>
             <td><code>{{ row.key }}</code><br>{{ row.alias }}</td>
-            <td class="{{ 'on' if row.enabled else 'off' }}">{{ 'ON' if row.enabled else 'OFF' }}</td>
+            <td class="{{ 'on' if row.enabled else 'off' }}"><span data-toggly-state="{{ 'on' if row.enabled else 'off' }}">{{ 'ON' if row.enabled else 'OFF' }}</span></td>
             <td>{{ 'ON' if row.native else 'OFF' }}</td>
             <td>{{ row.note }}</td>
           </tr>
