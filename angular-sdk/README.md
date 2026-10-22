@@ -67,7 +67,7 @@ this.sdk.registerContext<Order>("Order", (o) => ({
 await this.sdk.isFeatureOn(key, order, "Order");
 ```
 
-Changing identity or Order calls `setContext` on the service; the SDK refreshes definitions for the new targeting. Flags are for UI rollout, not authorization.
+Identity presets call `setContext` on the service. Order changes update the registered entity passed into `isFeatureOn` without replacing the signed-in user. Flags are for UI rollout, not authorization.
 
 **Variants note:** the Variants section uses a second service with `enableVariants: true`. Entity-gated flags and variant assignment do not share one snapshot today — see [OPS-1736](https://linear.app/opsai/issue/OPS-1736).
 

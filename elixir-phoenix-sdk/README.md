@@ -51,7 +51,7 @@ socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys,
 **Declarative gate** (HEEx):
 
 ```heex
-<.feature flag="new-dashboard" client={Showcase.Flags} context={@toggly_context}>
+<.feature flags={@toggly_flags} feature="new-dashboard">
   <p>New dashboard enabled</p>
 </.feature>
 ```

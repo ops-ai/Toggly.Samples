@@ -21,13 +21,16 @@ Open **http://localhost:5173**. Without a key, a banner appears and documented d
 **Provider setup** (`src/App.tsx`):
 
 ```tsx
-<TogglyProvider config={{
+const config = {
   appKey: import.meta.env.VITE_TOGGLY_APP_KEY || undefined,
   environment: import.meta.env.VITE_TOGGLY_ENVIRONMENT || "Production",
   flagDefaults: defaults,
-}}>
-  <Workshop configured={Boolean(config.appKey)} />
-</TogglyProvider>
+};
+return (
+  <TogglyProvider config={config}>
+    <Workshop configured={Boolean(config.appKey)} />
+  </TogglyProvider>
+);
 ```
 
 **Declarative gate**:

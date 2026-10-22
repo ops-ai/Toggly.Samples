@@ -27,15 +27,18 @@ client.is_enabled(key, &context.evaluation).await
 **Native guard** (untrusted headers only on `/native`):
 
 ```rust
-#[get("/native?<feature..>")]
-fn native(feature: Feature<'_>) -> Json<Value> { /* … */ }
+#[rocket::get("/native")]
+pub async fn native(feature: toggly_rocket::Feature<'_>) -> Json<Value> {
+    let enabled = feature.is_enabled("beta-access").await;
+    // …
+}
 ```
 
 **Composed beta route** (full workshop context):
 
 ```rust
-let result = decision(client, "beta-access", &context.evaluation).await;
-if !result.enabled { return Err(StatusCode::NotFound); }
+let result = decision(client.0, "beta-access", &context.evaluation).await;
+if !result.enabled { return Err(Status::NotFound); }
 ```
 
 Order registration and matching/non-matching presets match the Axum sample. `DeviceType=Macintosh` is false for the shared desktop Chrome UA — [OPS-2004](https://linear.app/opsai/issue/OPS-2004).
