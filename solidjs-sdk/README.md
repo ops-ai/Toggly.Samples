@@ -1,6 +1,6 @@
 # SolidJS SDK sample
 
-An interactive browser workshop for `@ops-ai/solid-feature-flags-toggly` **0.3.0** and SolidJS 1.9. It demonstrates the native provider, accessors, gates, resource, targeting and cleanup. This sample uses client rendering; it does not demonstrate SolidStart SSR.
+An interactive browser workshop for `@ops-ai/solid-feature-flags-toggly` **0.6.0** and SolidJS 1.9. It demonstrates the native provider, accessors, gates, resource, targeting and cleanup. This sample uses client rendering; it does not demonstrate SolidStart SSR.
 
 ## Quick start
 

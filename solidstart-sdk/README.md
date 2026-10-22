@@ -1,6 +1,6 @@
 # SolidStart SDK workshop
 
-A complete SolidStart 2 application using `@ops-ai/solid-feature-flags-toggly` **0.3.0**, SolidJS 1.9.15+, and Node 24+. It renders signed public flags on the server, hydrates a native Solid provider, and independently guards a server endpoint with the shared Node evaluator.
+A complete SolidStart 2 application using `@ops-ai/solid-feature-flags-toggly` **0.6.0**, SolidJS 1.9.15+, and Node 24+. It renders signed public flags on the server, hydrates a native Solid provider, and independently guards a server endpoint with the shared Node evaluator.
 
 ## Quick start
 

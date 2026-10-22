@@ -60,8 +60,8 @@ an app key.
 |---|---|
 | Rust stable | 1.98.1 |
 | Rocket | 0.5.1 |
-| `toggly` | 0.6.1 |
-| `toggly-rocket` | 0.6.1 |
+| `toggly` | 0.11.0 |
+| `toggly-rocket` | 0.11.0 |
 
 Versions are pinned in `Cargo.toml` and locked in `Cargo.lock`.
 
@@ -192,7 +192,7 @@ managed state is absent. The sample beta route instead resolves full context and
 returns 404 for off, 503 for error. Enhanced submit re-checks CSRF and its flag on
 the POST; it changes no business data.
 
-`evaluate_gate` negates **each feature before** Any/All aggregation in 0.6.1. It
+`evaluate_gate` negates **each feature before** Any/All aggregation in 0.11.0. It
 does not negate the aggregate. An empty gate returns false. Multi-key checks and
 Home rows are separate native evaluations, not an atomic all-flags revision.
 Each displayed boolean/error pair comes from one native call; no invented SDK
