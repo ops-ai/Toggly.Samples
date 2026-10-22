@@ -4,7 +4,7 @@ A client-only SolidJS app with a `TogglyProvider`, reactive `Feature` gates, pro
 
 ## Quick start
 
-Requires **Node 22+**.
+Requires **Node 22.12.0+** (see `package.json` `engines`).
 
 ```sh
 cd solidjs-sdk

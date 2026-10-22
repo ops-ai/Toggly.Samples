@@ -21,7 +21,7 @@ Open **http://localhost:8016**. Export `TOGGLY_APP_KEY` in your shell for live d
 **Evaluate with context** (`src/routes.rs`):
 
 ```rust
-client.is_enabled(key, &context.evaluation).await
+client.is_enabled(key, context.evaluation.clone()).await
 ```
 
 **Native guard** (untrusted headers only on `/native`):

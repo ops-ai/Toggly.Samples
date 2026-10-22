@@ -4,7 +4,7 @@ A single-page Angular app that loads Toggly feature definitions in the browser, 
 
 ## Quick start
 
-Requires **Node 22+**.
+Requires **Node 22.23.2+** (see `package.json` `engines`).
 
 ```sh
 cd angular-sdk

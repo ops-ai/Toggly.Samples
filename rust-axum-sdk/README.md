@@ -26,7 +26,7 @@ let client = TogglyClient::new(config).await.ok().map(Arc::new);
 **Evaluate with request context** (`src/routes.rs`):
 
 ```rust
-client.is_enabled(key, &context.evaluation).await
+client.is_enabled(key, context.evaluation.clone()).await
 ```
 
 **Native `Feature` extractor** (header identity only — `X-User-Id` then `X-Identity`):

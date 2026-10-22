@@ -15,11 +15,11 @@ npm run dev
 
 Open **http://localhost:5173**. Empty keys show configuration banners and safe defaults. Set keys in `.env` and rebuild when changing any `VITE_` variable.
 
-| Variable | Role |
-| --- | --- |
-| `VITE_TOGGLY_APP_KEY` | Public frontend key (SSR snapshot + browser) |
-| `TOGGLY_BACKEND_APP_KEY` | Private server key for `/api/submit` |
-| `TOGGLY_ENVIRONMENT` | Backend environment (default Production) |
+| Variable                 | Role                                         |
+| ------------------------ | -------------------------------------------- |
+| `VITE_TOGGLY_APP_KEY`    | Public frontend key (SSR snapshot + browser) |
+| `TOGGLY_BACKEND_APP_KEY` | Private server key for `/api/submit`         |
+| `TOGGLY_ENVIRONMENT`     | Backend environment (default Production)     |
 
 Never put the backend key or secrets in a `VITE_` variable.
 
@@ -30,7 +30,7 @@ Never put the backend key or secrets in a `VITE_` variable.
 ```ts
 const backend = createTogglyClient({
   appKey: process.env.TOGGLY_BACKEND_APP_KEY,
-  environment: process.env.TOGGLY_ENVIRONMENT ?? "Production",
+  environment: process.env.TOGGLY_ENVIRONMENT ?? 'Production',
   featureDefaults: defaults,
 });
 const scope = createTogglyRequest({
@@ -45,8 +45,8 @@ const snapshot = await scope.snapshot();
 **Guarded server route** (`src/routes/api/submit.ts`):
 
 ```ts
-await scope.requireFeature("enhanced-submit");
-return Response.json({ message: "Enhanced submit branch ran on the server." });
+await scope.requireFeature('enhanced-submit');
+return Response.json({ message: 'Enhanced submit branch ran on the server.' });
 ```
 
 **Browser gates** (same package as SolidJS — `Feature`, `useFeatureFlag` in `src/routes/index.tsx`).
@@ -55,16 +55,16 @@ Identity presets are teaching data, not authentication. Boolean gates only — n
 
 ## Workshop sections
 
-| Section | Focus |
-| --- | --- |
-| Home | Server snapshot + live browser flags |
-| Declarative gates | Feature, negate, lazy panel |
-| Programmatic API | Accessor + real POST guard |
-| Identity | Alice / Bob via server query |
-| Entity context | Order `Vip` checkbox |
-| Filters matrix | Shared filter keys |
-| SolidStart boundaries | Server-only imports, disposal |
-| Configuration | Missing frontend/backend banners |
+| Section               | Focus                                |
+| --------------------- | ------------------------------------ |
+| Home                  | Server snapshot + live browser flags |
+| Declarative gates     | Feature, negate, lazy panel          |
+| Programmatic API      | Accessor + real POST guard           |
+| Identity              | Alice / Bob via server query         |
+| Entity context        | Order `Vip` checkbox                 |
+| Filters matrix        | Shared filter keys                   |
+| SolidStart boundaries | Server-only imports, disposal        |
+| Configuration         | Missing frontend/backend banners     |
 
 ## Learn more
 
