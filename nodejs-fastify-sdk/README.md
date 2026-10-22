@@ -28,14 +28,18 @@ npm run offline
 Register the plugin before routes so each request gets `request.toggly` in a `preHandler`:
 
 ```js
-import { togglyPlugin, featureGate } from '@ops-ai/toggly-fastify';
+import { togglyPlugin, featureGate, featuresHandler } from '@ops-ai/toggly-fastify';
 
 await app.register(togglyPlugin, {
   appKey: process.env.TOGGLY_APP_KEY,
   environment: process.env.TOGGLY_ENVIRONMENT ?? 'Production',
   async getContext(request) {
     const input = inputs(request);
-    return { identity: input.identity, claims: { role: input.role } };
+    return {
+      identity: input.identity,
+      claims: { role: input.role },
+      ...(input.preset ? { request: { country: input.preset.country, acceptLanguage: input.preset.language, userAgent: input.preset.agent } } : {}),
+    };
   },
 });
 ```

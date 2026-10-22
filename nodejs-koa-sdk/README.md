@@ -28,14 +28,18 @@ npm run offline
 Register middleware before routers and gates. `getContext` supplies identity and claims per request:
 
 ```js
-import { togglyMiddleware, featureGate } from '@ops-ai/toggly-koa';
+import { togglyMiddleware, featureGate, featuresHandler } from '@ops-ai/toggly-koa';
 
 app.use(togglyMiddleware({
   appKey: process.env.TOGGLY_APP_KEY,
   environment: process.env.TOGGLY_ENVIRONMENT ?? 'Production',
   getContext(ctx) {
     const input = inputs(ctx);
-    return { identity: input.identity, claims: { role: input.role } };
+    return {
+      identity: input.identity,
+      claims: { role: input.role },
+      ...(input.preset ? { request: { country: input.preset.country, acceptLanguage: input.preset.language, userAgent: input.preset.agent } } : {}),
+    };
   },
 }));
 ```
@@ -63,6 +67,8 @@ await ctx.state.toggly.client.isFeatureOn(key, ctx.state.toggly.context, inputs(
 ```js
 await ctx.state.toggly.client.isFeatureOn('filter-targeting', { ...ctx.state.toggly.context, identity: 'alice' });
 ```
+
+Expose a global snapshot (not request-evaluated flags) with `router.get('/api/features', featuresHandler())`.
 
 Call `closeKoaToggly()` on process shutdown (`src/server.js`). One configured Toggly app per Node process.
 

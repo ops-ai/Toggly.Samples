@@ -31,6 +31,7 @@ Install the adapter middleware **before** routes that read flags. Use `getContex
 
 ```js
 import { togglyMiddleware, featureGate, featuresHandler } from '@ops-ai/toggly-express';
+// featuresHandler is a factory on Express: app.get('/api/features', featuresHandler());
 
 app.use(togglyMiddleware({
   appKey: process.env.TOGGLY_APP_KEY,
@@ -61,7 +62,7 @@ app.get('/gates/enabled', featureGate({ featureKey: 'new-dashboard' }), handler)
 **Entity context (Order)** — rules that use `Order.Vip` need the core client; adapter helpers only accept a key ([OPS-2000](https://linear.app/opsai/issue/OPS-2000)):
 
 ```js
-await req.toggly.client.isFeatureOn('ExpressCheckout', req.toggly.context, orderEntity);
+await req.toggly.client.isFeatureOn('ExpressCheckout', req.toggly.context, inputs(req).order);
 ```
 
 **One-off identity override** (does not change the request’s ambient identity):
@@ -80,7 +81,7 @@ On shutdown, call `closeExpressToggly()` once per process (see `src/server.js`).
 | `featuresHandler()` | Returns a global boolean snapshot plus request identity, not flags evaluated for this request’s claims or Order | [OPS-2001](https://linear.app/opsai/issue/OPS-2001) |
 | Experiments | Boolean branches only; no experiment enrollment/exposure API | [OPS-2002](https://linear.app/opsai/issue/OPS-2002) |
 
-Compare `/api/features` with `/api/evaluate` in the running app.
+Register the snapshot endpoint with `app.get('/api/features', featuresHandler())`. Compare `/api/features` with `/api/evaluate` in the running app.
 
 ## Tour
 

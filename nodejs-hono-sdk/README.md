@@ -35,7 +35,11 @@ app.use('*', togglyMiddleware({
   environment: process.env.TOGGLY_ENVIRONMENT ?? 'Production',
   async getContext(c) {
     const input = inputs(c.req);
-    return { identity: input.identity, claims: { role: input.role } };
+    return {
+      identity: input.identity,
+      claims: { role: input.role },
+      ...(input.preset ? { request: { country: input.preset.country, acceptLanguage: input.preset.language, userAgent: input.preset.agent } } : {}),
+    };
   },
 }));
 ```
