@@ -36,9 +36,11 @@ app.use(togglyMiddleware({
   appKey: process.env.TOGGLY_APP_KEY,
   environment: process.env.TOGGLY_ENVIRONMENT ?? 'Production',
   getContext(req) {
+    const input = inputs(req); // src/catalog.js — demo query/headers, not auth
     return {
-      identity: req.headers['x-toggly-identity'] ?? 'anonymous',
-      claims: { role: req.headers['x-demo-role'] ?? 'user' },
+      identity: input.identity,
+      claims: { role: input.role },
+      ...(input.preset ? { request: { country: input.preset.country, acceptLanguage: input.preset.language, userAgent: input.preset.agent } } : {}),
     };
   },
 }));
