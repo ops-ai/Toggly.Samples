@@ -1,6 +1,14 @@
 # .NET client SDK showcase
 
-A console and Avalonia desktop application using `Toggly.FeatureManagement.Client.Desktop` **3.13.3**, its portable client dependency **3.13.3**, and Avalonia **12.1.4**. Requires the stable .NET 10 SDK matching [`global.json`](global.json) (10.0.401 or a newer patch with the same major.minor). The desktop host runs on macOS, Linux and Windows using Avalonia's native platform requirements; it needs a graphical desktop session.
+A console and Avalonia desktop application using the published
+[`Toggly.FeatureManagement.Client.Desktop`](https://www.nuget.org/packages/Toggly.FeatureManagement.Client.Desktop)
+and [`Toggly.FeatureManagement.Client`](https://www.nuget.org/packages/Toggly.FeatureManagement.Client)
+packages (versions pinned in [`Console/Console.csproj`](Console/Console.csproj) and
+[`Desktop/Desktop.csproj`](Desktop/Desktop.csproj)), plus Avalonia **12.1.4**.
+Requires the stable .NET 10 SDK matching [`global.json`](global.json) (10.0.401 or a
+newer patch with the same major.minor). The desktop host runs on macOS, Linux and
+Windows using Avalonia's native platform requirements; it needs a graphical desktop
+session.
 
 The two hosts share the same seven-section showcase and real SDK calls. They require no ASP.NET Core app or Generic Host. Feature rollout in an end-user application does not replace backend authorization.
 
@@ -121,8 +129,8 @@ MIT license. See the [client SDK guide](https://docs.toggly.io/sdks/dotnet-clien
 
 ## Published telemetry consumers
 
-The separate [PublicTelemetry test hosts](tests/PublicTelemetry/README.md) use
-locked NuGet 3.10.0 portable and Desktop packages. They capture keyed native
+The separate [PublicTelemetry test hosts](tests/PublicTelemetry/README.md) restore
+locked portable and Desktop packages from NuGet (see their `.csproj` files). They capture keyed native
 telemetry on a local listener, exercise signed evaluations and bounded retry,
 and test both .NET 8 and .NET 10. Their output records identity attribution;
 the approved packet contract requires `k/e/f/m` and permits optional `i/u`.

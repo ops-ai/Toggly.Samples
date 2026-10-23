@@ -1,9 +1,12 @@
 # Blazor SDK workshop
 
 An actual .NET 8 Blazor Web App with separately compiled WebAssembly client code.
-Explore static SSR, Interactive Server, WebAssembly and Interactive Auto using
-`Toggly.FeatureManagement.Blazor` **3.8.0**, `.Blazor.Server` **3.8.0**, portable
-Client **3.8.0** and trusted `.NET` **3.8.0**. Live mode reports definition cache
+Explore static SSR, Interactive Server, WebAssembly and Interactive Auto using the
+published [`Toggly.FeatureManagement.Blazor`](https://www.nuget.org/packages/Toggly.FeatureManagement.Blazor),
+[`Toggly.FeatureManagement.Blazor.Server`](https://www.nuget.org/packages/Toggly.FeatureManagement.Blazor.Server),
+and portable [`Toggly.FeatureManagement.Client`](https://www.nuget.org/packages/Toggly.FeatureManagement.Client)
+packages (versions pinned in [`BlazorSample.Client/BlazorSample.Client.csproj`](BlazorSample.Client/BlazorSample.Client.csproj)
+and [`BlazorSample/BlazorSample.csproj`](BlazorSample/BlazorSample.csproj)). Live mode reports definition cache
 hits on the usage pipeline; offline and `ci-placeholder` runs do not upload usage.
 `python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 Presentation gates are not backend
@@ -97,11 +100,11 @@ Use one application host/service account per directory; this is not a distribute
 cache or a multi-writer deployment design.
 
 The directory remains **trusted local application state**, including the public
-JWKS. SDK 3.8.0 re-verifies the exact saved signed definitions and rejects a typed
+JWKS. The SDK re-verifies the exact saved signed definitions and rejects a typed
 copy that differs from those bytes. This does not authenticate simultaneous
 replacement of both definitions and their saved public signing keys by an attacker
 who controls the directory. The adapter preserves the SDK's timestamp fields;
-SDK 3.8.0 does not enforce the persisted JWKS expiry timestamp or a maximum offline
+The SDK does not enforce the persisted JWKS expiry timestamp or a maximum offline
 definitions age. Offline operation cannot learn about a revoked signing key or
 new flag value. Protect the service account and storage, and reconnect to obtain
 current definitions. Do not treat this cache as a new independent trust anchor.
@@ -244,12 +247,14 @@ assign named variants or record a new experiment API.
 
 ## Automated checks
 
-### Public NuGet 3.10.0 WebAssembly telemetry acceptance
+### Public NuGet WebAssembly telemetry acceptance
 
 `tests/PublicTelemetryHost` is a separate, credential-free browser fixture for
-`Toggly.FeatureManagement.Blazor` and its portable Client dependency at **3.10.0**.
+[`Toggly.FeatureManagement.Blazor`](https://www.nuget.org/packages/Toggly.FeatureManagement.Blazor)
+and its portable Client dependency (versions pinned in
+[`tests/PublicTelemetryHost/PublicTelemetryHost.csproj`](tests/PublicTelemetryHost/PublicTelemetryHost.csproj)).
 It restores from NuGet, not from the SDK repository, a local nupkg, or a project
-reference. The teaching workshop above retains its own 3.8.0 contract and render
+reference. The teaching workshop above retains its own render
 matrix; this fixture adds a focused real-browser transport gate. Its key,
 environment, and metrics URL are synthetic, chosen from the page query string.
 Only the test's loopback collector receives POSTs. Definitions use an offline
@@ -275,8 +280,8 @@ explicit usage/view/counter/gauge/flush, separate browser owners, opt-out and
 keyless silence, real navigation, and browser hide/pagehide/disposal. The collector verifies
 OPTIONS and `202` POST, exact compact keys, gzip ordinary delivery, plain
 keepalive delivery, no Authorization or Cookie header, and no groups, claims,
-or entity attributes in the packet. `i` and `u` are recorded as actual public
-3.10.0 behavior; this local run does not decide their open ingestion policy.
+or entity attributes in the packet. `i` and `u` are recorded as actual public-package
+behavior; this local run does not decide their open ingestion policy.
 The companion public-package check verifies non-browser/prerender registration
 evaluates a default with zero JS transport calls, and that the published Blazor
 Server session does not implement the frontend reporter. The existing render
