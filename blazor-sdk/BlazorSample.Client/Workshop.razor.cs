@@ -1,6 +1,5 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
 using Toggly.FeatureManagement.Blazor;
 using Toggly.FeatureManagement.Client;
 

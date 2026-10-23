@@ -82,6 +82,18 @@ public class ShowcaseTests
     }
 
     [Fact]
+    public async Task Missing_preset_defaults_to_matching_persona_and_targeting()
+    {
+        await using var app = new SampleFactory();
+        using var client = app.CreateClient();
+        using var snapshot = JsonDocument.Parse(await client.GetStringAsync("/api/snapshot"));
+        var data = snapshot.RootElement;
+        Assert.Equal("alice", data.GetProperty("persona").GetProperty("name").GetString());
+        Assert.True(data.GetProperty("flags").GetProperty("filter-targeting").GetBoolean());
+        Assert.True(data.GetProperty("flags").GetProperty("filter-country").GetBoolean());
+    }
+
+    [Fact]
     public async Task Matrix_presets_and_entity_fail_closed_are_actual_evaluations()
     {
         await using var app = new SampleFactory();

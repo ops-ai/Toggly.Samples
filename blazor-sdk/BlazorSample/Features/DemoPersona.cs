@@ -45,6 +45,11 @@ public sealed record DemoPersona(
             _ => Matching,
         };
 
+        if (context.Request.Query["order"] == "standard")
+            persona = persona with { Order = NonMatching.Order };
+        if (context.Request.Query["order"] == "vip")
+            persona = persona with { Order = Matching.Order };
+
         context.Items[typeof(DemoPersona)] = persona;
         context.Request.Headers["CF-IPCountry"] = persona.Country;
         context.Request.Headers["Accept-Language"] = persona.Language;
