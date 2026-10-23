@@ -323,7 +323,7 @@ jobs:
               'Could not queue the LiveE2E ADO pipeline (see the **Queue LiveE2E on Azure DevOps** step log and job summary for HTTP status and ADO response body).',
               `Samples: \`${ids}\``,
               `samplesRef: \`${context.payload.pull_request.head.sha}\``,
-              'packTier: `smoke`',
+              'packTier: `filters-matching`',
             ].join('\n\n');
             try {
               await github.rest.checks.create({
@@ -377,8 +377,8 @@ jobs:
               status: 'in_progress',
               details_url: runUrl || undefined,
               output: {
-                title: 'LiveE2E smoke (ADO)',
-                summary: `Queued ADO run for \`${ids}\` at smoke tier.`,
+                title: 'LiveE2E filters-matching (ADO)',
+                summary: `Queued ADO run for \`${ids}\` at filters-matching tier.`,
               },
             });
             core.setOutput('check_id', String(check.id));

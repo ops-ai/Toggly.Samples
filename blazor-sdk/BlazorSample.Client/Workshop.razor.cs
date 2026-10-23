@@ -163,7 +163,10 @@ public partial class Workshop
             if (matrix is null)
                 return;
             foreach (var key in Filters)
-                Values[key] = matrix.GetValueOrDefault(key);
+            {
+                if (HttpFilterMatrixServer.Contains(key))
+                    Values[key] = matrix.GetValueOrDefault(key);
+            }
         }
         catch (Exception ex)
         {
