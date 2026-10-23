@@ -46,6 +46,15 @@ public partial class Workshop
         "filter-os",
         "filter-context-property",
     ];
+    private static readonly HashSet<string> HttpFilterMatrixServer =
+    [
+        "filter-user-claims",
+        "filter-country",
+        "filter-browser-family",
+        "filter-browser-language",
+        "filter-device-type",
+        "filter-os",
+    ];
     private static readonly EntityContext VipOrder = new(
         "Order",
         "ord-vip",
@@ -77,10 +86,6 @@ public partial class Workshop
         {
             Interactive = true;
             StateHasChanged();
-            // Only the filters section needs a post-circuit Evaluate on server; doing it
-            // on identity/home stalled corrupt-snapshot persistence cases.
-            if (Mode != "ssr" && !OperatingSystem.IsBrowser() && Section == "filters")
-                _ = InvokeAsync(Evaluate);
         }
     }
 
@@ -94,9 +99,7 @@ public partial class Workshop
                 && !query.Contains("preset=non-matching", StringComparison.Ordinal);
             await SetPreset(matching);
         }
-        else if (OperatingSystem.IsBrowser())
-            await Evaluate();
-        else if (Interactive)
+        else
             await Evaluate();
     }
 
@@ -117,43 +120,37 @@ public partial class Workshop
 
     private async Task Evaluate()
     {
-        foreach (var key in Flags)
+        foreach (
+            var key in Flags
+                .Concat(Filters)
+                .Where(key => OperatingSystem.IsBrowser() || !HttpFilterMatrixServer.Contains(key))
+        )
             Values[key] = await Features.EvaluateAsync(
                 [key],
-                entity: key is "ExpressCheckout" ? CurrentOrder : null
+                entity: key is "ExpressCheckout" or "filter-context-property" ? CurrentOrder : null
             );
 
-        if (Section != "filters")
-            return;
+        if (!OperatingSystem.IsBrowser() && Section == "filters")
+            await MergeServerFilterMatrixAsync();
+    }
 
-        // Loopback filter-matrix HTTP is only for the filters section; calling it elsewhere
-        // can stall the Server circuit when signed snapshots are invalid.
-        if (!OperatingSystem.IsBrowser())
+    private async Task MergeServerFilterMatrixAsync()
+    {
+        try
         {
-            try
-            {
-                var preset = Identity == "alice" ? "matching" : "nonmatching";
-                var matrix = await Http.GetFromJsonAsync<Dictionary<string, bool>>(
-                    Navigation.ToAbsoluteUri($"/api/demo-filter-matrix?preset={preset}")
-                );
-                if (matrix is not null)
-                {
-                    foreach (var key in Filters)
-                        Values[key] = matrix.GetValueOrDefault(key);
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                Error = ex.Message;
-            }
-        }
-
-        foreach (var key in Filters)
-            Values[key] = await Features.EvaluateAsync(
-                [key],
-                entity: key is "filter-context-property" ? CurrentOrder : null
+            var preset = Identity == "alice" ? "matching" : "nonmatching";
+            var matrix = await Http.GetFromJsonAsync<Dictionary<string, bool>>(
+                Navigation.ToAbsoluteUri($"/api/demo-filter-matrix?preset={preset}")
             );
+            if (matrix is null)
+                return;
+            foreach (var key in Filters)
+                Values[key] = matrix.GetValueOrDefault(key);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
     }
 
     private async Task Refresh()
@@ -174,8 +171,7 @@ public partial class Workshop
                 }
 
                 Updates++;
-                if (OperatingSystem.IsBrowser() || Section == "filters")
-                    await Evaluate();
+                await Evaluate();
                 StateHasChanged();
             });
     }

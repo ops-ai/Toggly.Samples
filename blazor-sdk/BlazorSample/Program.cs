@@ -2,7 +2,7 @@ using BlazorSample.Client;
 using BlazorSample.Components;
 using BlazorSample.Features;
 using Microsoft.Extensions.Http;
-using Microsoft.FeatureManagement;
+using Microsoft.FeatureManagement.FeatureFilters;
 using Toggly.FeatureManagement;
 using Toggly.FeatureManagement.Blazor.Server;
 using Toggly.FeatureManagement.Configuration;
@@ -59,8 +59,8 @@ if (!string.IsNullOrWhiteSpace(definitionsUrl) &&
 
 // The trusted backend key remains in this server process. Only the explicit
 // Front-end App Key and environment are returned by the public settings endpoint.
+
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClient>(sp =>
 {
     var client = new HttpClient();
@@ -69,7 +69,7 @@ builder.Services.AddScoped<HttpClient>(sp =>
         client.BaseAddress = new Uri($"{request.Scheme}://{request.Host}/");
     return client;
 });
-builder.Services.AddTogglyWeb(options =>
+builder.Services.AddToggly(options =>
 {
     options.AppKey = backendKey ?? "";
     options.Environment = settings.Environment;
@@ -82,7 +82,8 @@ builder.Services.AddTogglyWeb(options =>
         options.DefinitionsBaseUrl = "http://127.0.0.1:1/";
         options.BaseUrl = "http://127.0.0.1:1/";
     }
-}).WithTogglyTargeting<RequestTargetingAccessor>();
+});
+builder.Services.AddSingleton<ITargetingContextAccessor, RequestTargetingAccessor>();
 builder.Services.AddTogglyEntityContext<DemoOrder>(
     "Order",
     order => order.Id,
@@ -132,3 +133,4 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(PublicSettings).Assembly);
 app.Run();
+
