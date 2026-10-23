@@ -31,11 +31,11 @@ Installed versions (pinned in `package.json` / lockfile):
 
 | Package | Version |
 | --- | --- |
-| Astro | 7.3.2 |
-| `@ops-ai/astro-feature-flags-toggly` | 1.17.0 |
-| `@astrojs/node` | 11.1.5 |
-| `@astrojs/react` / `vue` / `svelte` | 6.0.5 / 7.0.2 / 9.0.1 |
-| React / Vue / Svelte | 19.3.0 / 3.5.42 / 5.57.0 |
+| Astro | 7.4.0 |
+| `@ops-ai/astro-feature-flags-toggly` | 1.21.0 |
+| `@astrojs/node` | 11.1.7 |
+| `@astrojs/react` / `vue` / `svelte` | 7.1.0 / 7.1.0 / 9.0.1 |
+| React / Vue / Svelte | 19.3.0 / 3.5.44 / 5.57.2 |
 | TypeScript | 6.0.3 |
 | `@astrojs/check` | 0.9.10 |
 

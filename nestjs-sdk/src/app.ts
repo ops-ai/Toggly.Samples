@@ -1,5 +1,15 @@
 import 'reflect-metadata';
-import { Controller, Get, Header, Inject, Module, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  HttpCode,
+  Inject,
+  Module,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   TogglyModule,
@@ -12,9 +22,20 @@ import {
 } from '@ops-ai/toggly-nestjs';
 import { inputs, keys, filters } from './catalog.js';
 import { page } from './view.js';
+
+/** LiveE2E often sets `TOGGLY_REFRESH_INTERVAL_MS=0` when streaming was enabled; with streaming off, poll instead. */
+function liveRefreshIntervalMs(): number {
+  const raw = process.env.TOGGLY_REFRESH_INTERVAL_MS;
+  const parsed = raw !== undefined && raw !== '' ? Number(raw) : 5000;
+  if (!Number.isFinite(parsed) || parsed < 0) return 5000;
+  return parsed > 0 ? parsed : 5000;
+}
+
 export interface SampleOptions {
   appKey?: string;
   environment?: string;
+  /** Live definitions base (defaults to core `https://definitions.toggly.io`). */
+  definitionsBaseUrl?: string;
   fixtureUrl?: string;
   hooks?: Hook[];
   telemetry?: boolean;
@@ -23,6 +44,7 @@ export interface SampleOptions {
 export async function createApp({
   appKey = '',
   environment = 'Production',
+  definitionsBaseUrl,
   fixtureUrl,
   hooks = [],
   telemetry = true,
@@ -58,12 +80,22 @@ export async function createApp({
     @Get('api/evaluate')
     @Header('Cache-Control', 'no-store')
     async evaluated(@Req() req: any) {
+      const flags = await this.evaluate(req);
       return {
         source: this.source(),
         context: await this.toggly.context(),
         order: inputs(req).order,
-        flags: await this.evaluate(req),
+        flags,
+        // LiveE2E in-process edge-vs-mgmt probes read the shared snapshot field name.
+        features: this.provider.state.features,
       };
+    }
+    @Post('api/refresh')
+    @HttpCode(200)
+    @Header('Cache-Control', 'no-store')
+    async refreshDefinitions() {
+      await this.provider.client.refresh();
+      return { attemptCompleted: true };
     }
     @Get('api/override')
     @Header('Cache-Control', 'no-store')
@@ -154,11 +186,12 @@ export async function createApp({
         // No fake live credentials: fixture marker is sent only to the loopback server.
         appKey: offline ? 'offline-fixture' : configured ? appKey : undefined,
         environment,
-        baseUrl: fixtureUrl,
+        baseUrl: offline ? fixtureUrl : definitionsBaseUrl,
         verifySignatures: !offline,
-        enableStreaming: configured && !offline && telemetry,
-        refreshInterval:
-          configured && !offline ? Number(process.env.TOGGLY_REFRESH_INTERVAL_MS || 180000) : 0,
+        // Match other Node HTTP samples: poll definitions on an interval instead of
+        // WebSocket streaming so LiveE2E edge-vs-mgmt can observe CDN revisions reliably.
+        enableStreaming: false,
+        refreshInterval: configured && !offline ? liveRefreshIntervalMs() : 0,
         timeout: 3000,
         registerContextsOnStartup: false,
         hooks,

@@ -54,6 +54,11 @@ test('installed NestJS package drives all eight sections, gates, presets and ent
     assert.equal(other.context.identity, 'bob');
     assert.equal(matching.flags.ExpressCheckout, true);
     assert.equal(other.flags.ExpressCheckout, false);
+    assert.equal(typeof matching.features['new-dashboard'], 'boolean');
+    assert.equal(matching.features['new-dashboard'], matching.flags['new-dashboard']);
+    const refresh = await fetch(url + '/api/refresh', { method: 'POST' });
+    assert.equal(refresh.status, 200);
+    assert.deepEqual(await refresh.json(), { attemptCompleted: true });
     for (const flag of [
       'targeting',
       'user-claims',

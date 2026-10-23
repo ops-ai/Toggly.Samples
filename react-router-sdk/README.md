@@ -99,8 +99,8 @@ transport override for controlled development or tests; the SDK default is
 ## Package versions
 
 - `react-router`, `@react-router/dev`, `@react-router/node`, `@react-router/serve` `8.4.0`
-- `react`, `react-dom` `19.3.0`
-- `@ops-ai/react-router-toggly` `1.1.0`
+- `react`, `react-dom` `19.3.1`
+- `@ops-ai/react-router-toggly` `1.5.1`
 - `isbot` `5.2.2` (required by `@react-router/serve`)
 
 See also [the React Router SDK docs](https://docs.toggly.io/sdks/react-router)
