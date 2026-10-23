@@ -4,9 +4,9 @@
     "net10.0": {
       "Microsoft.AspNetCore.App.Internal.Assets": {
         "type": "Direct",
-        "requested": "[10.0.11, )",
-        "resolved": "10.0.11",
-        "contentHash": "tYYYBZsuF2DSz1I3hcfB8qC4nNekIKufkYZOJ2R28fNK3PkS7fJao/mIX5H84NH94UACZQ4dhvt8GDlkrJFwLg=="
+        "requested": "[10.0.13, )",
+        "resolved": "10.0.13",
+        "contentHash": "Y2cXnMnqht5fvja2H8kkr5WA2fYItIPwXiBVo83+/9oySuKZCrz4T+yyZRFtLpxxDScvtYDt7e+J0eNElJ+AiA=="
       },
       "Microsoft.AspNetCore.Components.WebAssembly.Server": {
         "type": "Direct",
@@ -172,11 +172,6 @@
         "resolved": "6.1.0",
         "contentHash": "M5cCC1ZMkZr9jbSQGTHnVkb5TDN67qWCV7AP8TAHdGkvDlu0puT5NzemESNn9+HkYIDpWpocP68/i+/ame2/2w=="
       },
-      "UAParser": {
-        "type": "Transitive",
-        "resolved": "3.1.47",
-        "contentHash": "I68Jl/Vs5RQZdz9BbmYtnXgujg0jVd61LhKbyNZOCm9lBxZFGxLbiQo6yFj21VYi7DzPvEvrVOmeC6v41AoLfw=="
-      },
       "Toggly.FeatureManagement": {
         "type": "Transitive",
         "resolved": "3.14.2",
@@ -207,6 +202,11 @@
         "type": "Transitive",
         "resolved": "3.14.2",
         "contentHash": "mWwsk/XwG1/oHhUdSLgKYR6Fjf/dUgba+GijkIdMKi33JGFyAW5E/ViWxmvm0ou0qgN5zghMSm1YUbKMKNq88w=="
+      },
+      "UAParser": {
+        "type": "Transitive",
+        "resolved": "3.1.47",
+        "contentHash": "I68Jl/Vs5RQZdz9BbmYtnXgujg0jVd61LhKbyNZOCm9lBxZFGxLbiQo6yFj21VYi7DzPvEvrVOmeC6v41AoLfw=="
       },
       "Websocket.Client": {
         "type": "Transitive",

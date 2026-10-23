@@ -185,6 +185,20 @@
         "resolved": "3.14.2",
         "contentHash": "mWwsk/XwG1/oHhUdSLgKYR6Fjf/dUgba+GijkIdMKi33JGFyAW5E/ViWxmvm0ou0qgN5zghMSm1YUbKMKNq88w=="
       },
+      "Toggly.FeatureManagement.Web": {
+        "type": "Transitive",
+        "resolved": "3.14.2",
+        "contentHash": "vgNNNovai528n6PdxiSm3JKHv9pg93hZd+nbCB0ODVKYccPei3aOBt1f6E4BCtLcUlp2+G2weAVfDvASigGePw==",
+        "dependencies": {
+          "Toggly.FeatureManagement": "3.14.2",
+          "UAParser": "3.1.47"
+        }
+      },
+      "UAParser": {
+        "type": "Transitive",
+        "resolved": "3.1.47",
+        "contentHash": "I68Jl/Vs5RQZdz9BbmYtnXgujg0jVd61LhKbyNZOCm9lBxZFGxLbiQo6yFj21VYi7DzPvEvrVOmeC6v41AoLfw=="
+      },
       "Websocket.Client": {
         "type": "Transitive",
         "resolved": "5.5.0",
@@ -199,7 +213,8 @@
         "dependencies": {
           "BlazorSample.Client": "[1.0.0, )",
           "Microsoft.AspNetCore.Components.WebAssembly.Server": "[10.0.13, )",
-          "Toggly.FeatureManagement.Blazor.Server": "[3.14.2, )"
+          "Toggly.FeatureManagement.Blazor.Server": "[3.14.2, )",
+          "Toggly.FeatureManagement.Web": "[3.14.2, )"
         }
       },
       "blazorsample.client": {

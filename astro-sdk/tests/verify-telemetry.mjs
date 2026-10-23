@@ -142,9 +142,10 @@ async function runCase({ optOut = false, plain = false, selection = 'on' }) {
     for (let attempt = 0; packets.length < 2 && attempt < 80; attempt++) {
       await page.waitForTimeout(50);
     }
-    assert.ok(packets.length >= 2, 'explicit flush sends a real compact packet');
-    assert.equal(packets[1].gzip, !plain, 'test exercises requested wire encoding');
-    const packet = packets[1].body;
+    const explicitPacket = packets.find((entry) => entry.body.m?.['sample-interactions']);
+    assert.ok(explicitPacket, 'explicit flush sends a real compact packet with sample metrics');
+    assert.equal(explicitPacket.gzip, !plain, 'test exercises requested wire encoding');
+    const packet = explicitPacket.body;
     assert.equal(packet.k, key);
     assert.equal(packet.e, 'Production');
     assert.ok(packet.f?.['new-dashboard'], 'island direct/gate checks and explicit events share one feature row');
