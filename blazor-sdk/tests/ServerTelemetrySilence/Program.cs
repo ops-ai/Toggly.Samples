@@ -33,7 +33,7 @@ await events.FlushTelemetryAsync();
 await session.DisposeAsync();
 if (js.Calls != 0)
     throw new InvalidOperationException("A non-browser runtime invoked JS transport.");
-Console.WriteLine("public 3.14.2 non-browser registration: evaluation true; zero JS transport calls; Server session has no frontend reporter");
+Console.WriteLine("public non-browser registration: evaluation true; zero JS transport calls; Server session has no frontend reporter");
 
 sealed class NoJs : IJSRuntime
 {

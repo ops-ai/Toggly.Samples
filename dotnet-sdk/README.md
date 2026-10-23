@@ -234,14 +234,25 @@ Registry checkpoint: 2026-09-16. Exact NuGet resolution is committed in both
 pipeline; offline and `ci-placeholder` runs do not upload usage. `python scripts/soak.py`
 waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 
+Published Toggly packages (exact versions are pinned in
+[`src/DotnetSample/DotnetSample.csproj`](src/DotnetSample/DotnetSample.csproj)
+and resolved in `packages.lock.json`):
+
+- [`Toggly.FeatureManagement`](https://www.nuget.org/packages/Toggly.FeatureManagement)
+- [`Toggly.FeatureManagement.Web`](https://www.nuget.org/packages/Toggly.FeatureManagement.Web)
+- [`Toggly.FeatureManagement.Hangfire`](https://www.nuget.org/packages/Toggly.FeatureManagement.Hangfire)
+- [`Toggly.FeatureManagement.HealthChecks`](https://www.nuget.org/packages/Toggly.FeatureManagement.HealthChecks)
+- [`Toggly.FeatureManagement.NSwag`](https://www.nuget.org/packages/Toggly.FeatureManagement.NSwag)
+
+Add packages the same way in your own app:
+
+```bash
+dotnet add package Toggly.FeatureManagement
+```
+
 | Dependency | Version |
 |---|---|
 | .NET SDK / ASP.NET Core runtime | 10.0.401 / 10.0.12 |
-| Toggly.FeatureManagement | 3.14.2 |
-| Toggly.FeatureManagement.Web | 3.14.2 |
-| Toggly.FeatureManagement.Hangfire | 3.14.2 |
-| Toggly.FeatureManagement.HealthChecks | 3.14.2 |
-| Toggly.FeatureManagement.NSwag | 3.14.2 |
 | Hangfire.AspNetCore | 1.8.25 |
 | Hangfire.InMemory | 1.0.0 |
 | NSwag.AspNetCore | 14.7.1 |
