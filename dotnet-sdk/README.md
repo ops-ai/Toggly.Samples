@@ -237,11 +237,11 @@ waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 | Dependency | Version |
 |---|---|
 | .NET SDK / ASP.NET Core runtime | 10.0.401 / 10.0.12 |
-| Toggly.FeatureManagement | 3.8.0 |
-| Toggly.FeatureManagement.Web | 3.8.0 |
-| Toggly.FeatureManagement.Hangfire | 3.8.0 |
-| Toggly.FeatureManagement.HealthChecks | 3.8.0 |
-| Toggly.FeatureManagement.NSwag | 3.8.0 |
+| Toggly.FeatureManagement | 3.14.2 |
+| Toggly.FeatureManagement.Web | 3.14.2 |
+| Toggly.FeatureManagement.Hangfire | 3.14.2 |
+| Toggly.FeatureManagement.HealthChecks | 3.14.2 |
+| Toggly.FeatureManagement.NSwag | 3.14.2 |
 | Hangfire.AspNetCore | 1.8.25 |
 | Hangfire.InMemory | 1.0.0 |
 | NSwag.AspNetCore | 14.7.1 |

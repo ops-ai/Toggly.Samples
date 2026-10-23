@@ -2,8 +2,8 @@
 
 An actual .NET 8 Blazor Web App with separately compiled WebAssembly client code.
 Explore static SSR, Interactive Server, WebAssembly and Interactive Auto using
-`Toggly.FeatureManagement.Blazor` **3.8.0**, `.Blazor.Server` **3.8.0**, portable
-Client **3.8.0** and trusted `.NET` **3.8.0**. Live mode reports definition cache
+`Toggly.FeatureManagement.Blazor` **3.14.2**, `.Blazor.Server` **3.14.2**, portable
+Client **3.14.2** and trusted `.NET` **3.14.2**. Live mode reports definition cache
 hits on the usage pipeline; offline and `ci-placeholder` runs do not upload usage.
 `python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.
 Presentation gates are not backend
@@ -244,12 +244,12 @@ assign named variants or record a new experiment API.
 
 ## Automated checks
 
-### Public NuGet 3.10.0 WebAssembly telemetry acceptance
+### Public NuGet 3.14.2 WebAssembly telemetry acceptance
 
 `tests/PublicTelemetryHost` is a separate, credential-free browser fixture for
-`Toggly.FeatureManagement.Blazor` and its portable Client dependency at **3.10.0**.
+`Toggly.FeatureManagement.Blazor` and its portable Client dependency at **3.14.2**.
 It restores from NuGet, not from the SDK repository, a local nupkg, or a project
-reference. The teaching workshop above retains its own 3.8.0 contract and render
+reference. The teaching workshop above retains its own 3.14.2 contract and render
 matrix; this fixture adds a focused real-browser transport gate. Its key,
 environment, and metrics URL are synthetic, chosen from the page query string.
 Only the test's loopback collector receives POSTs. Definitions use an offline
@@ -276,7 +276,7 @@ keyless silence, real navigation, and browser hide/pagehide/disposal. The collec
 OPTIONS and `202` POST, exact compact keys, gzip ordinary delivery, plain
 keepalive delivery, no Authorization or Cookie header, and no groups, claims,
 or entity attributes in the packet. `i` and `u` are recorded as actual public
-3.10.0 behavior; this local run does not decide their open ingestion policy.
+3.14.2 behavior; this local run does not decide their open ingestion policy.
 The companion public-package check verifies non-browser/prerender registration
 evaluates a default with zero JS transport calls, and that the published Blazor
 Server session does not implement the frontend reporter. The existing render

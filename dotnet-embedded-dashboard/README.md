@@ -1,6 +1,6 @@
 # .NET embedded dashboard workshop
 
-A complete ASP.NET Core application with the **published Toggly 3.8.0 dashboard**
+A complete ASP.NET Core application with the **published Toggly 3.14.2 dashboard**
 mounted at `/internal/features`, SQLite persistence, and seven Razor workshop
 pages. No Toggly account, app key, internet connection at runtime, frontend build,
 or external service is required. NuGet restore needs internet access.
@@ -191,12 +191,12 @@ permissions, approvals or publication state.
 | `example-catalog.json` | Portable, editable rules for the whole workshop |
 | `tests/EmbeddedDashboardSample.Tests/WorkshopTests.cs` | Real SQLite, request separation, dashboard forms and restart tests |
 
-All Toggly dependencies resolve to **3.8.0** from **nuget.org**. Direct references:
+All Toggly dependencies resolve to **3.14.2** from **nuget.org**. Direct references:
 
 | Package | Version |
 |---|---|
-| `Toggly.FeatureManagement.Dashboard` | 3.8.0 |
-| `Toggly.FeatureManagement.Storage.EntityFramework` | 3.8.0 |
+| `Toggly.FeatureManagement.Dashboard` | 3.14.2 |
+| `Toggly.FeatureManagement.Storage.EntityFramework` | 3.14.2 |
 | `Microsoft.EntityFrameworkCore.Sqlite` | 8.0.31 (`net8.0`), 10.0.12 (`net10.0`) |
 | `Microsoft.FeatureManagement.AspNetCore` | 4.7.0, for the MVC feature-gate attribute |
 | `SQLitePCLRaw.bundle_e_sqlite3` | 3.0.5, pins a patched native engine instead of EF 8's older transitive baseline |
