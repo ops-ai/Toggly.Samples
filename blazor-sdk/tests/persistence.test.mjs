@@ -385,10 +385,13 @@ test(
         }
         console.log(`local-signed-persistence: ${name}`);
       }
-      // Each case uses its own host; run sequentially to avoid runner contention
-      // (parallel batches of three intermittently missed fail-closed Classic dashboard).
-      for (const entry of cases) {
-        await runCase(entry);
+      // Separate directories/processes allow bounded parallel negative cases.
+      for (let index = 0; index < cases.length; index += 3) {
+        const results = await Promise.allSettled(
+          cases.slice(index, index + 3).map(runCase),
+        );
+        for (const result of results)
+          if (result.status === "rejected") throw result.reason;
       }
     } finally {
       await stop(host?.child);

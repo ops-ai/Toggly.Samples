@@ -96,7 +96,7 @@ public partial class Workshop
         }
         else if (OperatingSystem.IsBrowser())
             await Evaluate();
-        else if (Interactive && Section is "filters" or "api")
+        else if (Interactive)
             await Evaluate();
     }
 
