@@ -59,6 +59,7 @@ if (!string.IsNullOrWhiteSpace(definitionsUrl) &&
 
 // The trusted backend key remains in this server process. Only the explicit
 // Front-end App Key and environment are returned by the public settings endpoint.
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddTogglyWeb(options =>
 {

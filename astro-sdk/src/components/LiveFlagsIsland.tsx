@@ -55,7 +55,6 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
 
       if (ctx.identity) {
         setIdentity(ctx.identity);
-        await refreshFlags();
       }
 
       unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);

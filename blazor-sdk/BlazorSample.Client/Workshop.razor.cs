@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using Toggly.FeatureManagement.Blazor;
 using Toggly.FeatureManagement.Client;
 
@@ -111,16 +112,24 @@ public partial class Workshop
 
     private async Task Evaluate()
     {
+        foreach (var key in Flags)
+            Values[key] = await Features.EvaluateAsync(
+                [key],
+                entity: key is "ExpressCheckout" ? CurrentOrder : null
+            );
+
         if (!OperatingSystem.IsBrowser())
         {
             try
             {
-                var matrix = await Http.GetFromJsonAsync<Dictionary<string, bool>>(
-                    Navigation.ToAbsoluteUri("/api/demo-filter-matrix")
+                var preset = Identity == "alice" ? "matching" : "nonmatching";
+                var http = HttpFactory.CreateClient();
+                var matrix = await http.GetFromJsonAsync<Dictionary<string, bool>>(
+                    Navigation.ToAbsoluteUri($"/api/demo-filter-matrix?preset={preset}")
                 );
                 if (matrix is not null)
                 {
-                    foreach (var key in Flags.Concat(Filters))
+                    foreach (var key in Filters)
                         Values[key] = matrix.GetValueOrDefault(key);
                     return;
                 }
@@ -131,10 +140,10 @@ public partial class Workshop
             }
         }
 
-        foreach (var key in Flags.Concat(Filters))
+        foreach (var key in Filters)
             Values[key] = await Features.EvaluateAsync(
                 [key],
-                entity: key is "ExpressCheckout" or "filter-context-property" ? CurrentOrder : null
+                entity: key is "filter-context-property" ? CurrentOrder : null
             );
     }
 
