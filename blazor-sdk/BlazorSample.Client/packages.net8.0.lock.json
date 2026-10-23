@@ -29,13 +29,13 @@
       },
       "Toggly.FeatureManagement.Blazor": {
         "type": "Direct",
-        "requested": "[3.14.1, )",
-        "resolved": "3.14.1",
-        "contentHash": "nDTExuy/+cNaAqlhkWunB/O7x+gVoiXnIwco6gwIa8zcGBGOIpOY+NsfOm+XoPw8n2DbnBeD2ePtA6hTQyP1vg==",
+        "requested": "[3.14.2, )",
+        "resolved": "3.14.2",
+        "contentHash": "VnjGRg6/5Vdi2OxDgD/sw9d91YG/Nw1pNk9TkG59rpzZ7GbSbev6wFFV1GERgT9pv55xYF9fi7Nqi/PTqM0PMQ==",
         "dependencies": {
           "Microsoft.AspNetCore.Components.Authorization": "8.0.31",
           "Microsoft.AspNetCore.Components.Web": "8.0.31",
-          "Toggly.FeatureManagement.Client": "3.14.1"
+          "Toggly.FeatureManagement.Client": "3.14.2"
         }
       },
       "Microsoft.AspNetCore.Authorization": {
@@ -233,8 +233,8 @@
       },
       "Toggly.FeatureManagement.Client": {
         "type": "Transitive",
-        "resolved": "3.14.1",
-        "contentHash": "wT1zA2nPd4uHbJs+ifAnDonylRCY5UT9CGxsAMiKBVjnFELc+FlEW7EirL/Q3ds7d1JA5GAlwbBCSSz8CmCTuw=="
+        "resolved": "3.14.2",
+        "contentHash": "mWwsk/XwG1/oHhUdSLgKYR6Fjf/dUgba+GijkIdMKi33JGFyAW5E/ViWxmvm0ou0qgN5zghMSm1YUbKMKNq88w=="
       }
     },
     "net8.0/browser-wasm": {}
