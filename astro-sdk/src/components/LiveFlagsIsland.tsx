@@ -32,12 +32,14 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
 
   useEffect(() => {
     let unsubscribe = () => {};
+    let active = true;
 
     const syncPresetToClientStore = async () => {
       const base = (
         window as Window & { __TOGGLY_CONFIG__?: Record<string, unknown> }
       ).__TOGGLY_CONFIG__;
       if (!base?.appKey) {
+        if (!active) return;
         unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);
         return;
       }
@@ -48,7 +50,12 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
         url.searchParams.has('preset') ||
         Boolean(cookies?.get('sample-preset')) ||
         Boolean(cookies?.get('toggly-preset'));
-      if (!hasPreset && mode === 'snapshot') {
+      const hasContextOverride =
+        url.searchParams.has('identity') ||
+        url.searchParams.has('role') ||
+        url.searchParams.has('order');
+      if (!hasPreset && !hasContextOverride && mode === 'snapshot') {
+        if (!active) return;
         unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);
         return;
       }
@@ -61,6 +68,8 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
         claims: ctx.claims,
       });
 
+      if (!active) return;
+
       if (ctx.identity) {
         setIdentity(ctx.identity);
       }
@@ -70,7 +79,10 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
     };
 
     void syncPresetToClientStore();
-    return () => unsubscribe();
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, []);
 
   if (mode === 'filters') {
