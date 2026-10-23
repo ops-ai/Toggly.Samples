@@ -83,6 +83,19 @@ builder.Services.AddTogglyWeb(options =>
         options.BaseUrl = "http://127.0.0.1:1/";
     }
 }).WithTogglyTargeting<RequestTargetingAccessor>();
+builder.Services.AddTogglyEntityContext<DemoOrder>(
+    "Order",
+    order => order.Id,
+    schema => schema
+        .KeyProperty("Id")
+        .Property("Vip", "boolean")
+        .Property("Total", "number")
+        .MapAttributes(order => new Dictionary<string, object?>
+        {
+            ["Vip"] = order.Vip,
+            ["Total"] = order.Total,
+        })
+);
 builder.Services.AddTogglyBlazorServer();
 if (denyNetwork)
 {

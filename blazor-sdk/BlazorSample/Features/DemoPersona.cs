@@ -1,3 +1,5 @@
+using System.Security.Claims;
+
 namespace BlazorSample.Features;
 
 public sealed record DemoOrder(string Id, bool Vip, decimal Total);
@@ -51,6 +53,14 @@ public sealed record DemoPersona(
             persona = persona with { Order = Matching.Order };
 
         context.Items[typeof(DemoPersona)] = persona;
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, persona.Name),
+            new("role", persona.Role),
+        };
+        context.User = new ClaimsPrincipal(
+            new ClaimsIdentity(claims, persona.Name.Length == 0 ? null : "Demo persona")
+        );
         context.Request.Headers["CF-IPCountry"] = persona.Country;
         context.Request.Headers["Accept-Language"] = persona.Language;
         context.Request.Headers.UserAgent = persona.Agent;

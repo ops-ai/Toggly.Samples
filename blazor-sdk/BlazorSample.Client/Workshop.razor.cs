@@ -77,6 +77,10 @@ public partial class Workshop
         {
             Interactive = true;
             StateHasChanged();
+            // Server interactive modes: evaluate after the circuit attaches. Calling
+            // loopback HttpClient during the initial document request deadlocks Kestrel.
+            if (Mode != "ssr" && !OperatingSystem.IsBrowser())
+                _ = InvokeAsync(Evaluate);
         }
     }
 
@@ -90,7 +94,7 @@ public partial class Workshop
                 && !query.Contains("preset=non-matching", StringComparison.Ordinal);
             await SetPreset(matching);
         }
-        else
+        else if (OperatingSystem.IsBrowser())
             await Evaluate();
     }
 

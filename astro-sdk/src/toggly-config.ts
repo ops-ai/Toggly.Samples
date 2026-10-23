@@ -94,7 +94,11 @@ export function parseDocumentCookies(): CookieSource {
   for (const part of document.cookie.split(';')) {
     const [rawKey, ...rest] = part.trim().split('=');
     if (!rawKey) continue;
-    jar.set(rawKey, decodeURIComponent(rest.join('=')));
+    try {
+      jar.set(rawKey, decodeURIComponent(rest.join('=')));
+    } catch {
+      jar.set(rawKey, rest.join('='));
+    }
   }
   return {
     get(name: string) {
@@ -115,6 +119,19 @@ export function createTogglyRequestContext(
   url: URL,
   source?: TogglyRequestSource,
 ) {
+  const identityOverride =
+    url.searchParams.get('identity') ??
+    readHeader(source?.headers, 'x-toggly-identity') ??
+    readCookie(source?.cookies, 'demo-identity');
+
+  const roleOverride =
+    url.searchParams.get('role') ??
+    readHeader(source?.headers, 'x-demo-role');
+
+  const orderOverride =
+    url.searchParams.get('order') ??
+    readHeader(source?.headers, 'x-demo-order');
+
   const presetName =
     normalizePreset(url.searchParams.get('preset')) ??
     normalizePreset(readHeader(source?.headers, 'x-demo-preset')) ??
@@ -124,30 +141,24 @@ export function createTogglyRequestContext(
 
   if (!presetName) {
     return {
-      identity: '',
-      claims: { role: 'user' },
-      orderKey: orders.standard.Id,
+      identity: identityOverride ?? '',
+      claims: { role: roleOverride ?? 'user' },
+      orderKey:
+        orderOverride === 'vip' || orderOverride === orders.vip.Id
+          ? orders.vip.Id
+          : orderOverride ?? orders.standard.Id,
       presetName: 'anonymous',
     };
   }
 
   const preset = presets[presetName];
 
-  const identity =
-    url.searchParams.get('identity') ??
-    readHeader(source?.headers, 'x-toggly-identity') ??
-    readCookie(source?.cookies, 'demo-identity') ??
-    preset.identity;
+  const identity = identityOverride ?? preset.identity;
 
-  const role =
-    url.searchParams.get('role') ??
-    readHeader(source?.headers, 'x-demo-role') ??
-    preset.claims.role ??
-    'user';
+  const role = roleOverride ?? preset.claims.role ?? 'user';
 
   const orderKey =
-    url.searchParams.get('order') ??
-    readHeader(source?.headers, 'x-demo-order') ??
+    orderOverride ??
     (preset.order === 'vip' ? orders.vip.Id : orders.standard.Id);
 
   return {

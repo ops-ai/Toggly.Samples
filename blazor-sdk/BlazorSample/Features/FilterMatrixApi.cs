@@ -26,9 +26,7 @@ public static class FilterMatrixApi
             async (IFeatureManager features, HttpContext http) =>
             {
                 var persona = DemoPersona.Current(http);
-                var vipOrder = new { Id = "ord-vip", Vip = true };
-                var standardOrder = new { Id = "ord-standard", Vip = false };
-                var order = persona.Order.Vip ? vipOrder : standardOrder;
+                var order = persona.Order;
 
                 var values = new Dictionary<string, bool>(StringComparer.Ordinal);
                 foreach (var key in Keys)
