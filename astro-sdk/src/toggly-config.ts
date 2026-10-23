@@ -120,7 +120,16 @@ export function createTogglyRequestContext(
     normalizePreset(readHeader(source?.headers, 'x-demo-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'sample-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'toggly-preset')) ??
-    'matching';
+    (url.pathname.includes('filters') ? 'matching' : null);
+
+  if (!presetName) {
+    return {
+      identity: '',
+      claims: { role: 'user' },
+      orderKey: orders.standard.Id,
+      presetName: 'anonymous',
+    };
+  }
 
   const preset = presets[presetName];
 

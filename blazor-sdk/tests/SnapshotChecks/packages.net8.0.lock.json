@@ -484,7 +484,8 @@
         "dependencies": {
           "BlazorSample.Client": "[1.0.0, )",
           "Microsoft.AspNetCore.Components.WebAssembly.Server": "[8.0.32, )",
-          "Toggly.FeatureManagement.Blazor.Server": "[3.14.2, )"
+          "Toggly.FeatureManagement.Blazor.Server": "[3.14.2, )",
+          "Toggly.FeatureManagement.Web": "[3.14.2, )"
         }
       },
       "blazorsample.client": {
