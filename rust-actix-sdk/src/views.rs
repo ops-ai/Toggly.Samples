@@ -29,14 +29,14 @@ pub fn escape(value: &str) -> String {
 }
 
 fn badge(result: &Decision) -> String {
-    let (class, text) = if result.error {
-        ("error", "ERROR → OFF")
+    let (class, text, state) = if result.error {
+        ("error", "ERROR → OFF", "off")
     } else if result.enabled {
-        ("on", "ON")
+        ("on", "ON", "on")
     } else {
-        ("off", "OFF")
+        ("off", "OFF", "off")
     };
-    format!("<span class=\"badge {class}\">{text}</span>")
+    format!("<span class=\"badge {class}\" data-toggly-state=\"{state}\">{text}</span>")
 }
 
 pub async fn page(

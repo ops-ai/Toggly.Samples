@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { $flags } from '@ops-ai/astro-feature-flags-toggly/client/store';
+import {
+  $flags,
+  initTogglyClient,
+} from '@ops-ai/astro-feature-flags-toggly/client/store';
 import {
   liveSnapshotKeys,
   readLiveSnapshot,
@@ -7,6 +10,7 @@ import {
   type LiveSnapshot,
 } from '../sample/live-flags.ts';
 import { filterCatalog } from '../sample/catalog.ts';
+import { createTogglyRequestContext } from '../toggly-config';
 
 type Mode = 'snapshot' | 'filters';
 
@@ -23,6 +27,21 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
   );
 
   useEffect(() => {
+    const syncPresetToClientStore = async () => {
+      const base = (window as Window & { __TOGGLY_CONFIG__?: Record<string, unknown> })
+        .__TOGGLY_CONFIG__;
+      if (!base?.appKey) {
+        return;
+      }
+      const ctx = createTogglyRequestContext(new URL(window.location.href));
+      await initTogglyClient({
+        ...base,
+        identity: ctx.identity,
+        claims: ctx.claims,
+      });
+    };
+
+    void syncPresetToClientStore();
     return subscribeLiveSnapshot($flags, setSnapshot);
   }, []);
 
@@ -48,7 +67,10 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
                   <code>{row.key}</code>
                 </td>
                 <td>
-                  <span className={`pill ${value ? 'on' : 'off'}`}>
+                  <span
+                    className={`pill ${value ? 'on' : 'off'}`}
+                    data-toggly-state={value ? 'on' : 'off'}
+                  >
                     {String(value)}
                   </span>
                 </td>
@@ -81,7 +103,10 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
                 <code>{key}</code>
               </td>
               <td>
-                <span className={`pill ${value ? 'on' : 'off'}`}>
+                <span
+                  className={`pill ${value ? 'on' : 'off'}`}
+                  data-toggly-state={value ? 'on' : 'off'}
+                >
                   {String(value)}
                 </span>
               </td>

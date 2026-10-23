@@ -184,7 +184,15 @@ function Workshop(props: {
               {(key) => (
                 <tr>
                   <td>{key}</td>
-                  <td>{String(t.evaluate([key], 'all', false, order(vip())))}</td>
+                  <td>
+                    <span
+                      data-toggly-state={
+                        t.evaluate([key], 'all', false, order(vip())) ? 'on' : 'off'
+                      }
+                    >
+                      {String(t.evaluate([key], 'all', false, order(vip())))}
+                    </span>
+                  </td>
                 </tr>
               )}
             </For>

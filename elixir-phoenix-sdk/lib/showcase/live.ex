@@ -163,7 +163,9 @@ defmodule Showcase.Live do
           </thead><tbody>
             <tr :for={key <- @filters}>
               <td><code>{key}</code></td><td id={key}>
-                {if @toggly_flags[key], do: "ON", else: "OFF"}
+                <span data-toggly-state={if(@toggly_flags[key], do: "on", else: "off")}>
+                  {if @toggly_flags[key], do: "ON", else: "OFF"}
+                </span>
               </td>
             </tr>
           </tbody>

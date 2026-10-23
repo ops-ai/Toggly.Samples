@@ -147,7 +147,17 @@
                 {
                     <tr>
                         <td>@flag</td>
-                        <td>@(!OperatingSystem.IsBrowser() && UnsupportedServer.Contains(flag) ? "Unsupported" : Values.GetValueOrDefault(flag) ? "ON" : "OFF")</td>
+                        <td>
+                            @if (!OperatingSystem.IsBrowser() && UnsupportedServer.Contains(flag))
+                            {
+                                <span>Unsupported</span>
+                            }
+                            else
+                            {
+                                var on = Values.GetValueOrDefault(flag);
+                                <span data-toggly-state="@(on ? "on" : "off")">@(on ? "ON" : "OFF")</span>
+                            }
+                        </td>
                         <td>@Support(flag)</td>
                     </tr>
                 }

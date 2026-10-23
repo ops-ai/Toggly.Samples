@@ -49,7 +49,10 @@
             </td>
             <td>{filter.rule}</td>
             <td>
-              <span class={$session.snapshot[filter.key] ? "on" : "off"}>
+              <span
+                class={$session.snapshot[filter.key] ? "on" : "off"}
+                data-toggly-state={$session.snapshot[filter.key] ? "on" : "off"}
+              >
                 {$session.snapshot[filter.key] ? "ON" : "OFF"}
               </span>
             </td>

@@ -41,14 +41,19 @@ export default function FilterMatrix() {
                 {key === "filter-context-property"
                   ? entityFilter?.order === order &&
                     entityFilter?.identity === catalog.users[preset].identity
-                    ? entityFilter.value
-                      ? "ON"
-                      : "OFF"
+                    ? (() => {
+                        const on = entityFilter.value;
+                        return (
+                          <span data-toggly-state={on ? "on" : "off"}>
+                            {on ? "ON" : "OFF"}
+                          </span>
+                        );
+                      })()
                     : "Loading"
                   : flags[key] === true
-                    ? "ON"
+                    ? <span data-toggly-state="on">ON</span>
                     : flags[key] === false
-                      ? "OFF"
+                      ? <span data-toggly-state="off">OFF</span>
                       : "Unavailable"}
               </td>
             </tr>

@@ -29,14 +29,14 @@ pub fn escape(value: &str) -> String {
 }
 
 fn badge(result: &Decision) -> String {
-    let (class, text) = if result.error {
-        ("error", "ERROR → OFF")
+    let (class, text, state) = if result.error {
+        ("error", "ERROR → OFF", "off")
     } else if result.enabled {
-        ("on", "ON")
+        ("on", "ON", "on")
     } else {
-        ("off", "OFF")
+        ("off", "OFF", "off")
     };
-    format!("<span class=\"badge {class}\">{text}</span>")
+    format!("<span class=\"badge {class}\" data-toggly-state=\"{state}\">{text}</span>")
 }
 
 pub async fn page(
@@ -110,7 +110,7 @@ pub async fn page(
 <header>
     <div class="eyebrow">TOGGLY / RUST + AXUM 0.8</div>
     <h1>Feature flags, one request at a time.</h1>
-    <p>A hands-on workshop using published toggly 0.9.1, toggly-axum08 0.1.1 and Axum 0.8.9.</p>
+    <p>A hands-on workshop using the published Toggly Rust core and Axum adapter.</p>
 </header>
 <nav aria-label="Workshop sections">
 {nav}</nav>
@@ -308,13 +308,13 @@ async fn declarative(context: &WorkshopContext, client: Option<&TogglyClient>) -
     request_context.clone(),
     false,
 ).await?</code></pre>
-    <p>Published 0.6.0 negates each individual feature before Any/All aggregation. It does not invert the final gate. An empty key list returns false. Errors render the fallback.</p>
+    <p>The SDK negates each individual feature before Any/All aggregation. It does not invert the final gate. An empty key list returns false. Errors render the fallback.</p>
 </section>
 <div class="grid">
 {cards}</div>
 <section class="card">
     <h3>Variants: unsupported</h3>
-    <p>Published toggly 0.6.0 has no native variant allocation API. This sample does not invent a variant or call a boolean result a variant.</p>
+    <p>The Rust SDK has no native variant allocation API. This sample does not invent a variant or call a boolean result a variant.</p>
 </section>"##
     )
 }
@@ -400,7 +400,7 @@ fn surfaces() -> String {
 }</code></pre>
     <p><a href="/native">Try the native extractor</a>. It reads X-User-Id first, then X-Identity; absent headers are anonymous. Those headers are untrusted demo inputs. The adapter does not map workshop cookies, claims, groups, request metadata or Order.</p>
     <pre><code>curl -H 'X-User-Id: alice' -H 'X-Identity: bob' http://localhost:8017/native</code></pre>
-    <p>The extractor returns false on evaluation error and HTTP 500 if <code>Extension&lt;Arc&lt;TogglyClient&gt;&gt;</code> is absent. <code>FeatureEnabled</code> is a public data struct in 0.6.0 without <code>FromRequestParts</code>, so it cannot be used as a native handler extractor. The crate comments mention <code>require_feature</code>; that function is not published.</p>
+    <p>The extractor returns false on evaluation error and HTTP 500 if <code>Extension&lt;Arc&lt;TogglyClient&gt;&gt;</code> is absent. <code>FeatureEnabled</code> is a public data struct without <code>FromRequestParts</code>, so it cannot be used as a native handler extractor. The crate comments mention <code>require_feature</code>; that function is not published.</p>
     <h3>TogglyLayer and TogglyState</h3>
     <p><a href="/layer">Open the layered beta route</a>. <code>TogglyLayer::require("beta-access")</code> evaluates header identity only and returns HTTP 404 when the flag is off. Evaluation errors become false. If the client extension is missing, the published layer <strong>allows the request through</strong> instead of failing closed.</p>
     <p><a href="/extractor">TogglyExtractor</a> unwraps the same extension. <a href="/state">TogglyState</a> is a dedicated Axum state wrapper; <code>is_enabled</code> uses <code>EvalContext::default()</code> unless you call <code>is_enabled_with_context</code>.</p>

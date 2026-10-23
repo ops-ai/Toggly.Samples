@@ -99,7 +99,10 @@
           data-testid={`toggle-${key}`}
         >
           <code>{key}</code>
-          <span class={$session.snapshot[key] ? "on" : "off"}>
+          <span
+            class={$session.snapshot[key] ? "on" : "off"}
+            data-toggly-state={$session.snapshot[key] ? "on" : "off"}
+          >
             {$session.snapshot[key] ? "ON" : "OFF"}
           </span>
         </button>
