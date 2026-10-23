@@ -77,9 +77,9 @@ public partial class Workshop
         {
             Interactive = true;
             StateHasChanged();
-            // Server interactive modes: evaluate after the circuit attaches. Calling
-            // loopback HttpClient during the initial document request deadlocks Kestrel.
-            if (Mode != "ssr" && !OperatingSystem.IsBrowser())
+            // Only the filters section needs a post-circuit Evaluate on server; doing it
+            // on identity/home stalled corrupt-snapshot persistence cases.
+            if (Mode != "ssr" && !OperatingSystem.IsBrowser() && Section == "filters")
                 _ = InvokeAsync(Evaluate);
         }
     }
@@ -95,6 +95,8 @@ public partial class Workshop
             await SetPreset(matching);
         }
         else if (OperatingSystem.IsBrowser())
+            await Evaluate();
+        else if (Interactive)
             await Evaluate();
     }
 
