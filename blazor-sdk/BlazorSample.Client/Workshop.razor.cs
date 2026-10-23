@@ -156,7 +156,12 @@ public partial class Workshop
     {
         try
         {
-            var preset = Identity == "alice" ? "matching" : "nonmatching";
+            var preset =
+                Identity == "alice"
+                    ? "matching"
+                    : Identity == "bob"
+                        ? "nonmatching"
+                        : "anonymous";
             var matrix = await Http.GetFromJsonAsync<Dictionary<string, bool>>(
                 Navigation.ToAbsoluteUri($"/api/demo-filter-matrix?preset={preset}")
             );
