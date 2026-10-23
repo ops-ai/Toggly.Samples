@@ -6,8 +6,9 @@ public sealed class RequestTargetingAccessor(IHttpContextAccessor accessor) : IT
 {
     public ValueTask<TargetingContext> GetContextAsync()
     {
-        if (accessor.HttpContext?.Items.TryGetValue(typeof(DemoPersona), out var persona) == true
-            && persona is DemoPersona demo)
+        if (accessor.HttpContext is not null
+            && DemoPersona.TryFromExplicitPreset(accessor.HttpContext, out var demo)
+            && !string.IsNullOrEmpty(demo.Name))
         {
             return ValueTask.FromResult(
                 new TargetingContext

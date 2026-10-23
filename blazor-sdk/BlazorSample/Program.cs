@@ -121,7 +121,6 @@ else if (string.IsNullOrWhiteSpace(backendKey))
 }
 var app = builder.Build();
 app.UseStaticFiles();
-app.Use(DemoPersona.Apply);
 app.UseAntiforgery();
 #if NET9_0_OR_GREATER
 app.MapStaticAssets();

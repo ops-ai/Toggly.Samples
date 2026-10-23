@@ -27,32 +27,43 @@ public sealed record DemoPersona(
         "user",
         "CA",
         "fr-FR,fr;q=0.9",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv=121.0) Gecko/20100101 Firefox/121.0",
         new DemoOrder("ord-standard", false, 49)
     );
 
-    public static DemoPersona Current(HttpContext context) =>
-        (DemoPersona)context.Items[typeof(DemoPersona)]!;
-
-    public static async Task Apply(HttpContext context, RequestDelegate next)
-    {
-        var preset =
-            context.Request.Query["preset"].FirstOrDefault()
-            ?? context.Request.Cookies["sample-preset"];
-
-        var persona = preset switch
+    public static DemoPersona FromPreset(string? preset) =>
+        preset switch
         {
+            "matching" => Matching,
             "nonmatching" or "non-matching" => NonMatching,
             "anonymous" => NonMatching with { Name = "", Role = "" },
             _ => Matching,
         };
 
+    public static bool TryFromExplicitPreset(HttpContext context, out DemoPersona persona)
+    {
+        var preset =
+            context.Request.Query["preset"].FirstOrDefault()
+            ?? context.Request.Cookies["sample-preset"];
+        if (string.IsNullOrWhiteSpace(preset))
+        {
+            persona = NonMatching with { Name = "", Role = "" };
+            return false;
+        }
+
+        persona = FromPreset(preset);
         if (context.Request.Query["order"] == "standard")
             persona = persona with { Order = NonMatching.Order };
         if (context.Request.Query["order"] == "vip")
             persona = persona with { Order = Matching.Order };
+        return true;
+    }
 
-        context.Items[typeof(DemoPersona)] = persona;
+    public static void ApplyRequestHeaders(HttpContext context, DemoPersona persona)
+    {
+        context.Request.Headers["CF-IPCountry"] = persona.Country;
+        context.Request.Headers["Accept-Language"] = persona.Language;
+        context.Request.Headers.UserAgent = persona.Agent;
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, persona.Name),
@@ -61,9 +72,5 @@ public sealed record DemoPersona(
         context.User = new ClaimsPrincipal(
             new ClaimsIdentity(claims, persona.Name.Length == 0 ? null : "Demo persona")
         );
-        context.Request.Headers["CF-IPCountry"] = persona.Country;
-        context.Request.Headers["Accept-Language"] = persona.Language;
-        context.Request.Headers.UserAgent = persona.Agent;
-        await next(context);
     }
 }

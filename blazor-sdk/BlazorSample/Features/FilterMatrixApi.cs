@@ -25,7 +25,9 @@ public static class FilterMatrixApi
             "/api/demo-filter-matrix",
             async (IFeatureManager features, HttpContext http) =>
             {
-                var persona = DemoPersona.Current(http);
+                var preset = http.Request.Query["preset"].FirstOrDefault() ?? "matching";
+                var persona = DemoPersona.FromPreset(preset);
+                DemoPersona.ApplyRequestHeaders(http, persona);
                 var order = persona.Order;
 
                 var values = new Dictionary<string, bool>(StringComparer.Ordinal);
