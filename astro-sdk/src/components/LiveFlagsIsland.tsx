@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import {
   $flags,
   initTogglyClient,
-  refreshFlags,
   setIdentity,
 } from '@ops-ai/astro-feature-flags-toggly/client/store';
 import {
