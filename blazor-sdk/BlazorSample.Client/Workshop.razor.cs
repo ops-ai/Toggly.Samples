@@ -96,7 +96,7 @@ public partial class Workshop
         }
         else if (OperatingSystem.IsBrowser())
             await Evaluate();
-        else if (Interactive)
+        else if (Interactive && Section == "filters")
             await Evaluate();
     }
 
@@ -123,9 +123,12 @@ public partial class Workshop
                 entity: key is "ExpressCheckout" ? CurrentOrder : null
             );
 
-        // Loopback filter-matrix HTTP is only needed on the filters section; calling it
-        // during other routes can stall the Server circuit when signed snapshots are invalid.
-        if (!OperatingSystem.IsBrowser() && Section == "filters")
+        if (Section != "filters")
+            return;
+
+        // Loopback filter-matrix HTTP is only for the filters section; calling it elsewhere
+        // can stall the Server circuit when signed snapshots are invalid.
+        if (!OperatingSystem.IsBrowser())
         {
             try
             {
