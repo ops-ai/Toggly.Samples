@@ -61,6 +61,14 @@ if (!string.IsNullOrWhiteSpace(definitionsUrl) &&
 // Front-end App Key and environment are returned by the public settings endpoint.
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<HttpClient>(sp =>
+{
+    var client = new HttpClient();
+    var request = sp.GetRequiredService<IHttpContextAccessor>().HttpContext?.Request;
+    if (request is not null)
+        client.BaseAddress = new Uri($"{request.Scheme}://{request.Host}/");
+    return client;
+});
 builder.Services.AddTogglyWeb(options =>
 {
     options.AppKey = backendKey ?? "";

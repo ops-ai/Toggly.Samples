@@ -122,8 +122,7 @@ public partial class Workshop
             try
             {
                 var preset = Identity == "alice" ? "matching" : "nonmatching";
-                var http = HttpFactory.CreateClient();
-                var matrix = await http.GetFromJsonAsync<Dictionary<string, bool>>(
+                var matrix = await Http.GetFromJsonAsync<Dictionary<string, bool>>(
                     Navigation.ToAbsoluteUri($"/api/demo-filter-matrix?preset={preset}")
                 );
                 if (matrix is not null)
