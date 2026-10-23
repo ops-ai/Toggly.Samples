@@ -91,19 +91,37 @@ public partial class Workshop
 
     protected override async Task OnParametersSetAsync()
     {
+        var query = Navigation.ToAbsoluteUri(Navigation.Uri).Query;
         if (Mode == "ssr")
         {
-            var query = Navigation.ToAbsoluteUri(Navigation.Uri).Query;
             var matching =
                 !query.Contains("preset=nonmatching", StringComparison.Ordinal)
-                && !query.Contains("preset=non-matching", StringComparison.Ordinal);
+                && !query.Contains("preset=non-matching", StringComparison.Ordinal)
+                && !query.Contains("preset=anonymous", StringComparison.Ordinal);
             await SetPreset(matching);
         }
+        else if (query.Contains("preset=matching", StringComparison.Ordinal))
+            await SetPreset(true);
+        else if (
+            query.Contains("preset=nonmatching", StringComparison.Ordinal)
+            || query.Contains("preset=non-matching", StringComparison.Ordinal)
+        )
+            await SetPreset(false);
+        else if (query.Contains("preset=anonymous", StringComparison.Ordinal))
+            await SetAnonymous();
         else
             await Evaluate();
     }
 
     // Demo presets change only this request, circuit or browser session.
+    private async Task SetAnonymous()
+    {
+        Identity = "anonymous";
+        CurrentOrder = StandardOrder;
+        await Features.SetContextAsync(new("", [], new Dictionary<string, string> { { "role", "user" } }));
+        await Evaluate();
+    }
+
     private async Task SetPreset(bool matching)
     {
         Identity = matching ? "alice" : "bob";

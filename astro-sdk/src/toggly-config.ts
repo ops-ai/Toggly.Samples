@@ -136,8 +136,7 @@ export function createTogglyRequestContext(
     normalizePreset(url.searchParams.get('preset')) ??
     normalizePreset(readHeader(source?.headers, 'x-demo-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'sample-preset')) ??
-    normalizePreset(readCookie(source?.cookies, 'toggly-preset')) ??
-    (url.pathname.includes('filters') ? 'matching' : null);
+    normalizePreset(readCookie(source?.cookies, 'toggly-preset'));
 
   if (!presetName) {
     return {

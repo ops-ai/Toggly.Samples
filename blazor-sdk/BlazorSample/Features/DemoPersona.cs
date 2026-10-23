@@ -27,17 +27,26 @@ public sealed record DemoPersona(
         "user",
         "CA",
         "fr-FR,fr;q=0.9",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv=121.0) Gecko/20100101 Firefox/121.0",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
         new DemoOrder("ord-standard", false, 49)
     );
 
-    public static DemoPersona FromPreset(string? preset) =>
+    private static readonly DemoPersona Anonymous = new(
+        "",
+        "",
+        "",
+        "",
+        "",
+        NonMatching.Order
+    );
+
+    public static (DemoPersona Persona, bool ApplyDemoHeaders) FromPreset(string? preset) =>
         preset switch
         {
-            "matching" => Matching,
-            "nonmatching" or "non-matching" => NonMatching,
-            "anonymous" => NonMatching with { Name = "", Role = "" },
-            _ => Matching,
+            "matching" => (Matching, true),
+            "nonmatching" or "non-matching" => (NonMatching, true),
+            "anonymous" => (Anonymous, false),
+            _ => (Anonymous, false),
         };
 
     public static bool TryFromExplicitPreset(HttpContext context, out DemoPersona persona)
@@ -47,11 +56,11 @@ public sealed record DemoPersona(
             ?? context.Request.Cookies["sample-preset"];
         if (string.IsNullOrWhiteSpace(preset))
         {
-            persona = NonMatching with { Name = "", Role = "" };
+            persona = Anonymous;
             return false;
         }
 
-        persona = FromPreset(preset);
+        (persona, _) = FromPreset(preset);
         if (context.Request.Query["order"] == "standard")
             persona = persona with { Order = NonMatching.Order };
         if (context.Request.Query["order"] == "vip")
@@ -59,11 +68,15 @@ public sealed record DemoPersona(
         return true;
     }
 
-    public static void ApplyRequestHeaders(HttpContext context, DemoPersona persona)
+    public static void ApplyRequestHeaders(HttpContext context, DemoPersona persona, bool applyDemoHeaders)
     {
-        context.Request.Headers["CF-IPCountry"] = persona.Country;
-        context.Request.Headers["Accept-Language"] = persona.Language;
-        context.Request.Headers.UserAgent = persona.Agent;
+        if (applyDemoHeaders)
+        {
+            context.Request.Headers["CF-IPCountry"] = persona.Country;
+            context.Request.Headers["Accept-Language"] = persona.Language;
+            context.Request.Headers.UserAgent = persona.Agent;
+        }
+
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, persona.Name),

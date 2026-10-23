@@ -62,11 +62,15 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
 
       const ctx = createTogglyRequestContext(url, { cookies });
 
-      await initTogglyClient({
-        ...base,
-        identity: ctx.identity,
-        claims: ctx.claims,
-      });
+      try {
+        await initTogglyClient({
+          ...base,
+          identity: ctx.identity,
+          claims: ctx.claims,
+        });
+      } catch {
+        // Still subscribe so programmatic refresh / store updates can recover.
+      }
 
       if (!active) return;
 

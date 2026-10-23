@@ -25,9 +25,16 @@ public static class FilterMatrixApi
             "/api/demo-filter-matrix",
             async (IFeatureManager features, HttpContext http) =>
             {
-                var preset = http.Request.Query["preset"].FirstOrDefault() ?? "matching";
-                var persona = DemoPersona.FromPreset(preset);
-                DemoPersona.ApplyRequestHeaders(http, persona);
+                var preset =
+                    http.Request.Query["preset"].FirstOrDefault()
+                    ?? http.Request.Cookies["sample-preset"]
+                    ?? "anonymous";
+                var (persona, applyHeaders) = DemoPersona.FromPreset(preset);
+                if (http.Request.Query["order"] == "standard")
+                    persona = persona with { Order = DemoPersona.NonMatching.Order };
+                if (http.Request.Query["order"] == "vip")
+                    persona = persona with { Order = DemoPersona.Matching.Order };
+                DemoPersona.ApplyRequestHeaders(http, persona, applyHeaders);
                 var order = persona.Order;
 
                 var values = new Dictionary<string, bool>(StringComparer.Ordinal);
