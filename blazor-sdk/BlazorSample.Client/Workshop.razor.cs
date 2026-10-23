@@ -121,7 +121,9 @@ public partial class Workshop
                 entity: key is "ExpressCheckout" ? CurrentOrder : null
             );
 
-        if (!OperatingSystem.IsBrowser())
+        // Loopback filter-matrix HTTP is only needed on the filters section; calling it
+        // during other routes can stall the Server circuit when signed snapshots are invalid.
+        if (!OperatingSystem.IsBrowser() && Section == "filters")
         {
             try
             {
