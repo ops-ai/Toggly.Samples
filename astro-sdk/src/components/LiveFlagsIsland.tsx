@@ -46,8 +46,8 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
       const cookies = parseDocumentCookies();
       const hasPreset =
         url.searchParams.has('preset') ||
-        cookies?.get('sample-preset') ||
-        cookies?.get('toggly-preset');
+        Boolean(cookies?.get('sample-preset')) ||
+        Boolean(cookies?.get('toggly-preset'));
       if (!hasPreset && mode === 'snapshot') {
         unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);
         return;
