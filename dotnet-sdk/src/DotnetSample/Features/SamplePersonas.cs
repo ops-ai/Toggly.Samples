@@ -26,9 +26,13 @@ public static class SamplePersonas
         // They teach targeting; they are NOT authentication. Never copy this demo
         // middleware into a protected app: use validated authentication/proxy data.
         var preset = context.Request.Query["preset"].FirstOrDefault()
-            ?? context.Request.Cookies["sample-preset"] ?? "anonymous";
-        var persona = preset == "nonmatching" ? NonMatching : Matching;
-        if (preset == "anonymous") persona = NonMatching with { Name = "", Role = "" };
+            ?? context.Request.Cookies["sample-preset"];
+        var persona = preset switch
+        {
+            "nonmatching" or "non-matching" => NonMatching,
+            "anonymous" => NonMatching with { Name = "", Role = "" },
+            _ => Matching,
+        };
         if (context.Request.Query["order"] == "standard") persona = persona with { Order = NonMatching.Order };
         if (context.Request.Query["order"] == "vip") persona = persona with { Order = Matching.Order };
         context.Items[typeof(SamplePersona)] = persona;

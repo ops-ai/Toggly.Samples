@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import {
   $flags,
   initTogglyClient,
+  refreshFlags,
+  setIdentity,
 } from '@ops-ai/astro-feature-flags-toggly/client/store';
 import {
   liveSnapshotKeys,
@@ -10,7 +12,10 @@ import {
   type LiveSnapshot,
 } from '../sample/live-flags.ts';
 import { filterCatalog } from '../sample/catalog.ts';
-import { createTogglyRequestContext } from '../toggly-config';
+import {
+  createTogglyRequestContext,
+  parseDocumentCookies,
+} from '../toggly-config';
 
 type Mode = 'snapshot' | 'filters';
 
@@ -27,22 +32,38 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
   );
 
   useEffect(() => {
+    let unsubscribe = () => {};
+
     const syncPresetToClientStore = async () => {
-      const base = (window as Window & { __TOGGLY_CONFIG__?: Record<string, unknown> })
-        .__TOGGLY_CONFIG__;
+      const base = (
+        window as Window & { __TOGGLY_CONFIG__?: Record<string, unknown> }
+      ).__TOGGLY_CONFIG__;
       if (!base?.appKey) {
+        unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);
         return;
       }
-      const ctx = createTogglyRequestContext(new URL(window.location.href));
+
+      const ctx = createTogglyRequestContext(new URL(window.location.href), {
+        cookies: parseDocumentCookies(),
+      });
+
       await initTogglyClient({
         ...base,
         identity: ctx.identity,
         claims: ctx.claims,
       });
+
+      if (ctx.identity) {
+        setIdentity(ctx.identity);
+        await refreshFlags();
+      }
+
+      unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);
+      setSnapshot(readLiveSnapshot($flags.get()));
     };
 
     void syncPresetToClientStore();
-    return subscribeLiveSnapshot($flags, setSnapshot);
+    return () => unsubscribe();
   }, []);
 
   if (mode === 'filters') {

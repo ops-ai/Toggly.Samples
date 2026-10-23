@@ -24,12 +24,14 @@ defmodule Showcase.Live do
   end
 
   def handle_event("preset", %{"mode" => mode}, socket) do
+    normalized = if mode == "non-matching", do: "nonmatching", else: mode
+
     socket =
       Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys,
-        context: Showcase.Context.preset(mode)
+        context: Showcase.Context.preset(normalized)
       )
 
-    {:noreply, assign(socket, :preset, mode)}
+    {:noreply, assign(socket, :preset, normalized)}
   end
 
   def handle_event("submit", _, socket) do

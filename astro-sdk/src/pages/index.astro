@@ -29,7 +29,10 @@ import '../styles.css';
  */
 
 const configured = Boolean(import.meta.env.TOGGLY_APP_KEY);
-const requestContext = createTogglyRequestContext(Astro.url);
+const requestContext = createTogglyRequestContext(Astro.url, {
+  cookies: Astro.cookies,
+  headers: Astro.request.headers,
+});
 const baseOptions = {
   ...createTogglyOptions(
     import.meta.env.TOGGLY_APP_KEY,

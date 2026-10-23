@@ -2,6 +2,7 @@
 @inject IFeatureSession Features
 @inject PublicSettings Settings
 @inject NavigationManager Navigation
+@inject HttpClient Http
 
 <header>
     <a href="/">Toggly / Blazor workshop</a>
@@ -148,15 +149,10 @@
                     <tr>
                         <td>@flag</td>
                         <td>
-                            @if (!OperatingSystem.IsBrowser() && UnsupportedServer.Contains(flag))
-                            {
-                                <span>Unsupported</span>
-                            }
-                            else
-                            {
+                            @{
                                 var on = Values.GetValueOrDefault(flag);
-                                <span data-toggly-state="@(on ? "on" : "off")">@(on ? "ON" : "OFF")</span>
                             }
+                            <span data-toggly-state="@(on ? "on" : "off")">@(on ? "ON" : "OFF")</span>
                         </td>
                         <td>@Support(flag)</td>
                     </tr>

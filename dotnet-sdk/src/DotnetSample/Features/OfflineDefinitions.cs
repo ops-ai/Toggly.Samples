@@ -38,8 +38,8 @@ public sealed class OfflineDefinitions(IConfiguration configuration)
             Flag("filter-targeting", "Microsoft.Targeting", ("Audience:Users:0", "alice"), ("Audience:DefaultRolloutPercentage", "0")),
             Flag("filter-user-claims", "UserClaims", ("Claim", "role"), ("Value", "admin"), ("Percentage", "100")),
             Flag("filter-time-window", "Microsoft.TimeWindow", ("Start", "2020-01-01T00:00:00Z"), ("End", "2099-12-31T23:59:59Z")),
-            // CountryFamily and OS are the published .NET filter aliases.
-            Flag("filter-country", "CountryFamily", ("Country:0", "US"), ("Percentage", "100")),
+            // Dashboard filter name Country maps to CountryFamily in the .NET SDK.
+            Flag("filter-country", "Country", ("Country:0", "US"), ("Percentage", "100")),
             Flag("filter-browser-family", "BrowserFamily", ("BrowserFamily:0", "Chrome"), ("Percentage", "100")),
             Flag("filter-browser-language", "BrowserLanguage", ("BrowserLanguage:0", "en"), ("Percentage", "100")),
             Flag("filter-device-type", "DeviceType", ("DeviceType:0", "Macintosh"), ("Percentage", "100")),

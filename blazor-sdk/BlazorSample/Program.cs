@@ -2,9 +2,11 @@ using BlazorSample.Client;
 using BlazorSample.Components;
 using BlazorSample.Features;
 using Microsoft.Extensions.Http;
+using Microsoft.FeatureManagement;
 using Toggly.FeatureManagement;
 using Toggly.FeatureManagement.Blazor.Server;
 using Toggly.FeatureManagement.Configuration;
+using Toggly.FeatureManagement.Web.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
@@ -57,7 +59,8 @@ if (!string.IsNullOrWhiteSpace(definitionsUrl) &&
 
 // The trusted backend key remains in this server process. Only the explicit
 // Front-end App Key and environment are returned by the public settings endpoint.
-builder.Services.AddToggly(options =>
+builder.Services.AddHttpClient();
+builder.Services.AddTogglyWeb(options =>
 {
     options.AppKey = backendKey ?? "";
     options.Environment = settings.Environment;
@@ -70,7 +73,7 @@ builder.Services.AddToggly(options =>
         options.DefinitionsBaseUrl = "http://127.0.0.1:1/";
         options.BaseUrl = "http://127.0.0.1:1/";
     }
-});
+}).WithTogglyTargeting<RequestTargetingAccessor>();
 builder.Services.AddTogglyBlazorServer();
 if (denyNetwork)
 {
@@ -96,11 +99,13 @@ else if (string.IsNullOrWhiteSpace(backendKey))
 }
 var app = builder.Build();
 app.UseStaticFiles();
+app.Use(DemoPersona.Apply);
 app.UseAntiforgery();
 #if NET9_0_OR_GREATER
 app.MapStaticAssets();
 #endif
 app.MapGet("/public-toggly.json", () => settings);
+FilterMatrixApi.Map(app);
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()

@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
 using Toggly.FeatureManagement.Blazor;
 using Toggly.FeatureManagement.Client;
@@ -45,15 +46,6 @@ public partial class Workshop
         "filter-os",
         "filter-context-property",
     ];
-    private static readonly HashSet<string> UnsupportedServer =
-    [
-        "filter-user-claims",
-        "filter-country",
-        "filter-browser-family",
-        "filter-browser-language",
-        "filter-device-type",
-        "filter-os",
-    ];
     private static readonly EntityContext VipOrder = new(
         "Order",
         "ord-vip",
@@ -91,11 +83,13 @@ public partial class Workshop
     protected override async Task OnParametersSetAsync()
     {
         if (Mode == "ssr")
-            await SetPreset(
-                Navigation
-                    .ToAbsoluteUri(Navigation.Uri)
-                    .Query.Contains("preset=matching", StringComparison.Ordinal)
-            );
+        {
+            var query = Navigation.ToAbsoluteUri(Navigation.Uri).Query;
+            var matching =
+                !query.Contains("preset=nonmatching", StringComparison.Ordinal)
+                && !query.Contains("preset=non-matching", StringComparison.Ordinal);
+            await SetPreset(matching);
+        }
         else
             await Evaluate();
     }
@@ -117,11 +111,27 @@ public partial class Workshop
 
     private async Task Evaluate()
     {
-        foreach (
-            var key in Flags
-                .Concat(Filters)
-                .Where(key => OperatingSystem.IsBrowser() || !UnsupportedServer.Contains(key))
-        )
+        if (!OperatingSystem.IsBrowser())
+        {
+            try
+            {
+                var matrix = await Http.GetFromJsonAsync<Dictionary<string, bool>>(
+                    Navigation.ToAbsoluteUri("/api/demo-filter-matrix")
+                );
+                if (matrix is not null)
+                {
+                    foreach (var key in Flags.Concat(Filters))
+                        Values[key] = matrix.GetValueOrDefault(key);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Error = ex.Message;
+            }
+        }
+
+        foreach (var key in Flags.Concat(Filters))
             Values[key] = await Features.EvaluateAsync(
                 [key],
                 entity: key is "ExpressCheckout" or "filter-context-property" ? CurrentOrder : null
@@ -169,7 +179,9 @@ public partial class Workshop
                 or "filter-browser-language"
                 or "filter-device-type"
                 or "filter-os"
-            ? "Browser endpoint evaluation; not built into trusted Blazor circuit adapter"
+            ? OperatingSystem.IsBrowser()
+                ? "Browser evaluated-signed endpoint with real request metadata"
+                : "Trusted server HTTP filters via /api/demo-filter-matrix"
             : "Trusted server + signed browser definitions";
 
     public void Dispose()

@@ -15,7 +15,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
     globalThis as { process?: { env?: Record<string, string | undefined> } }
   ).process?.env;
 
-  const requestContext = createTogglyRequestContext(context.url);
+  const requestContext = createTogglyRequestContext(context.url, {
+    cookies: context.cookies,
+    headers: context.request.headers,
+  });
   const middleware = createTogglyMiddleware({
     ...createTogglyOptions(
       import.meta.env.TOGGLY_APP_KEY,

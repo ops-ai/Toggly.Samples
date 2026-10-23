@@ -54,30 +54,98 @@ export function createTogglyOptions(
   };
 }
 
+type HeaderSource = Headers | { get(name: string): string | null | undefined };
+
+type CookieSource =
+  | { get(name: string): { value: string } | string | undefined }
+  | undefined;
+
+export type TogglyRequestSource = {
+  headers?: HeaderSource;
+  cookies?: CookieSource;
+};
+
+function readHeader(source: HeaderSource | undefined, name: string) {
+  if (!source) return undefined;
+  const value = source.get(name);
+  return value && value.trim() !== '' ? value.trim() : undefined;
+}
+
+function readCookie(source: CookieSource | undefined, name: string) {
+  if (!source) return undefined;
+  const entry = source.get(name);
+  if (!entry) return undefined;
+  if (typeof entry === 'string') return entry.trim() !== '' ? entry.trim() : undefined;
+  const value = entry.value;
+  return value && value.trim() !== '' ? value.trim() : undefined;
+}
+
+function normalizePreset(raw: string | null | undefined): PresetName | null {
+  if (!raw) return null;
+  if (raw === 'matching') return 'matching';
+  if (raw === 'nonmatching' || raw === 'non-matching') return 'nonmatching';
+  return null;
+}
+
+/** Parse document.cookie in the browser (Live E2E may persist preset without query). */
+export function parseDocumentCookies(): CookieSource {
+  if (typeof document === 'undefined') return undefined;
+  const jar = new Map<string, string>();
+  for (const part of document.cookie.split(';')) {
+    const [rawKey, ...rest] = part.trim().split('=');
+    if (!rawKey) continue;
+    jar.set(rawKey, decodeURIComponent(rest.join('=')));
+  }
+  return {
+    get(name: string) {
+      const value = jar.get(name);
+      return value === undefined ? undefined : { value };
+    },
+  };
+}
+
 /**
- * Map the current URL to a request-local evaluation context.
+ * Map the current URL (and optional request cookies/headers) to evaluation context.
  *
  * Identity and claims are constructed per request for the middleware client.
  * They never mutate a process-wide singleton — that would leak one visitor's
  * targeting into the next request on SSR.
  */
-export function createTogglyRequestContext(url: URL) {
-  const presetName = (url.searchParams.get('preset') as PresetName | null) ?? null;
-  const preset = presetName && presets[presetName] ? presets[presetName] : null;
+export function createTogglyRequestContext(
+  url: URL,
+  source?: TogglyRequestSource,
+) {
+  const presetName =
+    normalizePreset(url.searchParams.get('preset')) ??
+    normalizePreset(readHeader(source?.headers, 'x-demo-preset')) ??
+    normalizePreset(readCookie(source?.cookies, 'sample-preset')) ??
+    normalizePreset(readCookie(source?.cookies, 'toggly-preset')) ??
+    'matching';
+
+  const preset = presets[presetName];
 
   const identity =
-    url.searchParams.get('identity') ?? preset?.identity ?? undefined;
+    url.searchParams.get('identity') ??
+    readHeader(source?.headers, 'x-toggly-identity') ??
+    readCookie(source?.cookies, 'demo-identity') ??
+    preset.identity;
+
   const role =
-    url.searchParams.get('role') ?? preset?.claims.role ?? 'user';
+    url.searchParams.get('role') ??
+    readHeader(source?.headers, 'x-demo-role') ??
+    preset.claims.role ??
+    'user';
+
   const orderKey =
     url.searchParams.get('order') ??
-    (preset?.order === 'vip' ? orders.vip.Id : orders.standard.Id);
+    readHeader(source?.headers, 'x-demo-order') ??
+    (preset.order === 'vip' ? orders.vip.Id : orders.standard.Id);
 
   return {
     identity,
     claims: { role },
     orderKey,
-    presetName: presetName ?? (identity === 'alice' ? 'matching' : identity === 'bob' ? 'nonmatching' : null),
+    presetName,
   };
 }
 
