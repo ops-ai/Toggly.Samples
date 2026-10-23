@@ -96,7 +96,7 @@ public partial class Workshop
         }
         else if (OperatingSystem.IsBrowser())
             await Evaluate();
-        else if (Interactive)
+        else if (Interactive && Section is "filters" or "api")
             await Evaluate();
     }
 
@@ -174,7 +174,8 @@ public partial class Workshop
                 }
 
                 Updates++;
-                await Evaluate();
+                if (OperatingSystem.IsBrowser() || Section == "filters")
+                    await Evaluate();
                 StateHasChanged();
             });
     }
