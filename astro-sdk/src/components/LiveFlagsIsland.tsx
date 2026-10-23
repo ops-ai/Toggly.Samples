@@ -42,9 +42,18 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
         return;
       }
 
-      const ctx = createTogglyRequestContext(new URL(window.location.href), {
-        cookies: parseDocumentCookies(),
-      });
+      const url = new URL(window.location.href);
+      const cookies = parseDocumentCookies();
+      const hasPreset =
+        url.searchParams.has('preset') ||
+        cookies?.get('sample-preset') ||
+        cookies?.get('toggly-preset');
+      if (!hasPreset && mode === 'snapshot') {
+        unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);
+        return;
+      }
+
+      const ctx = createTogglyRequestContext(url, { cookies });
 
       await initTogglyClient({
         ...base,
