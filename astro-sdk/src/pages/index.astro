@@ -48,8 +48,6 @@ const baseOptions = {
   usageFlushInterval: 0,
 };
 
-const requestToggly = Astro.locals.toggly;
-
 const order = orderEntity(requestContext.orderKey);
 const vipOrder = orderEntity(orders.vip.Id);
 const standardOrder = orderEntity(orders.standard.Id);
