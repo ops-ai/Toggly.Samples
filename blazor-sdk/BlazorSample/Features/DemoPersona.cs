@@ -68,6 +68,22 @@ public sealed record DemoPersona(
         return true;
     }
 
+    public static void ApplyFromRequestIfPresent(HttpContext context)
+    {
+        var preset =
+            context.Request.Query["preset"].FirstOrDefault()
+            ?? context.Request.Cookies["sample-preset"];
+        if (string.IsNullOrWhiteSpace(preset))
+            return;
+
+        var (persona, applyHeaders) = FromPreset(preset);
+        if (context.Request.Query["order"] == "standard")
+            persona = persona with { Order = NonMatching.Order };
+        if (context.Request.Query["order"] == "vip")
+            persona = persona with { Order = Matching.Order };
+        ApplyRequestHeaders(context, persona, applyHeaders);
+    }
+
     public static void ApplyRequestHeaders(HttpContext context, DemoPersona persona, bool applyDemoHeaders)
     {
         if (applyDemoHeaders)

@@ -84,6 +84,7 @@ builder.Services.AddToggly(options =>
     }
 });
 builder.Services.AddSingleton<ITargetingContextAccessor, RequestTargetingAccessor>();
+builder.Services.AddScoped<DemoFilterMatrix>();
 builder.Services.AddTogglyEntityContext<DemoOrder>(
     "Order",
     order => order.Id,
@@ -123,6 +124,11 @@ else if (string.IsNullOrWhiteSpace(backendKey))
 var app = builder.Build();
 app.UseStaticFiles();
 app.UseAntiforgery();
+app.Use(async (context, next) =>
+{
+    DemoPersona.ApplyFromRequestIfPresent(context);
+    await next();
+});
 #if NET9_0_OR_GREATER
 app.MapStaticAssets();
 #endif

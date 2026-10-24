@@ -4,7 +4,7 @@ namespace BlazorSample.Features;
 
 public static class FilterMatrixApi
 {
-    private static readonly string[] Keys =
+    internal static readonly string[] FilterKeys =
     [
         "filter-always-on",
         "filter-percentage",
@@ -23,30 +23,13 @@ public static class FilterMatrixApi
     {
         app.MapGet(
             "/api/demo-filter-matrix",
-            async (IFeatureManager features, HttpContext http) =>
+            async (DemoFilterMatrix matrix, HttpContext http) =>
             {
                 var preset =
                     http.Request.Query["preset"].FirstOrDefault()
                     ?? http.Request.Cookies["sample-preset"]
                     ?? "anonymous";
-                var (persona, applyHeaders) = DemoPersona.FromPreset(preset);
-                if (http.Request.Query["order"] == "standard")
-                    persona = persona with { Order = DemoPersona.NonMatching.Order };
-                if (http.Request.Query["order"] == "vip")
-                    persona = persona with { Order = DemoPersona.Matching.Order };
-                DemoPersona.ApplyRequestHeaders(http, persona, applyHeaders);
-                var order = persona.Order;
-
-                var values = new Dictionary<string, bool>(StringComparer.Ordinal);
-                foreach (var key in Keys)
-                {
-                    values[key] =
-                        key is "filter-context-property"
-                            ? await features.IsEnabledAsync(key, order)
-                            : await features.IsEnabledAsync(key);
-                }
-
-                return Results.Json(values);
+                return Results.Json(await matrix.EvaluatePresetAsync(preset));
             }
         );
     }

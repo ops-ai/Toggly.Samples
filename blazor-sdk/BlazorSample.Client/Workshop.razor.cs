@@ -153,7 +153,18 @@ public partial class Workshop
             );
 
         if (!OperatingSystem.IsBrowser() && Section == "filters")
-            await MergeServerFilterMatrixAsync();
+        {
+            if (Mode == "ssr")
+            {
+                foreach (var key in Filters)
+                {
+                    if (HttpFilterMatrixServer.Contains(key))
+                        Values[key] = await Features.EvaluateAsync([key]);
+                }
+            }
+            else
+                await MergeServerFilterMatrixAsync();
+        }
     }
 
     private async Task MergeServerFilterMatrixAsync()

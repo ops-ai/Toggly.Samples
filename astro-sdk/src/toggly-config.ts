@@ -87,6 +87,12 @@ function normalizePreset(raw: string | null | undefined): PresetName | null {
   return null;
 }
 
+function nonEmpty(value: string | null | undefined) {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  return trimmed === '' ? undefined : trimmed;
+}
+
 /** Parse document.cookie in the browser (Live E2E may persist preset without query). */
 export function parseDocumentCookies(): CookieSource {
   if (typeof document === 'undefined') return undefined;
@@ -120,17 +126,15 @@ export function createTogglyRequestContext(
   source?: TogglyRequestSource,
 ) {
   const identityOverride =
-    url.searchParams.get('identity') ??
+    nonEmpty(url.searchParams.get('identity')) ??
     readHeader(source?.headers, 'x-toggly-identity') ??
     readCookie(source?.cookies, 'demo-identity');
 
   const roleOverride =
-    url.searchParams.get('role') ??
-    readHeader(source?.headers, 'x-demo-role');
+    nonEmpty(url.searchParams.get('role')) ?? readHeader(source?.headers, 'x-demo-role');
 
   const orderOverride =
-    url.searchParams.get('order') ??
-    readHeader(source?.headers, 'x-demo-order');
+    nonEmpty(url.searchParams.get('order')) ?? readHeader(source?.headers, 'x-demo-order');
 
   const presetName =
     normalizePreset(url.searchParams.get('preset')) ??

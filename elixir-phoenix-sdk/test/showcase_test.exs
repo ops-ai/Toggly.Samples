@@ -20,6 +20,13 @@ defmodule ShowcaseTest do
     assert get(build_conn(), "/protected").status == 200
   end
 
+  test "mount honors ?preset= on initial LiveView connect" do
+    {:ok, view, _} = live(build_conn(), "/?preset=nonmatching")
+    assert has_element?(view, "#current-identity", "bob")
+    assert has_element?(view, "#filter-targeting", "OFF")
+    assert has_element?(view, "#filter-context-property", "OFF")
+  end
+
   test "separate sessions, matching/nonmatching filters and Order.Vip" do
     {:ok, alice, _} = live(build_conn(), "/")
     {:ok, bob, _} = live(build_conn(), "/")
