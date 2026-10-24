@@ -95,8 +95,14 @@ const closeServer = (server) => new Promise((resolve, reject) => {
     const before = packets.length;
     await page.locator("#record").click();
     await page.locator("#flush").click();
-    await waitFor(() => packets.length > before);
-    const ordinary = packets.at(-1);
+    await page.locator("#status").filter({ hasText: "flushed" }).waitFor();
+    await waitFor(() =>
+      packets.slice(before).some((packet) => packet.body.f?.checkout),
+    );
+    const ordinary = packets
+      .slice(before)
+      .find((packet) => packet.body.f?.checkout);
+    assert.ok(ordinary, "expected a metric packet with checkout counters");
     assert.deepEqual(
       await page.evaluate(() => window.telemetryFetchOptions.at(-1)),
       { keepalive: false, encoding: "gzip", credentials: "omit" },
