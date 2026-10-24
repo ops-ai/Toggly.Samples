@@ -34,8 +34,8 @@ defmodule ShowcaseTest do
   end
 
   test "separate sessions, matching/nonmatching filters and Order.Vip" do
-    {:ok, alice, _} = live(build_conn(), "/")
-    {:ok, bob, _} = live(build_conn(), "/")
+    {:ok, alice, _} = live(build_conn(), "/?preset=matching")
+    {:ok, bob, _} = live(build_conn(), "/?preset=matching")
     render_click(bob, "preset", %{"mode" => "non-matching"})
     assert has_element?(alice, "#current-identity", "alice")
     assert has_element?(bob, "#current-identity", "bob")

@@ -125,9 +125,10 @@ try {
       continue;
     }
 
-    const entity =
-      row.key === 'filter-context-property' ? order : undefined;
-    const value = await requestToggly.getFlag(row.key, false, entity ?? null);
+    const value =
+      row.key === 'filter-context-property'
+        ? await entityClient.getFlag(row.key, false, order)
+        : await requestToggly.getFlag(row.key, false);
     filterRows.push({
       ...row,
       value,
