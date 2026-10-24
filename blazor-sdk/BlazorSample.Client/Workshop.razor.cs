@@ -147,7 +147,7 @@ public partial class Workshop
                 .Concat(Filters)
                 .Where(key =>
                     OperatingSystem.IsBrowser()
-                    || Mode == "ssr"
+                    || (Mode == "ssr" && Section == "filters")
                     || !HttpFilterMatrixServer.Contains(key)
                 )
         )
