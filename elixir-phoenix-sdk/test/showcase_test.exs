@@ -27,6 +27,12 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-context-property", "OFF")
   end
 
+  test "mount without preset stays anonymous for targeting" do
+    {:ok, view, _} = live(build_conn(), "/")
+    assert has_element?(view, "#current-identity", "")
+    assert has_element?(view, "#filter-targeting", "OFF")
+  end
+
   test "separate sessions, matching/nonmatching filters and Order.Vip" do
     {:ok, alice, _} = live(build_conn(), "/")
     {:ok, bob, _} = live(build_conn(), "/")

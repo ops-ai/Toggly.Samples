@@ -145,26 +145,19 @@ public partial class Workshop
         foreach (
             var key in Flags
                 .Concat(Filters)
-                .Where(key => OperatingSystem.IsBrowser() || !HttpFilterMatrixServer.Contains(key))
+                .Where(key =>
+                    OperatingSystem.IsBrowser()
+                    || Mode == "ssr"
+                    || !HttpFilterMatrixServer.Contains(key)
+                )
         )
             Values[key] = await Features.EvaluateAsync(
                 [key],
                 entity: key is "ExpressCheckout" or "filter-context-property" ? CurrentOrder : null
             );
 
-        if (!OperatingSystem.IsBrowser() && Section == "filters")
-        {
-            if (Mode == "ssr")
-            {
-                foreach (var key in Filters)
-                {
-                    if (HttpFilterMatrixServer.Contains(key))
-                        Values[key] = await Features.EvaluateAsync([key]);
-                }
-            }
-            else
-                await MergeServerFilterMatrixAsync();
-        }
+        if (!OperatingSystem.IsBrowser() && Section == "filters" && Mode != "ssr")
+            await MergeServerFilterMatrixAsync();
     }
 
     private async Task MergeServerFilterMatrixAsync()

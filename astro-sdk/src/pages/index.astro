@@ -11,6 +11,7 @@ import {
   createTogglyOptions,
   createTogglyRequestContext,
   orderEntity,
+  togglyIdentityFields,
 } from '../toggly-config';
 import {
   demoKeys,
@@ -41,12 +42,13 @@ const baseOptions = {
     import.meta.env.TOGGLY_DEFINITIONS_BASE_URI,
     import.meta.env.TOGGLY_METRICS_BASE_URL,
   ),
-  identity: requestContext.identity,
-  claims: requestContext.claims,
+  ...togglyIdentityFields(requestContext),
   enableUsageTracking: false,
   telemetryAttachProcessHandlers: false,
   usageFlushInterval: 0,
 };
+
+const requestToggly = Astro.locals.toggly;
 
 const order = orderEntity(requestContext.orderKey);
 const vipOrder = orderEntity(orders.vip.Id);
@@ -125,7 +127,7 @@ try {
 
     const entity =
       row.key === 'filter-context-property' ? order : undefined;
-    const value = await entityClient.getFlag(row.key, false, entity ?? null);
+    const value = await requestToggly.getFlag(row.key, false, entity ?? null);
     filterRows.push({
       ...row,
       value,

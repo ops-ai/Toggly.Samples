@@ -9,7 +9,7 @@ defmodule Showcase.Live do
   def mount(params, _, socket) do
     # The on_mount hook installs subscriptions. LiveE2E filter packs pass
     # ?preset= on the initial HTTP request; real apps derive this from auth.
-    preset = normalize_preset(Map.get(params, "preset", "matching"))
+    preset = normalize_preset(Map.get(params, "preset"))
     context = Showcase.Context.preset(preset)
     socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
@@ -29,7 +29,9 @@ defmodule Showcase.Live do
       "nonmatching" -> "nonmatching"
       "non-matching" -> "nonmatching"
       "matching" -> "matching"
-      _ -> "matching"
+      "anonymous" -> "anonymous"
+      nil -> "anonymous"
+      _ -> "anonymous"
     end
   end
 

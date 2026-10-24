@@ -143,8 +143,10 @@ export function createTogglyRequestContext(
     normalizePreset(readCookie(source?.cookies, 'toggly-preset'));
 
   if (!presetName) {
+    const identity = identityOverride ?? undefined;
     return {
-      identity: identityOverride ?? undefined,
+      identity,
+      userId: identity,
       claims: { role: roleOverride ?? 'user' },
       orderKey:
         orderOverride === 'vip' || orderOverride === orders.vip.Id
@@ -166,9 +168,22 @@ export function createTogglyRequestContext(
 
   return {
     identity,
+    userId: identity,
     claims: { role },
     orderKey,
     presetName,
+  };
+}
+
+/** Identity fields for server clients (Targeting uses userId on live edge). */
+export function togglyIdentityFields(
+  requestContext: ReturnType<typeof createTogglyRequestContext>,
+) {
+  const userId = requestContext.identity;
+  return {
+    identity: userId,
+    userId,
+    claims: requestContext.claims,
   };
 }
 

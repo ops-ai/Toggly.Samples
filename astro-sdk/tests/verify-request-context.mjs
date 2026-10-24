@@ -5,6 +5,7 @@ const matching = createTogglyRequestContext(
   new URL('http://127.0.0.1:4321/?preset=matching&identity='),
 );
 assert.equal(matching.identity, 'alice', 'empty identity query must not block preset alice');
+assert.equal(matching.userId, 'alice');
 assert.equal(matching.presetName, 'matching');
 
 const nonMatching = createTogglyRequestContext(

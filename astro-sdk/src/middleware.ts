@@ -1,6 +1,10 @@
 import { defineMiddleware } from 'astro:middleware';
 import { createTogglyMiddleware } from '@ops-ai/astro-feature-flags-toggly/integration';
-import { createTogglyOptions, createTogglyRequestContext } from './toggly-config';
+import {
+  createTogglyOptions,
+  createTogglyRequestContext,
+  togglyIdentityFields,
+} from './toggly-config';
 
 /**
  * Request-scoped Toggly middleware.
@@ -27,8 +31,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       import.meta.env.TOGGLY_DEFINITIONS_BASE_URI,
       import.meta.env.TOGGLY_METRICS_BASE_URL,
     ),
-    identity: requestContext.identity,
-    claims: requestContext.claims,
+    ...togglyIdentityFields(requestContext),
   });
 
   return middleware(context, async () => {
