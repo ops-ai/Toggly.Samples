@@ -94,11 +94,15 @@ public partial class Workshop
         var query = Navigation.ToAbsoluteUri(Navigation.Uri).Query;
         if (Mode == "ssr")
         {
-            var matching =
-                !query.Contains("preset=nonmatching", StringComparison.Ordinal)
-                && !query.Contains("preset=non-matching", StringComparison.Ordinal)
-                && !query.Contains("preset=anonymous", StringComparison.Ordinal);
-            await SetPreset(matching);
+            if (query.Contains("preset=matching", StringComparison.Ordinal))
+                await SetPreset(true);
+            else if (
+                query.Contains("preset=nonmatching", StringComparison.Ordinal)
+                || query.Contains("preset=non-matching", StringComparison.Ordinal)
+            )
+                await SetPreset(false);
+            else
+                await SetAnonymous();
         }
         else if (query.Contains("preset=matching", StringComparison.Ordinal))
             await SetPreset(true);
