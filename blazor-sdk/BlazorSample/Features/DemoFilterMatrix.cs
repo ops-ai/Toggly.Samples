@@ -12,7 +12,11 @@ public sealed class DemoFilterMatrix(IFeatureManager features, IHttpContextAcces
         var http = accessor.HttpContext
             ?? throw new InvalidOperationException("HttpContext is required for filter-matrix evaluation.");
 
-        var (persona, applyHeaders) = DemoPersona.FromPreset(preset);
+        var resolved =
+            http.Request.Query["preset"].FirstOrDefault()
+            ?? http.Request.Cookies["sample-preset"]
+            ?? preset;
+        var (persona, applyHeaders) = DemoPersona.FromPreset(resolved);
         if (http.Request.Query["order"] == "standard")
             persona = persona with { Order = DemoPersona.NonMatching.Order };
         if (http.Request.Query["order"] == "vip")

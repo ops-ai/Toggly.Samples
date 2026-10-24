@@ -76,6 +76,38 @@ public sealed class OfflineTransport : HttpMessageHandler
                 ("Start", "2020-01-01T00:00:00Z"),
                 ("End", "2099-12-31T23:59:59Z")
             ),
+            Flag(
+                "filter-user-claims",
+                "UserClaims",
+                ("Claim", "role"),
+                ("Value", "admin"),
+                ("Percentage", "100")
+            ),
+            Flag(
+                "filter-country",
+                "Country",
+                ("Country:0", "US"),
+                ("Percentage", "100")
+            ),
+            Flag(
+                "filter-browser-family",
+                "BrowserFamily",
+                ("BrowserFamily:0", "Chrome"),
+                ("Percentage", "100")
+            ),
+            Flag(
+                "filter-browser-language",
+                "BrowserLanguage",
+                ("BrowserLanguage:0", "en"),
+                ("Percentage", "100")
+            ),
+            Flag(
+                "filter-device-type",
+                "DeviceType",
+                ("DeviceType:0", "Macintosh"),
+                ("Percentage", "100")
+            ),
+            Flag("filter-os", "OS", ("OperatingSystem:0", "Mac"), ("Percentage", "100")),
         ];
     }
 }

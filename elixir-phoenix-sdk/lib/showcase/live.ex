@@ -7,9 +7,9 @@ defmodule Showcase.Live do
   on_mount({Toggly.LiveView, {Showcase.Flags, @keys}})
 
   def mount(params, _, socket) do
-    # The on_mount hook installs subscriptions. LiveE2E filter packs pass
-    # ?preset= on the initial HTTP request; real apps derive this from auth.
-    preset = normalize_preset(Map.get(params, "preset"))
+    # LiveE2E may pass ?preset= or only the harness sample-preset cookie
+    # (fingerprint=matching on bare /). Anonymous stays the default when neither is set.
+    preset = preset_from_mount(params, socket)
     context = Showcase.Context.preset(preset)
     socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
@@ -22,6 +22,27 @@ defmodule Showcase.Live do
        preset: preset,
        refresh: "Waiting"
      )}
+  end
+
+  defp preset_from_mount(params, socket) do
+    case Map.get(params, "preset") do
+      nil ->
+        case cookie_preset(socket) do
+          nil -> "anonymous"
+          value -> normalize_preset(value)
+        end
+
+      value ->
+        normalize_preset(value)
+    end
+  end
+
+  defp cookie_preset(socket) do
+    case get_connect_info(socket, :cookies) do
+      %{"sample-preset" => value} when is_binary(value) and value != "" -> value
+      %{"toggly-preset" => value} when is_binary(value) and value != "" -> value
+      _ -> nil
+    end
   end
 
   defp normalize_preset(mode) do

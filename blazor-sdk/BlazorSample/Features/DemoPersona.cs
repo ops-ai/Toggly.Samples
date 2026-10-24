@@ -101,5 +101,6 @@ public sealed record DemoPersona(
         context.User = new ClaimsPrincipal(
             new ClaimsIdentity(claims, persona.Name.Length == 0 ? null : "Demo persona")
         );
+        context.Items[typeof(DemoPersona)] = persona;
     }
 }

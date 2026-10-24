@@ -33,6 +33,15 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-targeting", "OFF")
   end
 
+  test "mount reads sample-preset cookie when query omits preset" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_cookie("sample-preset", "matching")
+
+    {:ok, view, _} = live(conn, "/")
+    assert has_element?(view, "#filter-targeting", "ON")
+  end
+
   test "separate sessions, matching/nonmatching filters and Order.Vip" do
     {:ok, alice, _} = live(build_conn(), "/?preset=matching")
     {:ok, bob, _} = live(build_conn(), "/?preset=matching")

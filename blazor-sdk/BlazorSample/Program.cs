@@ -69,21 +69,22 @@ builder.Services.AddScoped<HttpClient>(sp =>
         client.BaseAddress = new Uri($"{request.Scheme}://{request.Host}/");
     return client;
 });
-builder.Services.AddToggly(options =>
-{
-    options.AppKey = backendKey ?? "";
-    options.Environment = settings.Environment;
-    options.UseSignedDefinitions = !string.IsNullOrWhiteSpace(backendKey);
-    options.UndefinedEnabledOnDevelopment = false;
-    options.RegisterContextsOnStartup = false;
-    options.DefinitionsBaseUrl = definitionsUrl;
-    if (string.IsNullOrWhiteSpace(backendKey) || denyNetwork)
+builder
+    .Services.AddTogglyWeb(options =>
     {
-        options.DefinitionsBaseUrl = "http://127.0.0.1:1/";
-        options.BaseUrl = "http://127.0.0.1:1/";
-    }
-});
-builder.Services.AddSingleton<ITargetingContextAccessor, RequestTargetingAccessor>();
+        options.AppKey = backendKey ?? "";
+        options.Environment = settings.Environment;
+        options.UseSignedDefinitions = !string.IsNullOrWhiteSpace(backendKey);
+        options.UndefinedEnabledOnDevelopment = false;
+        options.RegisterContextsOnStartup = !string.IsNullOrWhiteSpace(backendKey);
+        options.DefinitionsBaseUrl = definitionsUrl;
+        if (string.IsNullOrWhiteSpace(backendKey) || denyNetwork)
+        {
+            options.DefinitionsBaseUrl = "http://127.0.0.1:1/";
+            options.BaseUrl = "http://127.0.0.1:1/";
+        }
+    })
+    .WithTogglyTargeting<RequestTargetingAccessor>();
 builder.Services.AddScoped<DemoFilterMatrix>();
 builder.Services.AddScoped<IFilterMatrixMerge, ServerFilterMatrixMerge>();
 builder.Services.AddTogglyEntityContext<DemoOrder>(
