@@ -1,4 +1,4 @@
-import { orders, presets, type PresetName } from './sample/catalog';
+import { orders, presets, type PresetName } from './sample/catalog.ts';
 
 /**
  * Shared Toggly options for the Astro integration and request middleware.
