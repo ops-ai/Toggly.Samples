@@ -85,6 +85,7 @@ builder.Services.AddToggly(options =>
 });
 builder.Services.AddSingleton<ITargetingContextAccessor, RequestTargetingAccessor>();
 builder.Services.AddScoped<DemoFilterMatrix>();
+builder.Services.AddScoped<IFilterMatrixMerge, ServerFilterMatrixMerge>();
 builder.Services.AddTogglyEntityContext<DemoOrder>(
     "Order",
     order => order.Id,

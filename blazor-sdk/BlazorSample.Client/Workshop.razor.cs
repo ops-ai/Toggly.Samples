@@ -145,41 +145,63 @@ public partial class Workshop
         foreach (
             var key in Flags
                 .Concat(Filters)
-                .Where(key =>
-                    OperatingSystem.IsBrowser()
-                    || (Mode == "ssr" && Section == "filters")
-                    || !HttpFilterMatrixServer.Contains(key)
-                )
+                .Where(key => OperatingSystem.IsBrowser() || !HttpFilterMatrixServer.Contains(key))
         )
             Values[key] = await Features.EvaluateAsync(
                 [key],
                 entity: key is "ExpressCheckout" or "filter-context-property" ? CurrentOrder : null
             );
 
-        if (!OperatingSystem.IsBrowser() && Section == "filters" && Mode != "ssr")
-            await MergeServerFilterMatrixAsync();
+        if (!OperatingSystem.IsBrowser() && Section == "filters")
+        {
+            if (Mode == "ssr")
+                await MergeSsrFilterMatrixAsync();
+            else
+                await MergeServerFilterMatrixAsync();
+        }
+    }
+
+    private string FilterMatrixPreset() =>
+        Identity == "alice"
+            ? "matching"
+            : Identity == "bob"
+                ? "nonmatching"
+                : "anonymous";
+
+    private void ApplyHttpFilterMatrix(Dictionary<string, bool>? matrix)
+    {
+        if (matrix is null)
+            return;
+        foreach (var key in Filters)
+        {
+            if (HttpFilterMatrixServer.Contains(key))
+                Values[key] = matrix.GetValueOrDefault(key);
+        }
+    }
+
+    private async Task MergeSsrFilterMatrixAsync()
+    {
+        try
+        {
+            var matrix = await FilterMatrix.EvaluatePresetAsync(FilterMatrixPreset());
+            ApplyHttpFilterMatrix(matrix);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
     }
 
     private async Task MergeServerFilterMatrixAsync()
     {
         try
         {
-            var preset =
-                Identity == "alice"
-                    ? "matching"
-                    : Identity == "bob"
-                        ? "nonmatching"
-                        : "anonymous";
             var matrix = await Http.GetFromJsonAsync<Dictionary<string, bool>>(
-                Navigation.ToAbsoluteUri($"/api/demo-filter-matrix?preset={preset}")
+                Navigation.ToAbsoluteUri(
+                    $"/api/demo-filter-matrix?preset={FilterMatrixPreset()}"
+                )
             );
-            if (matrix is null)
-                return;
-            foreach (var key in Filters)
-            {
-                if (HttpFilterMatrixServer.Contains(key))
-                    Values[key] = matrix.GetValueOrDefault(key);
-            }
+            ApplyHttpFilterMatrix(matrix);
         }
         catch (Exception ex)
         {
@@ -230,7 +252,9 @@ public partial class Workshop
                 or "filter-os"
             ? OperatingSystem.IsBrowser()
                 ? "Browser evaluated-signed endpoint with real request metadata"
-                : "Trusted server HTTP filters via /api/demo-filter-matrix"
+                : Mode == "ssr"
+                    ? "SSR prerender: in-process DemoFilterMatrix on this HTTP request"
+                    : "Interactive server: loopback /api/demo-filter-matrix"
             : "Trusted server + signed browser definitions";
 
     public void Dispose()

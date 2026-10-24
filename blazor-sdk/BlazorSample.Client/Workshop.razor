@@ -3,6 +3,7 @@
 @inject PublicSettings Settings
 @inject NavigationManager Navigation
 @inject HttpClient Http
+@inject IFilterMatrixMerge FilterMatrix
 
 <header>
     <a href="/">Toggly / Blazor workshop</a>
@@ -133,6 +134,10 @@
     else if (Section == "filters")
     {
         <h2>Filter matrix</h2>
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <p role="alert" data-testid="filter-matrix-error">@Error</p>
+        }
         <button disabled="@(!Interactive)" @onclick="()=>SetPreset(true)">Matching</button>
         <button disabled="@(!Interactive)" @onclick="()=>SetPreset(false)">Non-matching</button>
         <table>

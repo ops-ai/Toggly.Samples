@@ -10,6 +10,7 @@ var settings =
     await http.GetFromJsonAsync<PublicSettings>("public-toggly.json") ?? new(null, "Production");
 builder.Services.AddSingleton(http);
 builder.Services.AddSingleton(settings);
+builder.Services.AddSingleton<IFilterMatrixMerge, NullFilterMatrixMerge>();
 
 // Browser code receives only a Front-end App Key. Defaults are deliberate demo
 // choices: baseline gates ON; every restrictive or entity flag defaults OFF.
