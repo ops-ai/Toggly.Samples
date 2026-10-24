@@ -82,6 +82,28 @@ public class ShowcaseTests
     }
 
     [Fact]
+    public async Task Anonymous_default_does_not_apply_non_matching_country()
+    {
+        await using var app = new SampleFactory();
+        using var client = app.CreateClient();
+        using var snapshot = JsonDocument.Parse(await client.GetStringAsync("/api/snapshot"));
+        var data = snapshot.RootElement;
+        Assert.Equal("", data.GetProperty("persona").GetProperty("name").GetString());
+        Assert.False(data.GetProperty("flags").GetProperty("filter-country").GetBoolean());
+    }
+
+    [Fact]
+    public async Task Matching_query_preset_enables_country_and_targeting()
+    {
+        await using var app = new SampleFactory();
+        using var client = app.CreateClient();
+        using var snapshot = JsonDocument.Parse(await client.GetStringAsync("/api/snapshot?preset=matching"));
+        var flags = snapshot.RootElement.GetProperty("flags");
+        Assert.True(flags.GetProperty("filter-targeting").GetBoolean());
+        Assert.True(flags.GetProperty("filter-country").GetBoolean());
+    }
+
+    [Fact]
     public async Task Matrix_presets_and_entity_fail_closed_are_actual_evaluations()
     {
         await using var app = new SampleFactory();

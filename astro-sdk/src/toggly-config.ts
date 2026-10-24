@@ -1,4 +1,4 @@
-import { orders, presets, type PresetName } from './sample/catalog';
+import { orders, presets, type PresetName } from './sample/catalog.ts';
 
 /**
  * Shared Toggly options for the Astro integration and request middleware.
@@ -54,30 +54,136 @@ export function createTogglyOptions(
   };
 }
 
+type HeaderSource = Headers | { get(name: string): string | null | undefined };
+
+type CookieSource =
+  | { get(name: string): { value: string } | string | undefined }
+  | undefined;
+
+export type TogglyRequestSource = {
+  headers?: HeaderSource;
+  cookies?: CookieSource;
+};
+
+function readHeader(source: HeaderSource | undefined, name: string) {
+  if (!source) return undefined;
+  const value = source.get(name);
+  return value && value.trim() !== '' ? value.trim() : undefined;
+}
+
+function readCookie(source: CookieSource | undefined, name: string) {
+  if (!source) return undefined;
+  const entry = source.get(name);
+  if (!entry) return undefined;
+  if (typeof entry === 'string') return entry.trim() !== '' ? entry.trim() : undefined;
+  const value = entry.value;
+  return value && value.trim() !== '' ? value.trim() : undefined;
+}
+
+function normalizePreset(raw: string | null | undefined): PresetName | null {
+  if (!raw) return null;
+  if (raw === 'matching') return 'matching';
+  if (raw === 'nonmatching' || raw === 'non-matching') return 'nonmatching';
+  return null;
+}
+
+function nonEmpty(value: string | null | undefined) {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  return trimmed === '' ? undefined : trimmed;
+}
+
+/** Parse document.cookie in the browser (Live E2E may persist preset without query). */
+export function parseDocumentCookies(): CookieSource {
+  if (typeof document === 'undefined') return undefined;
+  const jar = new Map<string, string>();
+  for (const part of document.cookie.split(';')) {
+    const [rawKey, ...rest] = part.trim().split('=');
+    if (!rawKey) continue;
+    try {
+      jar.set(rawKey, decodeURIComponent(rest.join('=')));
+    } catch {
+      jar.set(rawKey, rest.join('='));
+    }
+  }
+  return {
+    get(name: string) {
+      const value = jar.get(name);
+      return value === undefined ? undefined : { value };
+    },
+  };
+}
+
 /**
- * Map the current URL to a request-local evaluation context.
+ * Map the current URL (and optional request cookies/headers) to evaluation context.
  *
  * Identity and claims are constructed per request for the middleware client.
  * They never mutate a process-wide singleton — that would leak one visitor's
  * targeting into the next request on SSR.
  */
-export function createTogglyRequestContext(url: URL) {
-  const presetName = (url.searchParams.get('preset') as PresetName | null) ?? null;
-  const preset = presetName && presets[presetName] ? presets[presetName] : null;
+export function createTogglyRequestContext(
+  url: URL,
+  source?: TogglyRequestSource,
+) {
+  const identityOverride =
+    nonEmpty(url.searchParams.get('identity')) ??
+    readHeader(source?.headers, 'x-toggly-identity') ??
+    readCookie(source?.cookies, 'demo-identity');
 
-  const identity =
-    url.searchParams.get('identity') ?? preset?.identity ?? undefined;
-  const role =
-    url.searchParams.get('role') ?? preset?.claims.role ?? 'user';
+  const roleOverride =
+    nonEmpty(url.searchParams.get('role')) ?? readHeader(source?.headers, 'x-demo-role');
+
+  const orderOverride =
+    nonEmpty(url.searchParams.get('order')) ?? readHeader(source?.headers, 'x-demo-order');
+
+  const presetName =
+    normalizePreset(url.searchParams.get('preset')) ??
+    normalizePreset(readHeader(source?.headers, 'x-demo-preset')) ??
+    normalizePreset(readCookie(source?.cookies, 'sample-preset')) ??
+    normalizePreset(readCookie(source?.cookies, 'toggly-preset'));
+
+  if (!presetName) {
+    const identity = identityOverride ?? undefined;
+    return {
+      identity,
+      userId: identity,
+      claims: { role: roleOverride ?? 'user' },
+      orderKey:
+        orderOverride === 'vip' || orderOverride === orders.vip.Id
+          ? orders.vip.Id
+          : orderOverride ?? orders.standard.Id,
+      presetName: 'anonymous',
+    };
+  }
+
+  const preset = presets[presetName];
+
+  const identity = identityOverride ?? preset.identity;
+
+  const role = roleOverride ?? preset.claims.role ?? 'user';
+
   const orderKey =
-    url.searchParams.get('order') ??
-    (preset?.order === 'vip' ? orders.vip.Id : orders.standard.Id);
+    orderOverride ??
+    (preset.order === 'vip' ? orders.vip.Id : orders.standard.Id);
 
   return {
     identity,
+    userId: identity,
     claims: { role },
     orderKey,
-    presetName: presetName ?? (identity === 'alice' ? 'matching' : identity === 'bob' ? 'nonmatching' : null),
+    presetName,
+  };
+}
+
+/** Identity fields for server clients (Targeting uses userId on live edge). */
+export function togglyIdentityFields(
+  requestContext: ReturnType<typeof createTogglyRequestContext>,
+) {
+  const userId = requestContext.identity;
+  return {
+    identity: userId,
+    userId,
+    claims: requestContext.claims,
   };
 }
 

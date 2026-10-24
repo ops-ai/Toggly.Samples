@@ -17,6 +17,7 @@ public static class SamplePersonas
     public static readonly SamplePersona NonMatching = new("bob", "user", "CA", "fr-FR,fr;q=0.9",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
         new("ord-standard", false, 49));
+    private static readonly SamplePersona Anonymous = new("", "", "", "", "", NonMatching.Order);
 
     public static SamplePersona Current(HttpContext context) => (SamplePersona)context.Items[typeof(SamplePersona)]!;
 
@@ -26,18 +27,27 @@ public static class SamplePersonas
         // They teach targeting; they are NOT authentication. Never copy this demo
         // middleware into a protected app: use validated authentication/proxy data.
         var preset = context.Request.Query["preset"].FirstOrDefault()
-            ?? context.Request.Cookies["sample-preset"] ?? "anonymous";
-        var persona = preset == "nonmatching" ? NonMatching : Matching;
-        if (preset == "anonymous") persona = NonMatching with { Name = "", Role = "" };
+            ?? context.Request.Cookies["sample-preset"]
+            ?? "anonymous";
+        var (persona, applyDemoHeaders) = preset switch
+        {
+            "matching" => (Matching, true),
+            "nonmatching" or "non-matching" => (NonMatching, true),
+            "anonymous" => (Anonymous, false),
+            _ => (Anonymous, false),
+        };
         if (context.Request.Query["order"] == "standard") persona = persona with { Order = NonMatching.Order };
         if (context.Request.Query["order"] == "vip") persona = persona with { Order = Matching.Order };
         context.Items[typeof(SamplePersona)] = persona;
         var claims = new List<Claim> { new(ClaimTypes.Name, persona.Name), new("role", persona.Role) };
         foreach (var group in persona.Targeting.Groups) claims.Add(new Claim("group", group));
         context.User = new ClaimsPrincipal(new ClaimsIdentity(claims, persona.Name.Length == 0 ? null : "Sample persona"));
-        context.Request.Headers["CF-IPCountry"] = persona.Country;
-        context.Request.Headers["Accept-Language"] = persona.Language;
-        context.Request.Headers.UserAgent = persona.Agent;
+        if (applyDemoHeaders)
+        {
+            context.Request.Headers["CF-IPCountry"] = persona.Country;
+            context.Request.Headers["Accept-Language"] = persona.Language;
+            context.Request.Headers.UserAgent = persona.Agent;
+        }
         // Context exists BEFORE MVC, Razor, OpenAPI or the first flag check runs.
         await next(context);
     }

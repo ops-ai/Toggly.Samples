@@ -11,6 +11,7 @@ import {
   createTogglyOptions,
   createTogglyRequestContext,
   orderEntity,
+  togglyIdentityFields,
 } from '../toggly-config';
 import {
   demoKeys,
@@ -29,7 +30,10 @@ import '../styles.css';
  */
 
 const configured = Boolean(import.meta.env.TOGGLY_APP_KEY);
-const requestContext = createTogglyRequestContext(Astro.url);
+const requestContext = createTogglyRequestContext(Astro.url, {
+  cookies: Astro.cookies,
+  headers: Astro.request.headers,
+});
 const baseOptions = {
   ...createTogglyOptions(
     import.meta.env.TOGGLY_APP_KEY,
@@ -38,12 +42,13 @@ const baseOptions = {
     import.meta.env.TOGGLY_DEFINITIONS_BASE_URI,
     import.meta.env.TOGGLY_METRICS_BASE_URL,
   ),
-  identity: requestContext.identity,
-  claims: requestContext.claims,
+  ...togglyIdentityFields(requestContext),
   enableUsageTracking: false,
   telemetryAttachProcessHandlers: false,
   usageFlushInterval: 0,
 };
+
+const requestToggly = Astro.locals.toggly;
 
 const order = orderEntity(requestContext.orderKey);
 const vipOrder = orderEntity(orders.vip.Id);
@@ -120,9 +125,10 @@ try {
       continue;
     }
 
-    const entity =
-      row.key === 'filter-context-property' ? order : undefined;
-    const value = await entityClient.getFlag(row.key, false, entity ?? null);
+    const value =
+      row.key === 'filter-context-property'
+        ? await entityClient.getFlag(row.key, false, order)
+        : await requestToggly.getFlag(row.key, false);
     filterRows.push({
       ...row,
       value,

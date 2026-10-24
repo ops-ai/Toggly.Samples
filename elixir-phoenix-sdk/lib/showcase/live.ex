@@ -6,10 +6,11 @@ defmodule Showcase.Live do
   @keys ~w(new-dashboard api-v2 enhanced-submit ExpressCheckout beta-access) ++ @filters
   on_mount({Toggly.LiveView, {Showcase.Flags, @keys}})
 
-  def mount(_, _, socket) do
-    # The on_mount hook installs subscriptions. The demo then assigns its local
-    # preset; real applications derive context from their signed auth session.
-    context = Showcase.Context.preset("matching")
+  def mount(params, _, socket) do
+    # The on_mount hook installs subscriptions. LiveE2E filter packs pass
+    # ?preset= on the initial HTTP request; real apps derive this from auth.
+    preset = normalize_preset(Map.get(params, "preset"))
+    context = Showcase.Context.preset(preset)
     socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
     {:ok,
@@ -18,18 +19,31 @@ defmodule Showcase.Live do
        filters: @filters,
        keys: @keys,
        action: "No action yet",
-       preset: "matching",
+       preset: preset,
        refresh: "Waiting"
      )}
   end
 
+  defp normalize_preset(mode) do
+    case mode do
+      "nonmatching" -> "nonmatching"
+      "non-matching" -> "nonmatching"
+      "matching" -> "matching"
+      "anonymous" -> "anonymous"
+      nil -> "anonymous"
+      _ -> "anonymous"
+    end
+  end
+
   def handle_event("preset", %{"mode" => mode}, socket) do
+    normalized = if mode == "non-matching", do: "nonmatching", else: mode
+
     socket =
       Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys,
-        context: Showcase.Context.preset(mode)
+        context: Showcase.Context.preset(normalized)
       )
 
-    {:noreply, assign(socket, :preset, mode)}
+    {:noreply, assign(socket, :preset, normalized)}
   end
 
   def handle_event("submit", _, socket) do

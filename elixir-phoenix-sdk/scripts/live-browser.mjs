@@ -67,10 +67,13 @@ try {
     browser = await chromium.connect(server.wsEndpoint());
     const alice = await (await browser.newContext()).newPage();
     const bob = await (await browser.newContext()).newPage();
+    const matchingUrl = new URL(config.url);
+    matchingUrl.searchParams.set('preset', 'matching');
     for (const page of [alice, bob]) {
       page.setDefaultTimeout(15000);
       check = 'live_connection';
-      await page.goto(config.url);
+      // LiveE2E filter packs use anonymous `/`; smoke still needs alice/bob personas.
+      await page.goto(matchingUrl.href);
       await page.locator('[data-phx-main].phx-connected').waitFor();
       check = 'live_mode_required';
       assert.equal(await page.locator('#missing-key').count(), 0);

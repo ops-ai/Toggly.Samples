@@ -20,10 +20,23 @@ defmodule ShowcaseTest do
     assert get(build_conn(), "/protected").status == 200
   end
 
+  test "mount honors ?preset= on initial LiveView connect" do
+    {:ok, view, _} = live(build_conn(), "/?preset=nonmatching")
+    assert has_element?(view, "#current-identity", "bob")
+    assert has_element?(view, "#filter-targeting", "OFF")
+    assert has_element?(view, "#filter-context-property", "OFF")
+  end
+
+  test "mount without preset stays anonymous for targeting" do
+    {:ok, view, _} = live(build_conn(), "/")
+    assert has_element?(view, "#current-identity", "")
+    assert has_element?(view, "#filter-targeting", "OFF")
+  end
+
   test "separate sessions, matching/nonmatching filters and Order.Vip" do
-    {:ok, alice, _} = live(build_conn(), "/")
-    {:ok, bob, _} = live(build_conn(), "/")
-    render_click(bob, "preset", %{"mode" => "nonmatching"})
+    {:ok, alice, _} = live(build_conn(), "/?preset=matching")
+    {:ok, bob, _} = live(build_conn(), "/?preset=matching")
+    render_click(bob, "preset", %{"mode" => "non-matching"})
     assert has_element?(alice, "#current-identity", "alice")
     assert has_element?(bob, "#current-identity", "bob")
 

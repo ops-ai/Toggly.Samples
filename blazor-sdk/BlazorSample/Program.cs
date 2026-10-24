@@ -2,9 +2,11 @@ using BlazorSample.Client;
 using BlazorSample.Components;
 using BlazorSample.Features;
 using Microsoft.Extensions.Http;
+using Microsoft.FeatureManagement.FeatureFilters;
 using Toggly.FeatureManagement;
 using Toggly.FeatureManagement.Blazor.Server;
 using Toggly.FeatureManagement.Configuration;
+using Toggly.FeatureManagement.Web.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
@@ -57,6 +59,16 @@ if (!string.IsNullOrWhiteSpace(definitionsUrl) &&
 
 // The trusted backend key remains in this server process. Only the explicit
 // Front-end App Key and environment are returned by the public settings endpoint.
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<HttpClient>(sp =>
+{
+    var client = new HttpClient();
+    var request = sp.GetRequiredService<IHttpContextAccessor>().HttpContext?.Request;
+    if (request is not null)
+        client.BaseAddress = new Uri($"{request.Scheme}://{request.Host}/");
+    return client;
+});
 builder.Services.AddToggly(options =>
 {
     options.AppKey = backendKey ?? "";
@@ -71,6 +83,21 @@ builder.Services.AddToggly(options =>
         options.BaseUrl = "http://127.0.0.1:1/";
     }
 });
+builder.Services.AddSingleton<ITargetingContextAccessor, RequestTargetingAccessor>();
+builder.Services.AddScoped<DemoFilterMatrix>();
+builder.Services.AddTogglyEntityContext<DemoOrder>(
+    "Order",
+    order => order.Id,
+    schema => schema
+        .KeyProperty("Id")
+        .Property("Vip", "boolean")
+        .Property("Total", "number")
+        .MapAttributes(order => new Dictionary<string, object?>
+        {
+            ["Vip"] = order.Vip,
+            ["Total"] = order.Total,
+        })
+);
 builder.Services.AddTogglyBlazorServer();
 if (denyNetwork)
 {
@@ -97,12 +124,19 @@ else if (string.IsNullOrWhiteSpace(backendKey))
 var app = builder.Build();
 app.UseStaticFiles();
 app.UseAntiforgery();
+app.Use(async (context, next) =>
+{
+    DemoPersona.ApplyFromRequestIfPresent(context);
+    await next();
+});
 #if NET9_0_OR_GREATER
 app.MapStaticAssets();
 #endif
 app.MapGet("/public-toggly.json", () => settings);
+FilterMatrixApi.Map(app);
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(PublicSettings).Assembly);
 app.Run();
+

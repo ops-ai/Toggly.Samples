@@ -1,6 +1,10 @@
 import { defineMiddleware } from 'astro:middleware';
 import { createTogglyMiddleware } from '@ops-ai/astro-feature-flags-toggly/integration';
-import { createTogglyOptions, createTogglyRequestContext } from './toggly-config';
+import {
+  createTogglyOptions,
+  createTogglyRequestContext,
+  togglyIdentityFields,
+} from './toggly-config';
 
 /**
  * Request-scoped Toggly middleware.
@@ -15,7 +19,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
     globalThis as { process?: { env?: Record<string, string | undefined> } }
   ).process?.env;
 
-  const requestContext = createTogglyRequestContext(context.url);
+  const requestContext = createTogglyRequestContext(context.url, {
+    cookies: context.cookies,
+    headers: context.request.headers,
+  });
   const middleware = createTogglyMiddleware({
     ...createTogglyOptions(
       import.meta.env.TOGGLY_APP_KEY,
@@ -24,8 +31,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       import.meta.env.TOGGLY_DEFINITIONS_BASE_URI,
       import.meta.env.TOGGLY_METRICS_BASE_URL,
     ),
-    identity: requestContext.identity,
-    claims: requestContext.claims,
+    ...togglyIdentityFields(requestContext),
   });
 
   return middleware(context, async () => {
