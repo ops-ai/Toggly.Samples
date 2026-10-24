@@ -140,7 +140,7 @@ export function createTogglyRequestContext(
 
   if (!presetName) {
     return {
-      identity: identityOverride ?? '',
+      identity: identityOverride ?? undefined,
       claims: { role: roleOverride ?? 'user' },
       orderKey:
         orderOverride === 'vip' || orderOverride === orders.vip.Id
