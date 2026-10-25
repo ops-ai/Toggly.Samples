@@ -65,6 +65,7 @@ defmodule ShowcaseTest do
       |> Plug.Conn.fetch_cookies()
       |> Plug.Conn.fetch_session()
       |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
     assert get_session(conn, "sample_preset") == "matching"
     assert get_in(get_session(conn, "toggly_context"), ["identity"]) == "alice"
   end
