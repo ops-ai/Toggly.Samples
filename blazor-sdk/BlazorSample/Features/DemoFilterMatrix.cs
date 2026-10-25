@@ -12,9 +12,14 @@ public sealed class DemoFilterMatrix(IFeatureManager features, IHttpContextAcces
         var http = accessor.HttpContext
             ?? throw new InvalidOperationException("HttpContext is required for filter-matrix evaluation.");
 
+        var explicitPreset =
+            !string.IsNullOrWhiteSpace(preset) && !string.Equals(preset, "anonymous", StringComparison.Ordinal)
+                ? preset
+                : null;
         var resolved =
             http.Request.Query["preset"].FirstOrDefault()
             ?? http.Request.Headers["x-demo-preset"].FirstOrDefault()
+            ?? explicitPreset
             ?? http.Request.Cookies["sample-preset"]
             ?? http.Request.Cookies["toggly-preset"]
             ?? preset;

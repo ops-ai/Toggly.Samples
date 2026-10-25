@@ -21,6 +21,8 @@ defmodule Showcase.PresetCookiePlug do
 
       _ ->
         conn
+        |> delete_session("sample_preset")
+        |> delete_session("toggly_context")
     end
   end
 

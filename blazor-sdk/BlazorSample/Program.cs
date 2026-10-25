@@ -74,7 +74,8 @@ builder.Services.AddToggly(options =>
     options.Environment = settings.Environment;
     options.UseSignedDefinitions = !string.IsNullOrWhiteSpace(backendKey);
     options.UndefinedEnabledOnDevelopment = false;
-    options.RegisterContextsOnStartup = !string.IsNullOrWhiteSpace(backendKey);
+    options.RegisterContextsOnStartup =
+        !string.IsNullOrWhiteSpace(backendKey) && !denyNetwork;
     options.DefinitionsBaseUrl = definitionsUrl;
     if (string.IsNullOrWhiteSpace(backendKey) || denyNetwork)
     {

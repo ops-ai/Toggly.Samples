@@ -91,6 +91,7 @@ function normalizePreset(raw: string | null | undefined): PresetName | null {
   if (!raw) return null;
   if (raw === 'matching') return 'matching';
   if (raw === 'nonmatching' || raw === 'non-matching') return 'nonmatching';
+  if (raw === 'anonymous') return 'anonymous';
   return null;
 }
 
@@ -149,7 +150,7 @@ export function createTogglyRequestContext(
     normalizePreset(readCookie(source?.cookies, 'sample-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'toggly-preset'));
 
-  if (!presetName) {
+  if (!presetName || presetName === 'anonymous') {
     const identity = identityOverride ?? undefined;
     return {
       identity,
