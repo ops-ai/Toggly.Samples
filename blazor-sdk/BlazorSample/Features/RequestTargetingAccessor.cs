@@ -1,5 +1,4 @@
 using Microsoft.FeatureManagement.FeatureFilters;
-using Toggly.FeatureManagement.Blazor.Server;
 
 namespace BlazorSample.Features;
 
@@ -7,18 +6,6 @@ public sealed class RequestTargetingAccessor(IHttpContextAccessor accessor) : IT
 {
     public ValueTask<TargetingContext> GetContextAsync()
     {
-        var circuit = BlazorTargetingContext.Current;
-        if (!string.IsNullOrEmpty(circuit.Identity))
-        {
-            return ValueTask.FromResult(
-                new TargetingContext
-                {
-                    UserId = circuit.Identity,
-                    Groups = circuit.Groups?.ToList() ?? [],
-                }
-            );
-        }
-
         if (accessor.HttpContext is not { } http)
             return ValueTask.FromResult(new TargetingContext());
 

@@ -85,7 +85,8 @@ builder
             options.BaseUrl = "http://127.0.0.1:1/";
         }
     })
-    .WithTogglyTargeting<RequestTargetingAccessor>();
+    .WithTogglyTargeting<CircuitAndRequestTargetingAccessor>();
+builder.Services.AddSingleton<BlazorTargetingContext>();
 builder.Services.AddScoped<DemoFilterMatrix>();
 builder.Services.AddScoped<IFilterMatrixMerge, ServerFilterMatrixMerge>();
 builder.Services.AddTogglyEntityContext<DemoOrder>(
