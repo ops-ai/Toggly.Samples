@@ -6,10 +6,10 @@ defmodule Showcase.Live do
   @keys ~w(new-dashboard api-v2 enhanced-submit ExpressCheckout beta-access) ++ @filters
   on_mount({Toggly.LiveView, {Showcase.Flags, @keys}})
 
-  def mount(params, _, socket) do
+  def mount(params, session, socket) do
     # LiveE2E may pass ?preset= or only the harness sample-preset cookie
     # (fingerprint=matching on bare /). Anonymous stays the default when neither is set.
-    preset = preset_from_mount(params, socket)
+    preset = preset_from_mount(params, session, socket)
     context = Showcase.Context.preset(preset)
     socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
@@ -24,10 +24,10 @@ defmodule Showcase.Live do
      )}
   end
 
-  defp preset_from_mount(params, socket) do
+  defp preset_from_mount(params, session, socket) do
     case Map.get(params, "preset") do
       nil ->
-        case cookie_preset(socket) do
+        case session["sample_preset"] || cookie_preset(socket) do
           nil -> "anonymous"
           value -> normalize_preset(value)
         end

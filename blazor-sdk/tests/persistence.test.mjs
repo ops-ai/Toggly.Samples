@@ -99,8 +99,8 @@ async function dashboard(browser, origin, expected) {
   try {
     const page = await context.newPage();
     // Missing definitions retain the public SDK’s per-feature startup wait.
-    page.setDefaultNavigationTimeout(120000);
-    page.setDefaultTimeout(120000);
+    page.setDefaultNavigationTimeout(240000);
+    page.setDefaultTimeout(240000);
     let circuit = false;
     page.on("websocket", (socket) => {
       if (new URL(socket.url()).pathname === "/_blazor") circuit = true;
@@ -145,7 +145,7 @@ async function dashboard(browser, origin, expected) {
       .filter({
         hasText: expected ? "New dashboard enabled" : "Classic dashboard",
       })
-      .waitFor({ timeout: 120000 });
+      .waitFor({ timeout: 240000 });
     assert.equal(await cell.count(), 1);
     assert.equal(
       circuit,

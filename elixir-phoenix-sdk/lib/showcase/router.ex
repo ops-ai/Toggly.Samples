@@ -4,6 +4,8 @@ defmodule Showcase.Router do
 
   pipeline :browser do
     plug(:accepts, ["html"])
+    plug(:fetch_cookies)
+    plug(Showcase.PresetCookiePlug)
     plug(:fetch_session)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)

@@ -36,7 +36,7 @@ defmodule ShowcaseTest do
   test "mount reads sample-preset cookie when query omits preset" do
     conn =
       build_conn()
-      |> Plug.Conn.put_req_cookie("sample-preset", "matching")
+      |> Plug.Conn.put_req_header("cookie", "sample-preset=matching")
 
     {:ok, view, _} = live(conn, "/")
     assert has_element?(view, "#filter-targeting", "ON")
