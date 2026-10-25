@@ -1,7 +1,6 @@
 defmodule Showcase.AssignPresetContext do
   @moduledoc false
   import Phoenix.Component, only: [assign: 2]
-  import Phoenix.LiveView, only: [connected?: 1, put_session: 2]
 
   @doc """
   Resolves the LiveE2E harness preset before `Toggly.LiveView` on_mount.
@@ -14,19 +13,10 @@ defmodule Showcase.AssignPresetContext do
     preset = Showcase.Live.resolve_preset(params, session, socket)
     context = Showcase.Context.preset(preset)
 
-    socket =
-      assign(socket,
-        preset: preset,
-        toggly_context: context
-      )
-
-    socket =
-      if connected?(socket) do
-        put_session(socket, toggly_context: context, sample_preset: preset)
-      else
-        socket
-      end
-
-    {:cont, socket}
+    {:cont,
+     assign(socket,
+       preset: preset,
+       toggly_context: context
+     )}
   end
 end
