@@ -8,7 +8,7 @@ import {
 import { createTogglyServerClient } from '@ops-ai/astro-feature-flags-toggly';
 
 /**
- * index.astro filter matrix rows use entityClient (definitions-signed + local eval).
+ * index.astro uses apiClient for targeting claims and entityClient for Order rules.
  */
 
 const definitions = [
