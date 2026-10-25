@@ -4,6 +4,7 @@ using BlazorSample.Features;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.Extensions.Http;
 using Microsoft.FeatureManagement;
+using Microsoft.FeatureManagement.FeatureFilters;
 using Toggly.FeatureManagement;
 using Toggly.FeatureManagement.Blazor;
 using Toggly.FeatureManagement.Blazor.Server;
@@ -112,6 +113,7 @@ builder
     .AddFeatureFilter<UserClaimsFilter>()
     .WithTogglyTargeting<CircuitAndRequestTargetingAccessor>();
 builder.Services.AddSingleton<BlazorTargetingContext>();
+builder.Services.AddSingleton<ITargetingContextAccessor, CircuitAndRequestTargetingAccessor>();
 builder.Services.AddScoped<IFeatureSession, ServerFeatureSession>();
 builder.Services.AddScoped<CircuitHandler, FeatureCircuitHandler>();
 if (denyNetwork)
