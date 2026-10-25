@@ -72,6 +72,18 @@ export type TogglyRequestSource = {
   cookies?: CookieSource;
 };
 
+/** Prefer the incoming Request URL so preset query params are never dropped. */
+export function resolveRequestUrl(url: URL, request?: Request): URL {
+  if (request?.url) {
+    try {
+      return new URL(request.url);
+    } catch {
+      /* fall through */
+    }
+  }
+  return url;
+}
+
 function readHeader(source: HeaderSource | undefined, name: string) {
   if (!source) return undefined;
   const value = source.get(name);
@@ -131,19 +143,23 @@ export function parseDocumentCookies(): CookieSource {
 export function createTogglyRequestContext(
   url: URL,
   source?: TogglyRequestSource,
+  request?: Request,
 ) {
+  const resolvedUrl = resolveRequestUrl(url, request);
   const identityOverride =
-    nonEmpty(url.searchParams.get('identity')) ??
+    nonEmpty(resolvedUrl.searchParams.get('identity')) ??
     readHeader(source?.headers, 'x-toggly-identity') ??
     readCookie(source?.cookies, 'demo-identity');
 
   const roleOverride =
-    nonEmpty(url.searchParams.get('role')) ?? readHeader(source?.headers, 'x-demo-role');
+    nonEmpty(resolvedUrl.searchParams.get('role')) ??
+    readHeader(source?.headers, 'x-demo-role');
 
   const orderOverride =
-    nonEmpty(url.searchParams.get('order')) ?? readHeader(source?.headers, 'x-demo-order');
+    nonEmpty(resolvedUrl.searchParams.get('order')) ??
+    readHeader(source?.headers, 'x-demo-order');
 
-  if (url.searchParams.get('preset') === 'anonymous') {
+  if (resolvedUrl.searchParams.get('preset') === 'anonymous') {
     const identity = identityOverride ?? undefined;
     return {
       identity,
@@ -158,7 +174,7 @@ export function createTogglyRequestContext(
   }
 
   const presetName =
-    normalizePreset(url.searchParams.get('preset')) ??
+    normalizePreset(resolvedUrl.searchParams.get('preset')) ??
     normalizePreset(readHeader(source?.headers, 'x-demo-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'sample-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'toggly-preset'));
@@ -200,11 +216,18 @@ export function createTogglyRequestContext(
 export function togglyIdentityFields(
   requestContext: ReturnType<typeof createTogglyRequestContext>,
 ) {
-  const userId = requestContext.identity;
+  const preset =
+    requestContext.presetName === 'matching' || requestContext.presetName === 'nonmatching'
+      ? presets[requestContext.presetName]
+      : null;
+  const identity = requestContext.identity ?? preset?.identity;
+  const claims = {
+    role: requestContext.claims.role ?? preset?.claims.role ?? 'user',
+  };
   return {
-    identity: userId,
-    userId,
-    claims: requestContext.claims,
+    identity,
+    userId: identity,
+    claims,
   };
 }
 
