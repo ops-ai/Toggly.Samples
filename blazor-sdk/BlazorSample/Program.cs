@@ -1,16 +1,11 @@
 using BlazorSample.Client;
 using BlazorSample.Components;
 using BlazorSample.Features;
-using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.Extensions.Http;
-using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.FeatureFilters;
 using Toggly.FeatureManagement;
-using Toggly.FeatureManagement.Blazor;
 using Toggly.FeatureManagement.Blazor.Server;
 using Toggly.FeatureManagement.Configuration;
-using Toggly.FeatureManagement.Web.Configuration;
-using Toggly.FeatureManagement.Web.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
@@ -73,6 +68,20 @@ builder.Services.AddScoped<HttpClient>(sp =>
         client.BaseAddress = new Uri($"{request.Scheme}://{request.Host}/");
     return client;
 });
+builder.Services.AddToggly(options =>
+{
+    options.AppKey = backendKey ?? "";
+    options.Environment = settings.Environment;
+    options.UseSignedDefinitions = !string.IsNullOrWhiteSpace(backendKey);
+    options.UndefinedEnabledOnDevelopment = false;
+    options.RegisterContextsOnStartup = !string.IsNullOrWhiteSpace(backendKey);
+    options.DefinitionsBaseUrl = definitionsUrl;
+    if (string.IsNullOrWhiteSpace(backendKey) || denyNetwork)
+    {
+        options.DefinitionsBaseUrl = "http://127.0.0.1:1/";
+        options.BaseUrl = "http://127.0.0.1:1/";
+    }
+});
 builder.Services.AddScoped<DemoFilterMatrix>();
 builder.Services.AddScoped<IFilterMatrixMerge, ServerFilterMatrixMerge>();
 builder.Services.AddTogglyEntityContext<DemoOrder>(
@@ -88,34 +97,9 @@ builder.Services.AddTogglyEntityContext<DemoOrder>(
             ["Total"] = order.Total,
         })
 );
-builder.Services.AddToggly(options =>
-{
-    options.AppKey = backendKey ?? "";
-    options.Environment = settings.Environment;
-    options.UseSignedDefinitions = !string.IsNullOrWhiteSpace(backendKey);
-    options.UndefinedEnabledOnDevelopment = false;
-    options.RegisterContextsOnStartup = !string.IsNullOrWhiteSpace(backendKey);
-    options.DefinitionsBaseUrl = definitionsUrl;
-    if (string.IsNullOrWhiteSpace(backendKey) || denyNetwork)
-    {
-        options.DefinitionsBaseUrl = "http://127.0.0.1:1/";
-        options.BaseUrl = "http://127.0.0.1:1/";
-    }
-});
-builder.Services.AddTogglyHttpContext();
-builder
-    .Services.AddTogglyFeatureManagement()
-    .AddFeatureFilter<BrowserFamilyFilter>()
-    .AddFeatureFilter<BrowserLanguageFilter>()
-    .AddFeatureFilter<CountryFilter>()
-    .AddFeatureFilter<DeviceTypeFilter>()
-    .AddFeatureFilter<OSFilter>()
-    .AddFeatureFilter<UserClaimsFilter>()
-    .WithTogglyTargeting<BlazorTargetingContext>();
+builder.Services.AddTogglyBlazorServer();
 builder.Services.AddSingleton<BlazorTargetingContext>();
 builder.Services.AddSingleton<ITargetingContextAccessor, CircuitAndRequestTargetingAccessor>();
-builder.Services.AddScoped<IFeatureSession, ServerFeatureSession>();
-builder.Services.AddScoped<CircuitHandler, FeatureCircuitHandler>();
 if (denyNetwork)
 {
     // SDK HTTP/gRPC is denied. Its direct WebSocket bypasses this factory, so
