@@ -50,6 +50,38 @@ const corsHeaders = {
     'content-type, x-toggly-sdk, x-toggly-sdk-version, if-none-match',
 };
 
+const signedDefinitions = [
+  {
+    featureKey: 'filter-targeting',
+    filters: [
+      {
+        name: 'Targeting',
+        parameters: { 'Audience.Users:0': 'alice' },
+      },
+    ],
+  },
+  {
+    featureKey: 'filter-always-on',
+    filters: [{ name: 'AlwaysOn', parameters: {} }],
+  },
+  {
+    featureKey: 'filter-time-window',
+    filters: [
+      {
+        name: 'TimeWindow',
+        parameters: {
+          StartDate: '2020-01-01T00:00:00Z',
+          EndDate: '2099-12-31T23:59:59Z',
+        },
+      },
+    ],
+  },
+  {
+    featureKey: 'new-dashboard',
+    filters: [{ name: 'AlwaysOn', parameters: {} }],
+  },
+];
+
 const fixture = createServer((request, response) => {
   if (request.method === 'OPTIONS') {
     response.writeHead(204, corsHeaders);
@@ -59,7 +91,9 @@ const fixture = createServer((request, response) => {
   const url = new URL(request.url ?? '/', definitionsBase);
   const identity =
     url.searchParams.get('userId') ?? url.searchParams.get('u') ?? '';
-  const body = JSON.stringify(variantDefsForIdentity(identity));
+  const body = url.pathname.includes('/definitions-signed/')
+    ? JSON.stringify(signedDefinitions)
+    : JSON.stringify(variantDefsForIdentity(identity));
   response.writeHead(200, {
     ...corsHeaders,
     'Content-Type': 'application/json',
@@ -78,7 +112,10 @@ globalThis.fetch = async (input) => {
   const url = new URL(href);
   const identity =
     url.searchParams.get('userId') ?? url.searchParams.get('u') ?? '';
-  return new Response(JSON.stringify(variantDefsForIdentity(identity)), {
+  const payload = url.pathname.includes('/definitions-signed/')
+    ? signedDefinitions
+    : variantDefsForIdentity(identity);
+  return new Response(JSON.stringify(payload), {
     status: 200,
     headers: { 'content-type': 'application/json' },
   });
@@ -146,6 +183,7 @@ const run = (args, extra = {}) =>
       TOGGLY_DEFINITIONS_BASE_URI: definitionsBase,
       TOGGLY_METRICS_BASE_URL: definitionsBase,
       TOGGLY_BROWSER_TELEMETRY: 'false',
+      TOGGLY_VERIFY_SIGNATURES: 'false',
       ...extra,
     },
     stdio: 'inherit',
@@ -164,6 +202,7 @@ const server = spawn(process.execPath, ['dist/server/entry.mjs'], {
     TOGGLY_DEFINITIONS_BASE_URI: definitionsBase,
     TOGGLY_METRICS_BASE_URL: definitionsBase,
     TOGGLY_BROWSER_TELEMETRY: 'false',
+    TOGGLY_VERIFY_SIGNATURES: 'false',
   },
   stdio: 'inherit',
 });
@@ -211,7 +250,18 @@ try {
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', (message) => errors.push(String(message)));
-    await page.goto(`${origin}/?preset=matching`);
+    await page.goto(`${origin}/?preset=matching`, {
+      headers: { cookie: 'sample-preset=matching' },
+    });
+    await page.waitForSelector('#filter-matrix');
+    const ssrTargeting = page.locator(
+      'tr[data-filter="filter-targeting"] [data-toggly-state]',
+    );
+    assert.equal(
+      await ssrTargeting.getAttribute('data-toggly-state'),
+      'on',
+      'SSR filter matrix must show filter-targeting ON for harness URL/cookie',
+    );
     await page.waitForSelector('#live-filter-checklist');
     await page.waitForFunction(
       () =>

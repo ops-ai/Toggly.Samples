@@ -457,3 +457,20 @@ test("fresh browser process restores verified definitions offline and rejects co
     await rm(profile, { recursive: true, force: true });
   }
 });
+
+test("LiveE2E harness preset=matching enables filter-country on SSR filters matrix", async () => {
+  const response = await fetch(
+    `${origin}/ssr/filters?preset=matching`,
+    { headers: { "x-demo-preset": "matching" } },
+  );
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(
+    html,
+    /data-flag="filter-country"[\s\S]*?data-toggly-state="on"/,
+  );
+  assert.match(
+    html,
+    /data-flag="filter-targeting"[\s\S]*?data-toggly-state="on"/,
+  );
+});

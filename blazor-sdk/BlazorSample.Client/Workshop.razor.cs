@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
 using Toggly.FeatureManagement.Blazor;
 using Toggly.FeatureManagement.Client;
@@ -45,7 +46,7 @@ public partial class Workshop
         "filter-os",
         "filter-context-property",
     ];
-    private static readonly HashSet<string> UnsupportedServer =
+    private static readonly HashSet<string> HttpFilterMatrixServer =
     [
         "filter-user-claims",
         "filter-country",
@@ -90,17 +91,41 @@ public partial class Workshop
 
     protected override async Task OnParametersSetAsync()
     {
+        var query = Navigation.ToAbsoluteUri(Navigation.Uri).Query;
         if (Mode == "ssr")
-            await SetPreset(
-                Navigation
-                    .ToAbsoluteUri(Navigation.Uri)
-                    .Query.Contains("preset=matching", StringComparison.Ordinal)
-            );
+        {
+            if (query.Contains("preset=matching", StringComparison.Ordinal))
+                await SetPreset(true);
+            else if (
+                query.Contains("preset=nonmatching", StringComparison.Ordinal)
+                || query.Contains("preset=non-matching", StringComparison.Ordinal)
+            )
+                await SetPreset(false);
+            else
+                await SetAnonymous();
+        }
+        else if (query.Contains("preset=matching", StringComparison.Ordinal))
+            await SetPreset(true);
+        else if (
+            query.Contains("preset=nonmatching", StringComparison.Ordinal)
+            || query.Contains("preset=non-matching", StringComparison.Ordinal)
+        )
+            await SetPreset(false);
+        else if (query.Contains("preset=anonymous", StringComparison.Ordinal))
+            await SetAnonymous();
         else
             await Evaluate();
     }
 
     // Demo presets change only this request, circuit or browser session.
+    private async Task SetAnonymous()
+    {
+        Identity = "anonymous";
+        CurrentOrder = StandardOrder;
+        await Features.SetContextAsync(new("", [], new Dictionary<string, string> { { "role", "user" } }));
+        await Evaluate();
+    }
+
     private async Task SetPreset(bool matching)
     {
         Identity = matching ? "alice" : "bob";
@@ -120,12 +145,68 @@ public partial class Workshop
         foreach (
             var key in Flags
                 .Concat(Filters)
-                .Where(key => OperatingSystem.IsBrowser() || !UnsupportedServer.Contains(key))
+                .Where(key => OperatingSystem.IsBrowser() || !HttpFilterMatrixServer.Contains(key))
         )
             Values[key] = await Features.EvaluateAsync(
                 [key],
                 entity: key is "ExpressCheckout" or "filter-context-property" ? CurrentOrder : null
             );
+
+        if (!OperatingSystem.IsBrowser() && Section == "filters")
+        {
+            if (Mode == "ssr")
+                await MergeSsrFilterMatrixAsync();
+            else
+                await MergeServerFilterMatrixAsync();
+        }
+    }
+
+    private string FilterMatrixPreset() =>
+        Identity == "alice"
+            ? "matching"
+            : Identity == "bob"
+                ? "nonmatching"
+                : "anonymous";
+
+    private void ApplyHttpFilterMatrix(Dictionary<string, bool>? matrix)
+    {
+        if (matrix is null)
+            return;
+        foreach (var key in Filters)
+        {
+            if (HttpFilterMatrixServer.Contains(key))
+                Values[key] = matrix.GetValueOrDefault(key);
+        }
+    }
+
+    private async Task MergeSsrFilterMatrixAsync()
+    {
+        try
+        {
+            var matrix = await FilterMatrix.EvaluatePresetAsync(FilterMatrixPreset());
+            ApplyHttpFilterMatrix(matrix);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
+    }
+
+    private async Task MergeServerFilterMatrixAsync()
+    {
+        try
+        {
+            var matrix = await Http.GetFromJsonAsync<Dictionary<string, bool>>(
+                Navigation.ToAbsoluteUri(
+                    $"/api/demo-filter-matrix?preset={FilterMatrixPreset()}"
+                )
+            );
+            ApplyHttpFilterMatrix(matrix);
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
     }
 
     private async Task Refresh()
@@ -169,7 +250,11 @@ public partial class Workshop
                 or "filter-browser-language"
                 or "filter-device-type"
                 or "filter-os"
-            ? "Browser endpoint evaluation; not built into trusted Blazor circuit adapter"
+            ? OperatingSystem.IsBrowser()
+                ? "Browser evaluated-signed endpoint with real request metadata"
+                : Mode == "ssr"
+                    ? "SSR prerender: in-process DemoFilterMatrix on this HTTP request"
+                    : "Interactive server: loopback /api/demo-filter-matrix"
             : "Trusted server + signed browser definitions";
 
     public void Dispose()

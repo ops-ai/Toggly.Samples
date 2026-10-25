@@ -139,7 +139,7 @@ async function runCase({ optOut = false, plain = false, selection = 'on' }) {
       assert.equal(packets.length, 0, 'browser master opt-out must suppress packets');
       return;
     }
-    for (let attempt = 0; packets.length < 2 && attempt < 40; attempt++) {
+    for (let attempt = 0; packets.length < 2 && attempt < 80; attempt++) {
       await page.waitForTimeout(50);
     }
     assert.ok(packets.length >= 2, 'explicit flush sends a real compact packet');

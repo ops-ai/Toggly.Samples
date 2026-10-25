@@ -253,10 +253,11 @@ jobs:
           set -euo pipefail
           samples_ref="${{ github.event.pull_request.head.sha }}"
           pr_sample_ids="${{ steps.samples.outputs.ids }}"
+          pack_tier="smoke"
           body="$(jq -n \
             --arg samplesRef "$samples_ref" \
             --arg prSampleIds "$pr_sample_ids" \
-            --arg packTier "smoke" \
+            --arg packTier "$pack_tier" \
             '{
               templateParameters: {
                 samplesRef: $samplesRef,

@@ -7,7 +7,10 @@ defmodule Showcase.Endpoint do
     signing_salt: "showcase-session",
     same_site: "Lax"
   ]
-  socket("/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]])
+  socket("/live", Phoenix.LiveView.Socket,
+    websocket: [connect_info: [:x_headers, session: @session_options]]
+  )
+
   plug(Plug.Static, at: "/", from: :toggly_showcase, only: ~w(assets))
   plug(Plug.RequestId)
 

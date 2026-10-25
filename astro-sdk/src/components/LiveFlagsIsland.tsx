@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   $flags,
   initTogglyClient,
+  setIdentity,
 } from '@ops-ai/astro-feature-flags-toggly/client/store';
 import {
   liveSnapshotKeys,
@@ -10,7 +11,10 @@ import {
   type LiveSnapshot,
 } from '../sample/live-flags.ts';
 import { filterCatalog } from '../sample/catalog.ts';
-import { createTogglyRequestContext } from '../toggly-config';
+import {
+  createTogglyRequestContext,
+  parseDocumentCookies,
+} from '../toggly-config';
 
 type Mode = 'snapshot' | 'filters';
 
@@ -27,22 +31,62 @@ export default function LiveFlagsIsland({ mode }: { mode: Mode }) {
   );
 
   useEffect(() => {
+    let unsubscribe = () => {};
+    let active = true;
+
     const syncPresetToClientStore = async () => {
-      const base = (window as Window & { __TOGGLY_CONFIG__?: Record<string, unknown> })
-        .__TOGGLY_CONFIG__;
+      const base = (
+        window as Window & { __TOGGLY_CONFIG__?: Record<string, unknown> }
+      ).__TOGGLY_CONFIG__;
       if (!base?.appKey) {
+        if (!active) return;
+        unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);
         return;
       }
-      const ctx = createTogglyRequestContext(new URL(window.location.href));
-      await initTogglyClient({
-        ...base,
-        identity: ctx.identity,
-        claims: ctx.claims,
-      });
+
+      const url = new URL(window.location.href);
+      const cookies = parseDocumentCookies();
+      const hasPreset =
+        url.searchParams.has('preset') ||
+        Boolean(cookies?.get('sample-preset')) ||
+        Boolean(cookies?.get('toggly-preset'));
+      const hasContextOverride =
+        url.searchParams.has('identity') ||
+        url.searchParams.has('role') ||
+        url.searchParams.has('order');
+      if (!hasPreset && !hasContextOverride && mode === 'snapshot') {
+        if (!active) return;
+        unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);
+        return;
+      }
+
+      const ctx = createTogglyRequestContext(url, { cookies });
+
+      try {
+        await initTogglyClient({
+          ...base,
+          identity: ctx.identity,
+          claims: ctx.claims,
+        });
+      } catch {
+        // Still subscribe so programmatic refresh / store updates can recover.
+      }
+
+      if (!active) return;
+
+      if (ctx.identity) {
+        setIdentity(ctx.identity);
+      }
+
+      unsubscribe = subscribeLiveSnapshot($flags, setSnapshot);
+      setSnapshot(readLiveSnapshot($flags.get()));
     };
 
     void syncPresetToClientStore();
-    return subscribeLiveSnapshot($flags, setSnapshot);
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, []);
 
   if (mode === 'filters') {
