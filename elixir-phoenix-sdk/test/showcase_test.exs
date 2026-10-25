@@ -71,8 +71,7 @@ defmodule ShowcaseTest do
     follow_up =
       build_conn()
       |> Plug.Conn.fetch_cookies()
-      |> Plug.Conn.put_private(:plug_session, session)
-      |> Plug.Conn.fetch_session()
+      |> init_test_session(session)
       |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
 
     assert Plug.Conn.get_session(follow_up, "sample_preset") == "matching"
