@@ -1,9 +1,10 @@
 using BlazorSample.Client;
 using BlazorSample.Components;
 using BlazorSample.Features;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.Extensions.Http;
-using Microsoft.FeatureManagement.FeatureFilters;
 using Toggly.FeatureManagement;
+using Toggly.FeatureManagement.Blazor;
 using Toggly.FeatureManagement.Blazor.Server;
 using Toggly.FeatureManagement.Configuration;
 using Toggly.FeatureManagement.Web.Configuration;
@@ -100,7 +101,9 @@ builder.Services.AddTogglyEntityContext<DemoOrder>(
             ["Total"] = order.Total,
         })
 );
-builder.Services.AddTogglyBlazorServer();
+// AddTogglyWeb already registers feature management + HTTP filters. Register Blazor session only.
+builder.Services.AddScoped<IFeatureSession, ServerFeatureSession>();
+builder.Services.AddScoped<CircuitHandler, FeatureCircuitHandler>();
 if (denyNetwork)
 {
     // SDK HTTP/gRPC is denied. Its direct WebSocket bypasses this factory, so

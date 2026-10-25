@@ -7,6 +7,13 @@ import { orders, presets, type PresetName } from './sample/catalog.ts';
  * falling back to these booleans instead of crashing or inventing a network
  * response. Live definitions replace them once TOGGLY_APP_KEY is set.
  */
+function resolveVerifySignatures() {
+  const runtimeEnvironment = (
+    globalThis as { process?: { env?: Record<string, string | undefined> } }
+  ).process?.env;
+  return runtimeEnvironment?.TOGGLY_VERIFY_SIGNATURES !== 'false';
+}
+
 export function createTogglyOptions(
   appKey: string | undefined,
   environment = 'Production',
@@ -46,7 +53,7 @@ export function createTogglyOptions(
     // stays deterministic (no WebSocket); Home still subscribes to `$flags`
     // so programmatic refreshFlags / store updates refresh the UI.
     enableLiveUpdates: Boolean(appKey),
-    verifySignatures: true,
+    verifySignatures: resolveVerifySignatures(),
     enableUsageTracking: false,
     enableMetrics: false,
     telemetryAttachProcessHandlers: false,

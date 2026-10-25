@@ -126,7 +126,7 @@ try {
     const value =
       row.key === 'filter-context-property'
         ? await entityClient.getFlag(row.key, false, order)
-        : await entityClient.getFlag(row.key, false);
+        : await apiClient.getFlag(row.key, false);
     filterRows.push({
       ...row,
       value,

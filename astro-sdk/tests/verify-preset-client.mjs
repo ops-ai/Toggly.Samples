@@ -146,6 +146,7 @@ const run = (args, extra = {}) =>
       TOGGLY_DEFINITIONS_BASE_URI: definitionsBase,
       TOGGLY_METRICS_BASE_URL: definitionsBase,
       TOGGLY_BROWSER_TELEMETRY: 'false',
+      TOGGLY_VERIFY_SIGNATURES: 'false',
       ...extra,
     },
     stdio: 'inherit',
@@ -164,6 +165,7 @@ const server = spawn(process.execPath, ['dist/server/entry.mjs'], {
     TOGGLY_DEFINITIONS_BASE_URI: definitionsBase,
     TOGGLY_METRICS_BASE_URL: definitionsBase,
     TOGGLY_BROWSER_TELEMETRY: 'false',
+    TOGGLY_VERIFY_SIGNATURES: 'false',
   },
   stdio: 'inherit',
 });
@@ -211,7 +213,18 @@ try {
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', (message) => errors.push(String(message)));
-    await page.goto(`${origin}/?preset=matching`);
+    await page.goto(`${origin}/?preset=matching`, {
+      headers: { cookie: 'sample-preset=matching' },
+    });
+    await page.waitForSelector('#filter-matrix');
+    const ssrTargeting = page.locator(
+      'tr[data-filter="filter-targeting"] [data-toggly-state]',
+    );
+    assert.equal(
+      await ssrTargeting.getAttribute('data-toggly-state'),
+      'on',
+      'SSR filter matrix must show filter-targeting ON for harness URL/cookie',
+    );
     await page.waitForSelector('#live-filter-checklist');
     await page.waitForFunction(
       () =>

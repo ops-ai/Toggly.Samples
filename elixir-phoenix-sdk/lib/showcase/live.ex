@@ -37,13 +37,7 @@ defmodule Showcase.Live do
     end
   end
 
-  defp cookie_preset(socket) do
-    case get_connect_info(socket, :cookies) do
-      %{"sample-preset" => value} when is_binary(value) and value != "" -> value
-      %{"toggly-preset" => value} when is_binary(value) and value != "" -> value
-      _ -> nil
-    end
-  end
+  defp cookie_preset(socket), do: Showcase.Cookies.preset_from_socket(socket)
 
   defp normalize_preset(mode) do
     case mode do

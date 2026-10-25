@@ -8,7 +8,7 @@
     "build": "astro build",
     "build:ssr": "SAMPLE_OUTPUT=server astro build",
     "check": "astro check",
-    "test": "node --experimental-strip-types tests/verify-request-context.mjs && node tests/verify-evaluations.mjs && node --experimental-strip-types tests/verify-live-refresh.mjs && node --experimental-strip-types tests/verify-preset-client.mjs && node tests/verify.mjs && node tests/verify-telemetry.mjs"
+    "test": "node --experimental-strip-types tests/verify-request-context.mjs && node tests/verify-evaluations.mjs && node --experimental-strip-types tests/verify-filter-matrix-ssr.mjs && node --experimental-strip-types tests/verify-live-refresh.mjs && node --experimental-strip-types tests/verify-preset-client.mjs && node tests/verify.mjs && node tests/verify-telemetry.mjs"
   },
   "dependencies": {
     "@astrojs/node": "11.1.7",
