@@ -284,6 +284,24 @@ try {
 
     assert.deepEqual(errors, [], 'preset client island must hydrate without errors');
 
+    const harnessContext = await browser.newContext({
+      extraHTTPHeaders: { 'x-demo-preset': 'matching' },
+    });
+    await harnessContext.addCookies([
+      { name: 'sample-preset', value: 'matching', url: origin },
+    ]);
+    const harnessPage = await harnessContext.newPage();
+    await harnessPage.goto(`${origin}/`);
+    await harnessPage.waitForSelector('#filter-matrix');
+    assert.equal(
+      await harnessPage
+        .locator('tr[data-filter="filter-targeting"] [data-toggly-state]')
+        .getAttribute('data-toggly-state'),
+      'on',
+      'harness fingerprint (no ?preset=) must SSR filter-targeting ON',
+    );
+    await harnessContext.close();
+
     await page.goto(`${origin}/?preset=nonmatching`);
     await page.waitForSelector('#live-filter-checklist');
     await page.waitForFunction(

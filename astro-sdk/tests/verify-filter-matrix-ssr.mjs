@@ -89,8 +89,8 @@ const order = {
 };
 
 try {
-  // Home SSR filter rows use entityClient (definitions-signed + local eval).
-  assert.equal(await entityClient.getFlag('filter-targeting'), true);
+  // index.astro uses apiClient (edge evaluated variants) for targeting claims.
+  assert.equal(await apiClient.getFlag('filter-targeting'), true);
   assert.equal(await entityClient.getFlag('filter-context-property', false, order), true);
 } finally {
   await apiClient.close({ timeoutMs: 2000 });

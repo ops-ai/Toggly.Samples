@@ -27,7 +27,10 @@ defmodule Showcase.Live do
   def resolve_preset(params, session, socket) do
     case Map.get(params, "preset") do
       nil ->
-        case session["sample_preset"] || cookie_preset(socket) || header_preset(socket) do
+        case session["sample_preset"] ||
+               preset_from_session_context(session) ||
+               cookie_preset(socket) ||
+               header_preset(socket) do
           nil -> "anonymous"
           value -> normalize_preset(value)
         end
@@ -36,6 +39,14 @@ defmodule Showcase.Live do
         normalize_preset(value)
     end
   end
+
+  defp preset_from_session_context(%{"toggly_context" => %{"identity" => "alice"}}),
+    do: "matching"
+
+  defp preset_from_session_context(%{"toggly_context" => %{"identity" => "bob"}}),
+    do: "nonmatching"
+
+  defp preset_from_session_context(_), do: nil
 
   defp header_preset(socket) do
     case Phoenix.LiveView.get_connect_info(socket, :x_headers) do

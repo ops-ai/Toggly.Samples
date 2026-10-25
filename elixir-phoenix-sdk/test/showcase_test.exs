@@ -54,6 +54,31 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-targeting", "ON")
   end
 
+  test "preset plug keeps session when a follow-up request omits preset headers" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    session = Plug.Conn.get_session(conn)
+
+    follow_up =
+      build_conn()
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.put_private(:plug_session, session)
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(follow_up, "sample_preset") == "matching"
+    assert get_in(Plug.Conn.get_session(follow_up, "toggly_context"), ["identity"]) == "alice"
+  end
+
   test "preset plug stores toggly_context for connected Toggly on_mount" do
     conn =
       build_conn()

@@ -134,6 +134,10 @@
     else if (Section == "filters")
     {
         <h2>Filter matrix</h2>
+        <p>
+            Active identity:
+            <strong data-testid="filter-identity">@Identity</strong>
+        </p>
         @if (!string.IsNullOrEmpty(Error))
         {
             <p role="alert" data-testid="filter-matrix-error">@Error</p>
