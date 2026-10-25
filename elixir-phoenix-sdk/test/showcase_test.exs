@@ -54,6 +54,17 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-targeting", "ON")
   end
 
+  test "preset plug stores toggly_context for connected Toggly on_mount" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    conn = Showcase.PresetCookiePlug.call(conn, Showcase.PresetCookiePlug.init([]))
+    assert get_session(conn, "sample_preset") == "matching"
+    assert get_in(get_session(conn, "toggly_context"), ["identity"]) == "alice"
+  end
+
   test "separate sessions, matching/nonmatching filters and Order.Vip" do
     {:ok, alice, _} = live(build_conn(), "/?preset=matching")
     {:ok, bob, _} = live(build_conn(), "/?preset=matching")

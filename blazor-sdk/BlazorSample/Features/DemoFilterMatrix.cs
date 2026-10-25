@@ -29,19 +29,23 @@ public sealed class DemoFilterMatrix(IFeatureManager features, IHttpContextAcces
         var values = new Dictionary<string, bool>(StringComparer.Ordinal);
         foreach (var key in Keys)
         {
-            if (key == "filter-country")
+            if (DemoHttpFilters.TryEvaluate(key, persona, applyHeaders) is bool httpValue)
             {
-                // AddTogglyBlazorServer registers circuit/native filters only (see package README).
-                // Canonical filter-country is Country US at 100%; persona sets CF-IPCountry for SSR.
-                values[key] = applyHeaders
-                    && string.Equals(persona.Country, "US", StringComparison.OrdinalIgnoreCase);
+                values[key] = httpValue;
                 continue;
             }
 
-            values[key] =
-                key == "filter-context-property"
-                    ? await features.IsEnabledAsync(key, order)
-                    : await features.IsEnabledAsync(key);
+            try
+            {
+                values[key] =
+                    key == "filter-context-property"
+                        ? await features.IsEnabledAsync(key, order)
+                        : await features.IsEnabledAsync(key);
+            }
+            catch (FeatureManagementException)
+            {
+                values[key] = false;
+            }
         }
 
         return values;

@@ -458,13 +458,19 @@ test("fresh browser process restores verified definitions offline and rejects co
   }
 });
 
-test("LiveE2E harness preset=matching enables filter-country via demo matrix API", async () => {
+test("LiveE2E harness preset=matching enables filter-country on SSR filters matrix", async () => {
   const response = await fetch(
-    `${origin}/api/demo-filter-matrix?preset=matching`,
+    `${origin}/ssr/filters?preset=matching`,
     { headers: { "x-demo-preset": "matching" } },
   );
   assert.equal(response.status, 200);
-  const matrix = await response.json();
-  assert.equal(matrix["filter-country"], true);
-  assert.equal(matrix["filter-targeting"], true);
+  const html = await response.text();
+  assert.match(
+    html,
+    /data-flag="filter-country"[\s\S]*?data-toggly-state="on"/,
+  );
+  assert.match(
+    html,
+    /data-flag="filter-targeting"[\s\S]*?data-toggly-state="on"/,
+  );
 });

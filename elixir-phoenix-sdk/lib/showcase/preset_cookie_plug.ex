@@ -8,8 +8,19 @@ defmodule Showcase.PresetCookiePlug do
     conn = fetch_cookies(conn)
 
     case preset_from_conn(conn) do
-      value when is_binary(value) and value != "" -> put_session(conn, "sample_preset", value)
-      _ -> conn
+      value when is_binary(value) and value != "" ->
+        normalized =
+          case value do
+            "non-matching" -> "nonmatching"
+            other -> other
+          end
+
+        conn
+        |> put_session("sample_preset", normalized)
+        |> put_session("toggly_context", Showcase.Context.preset(normalized))
+
+      _ ->
+        conn
     end
   end
 
