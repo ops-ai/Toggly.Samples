@@ -6,6 +6,8 @@ using Microsoft.FeatureManagement.FeatureFilters;
 using Toggly.FeatureManagement;
 using Toggly.FeatureManagement.Blazor.Server;
 using Toggly.FeatureManagement.Configuration;
+using Toggly.FeatureManagement.Web.Configuration;
+using Toggly.FeatureManagement.Web.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
@@ -97,6 +99,15 @@ builder.Services.AddTogglyEntityContext<DemoOrder>(
             ["Total"] = order.Total,
         })
 );
+builder.Services.AddTogglyHttpContext();
+builder
+    .Services.AddTogglyFeatureManagement()
+    .AddFeatureFilter<BrowserFamilyFilter>()
+    .AddFeatureFilter<BrowserLanguageFilter>()
+    .AddFeatureFilter<CountryFilter>()
+    .AddFeatureFilter<DeviceTypeFilter>()
+    .AddFeatureFilter<OSFilter>()
+    .AddFeatureFilter<UserClaimsFilter>();
 builder.Services.AddTogglyBlazorServer();
 builder.Services.AddSingleton<BlazorTargetingContext>();
 builder.Services.AddSingleton<ITargetingContextAccessor, CircuitAndRequestTargetingAccessor>();

@@ -27,7 +27,9 @@ public static class FilterMatrixApi
             {
                 var preset =
                     http.Request.Query["preset"].FirstOrDefault()
+                    ?? http.Request.Headers["x-demo-preset"].FirstOrDefault()
                     ?? http.Request.Cookies["sample-preset"]
+                    ?? http.Request.Cookies["toggly-preset"]
                     ?? "anonymous";
                 return Results.Json(await matrix.EvaluatePresetAsync(preset));
             }

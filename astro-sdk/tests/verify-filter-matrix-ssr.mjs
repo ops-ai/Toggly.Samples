@@ -8,11 +8,19 @@ import {
 import { createTogglyServerClient } from '@ops-ai/astro-feature-flags-toggly';
 
 /**
- * index.astro evaluates targeting via apiClient (evaluated-variants + identity)
- * and ContextProperty via entityClient (definitions-signed + local eval).
+ * index.astro filter matrix rows use entityClient (definitions-signed + local eval).
  */
 
 const definitions = [
+  {
+    featureKey: 'filter-targeting',
+    filters: [
+      {
+        name: 'Targeting',
+        parameters: { 'Audience.Users:0': 'alice' },
+      },
+    ],
+  },
   {
     featureKey: 'filter-context-property',
     filters: [
@@ -81,7 +89,8 @@ const order = {
 };
 
 try {
-  assert.equal(await apiClient.getFlag('filter-targeting'), true);
+  // Home SSR filter rows use entityClient (definitions-signed + local eval).
+  assert.equal(await entityClient.getFlag('filter-targeting'), true);
   assert.equal(await entityClient.getFlag('filter-context-property', false, order), true);
 } finally {
   await apiClient.close({ timeoutMs: 2000 });

@@ -14,7 +14,9 @@ public sealed class DemoFilterMatrix(IFeatureManager features, IHttpContextAcces
 
         var resolved =
             http.Request.Query["preset"].FirstOrDefault()
+            ?? http.Request.Headers["x-demo-preset"].FirstOrDefault()
             ?? http.Request.Cookies["sample-preset"]
+            ?? http.Request.Cookies["toggly-preset"]
             ?? preset;
         var (persona, applyHeaders) = DemoPersona.FromPreset(resolved);
         if (http.Request.Query["order"] == "standard")

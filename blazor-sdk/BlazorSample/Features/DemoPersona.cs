@@ -53,7 +53,9 @@ public sealed record DemoPersona(
     {
         var preset =
             context.Request.Query["preset"].FirstOrDefault()
-            ?? context.Request.Cookies["sample-preset"];
+            ?? context.Request.Headers["x-demo-preset"].FirstOrDefault()
+            ?? context.Request.Cookies["sample-preset"]
+            ?? context.Request.Cookies["toggly-preset"];
         if (string.IsNullOrWhiteSpace(preset))
         {
             persona = Anonymous;
@@ -72,7 +74,9 @@ public sealed record DemoPersona(
     {
         var preset =
             context.Request.Query["preset"].FirstOrDefault()
-            ?? context.Request.Cookies["sample-preset"];
+            ?? context.Request.Headers["x-demo-preset"].FirstOrDefault()
+            ?? context.Request.Cookies["sample-preset"]
+            ?? context.Request.Cookies["toggly-preset"];
         if (string.IsNullOrWhiteSpace(preset))
             return;
 

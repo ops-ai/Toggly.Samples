@@ -1,5 +1,6 @@
 defmodule Showcase.Live do
   use Phoenix.LiveView
+  import Phoenix.LiveView, only: [get_connect_info: 2]
   import Toggly.LiveView, only: [feature: 1]
 
   @filters ~w(filter-always-on filter-percentage filter-targeting filter-user-claims filter-time-window filter-country filter-browser-family filter-browser-language filter-device-type filter-os filter-context-property)
@@ -27,13 +28,26 @@ defmodule Showcase.Live do
   defp preset_from_mount(params, session, socket) do
     case Map.get(params, "preset") do
       nil ->
-        case session["sample_preset"] || cookie_preset(socket) do
+        case session["sample_preset"] || cookie_preset(socket) || header_preset(socket) do
           nil -> "anonymous"
           value -> normalize_preset(value)
         end
 
       value ->
         normalize_preset(value)
+    end
+  end
+
+  defp header_preset(socket) do
+    case get_connect_info(socket, :x_headers) do
+      headers when is_list(headers) ->
+        Enum.find_value(headers, fn
+          {"x-demo-preset", value} when is_binary(value) and value != "" -> value
+          _ -> nil
+        end)
+
+      _ ->
+        nil
     end
   end
 

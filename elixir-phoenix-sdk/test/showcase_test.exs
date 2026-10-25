@@ -43,6 +43,17 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-targeting", "ON")
   end
 
+  test "mount reads x-demo-preset header when query and cookie omit preset (LiveE2E fingerprint)" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    {:ok, view, _} = live(conn, "/")
+    assert has_element?(view, "#current-identity", "alice")
+    assert has_element?(view, "#filter-targeting", "ON")
+  end
+
   test "separate sessions, matching/nonmatching filters and Order.Vip" do
     {:ok, alice, _} = live(build_conn(), "/?preset=matching")
     {:ok, bob, _} = live(build_conn(), "/?preset=matching")

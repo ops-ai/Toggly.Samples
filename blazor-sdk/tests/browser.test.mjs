@@ -79,6 +79,18 @@ test("prerendered controls wait for real interactive rendering before accepting 
   }
 });
 
+test("LiveE2E harness URL preset=matching enables filter-country on SSR filter matrix", async () => {
+  const context = await browser.newContext();
+  try {
+    const page = await context.newPage();
+    await page.goto(`${origin}/ssr/filters?preset=matching`);
+    await matrixResult(page, "filter-country", "ON");
+    await matrixResult(page, "filter-targeting", "ON");
+  } finally {
+    await context.close();
+  }
+});
+
 test("matching and non-matching presets select their Order in SSR and interactive filter matrices", async () => {
   const context = await browser.newContext();
   try {
@@ -94,6 +106,7 @@ test("matching and non-matching presets select their Order in SSR and interactiv
         true,
       );
       await matrixResult(page, "filter-targeting", expected);
+      await matrixResult(page, "filter-country", name === "matching" ? "ON" : "OFF");
       await matrixResult(page, "filter-context-property", expected);
     }
     await ready(page, "server");
