@@ -66,8 +66,8 @@ defmodule ShowcaseTest do
       |> Plug.Conn.fetch_session()
       |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
 
-    assert get_session(conn, "sample_preset") == "matching"
-    assert get_in(get_session(conn, "toggly_context"), ["identity"]) == "alice"
+    assert Plug.Conn.get_session(conn, "sample_preset") == "matching"
+    assert get_in(Plug.Conn.get_session(conn, "toggly_context"), ["identity"]) == "alice"
   end
 
   test "separate sessions, matching/nonmatching filters and Order.Vip" do
