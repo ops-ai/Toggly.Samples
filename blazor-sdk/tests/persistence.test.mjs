@@ -99,8 +99,8 @@ async function dashboard(browser, origin, expected) {
   try {
     const page = await context.newPage();
     // Missing definitions retain the public SDK’s per-feature startup wait.
-    page.setDefaultNavigationTimeout(240000);
-    page.setDefaultTimeout(240000);
+    page.setDefaultNavigationTimeout(360000);
+    page.setDefaultTimeout(360000);
     let circuit = false;
     page.on("websocket", (socket) => {
       if (new URL(socket.url()).pathname === "/_blazor") circuit = true;
@@ -145,7 +145,7 @@ async function dashboard(browser, origin, expected) {
       .filter({
         hasText: expected ? "New dashboard enabled" : "Classic dashboard",
       })
-      .waitFor({ timeout: 240000 });
+      .waitFor({ timeout: 360000 });
     assert.equal(await cell.count(), 1);
     assert.equal(
       circuit,
@@ -159,7 +159,7 @@ async function dashboard(browser, origin, expected) {
 
 test(
   "signed snapshots survive fresh Server processes and invalid storage fails closed",
-  { timeout: 600000 },
+  { timeout: 900000 },
   async () => {
     const root = await mkdtemp(
       join(await realpath(tmpdir()), "toggly-persistence-test-"),

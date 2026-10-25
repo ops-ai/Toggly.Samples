@@ -37,6 +37,7 @@ defmodule ShowcaseTest do
     conn =
       build_conn()
       |> Plug.Conn.put_req_header("cookie", "sample-preset=matching")
+      |> init_test_session(%{})
 
     {:ok, view, _} = live(conn, "/")
     assert has_element?(view, "#filter-targeting", "ON")
