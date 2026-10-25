@@ -111,7 +111,7 @@ builder
     .AddFeatureFilter<DeviceTypeFilter>()
     .AddFeatureFilter<OSFilter>()
     .AddFeatureFilter<UserClaimsFilter>()
-    .WithTogglyTargeting<CircuitAndRequestTargetingAccessor>();
+    .WithTogglyTargeting<BlazorTargetingContext>();
 builder.Services.AddSingleton<BlazorTargetingContext>();
 builder.Services.AddSingleton<ITargetingContextAccessor, CircuitAndRequestTargetingAccessor>();
 builder.Services.AddScoped<IFeatureSession, ServerFeatureSession>();
