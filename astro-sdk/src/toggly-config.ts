@@ -91,7 +91,6 @@ function normalizePreset(raw: string | null | undefined): PresetName | null {
   if (!raw) return null;
   if (raw === 'matching') return 'matching';
   if (raw === 'nonmatching' || raw === 'non-matching') return 'nonmatching';
-  if (raw === 'anonymous') return 'anonymous';
   return null;
 }
 
@@ -144,13 +143,27 @@ export function createTogglyRequestContext(
   const orderOverride =
     nonEmpty(url.searchParams.get('order')) ?? readHeader(source?.headers, 'x-demo-order');
 
+  if (url.searchParams.get('preset') === 'anonymous') {
+    const identity = identityOverride ?? undefined;
+    return {
+      identity,
+      userId: identity,
+      claims: { role: roleOverride ?? 'user' },
+      orderKey:
+        orderOverride === 'vip' || orderOverride === orders.vip.Id
+          ? orders.vip.Id
+          : orderOverride ?? orders.standard.Id,
+      presetName: 'anonymous',
+    };
+  }
+
   const presetName =
     normalizePreset(url.searchParams.get('preset')) ??
     normalizePreset(readHeader(source?.headers, 'x-demo-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'sample-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'toggly-preset'));
 
-  if (!presetName || presetName === 'anonymous') {
+  if (!presetName) {
     const identity = identityOverride ?? undefined;
     return {
       identity,
