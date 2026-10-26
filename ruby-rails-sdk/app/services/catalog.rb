@@ -15,7 +15,7 @@ module Catalog
   FILTERS = [
     ['always-on', 'AlwaysOn', 'ON for both presets.'],
     ['percentage', 'Percentage', '50% sticky by identity; opposite outcomes are not guaranteed.'],
-    ['targeting', 'Targeting', 'Native sole-rule result is ON for alice and bob; negative targeting is not demonstrated.'],
+    ['targeting', 'Targeting', 'Targeting users=alice: ON for alice, OFF for bob (default rollout fail-closed).'],
     ['user-claims', 'UserClaims', 'role=admin; segment percentage 100.'],
     ['time-window', 'TimeWindow', 'Open from 2020 through 2099; ON for both presets.'],
     ['country', 'Country', 'US; segment percentage 100.'],
