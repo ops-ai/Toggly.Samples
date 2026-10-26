@@ -11,7 +11,7 @@ with your application's authentication and authorization when adapting the code.
 
 ## Quick start
 
-Use Python **3.15.2** on macOS or Linux (WSL on Windows for Gunicorn).
+Use Python **3.15.1** on macOS or Linux (WSL on Windows for Gunicorn).
 
 ```bash
 cd python-flask-sdk
@@ -263,7 +263,7 @@ Flask claims/country/browser/language/OS columns stay OFF without explicit mappi
 ## Versions and verification
 
 Latest stable runtime and published dependency checkpoint: **2026-10-09**.
-[Python](https://www.python.org/downloads/) 3.15.2,
+[Python](https://www.python.org/downloads/) 3.15.1,
 [Flask](https://pypi.org/project/Flask/) 3.1.3,
 [toggly](https://pypi.org/project/toggly/) 1.3.2,
 [toggly-flask](https://pypi.org/project/toggly-flask/) 0.4.0.

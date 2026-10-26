@@ -11,7 +11,7 @@ use your real authentication and authorization in an application built from it.
 
 ## Quick start
 
-Use Python **3.15.2** on macOS or Linux. The production example uses Gunicorn;
+Use Python **3.15.1** on macOS or Linux. The production example uses Gunicorn;
 on Windows use WSL for the same commands.
 
 ```bash
@@ -258,7 +258,7 @@ Django claims/country/browser/language/OS columns stay OFF without explicit mapp
 ## Versions and verification
 
 Registry checkpoint: **2026-10-09**. Latest stable
-[Python](https://www.python.org/downloads/) 3.15.2 and published PyPI
+[Python](https://www.python.org/downloads/) 3.15.1 and published PyPI
 [Django](https://pypi.org/project/Django/) 6.1.1,
 [toggly](https://pypi.org/project/toggly/) 1.3.2 and
 [toggly-django](https://pypi.org/project/toggly-django/) 0.5.0.

@@ -10,7 +10,7 @@ your application's authentication and authorization when adapting it.
 
 ## Quick start
 
-Use Python **3.15.2**:
+Use Python **3.15.1**:
 
 ```bash
 cd python-fastapi-sdk
@@ -280,7 +280,7 @@ FastAPI claims/country/browser/language/OS columns stay OFF without explicit map
 ## Versions and verification
 
 Latest stable/published checkpoint: **2026-10-09**.
-[Python](https://www.python.org/downloads/) 3.15.2,
+[Python](https://www.python.org/downloads/) 3.15.1,
 [FastAPI](https://pypi.org/project/fastapi/) 0.141.1,
 [toggly](https://pypi.org/project/toggly/) 1.3.2,
 [toggly-fastapi](https://pypi.org/project/toggly-fastapi/) 0.4.0.
