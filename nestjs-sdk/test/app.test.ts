@@ -7,7 +7,7 @@ function isolateFetchFromProduction(
   originalFetch: typeof fetch,
   onDefinitions: (url: string, options?: RequestInit) => Promise<Response>,
 ) {
-  return (url: RequestInfo | URL, options?: RequestInit) => {
+  return (url: RequestInfo | URL, options?: RequestInit): Promise<Response> => {
     const href = String(url);
     if (href.startsWith('https://definitions.toggly.io/')) {
       return onDefinitions(href, options);
@@ -18,7 +18,7 @@ function isolateFetchFromProduction(
     if (/^https?:\/\/([a-z0-9-]+\.)*toggly\.io(?::\d+)?(?:[/?#]|$)/i.test(href)) {
       return Promise.resolve(new Response('{}', { status: 204 }));
     }
-    assert.fail(`test keys must never contact an external service: ${href}`);
+    throw new Error(`test keys must never contact an external service: ${href}`);
   };
 }
 
@@ -102,7 +102,7 @@ test('installed NestJS package drives all eight sections, gates, presets and ent
 });
 test('missing key uses defaults without crashing and makes the configuration gap visible', async () => {
   const originalFetch = globalThis.fetch;
-  globalThis.fetch = isolateFetchFromProduction(originalFetch, () => {
+  globalThis.fetch = isolateFetchFromProduction(originalFetch, async () => {
     assert.fail('missing key must never contact definitions.toggly.io');
   });
   try {

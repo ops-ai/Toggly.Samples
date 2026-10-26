@@ -8,6 +8,7 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "types": ["node"],
     "allowJs": true,
     "checkJs": false,
     "outDir": "dist",

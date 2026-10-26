@@ -32,5 +32,8 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "overrides": {
+    "@ops-ai/toggly-eval": "2.1.1"
   }
 }
