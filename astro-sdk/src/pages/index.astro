@@ -14,7 +14,7 @@ import {
   togglyIdentityFields,
 } from '../toggly-config';
 import { readTogglyRuntimeEnv } from '../server/toggly-runtime-env';
-import { diagFilterTargeting, logTogglyDiag } from '../server/toggly-diag';
+import { buildFilterTargetingPageDiag } from '../server/toggly-livee2e-page-diag';
 import {
   demoKeys,
   filterCatalog,
@@ -80,7 +80,9 @@ let filterRows: Array<{
   rule: string;
   value: boolean | null;
   note: string;
+  livee2eDiag?: string;
 }> = [];
+let filterTargetingDiag = '';
 let programmatic: {
   dashboard: boolean;
   api: boolean;
@@ -136,9 +138,22 @@ try {
         : row.key === 'filter-targeting' || row.key === 'filter-user-claims'
           ? await apiClient.getFlag(row.key, false)
           : await entityClient.getFlag(row.key, false);
+    let livee2eDiag: string | undefined;
+    if (row.key === 'filter-targeting') {
+      livee2eDiag = await buildFilterTargetingPageDiag({
+        togglyEnv,
+        verifySignatures: baseOptions.verifySignatures,
+        requestContext,
+        matrixValue: Boolean(value),
+        entityClient,
+        apiClient,
+      });
+      filterTargetingDiag = livee2eDiag;
+    }
     filterRows.push({
       ...row,
       value,
+      livee2eDiag,
       note:
         row.key === 'filter-percentage'
           ? 'Sticky by identity; Matching/Non-matching labels do not prescribe the result'
@@ -149,20 +164,6 @@ try {
   }
 
   variant = await variantClient.getVariant('new-dashboard');
-
-  await diagFilterTargeting(
-    'index-ssr',
-    requestContext,
-    togglyEnv.appKey,
-    entityClient,
-    apiClient,
-  );
-  logTogglyDiag('index-ssr', {
-    definitionsBaseUri: togglyEnv.definitionsBaseUri ?? null,
-    verifySignatures: baseOptions.verifySignatures,
-    preset: requestContext.presetName,
-    identity: requestContext.identity ?? null,
-  });
 } finally {
   await apiClient.close({ timeoutMs: 2000 });
   await entityClient.close({ timeoutMs: 2000 });
@@ -469,7 +470,10 @@ const bobHref = '/?identity=bob&role=user&order=ord-standard';
           <tbody>
             {
               filterRows.map((row) => (
-                <tr data-filter={row.key}>
+                <tr
+                  data-filter={row.key}
+                  data-livee2e-diag-temp={row.livee2eDiag}
+                >
                   <td><code>{row.key}</code></td>
                   <td>{row.name}</td>
                   <td>
@@ -484,6 +488,17 @@ const bobHref = '/?identity=bob&role=user&order=ord-standard';
                           {String(row.value)}
                         </span>
                       )
+                    }
+                    {
+                      row.key === 'filter-targeting' && row.livee2eDiag ? (
+                        <span
+                          class="livee2e-diag-temp"
+                          data-livee2e-diag-temp={row.livee2eDiag}
+                          hidden
+                        >
+                          {row.livee2eDiag}
+                        </span>
+                      ) : null
                     }
                   </td>
                   <td>{row.note}</td>

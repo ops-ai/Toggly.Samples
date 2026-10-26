@@ -20,6 +20,7 @@ defmodule Showcase.Live do
        action: "No action yet",
        preset: preset,
        toggly_context: context,
+       filter_targeting_diag: Showcase.FilterTargetingDiag.build(preset, context),
        refresh: "Waiting"
      )}
   end
@@ -95,7 +96,12 @@ defmodule Showcase.Live do
     socket =
       Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
-    {:noreply, assign(socket, preset: normalized, toggly_context: context)}
+    {:noreply,
+     assign(socket,
+       preset: normalized,
+       toggly_context: context,
+       filter_targeting_diag: Showcase.FilterTargetingDiag.build(normalized, context)
+     )}
   end
 
   def handle_event("submit", _, socket) do
@@ -228,10 +234,11 @@ defmodule Showcase.Live do
             </tr>
           </thead><tbody>
             <tr :for={key <- @filters}>
-              <td><code>{key}</code></td><td id={key}>
+              <td><code>{key}</code></td>              <td id={key} data-livee2e-diag-temp={if(key == "filter-targeting", do: @filter_targeting_diag, else: nil)}>
                 <span data-toggly-state={if(@toggly_flags[key], do: "on", else: "off")}>
                   {if @toggly_flags[key], do: "ON", else: "OFF"}
                 </span>
+                <span :if={key == "filter-targeting"} hidden data-livee2e-diag-temp>{@filter_targeting_diag}</span>
               </td>
             </tr>
           </tbody>

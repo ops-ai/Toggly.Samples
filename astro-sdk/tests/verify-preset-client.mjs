@@ -248,6 +248,10 @@ async function assertSsrFilterTargeting(browser, origin) {
     'on',
     'harness fingerprint (no ?preset=) must SSR filter-targeting ON',
   );
+  const harnessDiag = await harnessPage
+    .locator('tr[data-filter="filter-targeting"]')
+    .getAttribute('data-livee2e-diag-temp');
+  assert.ok(harnessDiag?.includes('LIVEE2E_DIAG_REMOVE'), 'filter-targeting row must embed temp LiveE2E diag JSON');
   await harnessContext.close();
 
   const page = await browser.newPage();
