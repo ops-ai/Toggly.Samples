@@ -25,5 +25,9 @@
   },
   "engines": {
     "node": ">=22.12.0"
+  },
+  "overrides": {
+    "@ops-ai/toggly-eval": "2.1.1",
+    "@ops-ai/toggly-node-core": "0.13.1"
   }
 }

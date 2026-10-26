@@ -7,7 +7,7 @@ A Nuxt **4.6.1** application that teaches Toggly feature flags across the publis
 | `@ops-ai/nuxt-toggly` | `1.4.0` | Nuxt module: auto-imports, Vue components/directives, browser plugin and Nitro plugin |
 | `@ops-ai/nuxt-toggly-core` | `1.16.1` | Definition fetching and feature evaluation |
 | `@ops-ai/nuxt-toggly-client` | `1.6.0` | Vue composables, components, directives and browser telemetry |
-| `@ops-ai/nuxt-toggly-server` | `1.10.0` | Request-scoped H3/Nitro helpers and route gates |
+| `@ops-ai/nuxt-toggly-server` | `1.10.2` | Request-scoped H3/Nitro helpers and route gates |
 
 All four are exact public npm packages. This sample uses no SDK workspace path,
 tarball, or substitute evaluator. Node 22.19+ is required by this sample.

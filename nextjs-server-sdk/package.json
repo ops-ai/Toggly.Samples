@@ -29,5 +29,8 @@
     "eslint-config-next": "16.4.2",
     "typescript": "^6",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "@ops-ai/toggly-eval": "2.1.1"
   }
 }
