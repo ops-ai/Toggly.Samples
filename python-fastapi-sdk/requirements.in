@@ -1,6 +1,6 @@
 # Direct application, verification and wheel-build pins. Regenerate the hash lock together.
 fastapi==0.141.1
-starlette==1.6.0
+starlette==1.9.0
 anyio==4.15.1
 toggly==1.3.2
 toggly-fastapi==0.4.0
