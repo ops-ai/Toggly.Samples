@@ -279,7 +279,7 @@
         {
           "name": "DeviceType",
           "parameters": {
-            "DeviceType:0": "Mac",
+            "DeviceType:0": "Macintosh",
             "Percentage": "100"
           }
         }

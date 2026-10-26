@@ -11,8 +11,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="packages.*.lock.json" />
-    <PackageReference Include="Toggly.FeatureManagement.Blazor.Server" Version="3.14.2" />
-    <PackageReference Include="Toggly.FeatureManagement.Web" Version="3.14.2" />
+    <PackageReference Include="Toggly.FeatureManagement.Blazor.Server" Version="3.14.3" />
+    <PackageReference Include="Toggly.FeatureManagement.Web" Version="3.14.3" />
     <ProjectReference Include="..\BlazorSample.Client\BlazorSample.Client.csproj" />
     <PackageReference
       Include="Microsoft.AspNetCore.Components.WebAssembly.Server"
