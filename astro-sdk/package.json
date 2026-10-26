@@ -20,7 +20,7 @@
     "@ops-ai/astro-feature-flags-toggly": "1.21.0",
     "astro": "7.4.0",
     "nanostores": "1.5.5",
-    "react": "19.3.0",
+    "react": "19.3.1",
     "react-dom": "19.3.0",
     "svelte": "5.57.2",
     "vue": "3.5.44"
