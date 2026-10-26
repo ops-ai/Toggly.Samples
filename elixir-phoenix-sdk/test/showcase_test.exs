@@ -55,6 +55,17 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-targeting", "ON")
   end
 
+  test "mount treats preset=none like absent query and uses harness header" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    {:ok, view, _} = live(conn, "/?preset=none")
+    assert has_element?(view, "#current-identity", "alice")
+    assert has_element?(view, "#filter-targeting", "ON")
+  end
+
   test "mount reads x-demo-preset header when query and cookie omit preset (LiveE2E fingerprint)" do
     conn =
       build_conn()

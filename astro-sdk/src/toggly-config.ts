@@ -159,7 +159,8 @@ export function createTogglyRequestContext(
     nonEmpty(resolvedUrl.searchParams.get('order')) ??
     readHeader(source?.headers, 'x-demo-order');
 
-  if (resolvedUrl.searchParams.get('preset') === 'anonymous') {
+  const rawPreset = resolvedUrl.searchParams.get('preset');
+  if (rawPreset === 'anonymous') {
     const identity = identityOverride ?? undefined;
     return {
       identity,
@@ -174,7 +175,7 @@ export function createTogglyRequestContext(
   }
 
   const presetName =
-    normalizePreset(resolvedUrl.searchParams.get('preset')) ??
+    normalizePreset(rawPreset === 'none' ? null : rawPreset) ??
     normalizePreset(readHeader(source?.headers, 'x-demo-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'sample-preset')) ??
     normalizePreset(readCookie(source?.cookies, 'toggly-preset'));

@@ -6,6 +6,7 @@ import {
   togglyIdentityFields,
 } from './toggly-config';
 import { readTogglyRuntimeEnv } from './server/toggly-runtime-env';
+import { logTogglyDiag } from './server/toggly-diag';
 
 /**
  * Request-scoped Toggly middleware.
@@ -60,6 +61,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
       'x-toggly-identity',
       requestContext.identity ?? 'anonymous',
     );
+    logTogglyDiag('middleware', {
+      path: context.url.pathname,
+      preset: requestContext.presetName,
+      identity: requestContext.identity ?? null,
+      appKeyPresent: Boolean(togglyEnv.appKey),
+      appKeyLength: togglyEnv.appKey?.length ?? 0,
+      definitionsBaseUri: togglyEnv.definitionsBaseUri ?? null,
+    });
     return response;
   });
 });
