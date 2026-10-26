@@ -14,8 +14,8 @@ authorization; demo personas do not authenticate a user.
 
 ## Quick start
 
-Install .NET SDK **10.0.401** (or a matching 10.0.4xx patch) and run from this
-directory. `global.json` pins the SDK with `rollForward: latestPatch`:
+Install .NET SDK **10.0.400** or newer (10.0.4xx; `global.json` uses
+`10.0.400` with `rollForward: latestPatch`) and run from this directory:
 
 ```sh
 dotnet restore BlazorSample.sln --locked-mode
@@ -261,7 +261,7 @@ handler, so fallback values and local prerequisites can be checked without a
 live signed-definition service. The entity call covers the per-read API shape;
 it does not prove a deployed Order rule or named variant allocation.
 
-With .NET SDK 10.0.401 and Node 24, from `blazor-sdk/`:
+With .NET SDK 10.0.400+ and Node 24, from `blazor-sdk/`:
 
 ```sh
 (cd tests/PublicTelemetryHost && dotnet restore --locked-mode --source https://api.nuget.org/v3/index.json && dotnet publish --no-restore -c Release -p:WasmBuildNative=false)
