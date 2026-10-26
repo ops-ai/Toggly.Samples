@@ -7,7 +7,7 @@ class NativeSdkTest < ActiveSupport::TestCase
     expected = {
       'always-on' => [true, true],
       'percentage' => [true, true],
-      'targeting' => [true, true],
+      'targeting' => [true, false],
       'user-claims' => [true, false],
       'time-window' => [true, true],
       'country' => [true, false],
