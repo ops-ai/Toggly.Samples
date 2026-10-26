@@ -22,6 +22,7 @@
     "koa": "3.2.1"
   },
   "overrides": {
-    "@ops-ai/toggly-node-core": "0.13.1"
+    "@ops-ai/toggly-node-core": "0.13.1",
+    "@ops-ai/toggly-eval": "2.1.1"
   }
 }
