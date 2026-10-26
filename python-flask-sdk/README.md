@@ -11,11 +11,11 @@ with your application's authentication and authorization when adapting the code.
 
 ## Quick start
 
-Use Python **3.14.7** on macOS or Linux (WSL on Windows for Gunicorn).
+Use Python **3.15.1** on macOS or Linux (WSL on Windows for Gunicorn).
 
 ```bash
 cd python-flask-sdk
-python3.14 -m venv .venv
+python3.15 -m venv .venv
 source .venv/bin/activate
 python -m pip install --require-hashes -r requirements.txt
 cp .env.example .env
@@ -263,7 +263,7 @@ Flask claims/country/browser/language/OS columns stay OFF without explicit mappi
 ## Versions and verification
 
 Latest stable runtime and published dependency checkpoint: **2026-10-09**.
-[Python](https://www.python.org/downloads/) 3.14.7,
+[Python](https://www.python.org/downloads/) 3.15.1,
 [Flask](https://pypi.org/project/Flask/) 3.1.3,
 [toggly](https://pypi.org/project/toggly/) 1.3.2,
 [toggly-flask](https://pypi.org/project/toggly-flask/) 0.4.0.
@@ -278,7 +278,7 @@ the sample. SDK packages always come from PyPI, never a local SDK build.
 `requirements.in` contains exact direct pins; `requirements.txt` locks every
 transitive dependency and artifact hash. `pyproject.toml` describes the sample
 wheel. When updating a runtime pin, update both manifests, then regenerate with
-`uv pip compile requirements.in --python 3.14 --generate-hashes --output-file requirements.txt`.
+`uv pip compile requirements.in --python 3.15 --python-platform manylinux_2_28_x86_64 --generate-hashes --output-file requirements.txt`.
 Dependabot tracks the actual pip manifests.
 
 ```bash

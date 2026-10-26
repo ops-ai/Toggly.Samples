@@ -67,9 +67,9 @@ SDK install guides live in [docs.toggly.io](https://docs.toggly.io) and in the [
 | Java Spring Boot SDK Sample | Spring Boot 4.1.1 / Java 26 + boot4 starter 2.3.1 | [`java-spring-boot-sdk/`](java-spring-boot-sdk/) | Starter auto-config, `@FeatureEnabled` / `@ConditionalOnFeature`, request context, Actuator, Order and eleven-filter matrix |
 | Java Spring MVC SDK Sample | Spring MVC 7 + Tomcat 11 + Java 27 + FreeMarker | [`java-spring-mvc-sdk/`](java-spring-mvc-sdk/) | Native context/gate interceptors, Boolean argument injection, model-driven templates, Order and eleven-filter matrix |
 | Java Spring WebFlux SDK Sample | Spring WebFlux 7 + Reactor Netty + Java 27 | [`java-spring-webflux-sdk/`](java-spring-webflux-sdk/) | Native reactive filters/client, isolated async users and Orders, eleven filters, signed refresh and cancellation |
-| Python Django SDK Sample | Python 3.14 + Django 6.1 | [`python-django-sdk/`](python-django-sdk/) | Native middleware, decorators, templates, session identity, Order and eleven-filter matrix |
-| Python Flask SDK Workshop | Flask 3 + Python 3.14 | [`python-flask-sdk/`](python-flask-sdk/) | Native extension, Jinja, decorators, Blueprint gates, request identity and Order/filter matrix |
-| Python FastAPI SDK Sample | FastAPI 0.141 + Python 3.14 | [`python-fastapi-sdk/`](python-fastapi-sdk/) | Native ASGI middleware, dependencies, router gates, async variants, request identity, Order and filter matrix |
+| Python Django SDK Sample | Python 3.15 + Django 6.1 | [`python-django-sdk/`](python-django-sdk/) | Native middleware, decorators, templates, session identity, Order and eleven-filter matrix |
+| Python Flask SDK Workshop | Flask 3 + Python 3.15 | [`python-flask-sdk/`](python-flask-sdk/) | Native extension, Jinja, decorators, Blueprint gates, request identity and Order/filter matrix |
+| Python FastAPI SDK Sample | FastAPI 0.141 + Python 3.15 | [`python-fastapi-sdk/`](python-fastapi-sdk/) | Native ASGI middleware, dependencies, router gates, async variants, request identity, Order and filter matrix |
 | Ruby SDK Sample | Ruby 4 / Rack 3 / Puma 8 | [`ruby-sdk/`](ruby-sdk/) | Native request contexts, ERB gates, Order, eleven filters, snapshots and lifecycle |
 
 New to feature flags? Start with a sample's **first-toggle exercise**, then its
