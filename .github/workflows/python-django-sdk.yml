@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.14.7'
+          python-version-file: python-django-sdk/.python-version
           cache: pip
           cache-dependency-path: python-django-sdk/requirements.txt
       - run: python -m pip install --require-hashes -r requirements.txt
