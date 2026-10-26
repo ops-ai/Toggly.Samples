@@ -1,7 +1,7 @@
 # Electron SDK Sample
 
 A beginner-oriented Electron 44 + React 19 desktop application using published
-[`@ops-ai/electron-feature-flags-toggly`](https://www.npmjs.com/package/@ops-ai/electron-feature-flags-toggly) (exact pin in `package.json` / `package-lock.json`).
+[`@ops-ai/electron-feature-flags-toggly`](https://www.npmjs.com/package/@ops-ai/electron-feature-flags-toggly) (exact pin in [`package.json`](package.json) / [`package-lock.json`](package-lock.json)).
 It pins Electron 44.3.0, electron-vite 5.0.0, React 19.3.0, Vite React plugin
 5.2.0, TypeScript 7.0.2, Vitest 5.0.0, and dotenv 17.4.2. These were checked
 against npm on 2026-09-12. Run with Node 22.12+; CI uses Node 24.
