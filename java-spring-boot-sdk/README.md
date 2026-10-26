@@ -48,8 +48,6 @@ Verified against official registries on 2026-10-19:
 |---|---|
 | OpenJDK, compiler release | 26.0.2.1, release 26 |
 | Maven | 3.9.12 |
-| `io.toggly:toggly-spring-boot4-starter` | 2.3.1 |
-| `io.toggly:toggly-core` (transitive) | 2.3.1 |
 | Spring Boot parent / Actuator / Web MVC / AspectJ / FreeMarker | **4.1.1** |
 | Embedded Tomcat (Boot 4.1.1) | 11.0.24 |
 
@@ -64,8 +62,9 @@ that null into `togglyClient`. `TogglySampleConfiguration` supplies a
 Spring-owned `HttpSnapshotProvider` so the **starter** still creates
 `TogglyClient`. That is documented host configuration, not a local jar.
 
-Only Maven Central artifacts are consumed. `pom.xml` pins the starter and Boot
-parent; `dependencies.lock.json` records the resolved runtime/test graph with
+Only Maven Central artifacts are consumed. `pom.xml` pins
+`io.toggly:toggly-spring-boot4-starter` and transitive `io.toggly:toggly-core`;
+`dependencies.lock.json` records the resolved runtime/test graph with
 SHA-256 checksums. After a deliberate dependency update, run
 `python3 scripts/check-dependencies.py --write`, review the lock, and re-run
 the suite. CI never regenerates the lock.
@@ -190,7 +189,7 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 With the recipe above, AlwaysOn and TimeWindow stay ON for both presets.
 Percentage is stable for the same user/flag, but its exact Alice/Bob outcome is
 not prescribed. The other seven supported rows turn ON for Matching and OFF for
-Non-matching. **DeviceType Macintosh is unsupported by the published 2.3.1
+Non-matching. **DeviceType Macintosh is unsupported by the published Java SDK
 User-Agent parser**: it recognizes iPhone/iPad/iPod, but returns Other for
 desktop Macintosh. We retain the exact shared Macintosh rule; that row shows
 the real OFF result. `?preset=matching` affects only that request; POST preset

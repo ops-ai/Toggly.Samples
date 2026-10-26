@@ -27,8 +27,9 @@ applying those rules to inputs such as a user identity or an Order.
    settings first, then `/api/toggly-debug`. A successful build or fixture test
    does not establish a connection to your dashboard.
 
-**Edge limitation in the published package:** this sample uses edge `1.5.0`,
-whose middleware reads `x-toggly-identity` or `toggly-identity` from requests,
+**Edge limitation in the published package:** this sample uses
+[`@ops-ai/nextjs-toggly-edge`](https://www.npmjs.com/package/@ops-ai/nextjs-toggly-edge)
+(the version pinned in `package.json`), whose middleware reads `x-toggly-identity` or `toggly-identity` from requests,
 assigns it to a shared client, and can reuse a cached boolean snapshot across
 identities. The sample's identity switcher writes that same cookie, so visiting
 `/edge/beta` after using it reaches this behavior even though middleware config
@@ -109,12 +110,13 @@ Legacy paths (`/dashboard`, `/actions`, `/api-demo`, `/orders`) redirect under `
 
 ## Package versions
 
-Published npm packages:
+Published npm packages (exact pins in [`package.json`](package.json) and
+[`package-lock.json`](package-lock.json)):
 
-- `@ops-ai/nextjs-toggly-core` `1.16.1`
-- `@ops-ai/nextjs-toggly-server` `1.9.0`
-- `@ops-ai/nextjs-toggly-client` `1.7.0`
-- `@ops-ai/nextjs-toggly-edge` `1.6.0`
+- [`@ops-ai/nextjs-toggly-core`](https://www.npmjs.com/package/@ops-ai/nextjs-toggly-core)
+- [`@ops-ai/nextjs-toggly-server`](https://www.npmjs.com/package/@ops-ai/nextjs-toggly-server)
+- [`@ops-ai/nextjs-toggly-client`](https://www.npmjs.com/package/@ops-ai/nextjs-toggly-client)
+- [`@ops-ai/nextjs-toggly-edge`](https://www.npmjs.com/package/@ops-ai/nextjs-toggly-edge)
 
 `next.config.ts` sets `serverExternalPackages: ['ws']` so Turbopack does not
 rewrite the WebSocket client. Do **not** externalize `@ops-ai/nextjs-toggly-server`
