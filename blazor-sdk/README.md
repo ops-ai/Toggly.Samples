@@ -14,8 +14,10 @@ authorization; demo personas do not authenticate a user.
 
 ## Quick start
 
-Install .NET SDK **10.0.400** or newer (10.0.4xx; `global.json` uses
-`10.0.400` with `rollForward: latestPatch`) and run from this directory:
+Install .NET SDK **10.0.400** and run from this directory. `global.json` pins
+that SDK (`rollForward: disable`). `Directory.Build.targets` pins
+SDK-injected pack versions so `--locked-mode` restore matches Live E2E agents
+whose runtime patch may differ:
 
 ```sh
 dotnet restore BlazorSample.sln --locked-mode
