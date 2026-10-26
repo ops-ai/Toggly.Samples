@@ -120,7 +120,7 @@ override. Their rows remain in the matrix so that the gap is explicit.
 
 ## Package versions
 
-- `@ops-ai/react-feature-flags-toggly` `1.12.0` (published npm package)
+- [`@ops-ai/react-feature-flags-toggly`](https://www.npmjs.com/package/@ops-ai/react-feature-flags-toggly) (published npm package; exact pin in [`package.json`](package.json))
 - React and React DOM `19.3.0`
 - Vite `8.3.0`
 - TypeScript `7.0.2`

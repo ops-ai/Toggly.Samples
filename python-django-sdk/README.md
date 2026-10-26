@@ -259,9 +259,10 @@ Django claims/country/browser/language/OS columns stay OFF without explicit mapp
 
 Registry checkpoint: **2026-10-09**. Latest stable
 [Python](https://www.python.org/downloads/) 3.14.7 and published PyPI
-[Django](https://pypi.org/project/Django/) 6.1.1,
-[toggly](https://pypi.org/project/toggly/) 1.3.2 and
-[toggly-django](https://pypi.org/project/toggly-django/) 0.5.0.
+[Django](https://pypi.org/project/Django/) 6.1.1, and published
+[toggly](https://pypi.org/project/toggly/) /
+[toggly-django](https://pypi.org/project/toggly-django/) packages (exact pins in
+`requirements.txt`).
 Live mode reports definition cache hits on the usage pipeline; offline,
 missing-key, fixture, and `ci-placeholder` runs do not upload usage.
 `python scripts/soak.py` waits for refresh + flush when a real `TOGGLY_APP_KEY` is set.

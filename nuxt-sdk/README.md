@@ -2,14 +2,15 @@
 
 A Nuxt **4.6.1** application that teaches Toggly feature flags across the published Nuxt family:
 
-| Package | Version | Responsibility |
-|---|---:|---|
-| `@ops-ai/nuxt-toggly` | `1.4.0` | Nuxt module: auto-imports, Vue components/directives, browser plugin and Nitro plugin |
-| `@ops-ai/nuxt-toggly-core` | `1.16.1` | Definition fetching and feature evaluation |
-| `@ops-ai/nuxt-toggly-client` | `1.6.0` | Vue composables, components, directives and browser telemetry |
-| `@ops-ai/nuxt-toggly-server` | `1.10.0` | Request-scoped H3/Nitro helpers and route gates |
+| Package | Responsibility |
+|---|---|
+| `@ops-ai/nuxt-toggly` | Nuxt module: auto-imports, Vue components/directives, browser plugin and Nitro plugin |
+| `@ops-ai/nuxt-toggly-core` | Definition fetching and feature evaluation |
+| `@ops-ai/nuxt-toggly-client` | Vue composables, components, directives and browser telemetry |
+| `@ops-ai/nuxt-toggly-server` | Request-scoped H3/Nitro helpers and route gates |
 
-All four are exact public npm packages. This sample uses no SDK workspace path,
+All four are exact public npm packages; versions are pinned in
+[`package.json`](package.json) and [`package-lock.json`](package-lock.json). This sample uses no SDK workspace path,
 tarball, or substitute evaluator. Node 22.19+ is required by this sample.
 
 ```sh
@@ -115,7 +116,7 @@ role, country, or query parameter.
 
 ### Capability boundary: variants
 
-`@ops-ai/nuxt-toggly` **1.4.0** exposes boolean feature gates. It does not
+The published `@ops-ai/nuxt-toggly` module exposes boolean feature gates. It does not
 currently expose an experiment/variant-assignment API, so the declarative
 section calls this out instead of fabricating a variant result. All eleven
 shared filter types are evaluated by the published Nuxt core/server packages;

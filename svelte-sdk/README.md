@@ -15,7 +15,7 @@ npm run dev
 
 Open **http://localhost:5173**. With no App Key, the prominent **OFFLINE FIXTURES** banner explains that the sample feeds deterministic payloads through the real SDK. Nothing is sent to a real Toggly app in this mode. You do not need an account to learn the controls.
 
-Installed host/package versions: Svelte **5.57.1**, Vite **8.3.1**, `@sveltejs/vite-plugin-svelte` **7.3.1**, Toggly Svelte SDK **1.12.0**. `package-lock.json` records the full dependency set. This sample uses the official Vite **JavaScript** Svelte template.
+Installed host/package versions: Svelte **5.57.1**, Vite **8.3.1**, `@sveltejs/vite-plugin-svelte` **7.3.1**, and [`@ops-ai/svelte-feature-flags-toggly`](https://www.npmjs.com/package/@ops-ai/svelte-feature-flags-toggly) from the public registry. `package.json` and `package-lock.json` record the full dependency set. This sample uses the official Vite **JavaScript** Svelte template.
 
 ## Your first flag, in three minutes
 
