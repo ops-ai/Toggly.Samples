@@ -18,7 +18,7 @@
     "@ops-ai/nuxt-toggly-client": "1.6.0",
     "@ops-ai/nuxt-toggly-core": "1.16.1",
     "@ops-ai/nuxt-toggly-server": "1.10.0",
-    "nuxt": "4.6.1"
+    "nuxt": "4.6.2"
   },
   "devDependencies": {
     "playwright": "1.64.1",
