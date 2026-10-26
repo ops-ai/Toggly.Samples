@@ -1,6 +1,6 @@
 # Blazor SDK workshop
 
-An actual .NET 8 Blazor Web App with separately compiled WebAssembly client code.
+An actual .NET 10 Blazor Web App with separately compiled WebAssembly client code.
 Explore static SSR, Interactive Server, WebAssembly and Interactive Auto using the
 published [`Toggly.FeatureManagement.Blazor`](https://www.nuget.org/packages/Toggly.FeatureManagement.Blazor),
 [`Toggly.FeatureManagement.Blazor.Server`](https://www.nuget.org/packages/Toggly.FeatureManagement.Blazor.Server),
@@ -14,25 +14,24 @@ authorization; demo personas do not authenticate a user.
 
 ## Quick start
 
-Install .NET SDK **8.0.425** and run from this directory. `global.json` selects
-that exact SDK; a missing version fails instead of silently selecting a newer SDK:
+Install .NET SDK **10.0.401** (or a matching 10.0.4xx patch) and run from this
+directory. `global.json` pins the SDK with `rollForward: latestPatch`:
 
 ```sh
 dotnet restore BlazorSample.sln --locked-mode
 ASPNETCORE_ENVIRONMENT=Development dotnet run --project BlazorSample --no-restore --no-launch-profile --urls http://localhost:5280
 ```
 
-To build a native .NET 10 host/client, install SDK **10.0.400**, change
-`sdk.version` in this directory's `global.json` to `10.0.400`, and use
-`dotnet restore BlazorSample.sln --locked-mode -p:SampleFramework=net10.0` (or pass
-`-p:AspNetCoreVersion=10.0.13` explicitly), then
-`dotnet publish BlazorSample --no-restore -c Release -p:SampleFramework=net10.0 -o published`
+To build on .NET 8 for compatibility testing, install SDK **8.0.425**, override
+this directory's `global.json` to `8.0.425` with `rollForward: disable`, and use
+`dotnet restore BlazorSample.sln --locked-mode -p:SampleFramework=net8.0` (or pass
+`-p:AspNetCoreVersion=8.0.32` explicitly), then
+`dotnet publish BlazorSample --no-restore -c Release -p:SampleFramework=net8.0 -o published`
 then `cd published` and run `dotnet BlazorSample.dll --urls http://localhost:5280`.
-Set `sdk.version` back to `8.0.425` for the .NET 8 commands. Keep `rollForward`
-set to `disable`. SDK patch releases can change implicit build-tool packages, so
-selecting the matching SDK is required as well as selecting the target framework.
+SDK patch releases can change implicit build-tool packages, so selecting the
+matching SDK is required as well as selecting the target framework.
 Rebuild with the matching framework; do not merely roll an already published
-.NET 8 application's runtime forward because framework static-asset routing changes.
+application's runtime forward because framework static-asset routing changes.
 
 Each project retains separate `packages.net8.0.lock.json` and
 `packages.net10.0.lock.json` files generated from public NuGet packages. Restore
@@ -262,8 +261,7 @@ handler, so fallback values and local prerequisites can be checked without a
 live signed-definition service. The entity call covers the per-read API shape;
 it does not prove a deployed Order rule or named variant allocation.
 
-With .NET SDK 10.0.400 and Node 24, from `blazor-sdk/` (the subdirectory
-`global.json` files select SDK 10 while the workshop root selects SDK 8):
+With .NET SDK 10.0.401 and Node 24, from `blazor-sdk/`:
 
 ```sh
 (cd tests/PublicTelemetryHost && dotnet restore --locked-mode --source https://api.nuget.org/v3/index.json && dotnet publish --no-restore -c Release -p:WasmBuildNative=false)
@@ -306,7 +304,8 @@ dotnet run --project tests/SnapshotChecks/SnapshotChecks.csproj --no-restore -c 
 node --test tests/persistence.test.mjs
 ```
 
-Use the same `SampleFramework`/`AspNetCoreVersion` properties for .NET 10 as above.
+Use `-p:SampleFramework=net8.0 -p:AspNetCoreVersion=8.0.32` when exercising the
+.NET 8 lockfiles; the default restore targets `net10.0`.
 The C# checks exercise atomic replacement, file permissions, cancellation, bounds,
 namespace isolation and symlink rejection. The browser test owns local signed
 HTTP fixtures and fresh host processes; it verifies actual Server circuit recovery

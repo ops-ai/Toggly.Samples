@@ -1,7 +1,7 @@
 <Project>
   <!-- LiveE2E restores with SampleFramework only. Default AspNetCoreVersion from the framework. -->
   <PropertyGroup>
-    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == '' and '$(SampleFramework)' == 'net10.0'">10.0.13</AspNetCoreVersion>
-    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == ''">8.0.32</AspNetCoreVersion>
+    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == '' and '$(SampleFramework)' == 'net8.0'">8.0.32</AspNetCoreVersion>
+    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == ''">10.0.13</AspNetCoreVersion>
   </PropertyGroup>
 </Project>
