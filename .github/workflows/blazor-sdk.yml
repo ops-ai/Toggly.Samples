@@ -75,7 +75,7 @@ jobs:
       - name: Check trusted filesystem snapshots
         run: |
           dotnet restore tests/SnapshotChecks/SnapshotChecks.csproj --locked-mode --source https://api.nuget.org/v3/index.json -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }}
-          dotnet run --project tests/SnapshotChecks/SnapshotChecks.csproj --no-restore -c Release -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -- /tmp
+          dotnet run --project tests/SnapshotChecks/SnapshotChecks.csproj --no-restore -c Release -f ${{ matrix.framework }} -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -- /tmp
       - run: npm ci
       - run: node --test tests/live-policy.test.mjs
       - run: npx playwright install --with-deps chromium
