@@ -33,22 +33,16 @@ defmodule Showcase.Cookies do
   end
 
   defp cookies_from_connect_info(socket) do
-    case get_connect_info(socket, :cookies) do
-      map when is_map(map) ->
-        map
+    case get_connect_info(socket, :x_headers) do
+      headers when is_list(headers) ->
+        Enum.find_value(headers, %{}, fn
+          {"cookie", value} -> parse_header(value)
+          {"Cookie", value} -> parse_header(value)
+          _ -> nil
+        end)
 
       _ ->
-        case get_connect_info(socket, :x_headers) do
-          headers when is_list(headers) ->
-            Enum.find_value(headers, %{}, fn
-              {"cookie", value} -> parse_header(value)
-              {"Cookie", value} -> parse_header(value)
-              _ -> nil
-            end)
-
-          _ ->
-            %{}
-        end
+        %{}
     end
   end
 end
