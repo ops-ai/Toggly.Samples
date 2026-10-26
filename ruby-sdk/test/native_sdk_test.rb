@@ -66,7 +66,7 @@ class NativeSdkTest < Minitest::Test
   def test_native_exact_matrix_and_sticky_identity
     expected = {
       'always-on' => [true, true], 'percentage' => [true, true],
-      'targeting' => [true, true], 'user-claims' => [true, false],
+      'targeting' => [true, false], 'user-claims' => [true, false],
       'time-window' => [true, true], 'country' => [true, false],
       'browser-family' => [true, false], 'browser-language' => [true, false],
       'device-type' => [false, false], 'os' => [true, false],

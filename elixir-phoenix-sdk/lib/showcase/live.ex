@@ -4,12 +4,12 @@ defmodule Showcase.Live do
 
   @filters ~w(filter-always-on filter-percentage filter-targeting filter-user-claims filter-time-window filter-country filter-browser-family filter-browser-language filter-device-type filter-os filter-context-property)
   @keys ~w(new-dashboard api-v2 enhanced-submit ExpressCheckout beta-access) ++ @filters
-  on_mount(Showcase.AssignPresetContext)
   on_mount({Toggly.LiveView, {Showcase.Flags, @keys}})
+  on_mount(Showcase.AssignPresetContext)
 
-  def mount(_params, _session, socket) do
-    preset = Map.get(socket.assigns, :preset, "anonymous")
-    context = Map.get(socket.assigns, :toggly_context, Showcase.Context.preset(preset))
+  def mount(params, session, socket) do
+    preset = resolve_preset(params, session, socket)
+    context = Showcase.Context.preset(preset)
     socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
     {:ok,
@@ -19,6 +19,7 @@ defmodule Showcase.Live do
        keys: @keys,
        action: "No action yet",
        preset: preset,
+       toggly_context: context,
        refresh: "Waiting"
      )}
   end
@@ -27,7 +28,19 @@ defmodule Showcase.Live do
   def resolve_preset(params, session, socket) do
     case Map.get(params, "preset") do
       nil ->
-        case session["sample_preset"] || cookie_preset(socket) || header_preset(socket) do
+        case session_preset(session) ||
+               preset_from_session_context(session) ||
+               cookie_preset(socket) ||
+               header_preset(socket) do
+          nil -> "anonymous"
+          value -> normalize_preset(value)
+        end
+
+      "none" ->
+        case session_preset(session) ||
+               preset_from_session_context(session) ||
+               cookie_preset(socket) ||
+               header_preset(socket) do
           nil -> "anonymous"
           value -> normalize_preset(value)
         end
@@ -36,6 +49,18 @@ defmodule Showcase.Live do
         normalize_preset(value)
     end
   end
+
+  defp session_preset(session) when is_map(session) do
+    session["sample_preset"] || session[:sample_preset]
+  end
+
+  defp preset_from_session_context(%{"toggly_context" => %{"identity" => "alice"}}),
+    do: "matching"
+
+  defp preset_from_session_context(%{"toggly_context" => %{"identity" => "bob"}}),
+    do: "nonmatching"
+
+  defp preset_from_session_context(_), do: nil
 
   defp header_preset(socket) do
     case Phoenix.LiveView.get_connect_info(socket, :x_headers) do
@@ -65,13 +90,12 @@ defmodule Showcase.Live do
 
   def handle_event("preset", %{"mode" => mode}, socket) do
     normalized = if mode == "non-matching", do: "nonmatching", else: mode
+    context = Showcase.Context.preset(normalized)
 
     socket =
-      Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys,
-        context: Showcase.Context.preset(normalized)
-      )
+      Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
-    {:noreply, assign(socket, :preset, normalized)}
+    {:noreply, assign(socket, preset: normalized, toggly_context: context)}
   end
 
   def handle_event("submit", _, socket) do

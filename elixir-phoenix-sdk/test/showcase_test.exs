@@ -43,6 +43,29 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-targeting", "ON")
   end
 
+  test "refresh keeps harness preset targeting after toggly_updated" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    {:ok, view, _} = live(conn, "/")
+    assert has_element?(view, "#filter-targeting", "ON")
+    render_click(view, "refresh")
+    assert has_element?(view, "#filter-targeting", "ON")
+  end
+
+  test "mount treats preset=none like absent query and uses harness header" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    {:ok, view, _} = live(conn, "/?preset=none")
+    assert has_element?(view, "#current-identity", "alice")
+    assert has_element?(view, "#filter-targeting", "ON")
+  end
+
   test "mount reads x-demo-preset header when query and cookie omit preset (LiveE2E fingerprint)" do
     conn =
       build_conn()
@@ -52,6 +75,30 @@ defmodule ShowcaseTest do
     {:ok, view, _} = live(conn, "/")
     assert has_element?(view, "#current-identity", "alice")
     assert has_element?(view, "#filter-targeting", "ON")
+  end
+
+  test "preset plug keeps session when a follow-up request omits preset headers" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    session = Plug.Conn.get_session(conn)
+
+    follow_up =
+      build_conn()
+      |> Plug.Conn.fetch_cookies()
+      |> init_test_session(session)
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(follow_up, "sample_preset") == "matching"
+    assert get_in(Plug.Conn.get_session(follow_up, "toggly_context"), ["identity"]) == "alice"
   end
 
   test "preset plug stores toggly_context for connected Toggly on_mount" do

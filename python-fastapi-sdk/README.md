@@ -10,11 +10,11 @@ your application's authentication and authorization when adapting it.
 
 ## Quick start
 
-Use Python **3.14.7**:
+Use Python **3.15.1**:
 
 ```bash
 cd python-fastapi-sdk
-python3.14 -m venv .venv
+python3.15 -m venv .venv
 source .venv/bin/activate
 python -m pip install --require-hashes -r requirements.txt
 cp .env.example .env
@@ -280,7 +280,7 @@ FastAPI claims/country/browser/language/OS columns stay OFF without explicit map
 ## Versions and verification
 
 Latest stable/published checkpoint: **2026-10-09**.
-[Python](https://www.python.org/downloads/) 3.14.7,
+[Python](https://www.python.org/downloads/) 3.15.1,
 [FastAPI](https://pypi.org/project/fastapi/) 0.141.1,
 [toggly](https://pypi.org/project/toggly/) 1.3.2,
 [toggly-fastapi](https://pypi.org/project/toggly-fastapi/) 0.4.0.
@@ -297,7 +297,7 @@ transitive version and artifact hash. `pyproject.toml` defines the sample wheel.
 Update direct pins in both manifests, then regenerate:
 
 ```bash
-uv pip compile requirements.in --python 3.14 --generate-hashes --output-file requirements.txt
+uv pip compile requirements.in --python 3.15 --python-platform manylinux_2_28_x86_64 --generate-hashes --output-file requirements.txt
 ```
 
 Dependabot tracks these pip manifests. Verify with placeholders and no account:

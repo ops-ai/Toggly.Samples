@@ -8,7 +8,7 @@ import {
 import { createTogglyServerClient } from '@ops-ai/astro-feature-flags-toggly';
 
 /**
- * index.astro filter matrix rows use entityClient (definitions-signed + local eval).
+ * index.astro evaluates the filter matrix with entityClient (definitions + local eval).
  */
 
 const definitions = [
@@ -80,7 +80,6 @@ const baseOptions = {
   usageFlushInterval: 0,
 };
 
-const apiClient = createTogglyServerClient({ ...baseOptions, enableVariants: true });
 const entityClient = createTogglyServerClient({ ...baseOptions, enableVariants: false });
 const order = {
   kind: 'Order',
@@ -89,11 +88,9 @@ const order = {
 };
 
 try {
-  // Home SSR filter rows use entityClient (definitions-signed + local eval).
   assert.equal(await entityClient.getFlag('filter-targeting'), true);
   assert.equal(await entityClient.getFlag('filter-context-property', false, order), true);
 } finally {
-  await apiClient.close({ timeoutMs: 2000 });
   await entityClient.close({ timeoutMs: 2000 });
   globalThis.fetch = originalFetch;
 }

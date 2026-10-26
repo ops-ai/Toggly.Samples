@@ -20,9 +20,9 @@ defmodule Showcase.PresetCookiePlug do
         |> put_session("toggly_context", Showcase.Context.preset(normalized))
 
       _ ->
+        # Leave an existing harness preset in session when this request omits
+        # preset cookies/headers (e.g. follow-up navigations).
         conn
-        |> delete_session("sample_preset")
-        |> delete_session("toggly_context")
     end
   end
 

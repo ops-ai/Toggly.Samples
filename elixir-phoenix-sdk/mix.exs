@@ -14,7 +14,7 @@ defmodule TogglyShowcase.MixProject do
         {:phoenix, "~> 1.8"},
         {:phoenix_live_view, "~> 1.2"},
         {:phoenix_html, "~> 4.3"},
-        {:bandit, "~> 1.8"},
+        {:bandit, "~> 1.14"},
         {:jason, "~> 1.4"},
         {:lazy_html, ">= 0.1.0", only: :test}
       ],

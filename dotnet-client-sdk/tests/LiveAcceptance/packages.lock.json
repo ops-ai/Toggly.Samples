@@ -4,17 +4,17 @@
     "net10.0": {
       "Toggly.FeatureManagement.Client.Desktop": {
         "type": "Direct",
-        "requested": "[3.14.2, )",
-        "resolved": "3.14.2",
-        "contentHash": "1b4nYGSdtgXtW3nq42iM3+uJtstfHaE6meA/sHVNwVBSh9Xc6DyuPmncKp9dxdl0MOlfgnJCfT3HF0ZfgpQouw==",
+        "requested": "[3.14.3, )",
+        "resolved": "3.14.3",
+        "contentHash": "ttOpfrl1Joa9C4DdrfOmBg9MMQO8ltfKHl/MfbrQXSBKR14nbkHgNVgmayMT+Va7Qu65ejWuCN10uY9yv3bBrA==",
         "dependencies": {
-          "Toggly.FeatureManagement.Client": "3.14.2"
+          "Toggly.FeatureManagement.Client": "3.14.3"
         }
       },
       "Toggly.FeatureManagement.Client": {
         "type": "Transitive",
-        "resolved": "3.14.2",
-        "contentHash": "mWwsk/XwG1/oHhUdSLgKYR6Fjf/dUgba+GijkIdMKi33JGFyAW5E/ViWxmvm0ou0qgN5zghMSm1YUbKMKNq88w=="
+        "resolved": "3.14.3",
+        "contentHash": "EjKQVXYXMuhdytc93Q/3RzlNezXGrj/NDJcgY93JKrabdRT1gUY1fYAunybSAcszhftBQmOeJmWMmqdoe9ByeA=="
       }
     }
   }

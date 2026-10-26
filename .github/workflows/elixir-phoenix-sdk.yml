@@ -37,4 +37,5 @@ jobs:
       # Live service provisioning is external; this gate checks the browser runner
       # without credentials, launching browsers, or replacing network responses.
       - run: node --check scripts/live-browser.mjs
+      - run: node --check scripts/harness-filters-matching.mjs
       - run: PLAYWRIGHT_MODULE_PATH=/tmp/unused-playwright.mjs node scripts/live-browser.mjs --check

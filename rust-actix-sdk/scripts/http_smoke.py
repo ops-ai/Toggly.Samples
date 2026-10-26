@@ -175,7 +175,7 @@ def run(output: Path):
             assert native["identity"] == "alice" and native["enabled"]
             result = {
                 "production_host": "Actix-web 4.15.0 / Rust 1.98.1",
-                "published_crates": "toggly 0.6.1 / toggly-actix 0.6.1",
+                "published_crates": "toggly 0.11.1 / toggly-actix 0.11.1",
                 "workers": 8,
                 "private_cookie_jars": 8,
                 "sections": list(SECTIONS),

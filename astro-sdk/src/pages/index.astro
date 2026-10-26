@@ -13,6 +13,8 @@ import {
   orderEntity,
   togglyIdentityFields,
 } from '../toggly-config';
+import { readTogglyRuntimeEnv } from '../server/toggly-runtime-env';
+import { diagFilterTargeting, logTogglyDiag } from '../server/toggly-diag';
 import {
   demoKeys,
   filterCatalog,
@@ -29,18 +31,23 @@ import '../styles.css';
  * closes in finally so identity never leaks across visitors.
  */
 
-const configured = Boolean(import.meta.env.TOGGLY_APP_KEY);
-const requestContext = createTogglyRequestContext(Astro.url, {
-  cookies: Astro.cookies,
-  headers: Astro.request.headers,
-});
+const togglyEnv = readTogglyRuntimeEnv();
+const configured = Boolean(togglyEnv.appKey);
+const requestContext = createTogglyRequestContext(
+  Astro.url,
+  {
+    cookies: Astro.cookies,
+    headers: Astro.request.headers,
+  },
+  Astro.request,
+);
 const baseOptions = {
   ...createTogglyOptions(
-    import.meta.env.TOGGLY_APP_KEY,
-    import.meta.env.TOGGLY_ENVIRONMENT ?? 'Production',
+    togglyEnv.appKey,
+    togglyEnv.environment,
     true,
-    import.meta.env.TOGGLY_DEFINITIONS_BASE_URI,
-    import.meta.env.TOGGLY_METRICS_BASE_URL,
+    togglyEnv.definitionsBaseUri,
+    togglyEnv.metricsBaseUrl,
   ),
   ...togglyIdentityFields(requestContext),
   enableUsageTracking: false,
@@ -126,7 +133,9 @@ try {
     const value =
       row.key === 'filter-context-property'
         ? await entityClient.getFlag(row.key, false, order)
-        : await entityClient.getFlag(row.key, false);
+        : row.key === 'filter-targeting' || row.key === 'filter-user-claims'
+          ? await apiClient.getFlag(row.key, false)
+          : await entityClient.getFlag(row.key, false);
     filterRows.push({
       ...row,
       value,
@@ -140,6 +149,20 @@ try {
   }
 
   variant = await variantClient.getVariant('new-dashboard');
+
+  await diagFilterTargeting(
+    'index-ssr',
+    requestContext,
+    togglyEnv.appKey,
+    entityClient,
+    apiClient,
+  );
+  logTogglyDiag('index-ssr', {
+    definitionsBaseUri: togglyEnv.definitionsBaseUri ?? null,
+    verifySignatures: baseOptions.verifySignatures,
+    preset: requestContext.presetName,
+    identity: requestContext.identity ?? null,
+  });
 } finally {
   await apiClient.close({ timeoutMs: 2000 });
   await entityClient.close({ timeoutMs: 2000 });

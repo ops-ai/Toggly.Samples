@@ -1,5 +1,7 @@
 # Direct application, verification and wheel-build pins. Regenerate the hash lock together.
 fastapi==0.141.1
+# pydantic 2.13.x pins pydantic-core 2.46.5, which has no cp315 wheels; 2.14.1 is required on Python 3.15.
+pydantic==2.14.1
 starlette==1.6.0
 anyio==4.15.1
 toggly==1.3.2

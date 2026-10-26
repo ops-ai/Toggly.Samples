@@ -63,13 +63,13 @@ are separate evidence.
 
 ## Versions and verification
 
-Official Ruby downloads and RubyGems metadata checked September 17, 2026:
+Official Ruby downloads and RubyGems metadata checked October 26, 2026:
 
 | Component | Selected version |
 |---|---|
 | Ruby | 4.0.6 |
-| Rails | 8.1.3.1 |
-| `toggly-rails` / `toggly` | 0.4.0 / 1.4.2 |
+| Rails | 8.1.4 |
+| `toggly-rails` / `toggly` | 0.5.0 / 2.0.0 |
 | Puma / Rack | 8.0.2 / 3.2.7 |
 | Propshaft | 1.3.2 |
 | JSON | 2.21.2, explicit `>= 2, < 3` |
@@ -203,7 +203,7 @@ User-Agent and `ord-standard`. Both exact User-Agent strings are kept in
 |---|---|
 | AlwaysOn | ON / ON |
 | Percentage 50 | Sticky by identity; the observed alice/bob results are ON / ON |
-| Targeting users=alice | ON / ON; native negative targeting is not demonstrated |
+| Targeting users=alice | ON / OFF |
 | UserClaims role=admin | ON / OFF |
 | TimeWindow 2020–2099 | ON / ON while the window is open |
 | Country US | ON / OFF |
