@@ -458,6 +458,19 @@ test("fresh browser process restores verified definitions offline and rejects co
   }
 });
 
+test("LiveE2E identity-targeting pack exposes alice on SSR filters", async () => {
+  const response = await fetch(`${origin}/ssr/filters?preset=matching`, {
+    headers: { "x-demo-preset": "matching" },
+  });
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /data-testid="filter-identity"[^>]*>[\s\S]*?alice/);
+  assert.match(
+    html,
+    /data-flag="filter-targeting"[\s\S]*?data-toggly-state="on"/,
+  );
+});
+
 test("LiveE2E harness preset=matching enables filter-country on SSR filters matrix", async () => {
   const response = await fetch(
     `${origin}/ssr/filters?preset=matching`,
