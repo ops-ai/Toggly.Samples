@@ -69,7 +69,7 @@ September 10, 2026 (September 11 UTC):
 | Component | Locked version |
 |---|---|
 | Ruby | 4.0.6 |
-| Toggly core (`toggly`) | 1.4.2 |
+| Toggly core (`toggly`) | 2.0.0 |
 | Rack / Rackup | 3.2.7 / 2.3.1 |
 | Puma | 8.0.2 |
 | Rack Session | 2.1.2 |

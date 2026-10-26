@@ -69,7 +69,7 @@ Official Ruby downloads and RubyGems metadata checked September 17, 2026:
 |---|---|
 | Ruby | 4.0.6 |
 | Rails | 8.1.3.1 |
-| `toggly-rails` / `toggly` | 0.4.0 / 1.4.2 |
+| `toggly-rails` / `toggly` | 0.5.0 / 2.0.0 |
 | Puma / Rack | 8.0.2 / 3.2.7 |
 | Propshaft | 1.3.2 |
 | JSON | 2.21.2, explicit `>= 2, < 3` |

@@ -118,10 +118,10 @@ public class ShowcaseTests
             Assert.Equal(preset == "matching", flags.GetProperty("ExpressCheckout").GetBoolean());
             foreach (var key in FeatureFlags.Filters.Where(key => key != "filter-percentage" && key != "filter-device-type"))
                 Assert.True((key is "filter-always-on" or "filter-time-window" || preset == "matching") == flags.GetProperty(key).GetBoolean(), $"{preset}: {key} = {flags.GetProperty(key)}; parsed device={UAParser.Parser.GetDefault().Parse(preset == "matching" ? SamplePersonas.Matching.Agent : SamplePersonas.NonMatching.Agent).Device.Family}");
-            // UAParser's native .NET device family is Mac, not the catalog's
-            // Macintosh. Keep the actual shared rule and expose the mismatch.
+            // UAParser still reports Mac. The SDK normalizes that to Macintosh
+            // before DeviceType, so the shared rule matches only the Mac preset.
             Assert.Equal("Mac", UAParser.Parser.GetDefault().Parse(SamplePersonas.Matching.Agent).Device.Family);
-            Assert.False(flags.GetProperty("filter-device-type").GetBoolean());
+            Assert.Equal(preset == "matching", flags.GetProperty("filter-device-type").GetBoolean());
             using var again = JsonDocument.Parse(await client.GetStringAsync("/api/snapshot?preset=" + preset));
             Assert.Equal(flags.GetProperty("filter-percentage").GetBoolean(), again.RootElement.GetProperty("flags").GetProperty("filter-percentage").GetBoolean());
         }
