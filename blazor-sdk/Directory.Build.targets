@@ -1,22 +1,34 @@
 <Project>
   <!-- Keep the SDK-injected WebAssembly pack aligned with the committed
        net10 lockfiles across machines with different workload manifests. -->
-  <Target Name="PinNet8WebAssemblyPack" BeforeTargets="ProcessFrameworkReferences"
+  <Target Name="PinNet8ImplicitPacks" BeforeTargets="ProcessFrameworkReferences"
           Condition="'$(TargetFramework)' == 'net8.0'">
     <ItemGroup>
       <KnownWebAssemblySdkPack Update="Microsoft.NET.Sdk.WebAssembly.Pack"
                                Condition="'%(KnownWebAssemblySdkPack.TargetFramework)' == 'net8.0'">
         <WebAssemblySdkPackVersion>8.0.32</WebAssemblySdkPackVersion>
       </KnownWebAssemblySdkPack>
+      <KnownILLinkPack Update="Microsoft.NET.ILLink.Tasks"
+                       Condition="'%(KnownILLinkPack.TargetFramework)' == 'net8.0'">
+        <ILLinkPackVersion>$(Net8ILLinkPackVersion)</ILLinkPackVersion>
+      </KnownILLinkPack>
     </ItemGroup>
   </Target>
-  <Target Name="PinNet10WebAssemblyPack" BeforeTargets="ProcessFrameworkReferences"
+  <Target Name="PinNet10ImplicitPacks" BeforeTargets="ProcessFrameworkReferences"
           Condition="'$(TargetFramework)' == 'net10.0'">
     <ItemGroup>
       <KnownWebAssemblySdkPack Update="Microsoft.NET.Sdk.WebAssembly.Pack"
                                Condition="'%(KnownWebAssemblySdkPack.TargetFramework)' == 'net10.0'">
-        <WebAssemblySdkPackVersion>10.0.13</WebAssemblySdkPackVersion>
+        <WebAssemblySdkPackVersion>$(Net10ImplicitPackVersion)</WebAssemblySdkPackVersion>
       </KnownWebAssemblySdkPack>
+      <KnownILLinkPack Update="Microsoft.NET.ILLink.Tasks"
+                       Condition="'%(KnownILLinkPack.TargetFramework)' == 'net10.0'">
+        <ILLinkPackVersion>$(Net10ImplicitPackVersion)</ILLinkPackVersion>
+      </KnownILLinkPack>
+      <KnownAspNetCorePack Update="Microsoft.AspNetCore.App.Internal.Assets"
+                             Condition="'%(KnownAspNetCorePack.TargetFramework)' == 'net10.0'">
+        <AspNetCorePackVersion>$(Net10ImplicitPackVersion)</AspNetCorePackVersion>
+      </KnownAspNetCorePack>
     </ItemGroup>
   </Target>
 </Project>
