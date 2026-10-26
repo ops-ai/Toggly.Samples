@@ -8,7 +8,7 @@ defmodule Showcase.Endpoint do
     same_site: "Lax"
   ]
   socket("/live", Phoenix.LiveView.Socket,
-    websocket: [connect_info: [:x_headers, session: @session_options]]
+    websocket: [connect_info: [:x_headers, :cookies, session: @session_options]]
   )
 
   plug(Plug.Static, at: "/", from: :toggly_showcase, only: ~w(assets))

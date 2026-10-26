@@ -7,9 +7,9 @@ defmodule Showcase.Live do
   on_mount(Showcase.AssignPresetContext)
   on_mount({Toggly.LiveView, {Showcase.Flags, @keys}})
 
-  def mount(_params, _session, socket) do
-    preset = Map.get(socket.assigns, :preset, "anonymous")
-    context = Map.get(socket.assigns, :toggly_context, Showcase.Context.preset(preset))
+  def mount(params, session, socket) do
+    preset = resolve_preset(params, session, socket)
+    context = Showcase.Context.preset(preset)
     socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
     {:ok,
@@ -19,6 +19,7 @@ defmodule Showcase.Live do
        keys: @keys,
        action: "No action yet",
        preset: preset,
+       toggly_context: context,
        refresh: "Waiting"
      )}
   end
@@ -27,7 +28,7 @@ defmodule Showcase.Live do
   def resolve_preset(params, session, socket) do
     case Map.get(params, "preset") do
       nil ->
-        case session["sample_preset"] ||
+        case session_preset(session) ||
                preset_from_session_context(session) ||
                cookie_preset(socket) ||
                header_preset(socket) do
@@ -38,6 +39,10 @@ defmodule Showcase.Live do
       value ->
         normalize_preset(value)
     end
+  end
+
+  defp session_preset(session) when is_map(session) do
+    session["sample_preset"] || session[:sample_preset]
   end
 
   defp preset_from_session_context(%{"toggly_context" => %{"identity" => "alice"}}),
@@ -76,13 +81,12 @@ defmodule Showcase.Live do
 
   def handle_event("preset", %{"mode" => mode}, socket) do
     normalized = if mode == "non-matching", do: "nonmatching", else: mode
+    context = Showcase.Context.preset(normalized)
 
     socket =
-      Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys,
-        context: Showcase.Context.preset(normalized)
-      )
+      Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
-    {:noreply, assign(socket, :preset, normalized)}
+    {:noreply, assign(socket, preset: normalized, toggly_context: context)}
   end
 
   def handle_event("submit", _, socket) do
