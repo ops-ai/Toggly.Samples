@@ -8,6 +8,6 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Toggly.FeatureManagement.Blazor.Server" Version="3.14.2" />
+    <PackageReference Include="Toggly.FeatureManagement.Blazor.Server" Version="3.14.3" />
   </ItemGroup>
 </Project>

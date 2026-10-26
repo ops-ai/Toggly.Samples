@@ -7,6 +7,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Toggly.FeatureManagement.Client.Desktop" Version="3.14.2" />
+    <PackageReference Include="Toggly.FeatureManagement.Client.Desktop" Version="3.14.3" />
   </ItemGroup>
 </Project>
