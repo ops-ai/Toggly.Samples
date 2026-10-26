@@ -5,6 +5,8 @@ import {
   createTogglyRequestContext,
   togglyIdentityFields,
 } from './toggly-config';
+import { readTogglyRuntimeEnv } from './server/toggly-runtime-env';
+import { logTogglyDiag } from './server/toggly-diag';
 
 /**
  * Request-scoped Toggly middleware.
@@ -19,17 +21,22 @@ export const onRequest = defineMiddleware(async (context, next) => {
     globalThis as { process?: { env?: Record<string, string | undefined> } }
   ).process?.env;
 
-  const requestContext = createTogglyRequestContext(context.url, {
-    cookies: context.cookies,
-    headers: context.request.headers,
-  });
+  const togglyEnv = readTogglyRuntimeEnv();
+  const requestContext = createTogglyRequestContext(
+    context.url,
+    {
+      cookies: context.cookies,
+      headers: context.request.headers,
+    },
+    context.request,
+  );
   const middleware = createTogglyMiddleware({
     ...createTogglyOptions(
-      import.meta.env.TOGGLY_APP_KEY,
-      import.meta.env.TOGGLY_ENVIRONMENT ?? 'Production',
+      togglyEnv.appKey,
+      togglyEnv.environment,
       runtimeEnvironment?.TOGGLY_BETA_ACCESS_DEFAULT !== 'false',
-      import.meta.env.TOGGLY_DEFINITIONS_BASE_URI,
-      import.meta.env.TOGGLY_METRICS_BASE_URL,
+      togglyEnv.definitionsBaseUri,
+      togglyEnv.metricsBaseUrl,
     ),
     ...togglyIdentityFields(requestContext),
   });
@@ -54,6 +61,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
       'x-toggly-identity',
       requestContext.identity ?? 'anonymous',
     );
+    logTogglyDiag('middleware', {
+      path: context.url.pathname,
+      preset: requestContext.presetName,
+      identity: requestContext.identity ?? null,
+      appKeyPresent: Boolean(togglyEnv.appKey),
+      appKeyLength: togglyEnv.appKey?.length ?? 0,
+      definitionsBaseUri: togglyEnv.definitionsBaseUri ?? null,
+    });
     return response;
   });
 });

@@ -23,23 +23,26 @@ defmodule Showcase.Cookies do
   end
 
   def preset_from_socket(socket) do
-    cookies =
-      case get_connect_info(socket, :x_headers) do
-        headers when is_list(headers) ->
-          Enum.find_value(headers, %{}, fn
-            {"cookie", value} -> parse_header(value)
-            {"Cookie", value} -> parse_header(value)
-            _ -> nil
-          end)
-
-        _ ->
-          %{}
-      end
+    cookies = cookies_from_connect_info(socket)
 
     case cookies do
       %{"sample-preset" => value} when is_binary(value) and value != "" -> value
       %{"toggly-preset" => value} when is_binary(value) and value != "" -> value
       _ -> nil
+    end
+  end
+
+  defp cookies_from_connect_info(socket) do
+    case get_connect_info(socket, :x_headers) do
+      headers when is_list(headers) ->
+        Enum.find_value(headers, %{}, fn
+          {"cookie", value} -> parse_header(value)
+          {"Cookie", value} -> parse_header(value)
+          _ -> nil
+        end)
+
+      _ ->
+        %{}
     end
   end
 end
