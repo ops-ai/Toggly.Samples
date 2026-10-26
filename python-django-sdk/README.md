@@ -11,12 +11,12 @@ use your real authentication and authorization in an application built from it.
 
 ## Quick start
 
-Use Python **3.14.7** on macOS or Linux. The production example uses Gunicorn;
+Use Python **3.15.2** on macOS or Linux. The production example uses Gunicorn;
 on Windows use WSL for the same commands.
 
 ```bash
 cd python-django-sdk
-python3.14 -m venv .venv
+python3.15 -m venv .venv
 source .venv/bin/activate
 python -m pip install --require-hashes -r requirements.txt
 cp .env.example .env
@@ -258,7 +258,7 @@ Django claims/country/browser/language/OS columns stay OFF without explicit mapp
 ## Versions and verification
 
 Registry checkpoint: **2026-10-09**. Latest stable
-[Python](https://www.python.org/downloads/) 3.14.7 and published PyPI
+[Python](https://www.python.org/downloads/) 3.15.2 and published PyPI
 [Django](https://pypi.org/project/Django/) 6.1.1,
 [toggly](https://pypi.org/project/toggly/) 1.3.2 and
 [toggly-django](https://pypi.org/project/toggly-django/) 0.5.0.
@@ -269,7 +269,7 @@ Gunicorn 26.2.0, WhiteNoise 6.12.0 and python-dotenv 1.2.3 support the host;
 cryptography 50.0.1 signs test-only loopback fixtures. Exact direct and transitive
 versions plus artifact hashes are in `requirements.txt`; `requirements.in`
 records the direct pins. To update, change the appropriate pin and regenerate
-with `uv pip compile requirements.in --python 3.14 --generate-hashes --output-file requirements.txt`.
+with `uv pip compile requirements.in --python 3.15 --python-platform manylinux_2_28_x86_64 --generate-hashes --output-file requirements.txt`.
 Dependabot tracks the actual pip manifests.
 
 ```bash
