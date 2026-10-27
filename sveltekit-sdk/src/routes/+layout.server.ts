@@ -1,6 +1,5 @@
 import { loadToggly } from '@ops-ai/toggly-sveltekit/server';
 import { TOGGLY_APP_KEY } from '$app/env/private';
-import { PUBLIC_TOGGLY_APP_KEY } from '$app/env/public';
 
 import {
   PUBLIC_TOGGLY_APP_KEY,
