@@ -17,8 +17,16 @@ export default function Root({ children }) {
   const generated =
     typeof __TOGGLY_CONFIG__ === "undefined" ? {} : __TOGGLY_CONFIG__;
   const offline = !generated.appKey;
-  const [preset, setPreset] = useState("matching");
-  const [harnessIdentity, setHarnessIdentity] = useState(undefined);
+  const [preset, setPreset] = useState(() =>
+    typeof window !== "undefined"
+      ? resolveHarnessPreset().preset
+      : "matching",
+  );
+  const [harnessIdentity, setHarnessIdentity] = useState(() =>
+    typeof window !== "undefined"
+      ? resolveHarnessPreset().identity
+      : undefined,
+  );
   useEffect(() => {
     const resolved = resolveHarnessPreset();
     setPreset(resolved.preset);
@@ -42,7 +50,12 @@ export default function Root({ children }) {
     }),
     [preset, toggles, safeDefaults, harnessIdentity],
   );
-  const sessionKey = JSON.stringify([preset, toggles, safeDefaults]);
+  const sessionKey = JSON.stringify([
+    preset,
+    toggles,
+    safeDefaults,
+    harnessIdentity,
+  ]);
   const workshop = {
     offline,
     preset,
