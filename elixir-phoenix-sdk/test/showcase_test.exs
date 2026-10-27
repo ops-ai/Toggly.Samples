@@ -66,6 +66,11 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-targeting", "ON")
   end
 
+  test "preset resolution preserves matching from socket assigns when session is empty" do
+    socket = %Phoenix.LiveView.Socket{assigns: %{preset: "matching"}}
+    assert Showcase.PresetResolution.resolve(%{}, %{}, socket) == "matching"
+  end
+
   test "mount reads x-demo-preset header when query and cookie omit preset (LiveE2E fingerprint)" do
     conn =
       build_conn()

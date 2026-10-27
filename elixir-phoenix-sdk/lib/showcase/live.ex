@@ -8,7 +8,7 @@ defmodule Showcase.Live do
   on_mount(Showcase.AssignPresetContext)
 
   def mount(params, session, socket) do
-    preset = resolve_preset(params, session, socket)
+    preset = Showcase.PresetResolution.resolve(params, session, socket)
     context = Showcase.Context.preset(preset)
     socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
@@ -30,6 +30,7 @@ defmodule Showcase.Live do
       nil ->
         case session_preset(session) ||
                preset_from_session_context(session) ||
+               query_preset(socket) ||
                cookie_preset(socket) ||
                header_preset(socket) do
           nil -> "anonymous"
@@ -39,6 +40,7 @@ defmodule Showcase.Live do
       "none" ->
         case session_preset(session) ||
                preset_from_session_context(session) ||
+               query_preset(socket) ||
                cookie_preset(socket) ||
                header_preset(socket) do
           nil -> "anonymous"
@@ -62,17 +64,37 @@ defmodule Showcase.Live do
 
   defp preset_from_session_context(_), do: nil
 
-  defp header_preset(socket) do
-    case Phoenix.LiveView.get_connect_info(socket, :x_headers) do
-      headers when is_list(headers) ->
-        Enum.find_value(headers, fn
-          {"x-demo-preset", value} when is_binary(value) and value != "" -> value
+  defp query_preset(socket) do
+    case Phoenix.LiveView.get_connect_info(socket, :uri) do
+      %URI{query: query} when is_binary(query) and query != "" ->
+        case URI.decode_query(query) |> Map.get("preset") do
+          value when is_binary(value) and value != "" -> value
           _ -> nil
-        end)
+        end
 
       _ ->
         nil
     end
+  end
+
+  defp header_preset(socket) do
+    case Phoenix.LiveView.get_connect_info(socket, :x_headers) do
+      headers when is_list(headers) ->
+        header_value(headers, "x-demo-preset")
+
+      _ ->
+        nil
+    end
+  end
+
+  defp header_value(headers, name) do
+    Enum.find_value(headers, fn
+      {key, value} when is_binary(key) and is_binary(value) ->
+        if String.downcase(key) == name, do: value, else: nil
+
+      _ ->
+        nil
+    end)
   end
 
   defp cookie_preset(socket), do: Showcase.Cookies.preset_from_socket(socket)

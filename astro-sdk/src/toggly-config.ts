@@ -72,16 +72,31 @@ export type TogglyRequestSource = {
   cookies?: CookieSource;
 };
 
-/** Prefer the incoming Request URL so preset query params are never dropped. */
+/**
+ * Prefer the incoming Request URL, but merge query params from `url` (Astro.url)
+ * when adapters/proxies strip search from `request.url` (Live E2E ?preset=matching).
+ */
 export function resolveRequestUrl(url: URL, request?: Request): URL {
+  let resolved: URL;
   if (request?.url) {
     try {
-      return new URL(request.url);
+      resolved = new URL(request.url);
     } catch {
-      /* fall through */
+      resolved = new URL(url.href);
+    }
+  } else {
+    resolved = new URL(url.href);
+  }
+
+  if (url.search) {
+    for (const [key, value] of url.searchParams) {
+      if (!resolved.searchParams.has(key)) {
+        resolved.searchParams.set(key, value);
+      }
     }
   }
-  return url;
+
+  return resolved;
 }
 
 function readHeader(source: HeaderSource | undefined, name: string) {

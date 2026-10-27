@@ -14,7 +14,6 @@ import {
   togglyIdentityFields,
 } from '../toggly-config';
 import { readTogglyRuntimeEnv } from '../server/toggly-runtime-env';
-import { diagFilterTargeting, logTogglyDiag } from '../server/toggly-diag';
 import {
   demoKeys,
   filterCatalog,
@@ -149,20 +148,6 @@ try {
   }
 
   variant = await variantClient.getVariant('new-dashboard');
-
-  await diagFilterTargeting(
-    'index-ssr',
-    requestContext,
-    togglyEnv.appKey,
-    entityClient,
-    apiClient,
-  );
-  logTogglyDiag('index-ssr', {
-    definitionsBaseUri: togglyEnv.definitionsBaseUri ?? null,
-    verifySignatures: baseOptions.verifySignatures,
-    preset: requestContext.presetName,
-    identity: requestContext.identity ?? null,
-  });
 } finally {
   await apiClient.close({ timeoutMs: 2000 });
   await entityClient.close({ timeoutMs: 2000 });
