@@ -17,16 +17,9 @@ export default function Root({ children }) {
   const generated =
     typeof __TOGGLY_CONFIG__ === "undefined" ? {} : __TOGGLY_CONFIG__;
   const offline = !generated.appKey;
-  const [preset, setPreset] = useState(() =>
-    typeof window !== "undefined"
-      ? resolveHarnessPreset().preset
-      : "matching",
-  );
-  const [harnessIdentity, setHarnessIdentity] = useState(() =>
-    typeof window !== "undefined"
-      ? resolveHarnessPreset().identity
-      : undefined,
-  );
+  // Default on SSR/static HTML; apply harness cookies/query after mount to avoid hydration mismatch.
+  const [preset, setPreset] = useState("matching");
+  const [harnessIdentity, setHarnessIdentity] = useState(undefined);
   useEffect(() => {
     const resolved = resolveHarnessPreset();
     setPreset(resolved.preset);
