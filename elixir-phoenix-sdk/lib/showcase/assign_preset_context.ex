@@ -13,7 +13,7 @@ defmodule Showcase.AssignPresetContext do
   def on_mount(_default, params, session, socket) do
     preset = Showcase.PresetResolution.resolve(params, session, socket)
     context = Showcase.Context.preset(preset)
-    keys = socket.assigns.toggly_keys
+    keys = Map.get(socket.assigns, :toggly_keys, Showcase.Live.toggly_keys())
 
     socket =
       assign(socket,

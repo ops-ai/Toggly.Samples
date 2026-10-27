@@ -4,8 +4,10 @@ defmodule Showcase.Live do
 
   @filters ~w(filter-always-on filter-percentage filter-targeting filter-user-claims filter-time-window filter-country filter-browser-family filter-browser-language filter-device-type filter-os filter-context-property)
   @keys ~w(new-dashboard api-v2 enhanced-submit ExpressCheckout beta-access) ++ @filters
-  on_mount({Toggly.LiveView, {Showcase.Flags, @keys}})
+
+  def toggly_keys, do: @keys
   on_mount(Showcase.AssignPresetContext)
+  on_mount({Toggly.LiveView, {Showcase.Flags, @keys}})
 
   def mount(params, session, socket) do
     preset = Showcase.PresetResolution.resolve(params, session, socket)
