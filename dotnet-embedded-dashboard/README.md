@@ -98,8 +98,8 @@ needs **no SaaS app setup** and has one logical environment, `Production`.
 
 - Embedded v1 supports Boolean flags, not variants, allocations, experiments or
   analytics. A Boolean branch is not experiment assignment.
-- UAParser reports the matching preset's device family as **`Mac`**. Toggly
-  **3.14.3+** normalizes that to **`Macintosh`** before DeviceType matching, so
+- UAParser reports the matching preset's device family as **`Mac`**. The Toggly
+  .NET SDK normalizes that to **`Macintosh`** before DeviceType matching, so
   the bundled `example-catalog.json` uses the shared template's
   `DeviceType:0 = Macintosh` rule. Browser family remains `Chrome` and
   operating system uses `OperatingSystem:0 = Mac`.
