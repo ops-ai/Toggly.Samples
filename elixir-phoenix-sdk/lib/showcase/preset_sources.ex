@@ -73,8 +73,6 @@ defmodule Showcase.PresetSources do
         do: {String.downcase(name), value}
   end
 
-  defp headers(list) when is_list(list), do: list
-
   defp resolve(query_params, cookies, headers, session) when is_map(query_params) do
     explicit = Map.get(query_params, "preset")
 
