@@ -167,15 +167,7 @@
         <thead><tr><th>Flag</th><th>Evaluated result</th></tr></thead><tbody
           >{#each data.matrix as row}
             {@const entity = data.matching ? vip : standard}
-            {@const ctx = data.context}
-            {@const liveOn =
-              $toggly &&
-              toggly.isEnabled(row.key, {
-                entity,
-                identity: ctx.identity,
-                groups: ctx.groups,
-                claims: ctx.claims,
-              })}
+            {@const liveOn = $toggly && toggly.isEnabled(row.key, { entity })}
             {@const togglyState = $toggly ? (liveOn ? 'on' : 'off') : row.enabled ? 'on' : 'off'}
             <tr {...{ label: row.key } as Record<string, string>} data-filter={row.key}
               ><td><code>{row.key}</code></td><td class:on={row.enabled} class:off={!row.enabled}
