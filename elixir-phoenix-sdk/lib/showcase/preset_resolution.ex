@@ -10,7 +10,7 @@ defmodule Showcase.PresetResolution do
   """
   def resolve(params, session, socket) do
     session = merge_connect_session(session, socket)
-    Showcase.Live.resolve_preset(params, session, socket)
+    Showcase.PresetSources.for_live(params, session, socket)
   end
 
   defp merge_connect_session(session, socket) when is_map(session) do
