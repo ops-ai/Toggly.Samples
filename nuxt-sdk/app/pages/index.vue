@@ -8,15 +8,15 @@ const preset = ref<DemoPreset>('matching')
 /** When false, /api/snapshot resolves preset from the incoming request (Live E2E headers/cookies). */
 const presetFromUi = ref(false)
 
-const harnessHeaders = useRequestHeaders(['x-demo-preset', 'x-toggly-identity', 'cookie'])
+// Forwards cookies and harness headers on SSR (Live E2E preset=none contract).
+const requestFetch = useRequestFetch()
 
 // The live snapshot is server evaluated. Nuxt runs this through a fresh H3
 // event, so its identity/claims/request values never become process globals.
 const { data: snapshot, status, refresh } = await useAsyncData(
   'toggly-snapshot',
   () =>
-    $fetch('/api/snapshot', {
-      ...(import.meta.server ? { headers: harnessHeaders } : {}),
+    requestFetch('/api/snapshot', {
       ...(presetFromUi.value ? { query: { preset: preset.value } } : {}),
     }),
 )

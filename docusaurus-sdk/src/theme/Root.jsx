@@ -38,23 +38,25 @@ export default function Root({ children }) {
   );
   const [safeDefaults, setSafeDefaults] = useState(false);
   const [entityFilter, setEntityFilter] = useState(null);
+  const resolvedIdentity =
+    harnessIdentity || catalog.users[preset].identity;
   const config = useMemo(
     () => ({
       ...generated,
-      identity: harnessIdentity || catalog.users[preset].identity,
+      identity: resolvedIdentity,
       featureFlagsRefreshInterval: 1000,
       flagDefaults:
         offline && !safeDefaults
           ? catalog.fixtureFlags(preset, toggles)
           : Object.fromEntries(catalog.allKeys.map((k) => [k, false])),
     }),
-    [preset, toggles, safeDefaults, harnessIdentity],
+    [preset, toggles, safeDefaults, resolvedIdentity],
   );
   const sessionKey = JSON.stringify([
     preset,
     toggles,
     safeDefaults,
-    harnessIdentity,
+    resolvedIdentity,
   ]);
   const workshop = {
     offline,

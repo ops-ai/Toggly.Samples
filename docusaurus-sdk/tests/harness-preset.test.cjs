@@ -9,6 +9,17 @@ test("normalizePreset accepts shared harness spellings", () => {
   assert.equal(normalizePreset("none"), null);
 });
 
+test("resolveHarnessPreset reads identity query override", () => {
+  const originalWindow = global.window;
+  global.window = { location: { search: "?identity=carol" } };
+  global.document = { cookie: "" };
+  try {
+    assert.equal(resolveHarnessPreset().identity, "carol");
+  } finally {
+    global.window = originalWindow;
+  }
+});
+
 test("resolveHarnessPreset reads sample-preset cookie when query is absent", () => {
   const originalDocument = global.document;
   const originalWindow = global.window;

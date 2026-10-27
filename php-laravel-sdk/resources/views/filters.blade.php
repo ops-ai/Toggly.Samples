@@ -53,7 +53,10 @@
                         const key = row.getAttribute('data-filter');
                         const enabled = flags?.[key];
                         const cell = row.querySelector('.flag-state');
-                        if (!cell || enabled === undefined || enabled === null) continue;
+                        if (!cell || enabled === undefined || enabled === null) {
+                            // Keep SSR UNKNOWN (no data-toggly-state) until a verified bool arrives.
+                            continue;
+                        }
                         const on = enabled === true;
                         cell.classList.toggle('on', on);
                         cell.classList.toggle('off', !on);
