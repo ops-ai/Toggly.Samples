@@ -61,6 +61,7 @@ export default function Root({ children }) {
   const workshop = {
     offline,
     preset,
+    identity: resolvedIdentity,
     setPreset,
     order,
     setOrder,
