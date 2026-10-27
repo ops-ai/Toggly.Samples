@@ -2,6 +2,7 @@ import { TOGGLY_APP_KEY, TOGGLY_ENVIRONMENT } from '$app/env/private';
 import { PUBLIC_TOGGLY_APP_KEY, PUBLIC_TOGGLY_ENVIRONMENT } from '$app/env/public';
 import { createTogglyClient, createTogglyHandle } from '@ops-ai/toggly-sveltekit/server';
 import { defaults, filters, preset } from '#lib/catalog.js';
+import { frontendExposeKeys } from '#lib/frontend-snapshot.js';
 // Definitions are shared; identity is supplied per request below, never assigned to this client.
 const client = createTogglyClient({
   appKey: TOGGLY_APP_KEY,
@@ -42,7 +43,7 @@ export const handle = createTogglyHandle({
   frontend: {
     appKey: PUBLIC_TOGGLY_APP_KEY,
     environment: PUBLIC_TOGGLY_ENVIRONMENT,
-    expose: [...Object.keys(defaults), 'ExpressCheckout'],
+    expose: frontendExposeKeys,
     featureDefaults: defaults,
     onError: (error) => console.error('Frontend snapshot unavailable', error),
   },

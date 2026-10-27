@@ -1,5 +1,6 @@
 import { loadToggly } from '@ops-ai/toggly-sveltekit/server';
 import { TOGGLY_APP_KEY } from '$app/env/private';
+import { PUBLIC_TOGGLY_APP_KEY } from '$app/env/public';
 
 import {
   PUBLIC_TOGGLY_APP_KEY,
@@ -15,11 +16,21 @@ export const load: LayoutServerLoad = async (event) => {
   // identity changes. The hook has already bound that request's context.
   const matching = event.url.searchParams.get('preset') !== 'non-matching';
   const entity = matching ? vip : standard;
+  const toggly = await loadToggly(event);
+  // Keyless demos: raw filter rules stay on the Node client; seed booleans the
+  // browser store can resolve (see @ops-ai/toggly-hooks-types resolveEvaluatedDefinition).
+  if (!TOGGLY_APP_KEY || !PUBLIC_TOGGLY_APP_KEY) {
+    for (const flag of filters) {
+      toggly.definitions[flag.featureKey] = await event.locals.toggly.isEnabled(flag.featureKey, {
+        entity,
+      });
+    }
+  }
 
   return {
     // Serialize only the verified, allowlisted frontend snapshot. Returning
     // event.locals.toggly would expose an inappropriate server-only object.
-    toggly: await loadToggly(event),
+    toggly,
     publicKey: PUBLIC_TOGGLY_APP_KEY ?? '',
     environment: PUBLIC_TOGGLY_ENVIRONMENT,
     telemetryEnabled: PUBLIC_TOGGLY_ENABLE_TELEMETRY !== 'false',

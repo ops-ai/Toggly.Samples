@@ -168,10 +168,11 @@
           >{#each data.matrix as row}
             {@const entity = data.matching ? vip : standard}
             {@const liveOn = $toggly && toggly.isEnabled(row.key, { entity })}
-            {@const togglyState = $toggly ? (liveOn ? 'on' : 'off') : row.enabled ? 'on' : 'off'}
+            {@const enabled = $toggly ? liveOn : row.enabled}
             <tr {...{ label: row.key } as Record<string, string>} data-filter={row.key}
-              ><td><code>{row.key}</code></td><td class:on={row.enabled} class:off={!row.enabled}
-                ><span data-toggly-state={togglyState}>{row.enabled ? 'ON' : 'OFF'}</span></td
+              ><td><code>{row.key}</code></td><td class:on={enabled} class:off={!enabled}
+                ><span data-toggly-state={enabled ? 'on' : 'off'}>{enabled ? 'ON' : 'OFF'}</span
+                ></td
               ></tr
             >{/each}</tbody
         >
