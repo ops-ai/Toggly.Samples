@@ -104,6 +104,12 @@ pub async fn style() -> HttpResponse {
         .body(include_str!("../static/workshop.css"))
 }
 
+pub async fn live_matrix_script() -> HttpResponse {
+    HttpResponse::Ok()
+        .insert_header((header::CONTENT_TYPE, "application/javascript; charset=utf-8"))
+        .body(include_str!("../static/live-matrix.js"))
+}
+
 #[derive(Deserialize)]
 pub struct SessionForm {
     csrf: String,

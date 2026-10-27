@@ -6,7 +6,6 @@ defmodule Showcase.Router do
     plug(:accepts, ["html"])
     plug(:fetch_cookies)
     plug(:fetch_session)
-    plug(Showcase.PresetCookiePlug)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug(:put_root_layout, html: {Showcase.Layouts, :root})

@@ -44,9 +44,9 @@ newest published release in `@astrojs/check` 0.9.10's peer range
 `@astrojs/check` (latest 0.9.10) or current Astro 7.3.2 toolchain declares a
 `^7` TypeScript peer.
 
-`npm run build` produces the static SSG site (including
-`toggly-page-features.json`). `npm run build:ssr` builds the Node adapter
-server used by middleware and page-gate checks.
+`npm run build` produces the Node adapter SSR server used by Live E2E and
+`npm start`. `npm run build:static` builds the static SSG teaching site
+(including `toggly-page-features.json`).
 
 With a Frontend App Key, the integration enables browser usage checks and
 business metrics for the one store shared by React, Vue, and Svelte islands.

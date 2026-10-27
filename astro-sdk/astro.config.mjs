@@ -6,9 +6,9 @@ import vue from '@astrojs/vue';
 import toggly from '@ops-ai/astro-feature-flags-toggly/integration';
 import { createTogglyOptions } from './src/toggly-config';
 
-// Static SSG is the default teaching build. Set SAMPLE_OUTPUT=server for the
-// Node adapter SSR build used by middleware/page-gate tests.
-const server = process.env.SAMPLE_OUTPUT === 'server';
+// Live E2E and `npm start` use the Node adapter SSR build so ?preset= and harness
+// headers evaluate per request. Set SAMPLE_OUTPUT=static for the teaching SSG build.
+const server = process.env.SAMPLE_OUTPUT !== 'static';
 
 export default defineConfig({
   output: server ? 'server' : 'static',

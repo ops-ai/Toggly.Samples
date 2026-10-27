@@ -66,6 +66,14 @@ pub fn style() -> RawCss<&'static str> {
     RawCss(include_str!("../static/workshop.css"))
 }
 
+#[rocket::get("/static/live-matrix.js")]
+pub fn live_matrix_script() -> (rocket::http::ContentType, &'static str) {
+    (
+        rocket::http::ContentType::JavaScript,
+        include_str!("../static/live-matrix.js"),
+    )
+}
+
 #[derive(rocket::FromForm)]
 pub struct SessionForm {
     csrf: String,
