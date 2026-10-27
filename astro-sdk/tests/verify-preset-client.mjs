@@ -274,11 +274,10 @@ const launchBrowser = () =>
   });
 
 // Live E2E builds the SSR bundle without secrets; the Node server gets TOGGLY_* at runtime.
-execFileSync(process.execPath, [npm, 'run', 'build:ssr'], {
+execFileSync(process.execPath, [npm, 'run', 'build'], {
   cwd: root,
   env: {
     ...process.env,
-    SAMPLE_OUTPUT: 'server',
     TOGGLY_APP_KEY: '',
     TOGGLY_DEFINITIONS_BASE_URI: '',
     TOGGLY_METRICS_BASE_URL: '',
@@ -295,7 +294,7 @@ await withSsrServer(4329, async (origin) => {
   }
 });
 
-run(['run', 'build:ssr'], { SAMPLE_OUTPUT: 'server' });
+run(['run', 'build']);
 
 await withSsrServer(4330, async (origin) => {
   const browser = await launchBrowser();

@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "build:ssr": "SAMPLE_OUTPUT=server astro build",
+    "build:static": "SAMPLE_OUTPUT=static astro build",
+    "build:ssr": "astro build",
+    "start": "node dist/server/entry.mjs",
     "check": "astro check",
-    "test": "node --experimental-strip-types tests/verify-request-context.mjs && node tests/verify-evaluations.mjs && node --experimental-strip-types tests/verify-filter-matrix-ssr.mjs && node --experimental-strip-types tests/verify-live-refresh.mjs && node --experimental-strip-types tests/verify-preset-client.mjs && node tests/verify.mjs && node tests/verify-telemetry.mjs"
+    "test": "node --experimental-strip-types tests/verify-request-context.mjs && node tests/verify-evaluations.mjs && node --experimental-strip-types tests/verify-filter-matrix-ssr.mjs && node --experimental-strip-types tests/verify-live-refresh.mjs && node --experimental-strip-types tests/verify-preset-client.mjs && node --experimental-strip-types tests/verify-harness-start.mjs && node tests/verify.mjs && node tests/verify-telemetry.mjs"
   },
   "dependencies": {
     "@astrojs/node": "11.1.9",

@@ -107,6 +107,16 @@ pub async fn style() -> impl IntoResponse {
     )
 }
 
+pub async fn live_matrix_script() -> impl IntoResponse {
+    (
+        [(
+            header::CONTENT_TYPE,
+            HeaderValue::from_static("application/javascript; charset=utf-8"),
+        )],
+        include_str!("../static/live-matrix.js"),
+    )
+}
+
 #[derive(Deserialize)]
 pub struct SessionForm {
     csrf: String,

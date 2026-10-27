@@ -206,7 +206,7 @@ async fn filters(context: &WorkshopContext, client: Option<&TogglyClient>) -> St
     for (key, name, expectation) in FILTERS {
         let result = decision(client, key, &context.evaluation).await;
         rows.push_str(&format!(
-            "<tr>
+            "<tr data-filter=\"{key}\" label=\"{key}\">
 <th scope=\"row\">{name}<br><code>{key}</code></th>
 <td>{}</td>
 <td>{expectation}</td>
@@ -231,6 +231,8 @@ async fn filters(context: &WorkshopContext, client: Option<&TogglyClient>) -> St
         <tbody>
 {rows}        </tbody>
     </table></div>
+    <p class="muted">Live E2E identity-targeting polls native results every two seconds after definition changes.</p>
+    <script src="/static/live-matrix.js" defer></script>
 </section>"##
     )
 }
