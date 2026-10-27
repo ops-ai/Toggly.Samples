@@ -195,7 +195,7 @@ Non-matching UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100
 ```
 
 The installed .NET UA parser returns device family **Mac** for desktop Chrome on
-macOS. Toggly **3.14.3+** normalizes that value to **Macintosh** before
+macOS. The Toggly .NET SDK normalizes that value to **Macintosh** before
 DeviceType matching, so the shared catalog rule works without a .NET-specific
 adaptation. The OS filter still matches **Mac** directly.
 
@@ -294,7 +294,7 @@ smoke. Hosted and local fixture tests do not replace the manual live checklist.
 - [ ] VIP Order enables ExpressCheckout; standard, missing and unregistered
       contexts do not. The Razor entity gate agrees with the programmatic result.
 - [ ] Filters Matching and Non-matching match the table above. DeviceType follows
-      the shared Macintosh rule (SDK 3.14.3+ normalizes Mac). AlwaysOn and
+      the shared Macintosh rule (the Toggly .NET SDK normalizes Mac). AlwaysOn and
       the open time window stay ON; Percentage remains sticky for each identity.
 - [ ] `/api/beta` returns 200/404 when beta-access changes. `/api/multi` requires
       both keys. `/api/data` selects the response version from api-v2.
