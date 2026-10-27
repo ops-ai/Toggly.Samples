@@ -172,8 +172,7 @@
               {...{ label: flag.featureKey } as Record<string, string>}
               data-filter={flag.featureKey}
               ><td><code>{flag.featureKey}</code></td><td class:on={enabled} class:off={!enabled}
-                ><span data-toggly-state={enabled ? 'on' : 'off'}
-                  >{enabled ? 'ON' : 'OFF'}</span
+                ><span data-toggly-state={enabled ? 'on' : 'off'}>{enabled ? 'ON' : 'OFF'}</span
                 ></td
               ></tr
             >{/each}</tbody
