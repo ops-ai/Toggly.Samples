@@ -53,7 +53,7 @@
                         const key = row.getAttribute('data-filter');
                         const enabled = flags?.[key];
                         const cell = row.querySelector('.flag-state');
-                        if (!cell || enabled === undefined) continue;
+                        if (!cell || enabled === undefined || enabled === null) continue;
                         const on = enabled === true;
                         cell.classList.toggle('on', on);
                         cell.classList.toggle('off', !on);
