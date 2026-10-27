@@ -106,7 +106,10 @@ pub async fn style() -> HttpResponse {
 
 pub async fn live_matrix_script() -> HttpResponse {
     HttpResponse::Ok()
-        .insert_header((header::CONTENT_TYPE, "application/javascript; charset=utf-8"))
+        .insert_header((
+            header::CONTENT_TYPE,
+            "application/javascript; charset=utf-8",
+        ))
         .body(include_str!("../static/live-matrix.js"))
 }
 

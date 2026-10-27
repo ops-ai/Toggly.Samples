@@ -171,7 +171,10 @@ pub fn application_with_key(
         .wrap(WorkshopContextMiddleware)
         .route("/", web::get().to(routes::home))
         .route("/static/workshop.css", web::get().to(routes::style))
-        .route("/static/live-matrix.js", web::get().to(routes::live_matrix_script))
+        .route(
+            "/static/live-matrix.js",
+            web::get().to(routes::live_matrix_script),
+        )
         .route("/session", web::post().to(routes::session))
         .route("/api/snapshot", web::get().to(routes::snapshot))
         .route("/api/check", web::get().to(routes::api))

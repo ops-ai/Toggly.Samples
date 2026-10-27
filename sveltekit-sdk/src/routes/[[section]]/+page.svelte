@@ -168,7 +168,9 @@
           >{#each filters as flag}
             {@const entity = data.matching ? vip : standard}
             {@const enabled = $toggly && toggly.isEnabled(flag.featureKey, { entity })}
-            <tr label={flag.featureKey}
+            <tr
+              {...{ label: flag.featureKey } as Record<string, string>}
+              data-filter={flag.featureKey}
               ><td><code>{flag.featureKey}</code></td><td class:on={enabled} class:off={!enabled}
                 ><span data-toggly-state={enabled ? 'on' : 'off'}
                   >{enabled ? 'ON' : 'OFF'}</span
