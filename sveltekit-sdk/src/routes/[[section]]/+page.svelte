@@ -165,18 +165,21 @@
     <div class="card">
       <table>
         <thead><tr><th>Flag</th><th>Evaluated result</th></tr></thead><tbody
-          >{#each filters as flag}
+          >{#each data.matrix as row}
             {@const entity = data.matching ? vip : standard}
-            {@const serverOn =
-              data.matrix.find((row) => row.key === flag.featureKey)?.enabled ?? false}
-            {@const clientOn = $toggly && toggly.isEnabled(flag.featureKey, { entity })}
-            {@const enabled = clientOn !== serverOn ? clientOn : serverOn}
-            <tr
-              {...{ label: flag.featureKey } as Record<string, string>}
-              data-filter={flag.featureKey}
-              ><td><code>{flag.featureKey}</code></td><td class:on={enabled} class:off={!enabled}
-                ><span data-toggly-state={enabled ? 'on' : 'off'}>{enabled ? 'ON' : 'OFF'}</span
-                ></td
+            {@const ctx = data.context}
+            {@const liveOn =
+              $toggly &&
+              toggly.isEnabled(row.key, {
+                entity,
+                identity: ctx.identity,
+                groups: ctx.groups,
+                claims: ctx.claims,
+              })}
+            {@const togglyState = $toggly ? (liveOn ? 'on' : 'off') : row.enabled ? 'on' : 'off'}
+            <tr {...{ label: row.key } as Record<string, string>} data-filter={row.key}
+              ><td><code>{row.key}</code></td><td class:on={row.enabled} class:off={!row.enabled}
+                ><span data-toggly-state={togglyState}>{row.enabled ? 'ON' : 'OFF'}</span></td
               ></tr
             >{/each}</tbody
         >
