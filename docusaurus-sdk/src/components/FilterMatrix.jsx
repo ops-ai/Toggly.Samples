@@ -3,7 +3,7 @@ import { useToggly } from "@ops-ai/toggly-docusaurus-plugin/client";
 import { useWorkshop } from "../theme/Root";
 import catalog from "../sample/catalog.cjs";
 export default function FilterMatrix() {
-  const { flags } = useToggly();
+  const { flags, isReady } = useToggly();
   const { preset, offline, order, entityFilter } = useWorkshop();
   return (
     <section className="panel" id="filters">
@@ -50,11 +50,13 @@ export default function FilterMatrix() {
                         );
                       })()
                     : "Loading"
-                  : flags[key] === true
-                    ? <span data-toggly-state="on">ON</span>
-                    : flags[key] === false
-                      ? <span data-toggly-state="off">OFF</span>
-                      : "Unavailable"}
+                  : !isReady
+                    ? "Loading"
+                    : flags[key] === true
+                      ? <span data-toggly-state="on">ON</span>
+                      : flags[key] === false
+                        ? <span data-toggly-state="off">OFF</span>
+                        : "Unavailable"}
               </td>
             </tr>
           ))}

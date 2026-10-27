@@ -1,22 +1,35 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { allFlagKeys, filterFlags, type DemoPreset } from '../../lib/demo'
+import { getDemoPreset } from '../../server/utils/demo-context'
 
 const config = useRuntimeConfig()
 const appKeyPresent = computed(() => Boolean(config.public.toggly?.appKey))
-const preset = ref<DemoPreset>('matching')
+const event = useRequestEvent()
+const harnessPreset = event ? getDemoPreset(event) : 'matching'
+const preset = ref<DemoPreset>(harnessPreset)
+/** When false, /api/snapshot resolves preset from the incoming request (Live E2E headers/cookies). */
+const presetFromUi = ref(false)
 
 // The live snapshot is server evaluated. Nuxt runs this through a fresh H3
 // event, so its identity/claims/request values never become process globals.
 const { data: snapshot, status, refresh } = await useAsyncData(
   'toggly-snapshot',
-  () => $fetch('/api/snapshot', { query: { preset: preset.value } }),
+  () =>
+    $fetch(
+      '/api/snapshot',
+      presetFromUi.value ? { query: { preset: preset.value } } : {},
+    ),
 )
 
-watch(preset, () => refresh())
+watch(preset, () => {
+  if (presetFromUi.value) refresh()
+})
 
 function choosePreset(next: DemoPreset) {
+  presetFromUi.value = true
   preset.value = next
+  refresh()
 }
 </script>
 

@@ -38,6 +38,17 @@ class ShowcaseTest extends TestCase
         $this->assertArrayNotHasKey('app_key', $json);
     }
 
+    public function test_harness_header_selects_non_matching_without_session(): void
+    {
+        $json = $this->withHeaders(['x-demo-preset' => 'non-matching'])
+            ->getJson('/api/snapshot')
+            ->assertOk()
+            ->json();
+
+        $this->assertSame('bob', $json['identity']);
+        $this->assertFalse($json['flags']['filter-targeting']);
+    }
+
     public function test_non_matching_request_keeps_its_own_identity_and_order(): void
     {
         $this->withSession(['demo.preset' => 'non-matching', 'demo.order' => 'standard']);

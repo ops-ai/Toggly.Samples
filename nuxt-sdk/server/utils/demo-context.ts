@@ -1,15 +1,29 @@
 import { getCookie, getHeader, getQuery, type H3Event } from 'h3'
 import { defaultIdentityForPreset, isDemoPreset, orderForPreset, type DemoPreset } from '../../lib/demo'
 
+function normalizePreset(raw: string | undefined | null): DemoPreset | null {
+  if (!raw) return null
+  if (raw === 'matching') return 'matching'
+  if (raw === 'nonmatching' || raw === 'non-matching') return 'non-matching'
+  return null
+}
+
 /**
- * The controls in this sample intentionally use a cookie and query preset.
- * They make filter outcomes repeatable without pretending that headers and
- * query values are authentication. Replace every extractor with trusted
- * session/user data in a production application.
+ * Live E2E uses preset=none with x-demo-preset / sample-preset (see astro/blazor samples).
+ * Query ?preset= wins when the UI explicitly navigates; otherwise headers and cookies apply.
  */
 export function getDemoPreset(event: H3Event): DemoPreset {
-  const preset = getQuery(event).preset
-  return isDemoPreset(preset) ? preset : 'matching'
+  const queryPreset = getQuery(event).preset
+  if (typeof queryPreset === 'string' && queryPreset !== '' && queryPreset !== 'none') {
+    return isDemoPreset(queryPreset) ? queryPreset : 'matching'
+  }
+
+  const fromHarness =
+    normalizePreset(getHeader(event, 'x-demo-preset')) ??
+    normalizePreset(getCookie(event, 'sample-preset')) ??
+    normalizePreset(getCookie(event, 'toggly-preset'))
+
+  return fromHarness ?? 'matching'
 }
 
 export function getDemoOrder(event: H3Event) {
@@ -18,9 +32,12 @@ export function getDemoOrder(event: H3Event) {
 
 export function getDemoEvalContext(event: H3Event) {
   const preset = getDemoPreset(event)
-  // A browser session identity wins for either preset. The preset still owns
-  // the demonstration defaults and all non-identity filter inputs.
-  const identity = getCookie(event, 'demo-identity') || defaultIdentityForPreset(preset)
+  const harnessIdentity = getHeader(event, 'x-toggly-identity')?.trim()
+  const cookieIdentity = getCookie(event, 'demo-identity')?.trim()
+  const identity =
+    harnessIdentity ||
+    cookieIdentity ||
+    defaultIdentityForPreset(preset)
 
   if (preset === 'matching') {
     return {
@@ -45,8 +62,6 @@ export function getDemoEvalContext(event: H3Event) {
       acceptLanguage: 'fr-FR,fr;q=0.9',
       userAgent:
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
-      // A real request has an actual user-agent and country header. The preset
-      // overrides them only so this catalogue page is deterministic.
       originalUserAgent: getHeader(event, 'user-agent') || undefined,
     },
   }

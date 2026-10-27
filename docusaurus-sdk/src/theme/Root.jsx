@@ -1,6 +1,13 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { TogglyProvider } from "@ops-ai/toggly-docusaurus-plugin/client";
 import catalog from "../sample/catalog.cjs";
+import { resolveHarnessPreset } from "../sample/harness-preset.cjs";
 const WorkshopContext = createContext(null);
 export const useWorkshop = () => useContext(WorkshopContext);
 export default function Root({ children }) {
@@ -11,6 +18,12 @@ export default function Root({ children }) {
     typeof __TOGGLY_CONFIG__ === "undefined" ? {} : __TOGGLY_CONFIG__;
   const offline = !generated.appKey;
   const [preset, setPreset] = useState("matching");
+  const [harnessIdentity, setHarnessIdentity] = useState(undefined);
+  useEffect(() => {
+    const resolved = resolveHarnessPreset();
+    setPreset(resolved.preset);
+    setHarnessIdentity(resolved.identity);
+  }, []);
   const [order, setOrder] = useState("vip");
   const [toggles, setToggles] = useState(() =>
     Object.fromEntries(catalog.demoKeys.map((k) => [k, true])),
@@ -20,14 +33,14 @@ export default function Root({ children }) {
   const config = useMemo(
     () => ({
       ...generated,
-      identity: catalog.users[preset].identity,
+      identity: harnessIdentity || catalog.users[preset].identity,
       featureFlagsRefreshInterval: 1000,
       flagDefaults:
         offline && !safeDefaults
           ? catalog.fixtureFlags(preset, toggles)
           : Object.fromEntries(catalog.allKeys.map((k) => [k, false])),
     }),
-    [preset, toggles, safeDefaults],
+    [preset, toggles, safeDefaults, harnessIdentity],
   );
   const sessionKey = JSON.stringify([preset, toggles, safeDefaults]);
   const workshop = {
