@@ -20,4 +20,16 @@ const harnessNone = createTogglyRequestContext(
 assert.equal(harnessNone.identity, 'alice', 'preset=none must defer to x-demo-preset');
 assert.equal(harnessNone.presetName, 'matching');
 
+const harnessStrippedRequestUrl = createTogglyRequestContext(
+  new URL('http://127.0.0.1:4321/?preset=matching'),
+  undefined,
+  { url: 'http://127.0.0.1:4321/' },
+);
+assert.equal(
+  harnessStrippedRequestUrl.presetName,
+  'matching',
+  'Astro.url query must apply when request.url omits search (Node adapter / Live E2E)',
+);
+assert.equal(harnessStrippedRequestUrl.identity, 'alice');
+
 console.log('Astro request context preset tests passed.');
