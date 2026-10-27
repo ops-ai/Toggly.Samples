@@ -167,7 +167,10 @@
         <thead><tr><th>Flag</th><th>Evaluated result</th></tr></thead><tbody
           >{#each filters as flag}
             {@const entity = data.matching ? vip : standard}
-            {@const enabled = $toggly && toggly.isEnabled(flag.featureKey, { entity })}
+            {@const serverOn =
+              data.matrix.find((row) => row.key === flag.featureKey)?.enabled ?? false}
+            {@const clientOn = $toggly && toggly.isEnabled(flag.featureKey, { entity })}
+            {@const enabled = clientOn !== serverOn ? clientOn : serverOn}
             <tr
               {...{ label: flag.featureKey } as Record<string, string>}
               data-filter={flag.featureKey}
