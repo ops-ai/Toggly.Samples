@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <SampleFramework Condition="'$(SampleFramework)' == ''">net8.0</SampleFramework>
+    <SampleFramework Condition="'$(SampleFramework)' == ''">net10.0</SampleFramework>
     <TargetFramework>$(SampleFramework)</TargetFramework>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <DisableImplicitLibraryPacksFolder>true</DisableImplicitLibraryPacksFolder>

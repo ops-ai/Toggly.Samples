@@ -1,7 +1,11 @@
 <Project>
   <!-- LiveE2E restores with SampleFramework only. Default AspNetCoreVersion from the framework. -->
   <PropertyGroup>
-    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == '' and '$(SampleFramework)' == 'net10.0'">10.0.13</AspNetCoreVersion>
-    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == ''">8.0.32</AspNetCoreVersion>
+    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == '' and '$(SampleFramework)' == 'net8.0'">8.0.32</AspNetCoreVersion>
+    <AspNetCoreVersion Condition="'$(AspNetCoreVersion)' == ''">10.0.13</AspNetCoreVersion>
+    <!-- SDK-injected pack versions (ILLink, Internal.Assets, WebAssembly.Pack) follow the
+         installed SDK patch unless pinned here; Live E2E locked restore must match GitHub CI. -->
+    <Net10ImplicitPackVersion Condition="'$(Net10ImplicitPackVersion)' == ''">10.0.14</Net10ImplicitPackVersion>
+    <Net8ILLinkPackVersion Condition="'$(Net8ILLinkPackVersion)' == ''">8.0.32</Net8ILLinkPackVersion>
   </PropertyGroup>
 </Project>
