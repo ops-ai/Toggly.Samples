@@ -69,7 +69,6 @@ Official Ruby downloads and RubyGems metadata checked October 26, 2026:
 |---|---|
 | Ruby | 4.0.6 |
 | Rails | 8.1.4 |
-| `toggly-rails` / `toggly` | 0.5.0 / 2.0.0 |
 | Puma / Rack | 8.0.2 / 3.2.7 |
 | Propshaft | 1.3.2 |
 | JSON | 2.21.2, explicit `>= 2, < 3` |
@@ -80,6 +79,9 @@ metadata decoding. JSON 3 requires keyword options; the explicit compatible JSON
 bound keeps that native path working. ActiveSupport's declared `json >= 0`
 constraint permits JSON 2.21.2. This is ordinary published dependency resolution,
 with the latest stable Rails/runtime and published Toggly packages retained.
+Published Toggly gems ([`toggly-rails`](https://rubygems.org/gems/toggly-rails),
+[`toggly`](https://rubygems.org/gems/toggly)): exact versions in
+[`Gemfile`](Gemfile) and [`Gemfile.lock`](Gemfile.lock).
 No SDK patch, serializer downgrade or dependency bypass is used.
 
 The checksum-bearing lock includes generic Ruby, macOS and Linux platforms.

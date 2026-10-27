@@ -96,7 +96,7 @@ identity and claims.
 
 ## Package versions
 
-- `@ops-ai/feature-flags-toggly` `1.9.0`
+- [`@ops-ai/feature-flags-toggly`](https://www.npmjs.com/package/@ops-ai/feature-flags-toggly) (published npm package; exact pin in [`package.json`](package.json))
 - Vite `8.3.0`
 - TypeScript `7.0.2`
 - Vitest `5.0.0`

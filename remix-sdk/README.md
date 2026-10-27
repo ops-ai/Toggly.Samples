@@ -90,7 +90,7 @@ building, so restart development or rebuild production assets after changing it.
 
 - `react-router`, `@react-router/dev`, `@react-router/node`, `@react-router/serve` `8.4.0`
 - `react`, `react-dom` `19.3.1`
-- `@ops-ai/react-router-toggly` `1.5.1`
+- [`@ops-ai/react-router-toggly`](https://www.npmjs.com/package/@ops-ai/react-router-toggly) (published npm package; exact pin in [`package.json`](package.json))
 
 ## Evaluation, refresh, cache, and limitations
 

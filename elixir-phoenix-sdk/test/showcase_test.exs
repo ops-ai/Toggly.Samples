@@ -66,6 +66,51 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-targeting", "ON")
   end
 
+  test "connected preset resolution uses session when socket assigns are empty" do
+    session = %{
+      "sample_preset" => "matching",
+      "toggly_context" => Showcase.Context.preset("matching")
+    }
+
+    socket = %Phoenix.LiveView.Socket{assigns: %{}}
+    assert Showcase.PresetResolution.resolve(%{}, session, socket) == "matching"
+  end
+
+  test "connected preset resolution uses x-demo-preset connect_info without dead-render assigns" do
+    socket = %Phoenix.LiveView.Socket{
+      assigns: %{},
+      private: %{connect_info: %{x_headers: [{"x-demo-preset", "matching"}]}}
+    }
+
+    assert Showcase.PresetResolution.resolve(%{}, %{}, socket) == "matching"
+  end
+
+  test "connected mount uses plug session when harness header is absent (WebSocket connect)" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    session = Plug.Conn.get_session(conn)
+
+    {:ok, view, _} =
+      live(
+        build_conn()
+        |> Plug.Conn.fetch_cookies()
+        |> init_test_session(session),
+        "/"
+      )
+
+    assert has_element?(view, "#current-identity", "alice")
+    assert has_element?(view, "#filter-targeting", "ON")
+  end
+
   test "mount reads x-demo-preset header when query and cookie omit preset (LiveE2E fingerprint)" do
     conn =
       build_conn()

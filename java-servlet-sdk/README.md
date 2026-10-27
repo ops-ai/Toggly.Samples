@@ -46,13 +46,12 @@ Verified against official registries on 2026-10-19:
 |---|---|
 | OpenJDK, compiler release | 27+35 (GA), release 27 |
 | Maven | 3.9.12 |
-| `io.toggly:toggly-core` | 2.3.1 |
-| `io.toggly:toggly-servlet` | 2.3.1 |
 | `org.apache.tomcat.embed:tomcat-embed-core` | 11.0.26 |
 | Jakarta Servlet API supplied by Tomcat | 6.1 |
 | JUnit Jupiter | 6.0.3 |
 
-Only Maven Central artifacts are consumed. `pom.xml` pins direct dependencies
+Only Maven Central artifacts are consumed. `pom.xml` pins `io.toggly:toggly-core`,
+`io.toggly:toggly-servlet`, and other direct dependencies
 and build plugins; `dependencies.lock.json` records the complete resolved
 runtime/test dependency graph with SHA-256 checksums. The verification script
 uses the standard Maven repository layout. After a deliberate dependency update,
@@ -184,7 +183,7 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 With the recipe above, AlwaysOn and TimeWindow stay ON for both presets.
 Percentage is stable for the same user/flag, but its exact Alice/Bob outcome is
 not prescribed. The other seven supported rows turn ON for Matching and OFF for
-Non-matching. **DeviceType Macintosh is unsupported by the published 2.3.1
+Non-matching. **DeviceType Macintosh is unsupported by the published Java SDK
 User-Agent parser**: it recognizes iPhone/iPad/iPod, but returns Other for
 desktop Macintosh. We retain the exact shared Macintosh rule and User-Agent;
 that row shows the real OFF result and an explicit capability note. No fallback

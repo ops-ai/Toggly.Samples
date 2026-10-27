@@ -69,14 +69,14 @@ October 26, 2026:
 | Component | Locked version |
 |---|---|
 | Ruby | 4.0.6 |
-| Toggly core (`toggly`) | 2.0.0 |
 | Rack / Rackup | 3.2.7 / 2.3.1 |
 | Puma | 8.0.2 |
 | Rack Session | 2.1.2 |
 | Bundler | 4.0.20 |
 | Minitest / Rake | 6.0.6 / 13.4.2 |
 
-The lock includes checksums and generic Ruby, macOS and Linux platforms. A normal
+Published Toggly gems ([`toggly`](https://rubygems.org/gems/toggly)): exact versions in
+[`Gemfile`](Gemfile) and [`Gemfile.lock`](Gemfile.lock). The lock includes checksums and generic Ruby, macOS and Linux platforms. A normal
 frozen install consumes published gems; no local SDK checkout or patched artifact
 is used. A Ruby app has no browser bundling step: `rake build` compiles Ruby and
 ERB syntax, then renders all eight pages using the actual production Rack app.
