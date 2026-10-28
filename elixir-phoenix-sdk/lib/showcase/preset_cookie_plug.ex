@@ -14,6 +14,7 @@ defmodule Showcase.PresetCookiePlug do
         |> put_resp_cookie("sample-preset", normalized, path: "/", same_site: "Lax")
         |> put_session("sample_preset", normalized)
         |> put_session("toggly_context", Showcase.Context.preset(normalized))
+        |> put_private(:showcase_preset_capture, normalized)
 
       _ ->
         conn
