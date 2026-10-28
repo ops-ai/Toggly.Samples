@@ -1,7 +1,7 @@
 # Electron SDK Sample
 
 A beginner-oriented Electron 44 + React 19 desktop application using published
-[`@ops-ai/electron-feature-flags-toggly` 1.1.0](https://www.npmjs.com/package/@ops-ai/electron-feature-flags-toggly).
+[`@ops-ai/electron-feature-flags-toggly`](https://www.npmjs.com/package/@ops-ai/electron-feature-flags-toggly) (exact pin in [`package.json`](package.json) / [`package-lock.json`](package-lock.json)).
 It pins Electron 44.3.0, electron-vite 5.0.0, React 19.3.0, Vite React plugin
 5.2.0, TypeScript 7.0.2, Vitest 5.0.0, and dotenv 17.4.2. These were checked
 against npm on 2026-09-12. Run with Node 22.12+; CI uses Node 24.
@@ -80,13 +80,13 @@ rollouts stable for that identity.
 For `ExpressCheckout`, this sample sends the published entity object
 `{ kind: 'Order', key: 'ord-vip', attributes: { Id, Vip, Total } }` only to
 that evaluation. It does not change the desktop identity to inspect an order.
-Electron SDK 1.1.0 publishes boolean flags and
+The published Electron SDK publishes boolean flags and
 all/any/negate gates, but no named-variant or experiment-assignment API. The
 dashboard labels are boolean UI branches, not A/B assignments.
 
 ## Main-owned telemetry
 
-With a configured App Key, SDK 1.1.0 automatically counts effective feature
+With a configured App Key, the SDK automatically counts effective feature
 checks made by direct, gate, and committed React paths. The Electron section
 demonstrates explicit `recordUsage`, `recordView`, `incrementCounter`,
 `setGauge`, and `flushTelemetry` through the validated preload bridge. Main
@@ -135,7 +135,7 @@ Matching sends `alice`, `role=admin`, and a VIP Order. Non-matching sends
 `bob`, `role=user`, and a standard Order. The full template inputs are visible
 in the UI to keep configuration consistent.
 
-| Filter | Matching / non-matching | Electron 1.1.0 |
+| Filter | Matching / non-matching | Published Electron SDK |
 | --- | --- | --- |
 | AlwaysOn, Percentage, Targeting, UserClaims, TimeWindow | Template values | Supported. Percentage is sticky and has no prescribed result. |
 | ContextProperty | VIP / standard Order | Supported per evaluation. |
@@ -160,11 +160,11 @@ npm run test:public-host
 npm run test:native-timeout
 
 # Retained maintainer compatibility contract, separate from public proof.
-TOGGLY_ELECTRON_SDK_TARBALL=/absolute/path/to/ops-ai-electron-feature-flags-toggly-1.1.0.tgz npm run test:packed-hosts
+TOGGLY_ELECTRON_SDK_TARBALL=/absolute/path/to/ops-ai-electron-feature-flags-toggly.tgz npm run test:packed-hosts
 npm run dev
 ```
 
-`test:public-host` uses the public 1.1.0 package recorded in the registry
+`test:public-host` uses the public package version recorded in the registry
 lockfile. `test:packed-hosts` installs the supplied packed candidate into disposable
 Electron 28.3.3 and 44.3.0 hosts. It runs the built main, custom compiled
 preload, context-isolated renderer IPC bridge, and React hooks/components in

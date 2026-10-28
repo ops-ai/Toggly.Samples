@@ -1,6 +1,6 @@
 # Docusaurus SDK workshop
 
-A Docusaurus 3 site that takes one feature flag through native MDX/React components, a programmatic action, a live filter matrix and a real core Order mapper. It uses the published **@ops-ai/toggly-docusaurus-plugin 0.10.2** and **@ops-ai/toggly-client-core 0.5.2**, with **Docusaurus 3.10.2** and **React 19.3.0** recorded in the lockfile. Planned bumps to 0.10.4 / 0.5.3 are tracked in [docs/LIVE_E2E_JS_SDK_BUMPS.md](../docs/LIVE_E2E_JS_SDK_BUMPS.md) (OPS-1994, pending npm publish).
+A Docusaurus 3 site that takes one feature flag through native MDX/React components, a programmatic action, a live filter matrix and a real core Order mapper. It uses the published [`@ops-ai/toggly-docusaurus-plugin`](https://www.npmjs.com/package/@ops-ai/toggly-docusaurus-plugin) and [`@ops-ai/toggly-client-core`](https://www.npmjs.com/package/@ops-ai/toggly-client-core) packages, with **Docusaurus 3.10.2** and **React 19.3.0** recorded in the lockfile. Exact Toggly pins live in [`package.json`](package.json) and [`package-lock.json`](package-lock.json).
 
 ## Run the workshop
 

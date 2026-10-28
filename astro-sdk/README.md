@@ -27,12 +27,11 @@ are active. For live definitions, set `TOGGLY_APP_KEY` and
 `TOGGLY_ENVIRONMENT=Production` in `.env`, then restart. Use a public Frontend
 / Client Side API key only — never a management API key.
 
-Installed versions (pinned in `package.json` / lockfile):
+Installed host and integration versions (Toggly package pins and the full graph are in `package.json` / `package-lock.json`):
 
 | Package | Version |
 | --- | --- |
 | Astro | 7.4.0 |
-| `@ops-ai/astro-feature-flags-toggly` | 1.21.0 |
 | `@astrojs/node` | 11.1.7 |
 | `@astrojs/react` / `vue` / `svelte` | 7.1.0 / 7.1.0 / 9.0.1 |
 | React / Vue / Svelte | 19.3.0 / 3.5.44 / 5.57.2 |
@@ -45,9 +44,9 @@ newest published release in `@astrojs/check` 0.9.10's peer range
 `@astrojs/check` (latest 0.9.10) or current Astro 7.3.2 toolchain declares a
 `^7` TypeScript peer.
 
-`npm run build` produces the static SSG site (including
-`toggly-page-features.json`). `npm run build:ssr` builds the Node adapter
-server used by middleware and page-gate checks.
+`npm run build` produces the Node adapter SSR server used by Live E2E and
+`npm start`. `npm run build:static` builds the static SSG teaching site
+(including `toggly-page-features.json`).
 
 With a Frontend App Key, the integration enables browser usage checks and
 business metrics for the one store shared by React, Vue, and Svelte islands.

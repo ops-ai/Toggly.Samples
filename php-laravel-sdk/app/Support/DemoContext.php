@@ -23,8 +23,15 @@ final class DemoContext
     public static function fromRequest(Request $request): self
     {
         // Session controls choose only predefined personas; they are not a login system.
-        $preset = $request->session()->get('demo.preset', 'matching');
+        // Live E2E uses preset=none with x-demo-preset / sample-preset (see astro/blazor).
+        $preset = self::resolvePreset($request)
+            ?? $request->session()->get('demo.preset', 'matching');
+        $preset = $preset === 'nonmatching' ? 'non-matching' : $preset;
         $matches = $preset === 'matching';
+        $harnessIdentity = $request->header('x-toggly-identity');
+        $identity = is_string($harnessIdentity) && $harnessIdentity !== ''
+            ? trim($harnessIdentity)
+            : ($matches ? 'alice' : 'bob');
         $orderChoice = $request->session()->get('demo.order', $matches ? 'vip' : 'standard');
         $order = match ($orderChoice) {
             'vip' => [
@@ -43,7 +50,7 @@ final class DemoContext
         return new self(
             preset: $matches ? 'matching' : 'non-matching',
             scenario: $request->session()->get('demo.scenario', 'mixed'),
-            identity: $matches ? 'alice' : 'bob',
+            identity: $identity,
             groups: $matches ? ['beta-testers'] : [],
             claims: ['role' => $matches ? 'admin' : 'user'],
             requestFields: [
@@ -53,6 +60,26 @@ final class DemoContext
             ],
             order: $order,
         );
+    }
+
+    private static function resolvePreset(Request $request): ?string
+    {
+        $query = $request->query('preset');
+        if (is_string($query) && $query !== '' && $query !== 'none') {
+            return $query;
+        }
+
+        $header = $request->header('x-demo-preset');
+        if (is_string($header) && $header !== '') {
+            return $header;
+        }
+
+        $cookie = $request->cookie('sample-preset') ?? $request->cookie('toggly-preset');
+        if (is_string($cookie) && $cookie !== '') {
+            return $cookie;
+        }
+
+        return null;
     }
 
     public function evaluation(): array

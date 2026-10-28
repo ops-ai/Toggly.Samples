@@ -46,12 +46,13 @@ Refreshed from public Composer and WordPress.org metadata on September 16, 2026:
 | --- | --- |
 | WordPress | 7.1 |
 | SQLite Database Integration | 3.0.2 |
-| `toggly/wordpress` | 1.0.0, locked from Packagist |
-| `toggly/feature-management-php` | 1.0.0, locked from Packagist |
 | PHP | 8.5.10 |
 | Composer | 2.10.3 |
 
-The Composer lockfile installs registry packages. No SDK source checkout, local
+The Composer lockfile installs registry packages, including
+[`toggly/wordpress`](https://packagist.org/packages/toggly/wordpress) and
+[`toggly/feature-management-php`](https://packagist.org/packages/toggly/feature-management-php)
+(exact pins in `composer.lock`). No SDK source checkout, local
 package path, or vendor patch is required. Check
 [the WordPress adapter](https://packagist.org/packages/toggly/wordpress) and
 [the core package](https://packagist.org/packages/toggly/feature-management-php).
@@ -144,7 +145,7 @@ the **Filters** category.
 | `filter-browser-language` | `BrowserLanguage` | `Percentage: "100"`, `BrowserLanguage:0: en` | ON / OFF |
 | `filter-device-type` | `DeviceType` | `Percentage: "100"`, `DeviceType:0: Macintosh` | OFF / OFF: native desktop parsing limitation |
 | `filter-os` | `OperatingSystem` | `Percentage: "100"`, `OperatingSystem:0: Mac` | ON / OFF |
-| `filter-context-property` | `ContextProperty` | `ContextKind: Order`, `Property: Vip`, `Operator: eq`, `Value: "true"`, `ValueType: boolean` | OFF / OFF: evaluator absent in PHP 1.0.0 |
+| `filter-context-property` | `ContextProperty` | `ContextKind: Order`, `Property: Vip`, `Operator: eq`, `Value: "true"`, `ValueType: boolean` | OFF / OFF: ContextProperty evaluator absent in the published PHP SDK |
 
 The indexed keys such as `Audience.Users:0` are literal parameter names. The
 complete multiline arrays are in [`src/FlagCatalog.php`](src/FlagCatalog.php).

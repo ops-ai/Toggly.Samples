@@ -43,4 +43,34 @@
             <pre><code>{{ json_encode($snapshot['context'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</code></pre>
         </details>
     </section>
+    @unless ($runtime->offline)
+        <script>
+            (() => {
+                const rows = document.querySelectorAll('tr[data-filter]');
+                if (!rows.length) return;
+                const apply = (flags) => {
+                    for (const row of rows) {
+                        const key = row.getAttribute('data-filter');
+                        const enabled = flags?.[key];
+                        const cell = row.querySelector('.flag-state');
+                        if (!cell || enabled === undefined || enabled === null) {
+                            // Keep SSR UNKNOWN (no data-toggly-state) until a verified bool arrives.
+                            continue;
+                        }
+                        const on = enabled === true;
+                        cell.classList.toggle('on', on);
+                        cell.classList.toggle('off', !on);
+                        cell.textContent = on ? 'ON' : 'OFF';
+                        cell.setAttribute('data-toggly-state', on ? 'on' : 'off');
+                    }
+                };
+                const poll = () =>
+                    fetch('/api/snapshot', { cache: 'no-store', credentials: 'same-origin' })
+                        .then((r) => (r.ok ? r.json() : null))
+                        .then((body) => body?.flags && apply(body.flags))
+                        .catch(() => {});
+                setInterval(poll, 2000);
+            })();
+        </script>
+    @endunless
 @endsection

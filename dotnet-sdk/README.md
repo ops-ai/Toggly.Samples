@@ -180,7 +180,7 @@ fallback. A feature flag need not have variants at all.
 | `filter-country` | Country US, Percentage 100 | ON / OFF |
 | `filter-browser-family` | BrowserFamily Chrome, Percentage 100 | ON / OFF |
 | `filter-browser-language` | BrowserLanguage en, Percentage 100 | ON / OFF |
-| `filter-device-type` | DeviceType Macintosh, Percentage 100 | **OFF / OFF: native parser/template gap** |
+| `filter-device-type` | DeviceType Macintosh, Percentage 100 | ON / OFF |
 | `filter-os` | OperatingSystem Mac, Percentage 100 | ON / OFF |
 | `filter-context-property` | ContextProperty Order.Vip=true | ON / OFF |
 
@@ -194,12 +194,10 @@ Matching UA: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 
 Non-matching UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0
 ```
 
-The installed .NET UA parser returns device family **Mac**, while the shared
-catalog rule says **Macintosh**. The native DeviceType filter therefore returns
-OFF even for Matching. This sample preserves the shared rule and shows that
-actual result instead of claiming parity. The OS filter separately matches Mac
-and works. To explore a .NET-specific device rule in your own app, match Mac;
-that differs from this catalog's shared template.
+The installed .NET UA parser returns device family **Mac** for desktop Chrome on
+macOS. The Toggly .NET SDK normalizes that value to **Macintosh** before
+DeviceType matching, so the shared catalog rule works without a .NET-specific
+adaptation. The OS filter still matches **Mac** directly.
 
 The actual .NET filter aliases in definitions are `CountryFamily` and `OS`.
 Core uses `Microsoft.Percentage`, `Microsoft.Targeting`, `Microsoft.TimeWindow`.
@@ -295,8 +293,8 @@ smoke. Hosted and local fixture tests do not replace the manual live checklist.
       preference. No visitor changes another request's targeting or Order.
 - [ ] VIP Order enables ExpressCheckout; standard, missing and unregistered
       contexts do not. The Razor entity gate agrees with the programmatic result.
-- [ ] Filters Matching and Non-matching match the table above. DeviceType is
-      explicitly OFF for both because Mac differs from Macintosh. AlwaysOn and
+- [ ] Filters Matching and Non-matching match the table above. DeviceType follows
+      the shared Macintosh rule (the Toggly .NET SDK normalizes Mac). AlwaysOn and
       the open time window stay ON; Percentage remains sticky for each identity.
 - [ ] `/api/beta` returns 200/404 when beta-access changes. `/api/multi` requires
       both keys. `/api/data` selects the response version from api-v2.

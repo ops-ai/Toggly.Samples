@@ -58,20 +58,21 @@ an app key.
 |---|---|
 | Rust stable | 1.98.1 |
 | Actix-web | 4.15.0 |
-| `toggly` | 0.6.1 |
-| `toggly-actix` | 0.6.1 |
 
-These were the latest published SDK releases and the newest Actix-web series the
-published adapter actually supports, checked on 16 September 2026 UTC against
-crates.io. `toggly-actix` 0.6.1 declares `actix-web >=4.4, <4.16`. This sample
-hosts Actix-web **4.15.0** with registry packages only. Cargo.lock records normal
+Published [`toggly`](https://crates.io/crates/toggly) and
+[`toggly-actix`](https://crates.io/crates/toggly-actix) crates (exact versions in
+[`Cargo.toml`](Cargo.toml) and [`Cargo.lock`](Cargo.lock)) were the latest SDK
+releases and the newest Actix-web series the published adapter actually supports,
+checked on 16 September 2026 UTC against crates.io. The published `toggly-actix`
+crate declares `actix-web >=4.4, <4.16`. This sample hosts Actix-web **4.15.0**
+with registry packages only. Cargo.lock records normal
 registry checksums. There are no local SDK paths, tarballs, dependency patches
 or resolver overrides.
 
 Supporting signing dependencies match the native SDK's compatible P-256/SHA-2
 generation; they do not change its signature protocol.
 
-This sample documents the actual **published 0.6.1 / Actix-web 4.15** boundary:
+This sample documents the actual **published SDK / Actix-web 4.15** boundary:
 
 - Native extractors, middleware and `FeatureGuard` look up
   `web::Data<TogglyClient>`, not `Data<Arc<TogglyClient>>`. The client is not
@@ -180,8 +181,7 @@ The exact shared User-Agent strings are in `src/context.rs`. The extra
 `ord-high-value` is non-VIP with Total=250; `ord-no-total` omits Total. Keep
 identity fixed while switching Order to demonstrate user/entity separation.
 
-Local schema registration runs before constructing the SDK client. Published
-0.6.1 performs the remote catalog PUT during construction, **before**
+Local schema registration runs before constructing the SDK client. The published SDK performs the remote catalog PUT during construction, **before**
 `initialize()` fetches definitions. Transport errors are ignored. Manually save
 the remote Order binding before testing the live flag; do not assume startup
 makes a missing remote rule immediately valid.
@@ -212,7 +212,7 @@ The sample beta route instead resolves full context and returns 404 for off, 503
 for error. Enhanced submit re-checks CSRF and its flag on the POST; it changes
 no business data.
 
-`evaluate_gate` negates **each feature before** Any/All aggregation in 0.6.1. It
+`evaluate_gate` negates **each feature before** Any/All aggregation in the published crate. It
 does not negate the aggregate. An empty gate returns false. Multi-key checks and
 Home rows are separate native evaluations, not an atomic all-flags revision.
 Each displayed boolean/error pair comes from one native call; no invented SDK
@@ -229,7 +229,7 @@ remains shared and is not cleared on requests.
 Native polling runs every 30 seconds live and 2 seconds offline. A failed poll
 retains the last accepted definitions and displays a redacted refresh warning;
 raw errors and app-key-bearing URLs are never shown. A subsequent successful poll
-updates future requests. Published 0.6.1 rejects a signed document whose
+updates future requests. The published SDK rejects a signed document whose
 timestamp is not newer than the last accepted one, so fixture replacements in
 tests wait for the next second. Actix graceful shutdown calls `close`; the
 loopback fixture remains alive until shutdown finishes, then its owned thread is
@@ -258,17 +258,17 @@ memory. This sample does not patch or replace native signature verification.
 
 Checked against [docs.toggly.io/sdks/rust](https://docs.toggly.io/sdks/rust),
 [docs.toggly.io/sdks/rust/actix](https://docs.toggly.io/sdks/rust/actix) and the
-published 0.6.1 crate sources on 16 September 2026:
+published crate sources on 16 September 2026:
 
 - Customer Actix docs already teach Actix-web 4.4–4.15, `web::Data<TogglyClient>`,
   Feature header precedence, middleware `with_feature` / `identity_header`, and
-  FeatureGuard as definition existence. Keep those accurate for 0.6.1.
+  FeatureGuard as definition existence. Keep those accurate for the published crate.
 - crates.io crate-level example still shows `TogglyClient::builder()` plus
   `client.clone()` and treats `FeatureGuard` as a feature-enabled route gate.
   Customer docs correctly say the client is not Clone and FeatureGuard is
   existence-only. Align the crate README example with the customer page.
 - docs.rs labels `FeatureEnabled` as an extractor; it does not implement
-  `FromRequest` in 0.6.1.
+  `FromRequest` in the published crate.
 - Document that published `Feature` and `TogglyData` panic when Data is missing,
   while `TogglyMiddleware` fail-opens and `FeatureGuard` fail-closes.
 - Middleware reads only its configured identity header. It does not fall back to

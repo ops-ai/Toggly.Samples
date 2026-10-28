@@ -189,46 +189,115 @@ const run = (args, extra = {}) =>
     stdio: 'inherit',
   });
 
-run(['run', 'build:ssr'], { SAMPLE_OUTPUT: 'server' });
-
-const port = 4329;
-const server = spawn(process.execPath, ['dist/server/entry.mjs'], {
-  cwd: root,
-  env: {
-    ...process.env,
-    HOST: '127.0.0.1',
-    PORT: String(port),
-    TOGGLY_APP_KEY: appKey,
-    TOGGLY_DEFINITIONS_BASE_URI: definitionsBase,
-    TOGGLY_METRICS_BASE_URL: definitionsBase,
-    TOGGLY_BROWSER_TELEMETRY: 'false',
-    TOGGLY_VERIFY_SIGNATURES: 'false',
-  },
-  stdio: 'inherit',
-});
-const stopped = once(server, 'exit');
-if (server.exitCode !== null || server.signalCode !== null) {
-  throw new Error('SSR server failed to start');
-}
-
-const origin = `http://127.0.0.1:${port}`;
-try {
+async function waitForOrigin(origin) {
   for (let attempt = 0; attempt < 50; attempt++) {
     try {
       const probe = await fetch(origin);
-      if (probe.ok) break;
+      if (probe.ok) return;
     } catch {
       /* wait */
     }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
+  throw new Error(`Server did not become ready at ${origin}`);
+}
 
-  const browser = await chromium.launch({
+async function withSsrServer(port, verify) {
+  const server = spawn(process.execPath, ['dist/server/entry.mjs'], {
+    cwd: root,
+    env: {
+      ...process.env,
+      HOST: '127.0.0.1',
+      PORT: String(port),
+      TOGGLY_APP_KEY: appKey,
+      TOGGLY_DEFINITIONS_BASE_URI: definitionsBase,
+      TOGGLY_METRICS_BASE_URL: definitionsBase,
+      TOGGLY_BROWSER_TELEMETRY: 'false',
+      TOGGLY_VERIFY_SIGNATURES: 'false',
+    },
+    stdio: 'inherit',
+  });
+  const stopped = once(server, 'exit');
+  if (server.exitCode !== null || server.signalCode !== null) {
+    throw new Error('SSR server failed to start');
+  }
+  const origin = `http://127.0.0.1:${port}`;
+  try {
+    await waitForOrigin(origin);
+    await verify(origin);
+  } finally {
+    server.kill('SIGTERM');
+    await stopped;
+  }
+}
+
+async function assertSsrFilterTargeting(browser, origin) {
+  const harnessContext = await browser.newContext({
+    extraHTTPHeaders: { 'x-demo-preset': 'matching' },
+  });
+  await harnessContext.addCookies([
+    { name: 'sample-preset', value: 'matching', url: origin },
+  ]);
+  const harnessPage = await harnessContext.newPage();
+  await harnessPage.goto(`${origin}/`);
+  await harnessPage.waitForSelector('#filter-matrix');
+  assert.equal(
+    await harnessPage
+      .locator('tr[data-filter="filter-targeting"] [data-toggly-state]')
+      .getAttribute('data-toggly-state'),
+    'on',
+    'harness fingerprint (no ?preset=) must SSR filter-targeting ON',
+  );
+  await harnessContext.close();
+
+  const page = await browser.newPage();
+  await page.goto(`${origin}/?preset=matching`, {
+    headers: { cookie: 'sample-preset=matching' },
+  });
+  await page.waitForSelector('#filter-matrix');
+  assert.equal(
+    await page
+      .locator('tr[data-filter="filter-targeting"] [data-toggly-state]')
+      .getAttribute('data-toggly-state'),
+    'on',
+    'SSR filter matrix must show filter-targeting ON for harness URL/cookie',
+  );
+  await page.close();
+}
+
+const launchBrowser = () =>
+  chromium.launch({
     headless: true,
     ...(process.env.CHROMIUM_EXECUTABLE
       ? { executablePath: process.env.CHROMIUM_EXECUTABLE }
       : {}),
   });
+
+// Live E2E builds the SSR bundle without secrets; the Node server gets TOGGLY_* at runtime.
+execFileSync(process.execPath, [npm, 'run', 'build'], {
+  cwd: root,
+  env: {
+    ...process.env,
+    TOGGLY_APP_KEY: '',
+    TOGGLY_DEFINITIONS_BASE_URI: '',
+    TOGGLY_METRICS_BASE_URL: '',
+  },
+  stdio: 'inherit',
+});
+
+await withSsrServer(4329, async (origin) => {
+  const browser = await launchBrowser();
+  try {
+    await assertSsrFilterTargeting(browser, origin);
+  } finally {
+    await browser.close();
+  }
+});
+
+run(['run', 'build']);
+
+await withSsrServer(4330, async (origin) => {
+  const browser = await launchBrowser();
   try {
     const context = await browser.newContext();
     await context.addInitScript(() => {
@@ -254,13 +323,11 @@ try {
       headers: { cookie: 'sample-preset=matching' },
     });
     await page.waitForSelector('#filter-matrix');
-    const ssrTargeting = page.locator(
-      'tr[data-filter="filter-targeting"] [data-toggly-state]',
-    );
     assert.equal(
-      await ssrTargeting.getAttribute('data-toggly-state'),
+      await page
+        .locator('tr[data-filter="filter-targeting"] [data-toggly-state]')
+        .getAttribute('data-toggly-state'),
       'on',
-      'SSR filter matrix must show filter-targeting ON for harness URL/cookie',
     );
     await page.waitForSelector('#live-filter-checklist');
     await page.waitForFunction(
@@ -273,16 +340,9 @@ try {
       undefined,
       { timeout: 15_000 },
     );
-    const targeting = page.locator(
-      '[data-live-filter="filter-targeting"] [data-toggly-state]',
-    );
-    assert.equal(
-      await targeting.getAttribute('data-toggly-state'),
-      'on',
-      'client filter checklist must expose data-toggly-state=on for alice preset',
-    );
-
     assert.deepEqual(errors, [], 'preset client island must hydrate without errors');
+
+    await assertSsrFilterTargeting(browser, origin);
 
     await page.goto(`${origin}/?preset=nonmatching`);
     await page.waitForSelector('#live-filter-checklist');
@@ -301,11 +361,9 @@ try {
   } finally {
     await browser.close();
   }
-} finally {
-  server.kill('SIGTERM');
-  await stopped;
-  fixture.close();
-}
+});
+
+fixture.close();
 
 console.log(
   'Astro preset client identity tests passed (store sync + data-toggly-state).',

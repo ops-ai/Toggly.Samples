@@ -5,14 +5,14 @@
     "start": "docusaurus start --host 0.0.0.0",
     "build": "docusaurus build",
     "serve": "docusaurus serve",
-    "test": "node --test tests/core.test.cjs && node tests/browser.cjs"
+    "test": "node --test tests/core.test.cjs tests/harness-preset.test.cjs && node tests/browser.cjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.2",
     "@docusaurus/preset-classic": "3.10.2",
     "@mdx-js/react": "^3.1.1",
-    "@ops-ai/toggly-client-core": "0.5.2",
-    "@ops-ai/toggly-docusaurus-plugin": "0.10.2",
+    "@ops-ai/toggly-client-core": "0.5.3",
+    "@ops-ai/toggly-docusaurus-plugin": "0.10.4",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },

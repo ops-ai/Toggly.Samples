@@ -137,6 +137,7 @@ pub fn application_with_key(
     let workshop = Router::new()
         .route("/", get(routes::home))
         .route("/static/workshop.css", get(routes::style))
+        .route("/static/live-matrix.js", get(routes::live_matrix_script))
         .route("/session", post(routes::session))
         .route("/api/snapshot", get(routes::snapshot))
         .route("/api/check", get(routes::api))

@@ -98,10 +98,11 @@ needs **no SaaS app setup** and has one logical environment, `Production`.
 
 - Embedded v1 supports Boolean flags, not variants, allocations, experiments or
   analytics. A Boolean branch is not experiment assignment.
-- The .NET UAParser reports the matching preset's device family as **`Mac`**.
-  The included rule uses `DeviceType:0 = Mac`, adapting the shared template's
-  `Macintosh` to the actual published SDK value. Browser family remains `Chrome`
-  and operating system uses `OperatingSystem:0 = Mac`.
+- UAParser reports the matching preset's device family as **`Mac`**. The Toggly
+  .NET SDK normalizes that to **`Macintosh`** before DeviceType matching, so
+  the bundled `example-catalog.json` uses the shared template's
+  `DeviceType:0 = Macintosh` rule. Browser family remains `Chrome` and
+  operating system uses `OperatingSystem:0 = Mac`.
 - The country alias is `CountryFamily`, with `Country:0 = US` and `Percentage = 100`.
   Matching reads `CF-IPCountry`; no GeoIP service is called.
 - The 50% percentage result is stable for the same feature/identity. Neither

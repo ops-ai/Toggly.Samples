@@ -46,8 +46,6 @@ Official Maven Central metadata and published artifacts checked 2026-10-19:
 |---|---|
 | OpenJDK / compiler release | 27+35 (GA) / 27 |
 | Maven | 3.9.12 |
-| io.toggly:toggly-core | 2.3.1 |
-| io.toggly:toggly-spring-webflux | 2.3.1 |
 | Spring Framework BOM / WebFlux | 7.0.9 |
 | Reactor BOM | 2025.0.7 |
 | reactor-core / reactor-test | 3.8.7 |
@@ -58,7 +56,7 @@ Official Maven Central metadata and published artifacts checked 2026-10-19:
 These are stable host versions; Spring 7.1.0-M1, Reactor Netty 1.4.0-M1 and
 Reactor BOM 2026.0.0-M1 are prereleases. Ordinary Spring/Reactor BOM dependency
 management aligns transitive dependencies; no SDK source replacement is used.
-`pom.xml` pins dependencies and build plugins. `dependencies.lock.json` records
+`pom.xml` pins `io.toggly:toggly-core`, `io.toggly:toggly-spring-webflux`, and other dependencies and build plugins. `dependencies.lock.json` records
 all resolved runtime/test artifact paths and SHA-256 checksums because Maven has
 no native lockfile. CI only compares it. After a deliberate dependency upgrade,
 review the graph and run `python3 scripts/check-dependencies.py --write`, review
@@ -229,7 +227,7 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 With the recipe above, AlwaysOn and TimeWindow stay ON for both presets.
 Percentage is stable for the same user/flag, but its exact Alice/Bob outcome is
 not prescribed. The other seven supported rows turn ON for Matching and OFF for
-Non-matching. **DeviceType Macintosh is unsupported by the published 2.3.1
+Non-matching. **DeviceType Macintosh is unsupported by the published Java SDK
 User-Agent parser**: it recognizes iPhone/iPad/iPod, but returns Other for
 desktop Macintosh. We retain the exact shared Macintosh rule and User-Agent;
 that row shows the real OFF result and an explicit capability note. No fallback

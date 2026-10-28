@@ -7,6 +7,7 @@ import { TelemetryPanel } from './TelemetryPanel'
 import { createProviderOptions } from './sample-config'
 import { FiltersMatrix, IdentityPanel, Snapshot } from './DemoPanels'
 import { setSampleContext, useTogglyService } from './toggly'
+import { mockEvaluatedDefinitionsBody } from '../tests/helpers/mock-definitions'
 
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks() })
 
@@ -18,7 +19,9 @@ describe('published React telemetry owner', () => {
         bodies.push(JSON.parse(String(init?.body)))
         return new Response('{}', { status: 202 })
       }
-      return new Response(JSON.stringify({ defs: { 'new-dashboard': false } }), { status: 200 })
+      const url = new URL(String(input))
+      const body = mockEvaluatedDefinitionsBody(url, false)
+      return new Response(JSON.stringify(body), { status: 200 })
     }))
     // Plain serialization is exercised here; actual Chrome verifies compressed requests.
     vi.stubGlobal('CompressionStream', undefined)
@@ -62,8 +65,8 @@ async function contextHost() {
       bodies.push(JSON.parse(String(init?.body)))
       return new Response('{}', { status: 202 })
     }
-    const enabled = url.searchParams.get('userId') === 'alice' && aliceEnabled
-    return new Response(JSON.stringify({ defs: { 'new-dashboard': { enabled, variant: enabled ? 'enabled' : 'disabled' } } }), { status: 200 })
+    const body = mockEvaluatedDefinitionsBody(url, aliceEnabled)
+    return new Response(JSON.stringify(body), { status: 200 })
   }))
   const Provider = await createTogglyProvider({
     ...createProviderOptions('test-only', 'Production', 'alice', { metricsBaseUrl: 'https://metrics.test.invalid' }),

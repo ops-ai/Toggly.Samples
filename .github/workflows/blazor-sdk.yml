@@ -40,7 +40,7 @@ jobs:
       - run: npm run test:public-telemetry-cleanup
   sample:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     strategy:
       matrix:
         include:
@@ -68,14 +68,14 @@ jobs:
           cache: npm
           cache-dependency-path: blazor-sdk/package-lock.json
       - name: Locked restore matches LiveE2E (no MSBuild properties)
-        if: matrix.framework == 'net8.0'
+        if: matrix.framework == 'net10.0'
         run: dotnet restore BlazorSample.sln --locked-mode --source https://api.nuget.org/v3/index.json
       - run: dotnet restore BlazorSample.sln --locked-mode --source https://api.nuget.org/v3/index.json -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }}
       - run: dotnet publish BlazorSample --no-restore -c Release -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -o ./published
       - name: Check trusted filesystem snapshots
         run: |
           dotnet restore tests/SnapshotChecks/SnapshotChecks.csproj --locked-mode --source https://api.nuget.org/v3/index.json -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }}
-          dotnet run --project tests/SnapshotChecks/SnapshotChecks.csproj --no-restore -c Release -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -- /tmp
+          dotnet run --project tests/SnapshotChecks/SnapshotChecks.csproj --no-restore -c Release -f ${{ matrix.framework }} -p:SampleFramework=${{ matrix.framework }} -p:AspNetCoreVersion=${{ matrix.aspnet }} -- /tmp
       - run: npm ci
       - run: node --test tests/live-policy.test.mjs
       - run: npx playwright install --with-deps chromium

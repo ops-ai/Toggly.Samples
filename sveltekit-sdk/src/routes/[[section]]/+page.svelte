@@ -3,7 +3,7 @@
   import { page } from '$app/state';
   import type { TogglyStore } from '@ops-ai/toggly-sveltekit';
   import Feature from '@ops-ai/toggly-sveltekit/Feature.svelte';
-  import { sections, vip, standard } from '#lib/catalog.js';
+  import { filters, sections, vip, standard } from '#lib/catalog.js';
   import type { PageData, ActionData } from './$types';
   export let data: PageData;
   export let form: ActionData;
@@ -165,10 +165,14 @@
     <div class="card">
       <table>
         <thead><tr><th>Flag</th><th>Evaluated result</th></tr></thead><tbody
-          >{#each data.matrix as row}<tr
-              ><td><code>{row.key}</code></td><td class:on={row.enabled} class:off={!row.enabled}
-                ><span data-toggly-state={row.enabled ? 'on' : 'off'}
-                  >{row.enabled ? 'ON' : 'OFF'}</span
+          >{#each data.matrix as row}
+            {@const entity = data.matching ? vip : standard}
+            {@const hasClientDef = $toggly && Object.hasOwn($toggly.definitions, row.key)}
+            {@const liveOn = hasClientDef && toggly.isEnabled(row.key, { entity })}
+            {@const enabled = hasClientDef ? liveOn : row.enabled}
+            <tr {...{ label: row.key } as Record<string, string>} data-filter={row.key}
+              ><td><code>{row.key}</code></td><td class:on={enabled} class:off={!enabled}
+                ><span data-toggly-state={enabled ? 'on' : 'off'}>{enabled ? 'ON' : 'OFF'}</span
                 ></td
               ></tr
             >{/each}</tbody

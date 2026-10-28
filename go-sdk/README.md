@@ -149,7 +149,7 @@ request instead of mutating client identity from handlers.
 ## Behavior and SDK boundaries
 
 - **Loading and refresh:** `NewClient` returns before the first response. Unknown/unloaded flags are false. The page displays the last successful refresh timestamp, and snapshots reevaluate on every request. No browser auto-refresh or public manual SDK Refresh method is assumed. An error retains last accepted definitions; the SDK's historical error timestamp remains visible even after a later success. Live dashboard apps poll every 5 seconds by default (30 seconds offline); optional `TOGGLY_REFRESH_INTERVAL_MS` overrides the interval. This sample leaves `EnableLiveUpdates` off and relies on that poll interval so the workshop shows scheduled background refresh and per-request snapshots rather than WebSocket push invalidation (production apps may enable live updates).
-- **Variant assignment vs filter enabled:** Published `toggly-go` v0.13.2 assigns variants locally via `GetVariant(ctx, key, evalCtx)`. `VariantResult.Enabled` reflects effective enabled state after `StatusOverride`; `IsEnabled` remains filter-based only. This sample labels those reads separately; compact/control layout follows the assignment name only and is not gated on `IsEnabled`.
+- **Variant assignment vs filter enabled:** The published `toggly-go` module assigns variants locally via `GetVariant(ctx, key, evalCtx)`. `VariantResult.Enabled` reflects effective enabled state after `StatusOverride`; `IsEnabled` remains filter-based only. This sample labels those reads separately; compact/control layout follows the assignment name only and is not gated on `IsEnabled`.
 - **Filter expectations:** Matching turns on targeting, claims, country, browser, language, OS, and VIP context. Non-matching turns those off. AlwaysOn and TimeWindow stay on in both presets; 50% rollout results are stable for an identity, not prescribed as on/off by the preset.
 - **DeviceType parser gap:** the published Go parser reports `Other` for the exact Macintosh desktop user agent, so `filter-device-type` remains off even under Matching. The sample does not rename the shared Macintosh rule to make it pass.
 - **Entity kind limitation:** the published ContextProperty evaluator checks entity attributes but does not enforce `ContextKind` against `Entity.Kind`. The sample always maps the correct Order type and demonstrates absent entity as false. A kind name is not an access-control boundary.
@@ -162,17 +162,17 @@ request instead of mutating client identity from handlers.
 ## Package versions and verification
 
 Verified at refresh time on 2026-10-20 against the Go module proxy and
-`go.dev/dl`. Published `toggly-go` v0.13.2 requires Go 1.25 or later and
-compiles with current `golang.org/x/crypto` and `golang.org/x/net`. This
-sample keeps the Go 1.27.1 toolchain.
+`go.dev/dl`. The published `toggly-go` module (exact version in [`go.mod`](go.mod) /
+[`go.sum`](go.sum)) requires Go 1.25 or later and compiles with current
+`golang.org/x/crypto` and `golang.org/x/net`. This sample keeps the Go 1.27.1
+toolchain.
 
 | Dependency | Version |
 | --- | --- |
 | Go stable toolchain | 1.27.1 |
-| `github.com/ops-ai/Toggly.FeatureManagement/toggly-go` | v0.13.2 |
 | Host framework | Go standard library `net/http` + `html/template` |
 
-`go.mod` and `go.sum` resolve the published module normally; there is no local SDK replacement. Subpackages `toggly`, `togglyctx`, `togglyhttp` and `togglytemplate` come from that module.
+`go.mod` and `go.sum` resolve the published `toggly-go` module normally; there is no local SDK replacement. Subpackages `toggly`, `togglyctx`, `togglyhttp` and `togglytemplate` come from that module.
 
 ```bash
 go mod download

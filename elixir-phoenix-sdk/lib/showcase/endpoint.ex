@@ -8,7 +8,9 @@ defmodule Showcase.Endpoint do
     same_site: "Lax"
   ]
   socket("/live", Phoenix.LiveView.Socket,
-    websocket: [connect_info: [:x_headers, session: @session_options]]
+    websocket: [
+      connect_info: [:x_headers, :uri, session: @session_options]
+    ]
   )
 
   plug(Plug.Static, at: "/", from: :toggly_showcase, only: ~w(assets))
@@ -21,6 +23,9 @@ defmodule Showcase.Endpoint do
   )
 
   plug(Plug.Session, @session_options)
+  plug(:fetch_session)
+  plug(Showcase.PresetCookiePlug)
+  plug(Showcase.LiveE2eDiagPlug)
   plug(Showcase.Router)
 end
 

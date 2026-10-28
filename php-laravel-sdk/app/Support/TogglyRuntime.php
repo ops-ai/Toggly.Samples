@@ -98,8 +98,16 @@ final class TogglyRuntime
         }
     }
 
-    public function snapshot(): array
+    public function snapshot(bool $refresh = false): array
     {
+        if ($refresh && $this->provider !== null) {
+            try {
+                $this->provider->refreshFeatures(false);
+            } catch (\Throwable) {
+                $this->refreshFailed = true;
+            }
+        }
+
         $status = $this->provider->getDebugInfo();
         $flags = [];
         foreach (FlagCatalog::keys() as $key) {

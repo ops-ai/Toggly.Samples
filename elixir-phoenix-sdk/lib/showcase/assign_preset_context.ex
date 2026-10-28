@@ -1,6 +1,7 @@
 defmodule Showcase.AssignPresetContext do
   @moduledoc false
   import Phoenix.Component, only: [assign: 2]
+  import Phoenix.LiveView, only: [attach_hook: 4, connected?: 1]
 
   @doc """
   Resolves the LiveE2E harness preset before `Toggly.LiveView` on_mount.
@@ -10,13 +11,38 @@ defmodule Showcase.AssignPresetContext do
   flags as anonymous and the filter matrix flips OFF after hydration.
   """
   def on_mount(_default, params, session, socket) do
-    preset = Showcase.Live.resolve_preset(params, session, socket)
+    preset = Showcase.PresetResolution.resolve(params, session, socket)
+    context = Showcase.Context.preset(preset)
+    keys = Map.get(socket.assigns, :toggly_keys, Showcase.Live.toggly_keys())
+
+    socket =
+      assign(socket,
+        preset: preset,
+        toggly_context: context
+      )
+
+    socket =
+      Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, keys, context: context)
+
+    socket =
+      if connected?(socket) do
+        attach_hook(socket, :preset_toggly_refresh, :handle_info, &refresh_flags_with_preset/2)
+      else
+        socket
+      end
+
+    {:cont, socket}
+  end
+
+  defp refresh_flags_with_preset({:toggly_updated, Showcase.Flags, _}, socket) do
+    preset = Map.get(socket.assigns, :preset, "anonymous")
     context = Showcase.Context.preset(preset)
 
-    {:cont,
-     assign(socket,
-       preset: preset,
-       toggly_context: context
+    {:halt,
+     Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, socket.assigns.toggly_keys,
+       context: context
      )}
   end
+
+  defp refresh_flags_with_preset(_message, socket), do: {:cont, socket}
 end

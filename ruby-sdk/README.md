@@ -64,19 +64,19 @@ the usage pipeline (default flush ~60s). Offline, missing-key, fixture, and
 ## Versions and commands
 
 Latest stable versions checked against official Ruby downloads and RubyGems on
-September 10, 2026 (September 11 UTC):
+October 26, 2026:
 
 | Component | Locked version |
 |---|---|
 | Ruby | 4.0.6 |
-| Toggly core (`toggly`) | 1.4.2 |
 | Rack / Rackup | 3.2.7 / 2.3.1 |
 | Puma | 8.0.2 |
 | Rack Session | 2.1.2 |
 | Bundler | 4.0.20 |
 | Minitest / Rake | 6.0.6 / 13.4.2 |
 
-The lock includes checksums and generic Ruby, macOS and Linux platforms. A normal
+Published Toggly gems ([`toggly`](https://rubygems.org/gems/toggly)): exact versions in
+[`Gemfile`](Gemfile) and [`Gemfile.lock`](Gemfile.lock). The lock includes checksums and generic Ruby, macOS and Linux platforms. A normal
 frozen install consumes published gems; no local SDK checkout or patched artifact
 is used. A Ruby app has no browser bundling step: `rake build` compiles Ruby and
 ERB syntax, then renders all eight pages using the actual production Rack app.
@@ -280,8 +280,8 @@ Non-matching: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101
 Against the exact sole-rule fixture, claims/country/browser/language/OS/Order
 rows produce ON/OFF. AlwaysOn and the open TimeWindow produce ON/ON. Percentage
 is sticky but does not promise opposite outcomes for the two identities.
-**Native Targeting produces ON/ON** for these sole-rule definitions; it does not
-demonstrate the intended negative. **Native DeviceType produces OFF/OFF** because
+**Native Targeting produces ON/OFF** for alice versus bob with sole-rule definitions.
+**Native DeviceType produces OFF/OFF** because
 the exact Macintosh user agent maps to Other. Preserve Macintosh device and Mac
 operating-system values; the UI reports native results without replacement rules
 or evaluators. Live values depend on your actual applied definitions.
