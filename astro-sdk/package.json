@@ -28,7 +28,7 @@
     "vue": "3.5.44"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.10",
+    "@astrojs/check": "0.9.12",
     "@playwright/test": "1.63.0",
     "typescript": "6.0.3"
   },
