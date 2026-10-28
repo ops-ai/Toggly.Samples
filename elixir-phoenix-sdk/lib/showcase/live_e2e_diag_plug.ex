@@ -38,7 +38,12 @@ defmodule Showcase.LiveE2eDiagPlug do
   defp header_map(conn) do
     Map.new(conn.req_headers, fn {k, v} ->
       key = String.downcase(k)
-      value = if key in @interest, do: v, else: if(String.starts_with?(key, "x-forwarded-"), do: v, else: "")
+
+      value =
+        if key in @interest,
+          do: v,
+          else: if(String.starts_with?(key, "x-forwarded-"), do: v, else: "")
+
       {key, value}
     end)
     |> Enum.reject(fn {_k, v} -> v == "" end)
@@ -46,7 +51,9 @@ defmodule Showcase.LiveE2eDiagPlug do
   end
 
   defp cookie_values(cookies) do
-    for key <- ~w(sample-preset toggly-preset demo-identity), value = cookies[key], not is_nil(value) do
+    for key <- ~w(sample-preset toggly-preset demo-identity),
+        value = cookies[key],
+        not is_nil(value) do
       {key, value}
     end
     |> Map.new()

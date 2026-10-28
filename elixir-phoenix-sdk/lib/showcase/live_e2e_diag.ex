@@ -63,7 +63,11 @@ defmodule Showcase.LiveE2eDiag do
       name = Map.get(filter, "name") || Map.get(filter, :name) || "?"
       params = Map.get(filter, "parameters") || Map.get(filter, :parameters) || %{}
       users = Map.get(params, "Audience.Users:0") || Map.get(params, "Users:0") || ""
-      rollout = Map.get(params, "Audience.DefaultRolloutPercentage") || Map.get(params, "DefaultRolloutPercentage") || ""
+
+      rollout =
+        Map.get(params, "Audience.DefaultRolloutPercentage") ||
+          Map.get(params, "DefaultRolloutPercentage") || ""
+
       "name=#{name} users0=#{users} rollout=#{rollout}"
     end)
   end
@@ -78,7 +82,9 @@ defmodule Showcase.LiveE2eDiag do
 
   defp entity_summary(_), do: ""
 
-  defp session_keys(session) when is_map(session), do: Enum.join(Map.keys(session) |> Enum.sort(), ",")
+  defp session_keys(session) when is_map(session),
+    do: Enum.join(Map.keys(session) |> Enum.sort(), ",")
+
   defp session_keys(_), do: ""
 
   defp session_val(session, key) when is_map(session) do
