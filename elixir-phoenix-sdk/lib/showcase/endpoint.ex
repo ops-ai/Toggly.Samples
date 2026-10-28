@@ -23,6 +23,9 @@ defmodule Showcase.Endpoint do
   )
 
   plug(Plug.Session, @session_options)
+  plug(:fetch_session)
+  plug(Showcase.PresetCookiePlug)
+  plug(Showcase.LiveE2eDiagPlug)
   plug(Showcase.Router)
 end
 

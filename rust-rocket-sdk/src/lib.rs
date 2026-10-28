@@ -77,7 +77,7 @@ pub fn is_placeholder(key: &str) -> bool {
 
 pub fn application(client: Option<TogglyClient>, mode: Mode) -> Rocket<Build> {
     let app = rocket::build().manage(mode)
-        .mount("/", rocket::routes![routes::home, routes::section, routes::style, routes::session,
+        .mount("/", rocket::routes![routes::home, routes::section, routes::style, routes::live_matrix_script, routes::session,
             routes::snapshot, routes::api, routes::native, routes::beta, routes::submit])
         .attach(AdHoc::on_response("Private workshop responses", |_, response| Box::pin(async move {
             response.set_raw_header("Cache-Control", "no-store");

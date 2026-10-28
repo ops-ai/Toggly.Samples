@@ -22,7 +22,7 @@ const run = (args, extra = {}) =>
   });
 
 run(['run', 'check']);
-run(['run', 'build']);
+run(['run', 'build:static']);
 
 const manifest = JSON.parse(
   readFileSync(join(root, 'dist/toggly-page-features.json'), 'utf8'),
@@ -46,7 +46,7 @@ assert.match(homeHtml, /id="filter-matrix"/);
 assert.match(homeHtml, /live-snapshot/);
 assert.match(homeHtml, /live-filter-checklist|LiveFlagsIsland/);
 
-run(['run', 'build:ssr']);
+run(['run', 'build']);
 
 const port = 4327;
 

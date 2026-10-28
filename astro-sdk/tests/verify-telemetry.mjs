@@ -49,7 +49,7 @@ async function runCase({ optOut = false, plain = false, selection = 'on' }) {
   };
   if (!optOut && !plain && selection === 'on') {
     const beforeGets = definitionGets;
-    const output = await build(['run', 'build'], { ...env, SAMPLE_OUTPUT: 'static' });
+    const output = await build(['run', 'build:static'], { ...env, SAMPLE_OUTPUT: 'static' });
     await new Promise((resolve) => setTimeout(resolve, 100));
     assert.match(stripVTControlCharacters('output: \x1b[32m"static"\x1b[0m'), /output: "static"/,
       'ANSI styling must not hide the static output marker');

@@ -28,6 +28,8 @@ defmodule Showcase.Cookies do
     case cookies do
       %{"sample-preset" => value} when is_binary(value) and value != "" -> value
       %{"toggly-preset" => value} when is_binary(value) and value != "" -> value
+      %{"demo-identity" => "alice"} -> "matching"
+      %{"demo-identity" => "bob"} -> "nonmatching"
       _ -> nil
     end
   end

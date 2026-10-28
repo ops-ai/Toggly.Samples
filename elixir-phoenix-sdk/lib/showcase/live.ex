@@ -14,102 +14,23 @@ defmodule Showcase.Live do
     context = Showcase.Context.preset(preset)
     socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
-    {:ok,
-     assign(socket,
-       offline: Application.fetch_env!(:toggly_showcase, :offline),
-       filters: @filters,
-       keys: @keys,
-       action: "No action yet",
-       preset: preset,
-       toggly_context: context,
-       refresh: "Waiting"
-     )}
+    socket =
+      assign(socket,
+        offline: Application.fetch_env!(:toggly_showcase, :offline),
+        filters: @filters,
+        keys: @keys,
+        action: "No action yet",
+        preset: preset,
+        toggly_context: context,
+        refresh: "Waiting"
+      )
+
+    {:ok, Showcase.LiveE2eDiag.assign_diag(socket, params, session)}
   end
 
   @doc false
   def resolve_preset(params, session, socket) do
-    case Map.get(params, "preset") do
-      nil ->
-        case session_preset(session) ||
-               preset_from_session_context(session) ||
-               query_preset(socket) ||
-               cookie_preset(socket) ||
-               header_preset(socket) do
-          nil -> "anonymous"
-          value -> normalize_preset(value)
-        end
-
-      "none" ->
-        case session_preset(session) ||
-               preset_from_session_context(session) ||
-               query_preset(socket) ||
-               cookie_preset(socket) ||
-               header_preset(socket) do
-          nil -> "anonymous"
-          value -> normalize_preset(value)
-        end
-
-      value ->
-        normalize_preset(value)
-    end
-  end
-
-  defp session_preset(session) when is_map(session) do
-    session["sample_preset"] || session[:sample_preset]
-  end
-
-  defp preset_from_session_context(%{"toggly_context" => %{"identity" => "alice"}}),
-    do: "matching"
-
-  defp preset_from_session_context(%{"toggly_context" => %{"identity" => "bob"}}),
-    do: "nonmatching"
-
-  defp preset_from_session_context(_), do: nil
-
-  defp query_preset(socket) do
-    case Phoenix.LiveView.get_connect_info(socket, :uri) do
-      %URI{query: query} when is_binary(query) and query != "" ->
-        case URI.decode_query(query) |> Map.get("preset") do
-          value when is_binary(value) and value != "" -> value
-          _ -> nil
-        end
-
-      _ ->
-        nil
-    end
-  end
-
-  defp header_preset(socket) do
-    case Phoenix.LiveView.get_connect_info(socket, :x_headers) do
-      headers when is_list(headers) ->
-        header_value(headers, "x-demo-preset")
-
-      _ ->
-        nil
-    end
-  end
-
-  defp header_value(headers, name) do
-    Enum.find_value(headers, fn
-      {key, value} when is_binary(key) and is_binary(value) ->
-        if String.downcase(key) == name, do: value, else: nil
-
-      _ ->
-        nil
-    end)
-  end
-
-  defp cookie_preset(socket), do: Showcase.Cookies.preset_from_socket(socket)
-
-  defp normalize_preset(mode) do
-    case mode do
-      "nonmatching" -> "nonmatching"
-      "non-matching" -> "nonmatching"
-      "matching" -> "matching"
-      "anonymous" -> "anonymous"
-      nil -> "anonymous"
-      _ -> "anonymous"
-    end
+    Showcase.PresetSources.for_live(params, session, socket)
   end
 
   def handle_event("preset", %{"mode" => mode}, socket) do
@@ -252,10 +173,19 @@ defmodule Showcase.Live do
             </tr>
           </thead><tbody>
             <tr :for={key <- @filters}>
-              <td><code>{key}</code></td><td id={key}>
+              <td><code>{key}</code></td>
+              <td
+                id={key}
+                data-livee2e-diag-temp={if(key == "filter-targeting", do: "1", else: nil)}
+              >
                 <span data-toggly-state={if(@toggly_flags[key], do: "on", else: "off")}>
                   {if @toggly_flags[key], do: "ON", else: "OFF"}
                 </span>
+                <%= if key == "filter-targeting" do %>
+                  <span class="livee2e-diag-temp" data-livee2e-diag-temp="1">
+                    {@livee2e_diag_line}
+                  </span>
+                <% end %>
               </td>
             </tr>
           </tbody>

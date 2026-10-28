@@ -111,6 +111,52 @@ defmodule ShowcaseTest do
     assert has_element?(view, "#filter-targeting", "ON")
   end
 
+  defp filter_targeting_state(html) do
+    case Regex.run(~r/id="filter-targeting"[^>]*>.*?data-toggly-state="(on|off)"/s, html) do
+      [_, state] -> state
+      _ -> flunk("filter-targeting row missing in HTML")
+    end
+  end
+
+  test "endpoint GET preset=none without harness signals leaves filter-targeting OFF" do
+    conn = build_conn() |> init_test_session(%{})
+    conn = get(conn, "/?preset=none")
+    assert filter_targeting_state(conn.resp_body) == "off"
+  end
+
+  test "endpoint GET preset=none with x-toggly-identity alice renders filter-targeting ON" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-toggly-identity", "alice")
+      |> init_test_session(%{})
+
+    conn = get(conn, "/?preset=none")
+    assert conn.status == 200
+    assert filter_targeting_state(conn.resp_body) == "on"
+  end
+
+  test "endpoint GET preset=none with harness cookie renders filter-targeting ON (LiveE2E ui-static)" do
+    conn =
+      build_conn()
+      |> put_req_cookie("sample-preset", "matching")
+      |> init_test_session(%{})
+
+    conn = get(conn, "/?preset=none")
+    assert conn.status == 200
+    assert filter_targeting_state(conn.resp_body) == "on"
+  end
+
+  test "ui-static dead render honors harness header before LiveView connects" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    {:ok, _view, html} = live(conn, "/")
+    assert html =~ ~s/id="filter-targeting"/
+    assert html =~ ~s/data-toggly-state="on"/
+  end
+
   test "mount reads x-demo-preset header when query and cookie omit preset (LiveE2E fingerprint)" do
     conn =
       build_conn()
