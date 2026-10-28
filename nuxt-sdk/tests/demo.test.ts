@@ -3,7 +3,7 @@ import { allFlagKeys, filterFlags, isDemoPreset, orderForPreset } from '../lib/d
 import { EventEmitter } from 'node:events'
 import { createEvent } from 'h3'
 import { createTogglyModuleOptions } from '../lib/toggly-options'
-import { getDemoEvalContext } from '../server/utils/demo-context'
+import { getDemoEvalContext, getDemoPreset } from '../server/utils/demo-context'
 
 function requestEvent(url: string, cookie?: string) {
   const request = Object.assign(new EventEmitter(), {
@@ -63,6 +63,55 @@ describe('shared catalogue inputs', () => {
   it('keeps each preset identity when no browser session cookie exists', () => {
     expect(getDemoEvalContext(requestEvent('/?preset=matching')).identity).toBe('alice')
     expect(getDemoEvalContext(requestEvent('/?preset=non-matching')).identity).toBe('bob')
+  })
+
+  it('resolves harness preset from x-demo-preset when query is absent', () => {
+    const request = Object.assign(new EventEmitter(), {
+      method: 'GET',
+      url: '/',
+      headers: { 'x-demo-preset': 'non-matching' },
+    })
+    const response = Object.assign(new EventEmitter(), {
+      statusCode: 200,
+      getHeader: () => undefined,
+      setHeader: () => undefined,
+      end: () => undefined,
+    })
+    const event = createEvent(request as never, response as never)
+    expect(getDemoPreset(event)).toBe('non-matching')
+  })
+
+  it('reads Live E2E harness preset when query omits preset', () => {
+    const headers = { 'x-demo-preset': 'non-matching' }
+    const request = Object.assign(new EventEmitter(), {
+      method: 'GET',
+      url: '/',
+      headers,
+    })
+    const response = Object.assign(new EventEmitter(), {
+      statusCode: 200,
+      getHeader: () => undefined,
+      setHeader: () => undefined,
+      end: () => undefined,
+    })
+    const event = createEvent(request as never, response as never)
+    expect(getDemoEvalContext(event).identity).toBe('bob')
+  })
+
+  it('prefers x-toggly-identity over preset defaults', () => {
+    const request = Object.assign(new EventEmitter(), {
+      method: 'GET',
+      url: '/?preset=non-matching',
+      headers: { 'x-toggly-identity': 'carol' },
+    })
+    const response = Object.assign(new EventEmitter(), {
+      statusCode: 200,
+      getHeader: () => undefined,
+      setHeader: () => undefined,
+      end: () => undefined,
+    })
+    const event = createEvent(request as never, response as never)
+    expect(getDemoEvalContext(event).identity).toBe('carol')
   })
 })
 

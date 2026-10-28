@@ -5,7 +5,7 @@
     "start": "docusaurus start --host 0.0.0.0",
     "build": "docusaurus build",
     "serve": "docusaurus serve",
-    "test": "node --test tests/core.test.cjs && node tests/browser.cjs"
+    "test": "node --test tests/core.test.cjs tests/harness-preset.test.cjs && node tests/browser.cjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.2",

@@ -3,8 +3,8 @@ import { useToggly } from "@ops-ai/toggly-docusaurus-plugin/client";
 import { useWorkshop } from "../theme/Root";
 import catalog from "../sample/catalog.cjs";
 export default function FilterMatrix() {
-  const { flags } = useToggly();
-  const { preset, offline, order, entityFilter } = useWorkshop();
+  const { flags, isReady } = useToggly();
+  const { preset, offline, order, entityFilter, identity } = useWorkshop();
   return (
     <section className="panel" id="filters">
       <h2>07 · Eleven filters, one reference matrix</h2>
@@ -40,7 +40,7 @@ export default function FilterMatrix() {
               <td>
                 {key === "filter-context-property"
                   ? entityFilter?.order === order &&
-                    entityFilter?.identity === catalog.users[preset].identity
+                    entityFilter?.identity === identity
                     ? (() => {
                         const on = entityFilter.value;
                         return (
@@ -50,11 +50,13 @@ export default function FilterMatrix() {
                         );
                       })()
                     : "Loading"
-                  : flags[key] === true
-                    ? <span data-toggly-state="on">ON</span>
-                    : flags[key] === false
-                      ? <span data-toggly-state="off">OFF</span>
-                      : "Unavailable"}
+                  : !isReady
+                    ? "Loading"
+                    : flags[key] === true
+                      ? <span data-toggly-state="on">ON</span>
+                      : flags[key] === false
+                        ? <span data-toggly-state="off">OFF</span>
+                        : "Unavailable"}
               </td>
             </tr>
           ))}

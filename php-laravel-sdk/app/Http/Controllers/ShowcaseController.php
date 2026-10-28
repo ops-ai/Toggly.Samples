@@ -20,6 +20,6 @@ final class ShowcaseController
 
     public function snapshot(TogglyRuntime $runtime): JsonResponse
     {
-        return response()->json($runtime->snapshot());
+        return response()->json($runtime->snapshot(true));
     }
 }
