@@ -180,6 +180,34 @@ defmodule ShowcaseTest do
     assert get_in(Plug.Conn.get_session(conn, "toggly_context"), ["identity"]) == "alice"
   end
 
+  test "preset plug clears filter-derived toggly_context when harness cookies are removed" do
+    conn =
+      build_conn()
+      |> put_req_cookie("toggly-identity", "alice")
+      |> put_req_cookie("toggly-filter-country", "CA")
+      |> put_req_cookie("toggly-filter-vip", "0")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert get_in(Plug.Conn.get_session(conn, "toggly_context"), ["request", "country"]) == "CA"
+
+    session = Plug.Conn.get_session(conn)
+
+    follow_up =
+      build_conn()
+      |> Plug.Conn.fetch_cookies()
+      |> init_test_session(session)
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(follow_up, "toggly_context") == nil
+    assert Plug.Conn.get_session(follow_up, "sample_preset") == nil
+  end
+
   test "ui-static dead render honors harness header before LiveView connects" do
     conn =
       build_conn()
