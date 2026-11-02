@@ -8,7 +8,9 @@ defmodule Showcase.EvaluationContext do
   `toggly_context` stored on the session by `Showcase.PresetCookiePlug` from
   LiveE2E filter cookies (`toggly-identity`, `toggly-filter-*`).
   """
-  def for_mount(preset, session, socket \\ nil) when is_binary(preset) do
+  def for_mount(preset, session, socket \\ nil) do
+    preset = if is_binary(preset), do: preset, else: "anonymous"
+
     case preset do
       "matching" -> Showcase.Context.preset("matching")
       "nonmatching" -> Showcase.Context.preset("nonmatching")

@@ -54,16 +54,16 @@ defmodule Showcase.FilterEvalCookies do
   defp read_bag(cookies, identity_header) do
     identity =
       non_empty(identity_header) ||
-        non_empty(cookies[@identity_cookie]) ||
-        non_empty(cookies["demo-identity"])
+        cookie_value(cookies[@identity_cookie]) ||
+        cookie_value(cookies["demo-identity"])
 
     %{
       identity: identity,
-      claims_preset: parse_claims(cookies[@claims_cookie]),
-      country: non_empty(cookies[@country_cookie]),
-      user_agent: non_empty(cookies[@ua_cookie]),
-      accept_language: non_empty(cookies[@lang_cookie]),
-      vip: parse_vip(cookies[@vip_cookie])
+      claims_preset: parse_claims(cookie_value(cookies[@claims_cookie])),
+      country: cookie_value(cookies[@country_cookie]),
+      user_agent: cookie_value(cookies[@ua_cookie]),
+      accept_language: cookie_value(cookies[@lang_cookie]),
+      vip: parse_vip(cookie_value(cookies[@vip_cookie]))
     }
   end
 
@@ -141,4 +141,21 @@ defmodule Showcase.FilterEvalCookies do
   end
 
   defp non_empty(_), do: nil
+
+  defp cookie_value(value) when is_binary(value) do
+    value
+    |> String.trim()
+    |> case do
+      "" ->
+        nil
+
+      trimmed ->
+        case URI.decode(trimmed) do
+          decoded when is_binary(decoded) and decoded != "" -> decoded
+          _ -> trimmed
+        end
+    end
+  end
+
+  defp cookie_value(_), do: nil
 end

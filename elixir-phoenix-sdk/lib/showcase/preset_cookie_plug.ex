@@ -9,7 +9,11 @@ defmodule Showcase.PresetCookiePlug do
       "anonymous" ->
         case Showcase.FilterEvalCookies.context_from_conn(conn) do
           nil ->
-            conn
+            if session_has_named_preset?(conn) do
+              conn
+            else
+              conn |> delete_session("toggly_context")
+            end
 
           context ->
             conn
@@ -27,5 +31,14 @@ defmodule Showcase.PresetCookiePlug do
       _ ->
         conn
     end
+  end
+
+  defp session_has_named_preset?(conn) do
+    case get_session(conn, "sample_preset") do
+      preset when preset in ["matching", "nonmatching"] -> true
+      _ -> false
+    end
+  rescue
+    _ -> false
   end
 end

@@ -18,4 +18,14 @@ defmodule Showcase.FilterEvalCookiesTest do
   test "ignores empty cookie bag" do
     refute Showcase.FilterEvalCookies.context_from_bag(%{})
   end
+
+  test "decodes percent-encoded accept-language cookie values" do
+    ctx =
+      Showcase.FilterEvalCookies.context_from_bag(%{
+        "toggly-identity" => "alice",
+        "toggly-filter-lang" => "en-US%2Cen%3Bq%3D0.9"
+      })
+
+    assert get_in(ctx, ["request", "acceptLanguage"]) == "en-US,en;q=0.9"
+  end
 end

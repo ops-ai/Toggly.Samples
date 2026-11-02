@@ -120,8 +120,7 @@ defmodule Showcase.PresetSources do
   defp cookie_preset(cookies) when is_map(cookies) do
     cookies["sample-preset"] ||
       cookies["toggly-preset"] ||
-      identity_cookie(cookies["demo-identity"]) ||
-      identity_cookie(cookies["toggly-identity"])
+      identity_cookie(cookies["demo-identity"])
   end
 
   defp identity_cookie("alice"), do: "matching"
