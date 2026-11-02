@@ -8,6 +8,19 @@ function normalizePreset(raw: string | undefined | null): DemoPreset | null {
   return null
 }
 
+/** True when Live E2E (or harness) chose the preset via header/cookie, not ?preset=. */
+function harnessPresetSelected(event: H3Event): boolean {
+  const queryPreset = getQuery(event).preset
+  if (typeof queryPreset === 'string' && queryPreset !== '' && queryPreset !== 'none') {
+    return false
+  }
+  return (
+    normalizePreset(getHeader(event, 'x-demo-preset')) != null ||
+    normalizePreset(getCookie(event, 'sample-preset')) != null ||
+    normalizePreset(getCookie(event, 'toggly-preset')) != null
+  )
+}
+
 /**
  * Live E2E uses preset=none with x-demo-preset / sample-preset (see astro/blazor samples).
  * Query ?preset= wins when the UI explicitly navigates; otherwise headers and cookies apply.
@@ -34,17 +47,12 @@ export function getDemoEvalContext(event: H3Event) {
   const preset = getDemoPreset(event)
   const harnessIdentity = getHeader(event, 'x-toggly-identity')?.trim()
   const cookieIdentity = getCookie(event, 'demo-identity')?.trim()
-  const queryPreset = getQuery(event).preset
-  const presetFromHarnessOnly =
-    queryPreset === undefined ||
-    queryPreset === '' ||
-    queryPreset === 'none'
 
-  // Preset defaults beat a stale demo-identity cookie left from filters-matching
-  // when Live E2E runs filters-non-matching with preset=none (harness headers only).
+  // Only when a harness preset header/cookie is present: preset default beats a
+  // stale demo-identity cookie from an earlier filters-matching scenario.
   const identity =
     harnessIdentity ||
-    (presetFromHarnessOnly
+    (harnessPresetSelected(event)
       ? defaultIdentityForPreset(preset) || cookieIdentity
       : cookieIdentity || defaultIdentityForPreset(preset))
 

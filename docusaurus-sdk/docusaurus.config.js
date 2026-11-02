@@ -3,9 +3,17 @@
 const path = require("node:path");
 if (require("node:fs").existsSync(".env.local"))
   process.loadEnvFile(".env.local");
-const entityGatePatch = path.resolve(
+const togglyHooksTypesShim = path.resolve(
   __dirname,
-  "src/sample/entity-gate-patch.cjs",
+  "src/sample/toggly-hooks-types-browser-shim.cjs",
+);
+const entityGateStock = path.resolve(
+  __dirname,
+  "node_modules/@ops-ai/toggly-hooks-types/dist/entity-gate.js",
+);
+const togglyHooksTypesStock = path.resolve(
+  __dirname,
+  "node_modules/@ops-ai/toggly-hooks-types/dist/index.js",
 );
 const defaults = {
   "new-dashboard": false,
@@ -41,10 +49,11 @@ module.exports = {
           return {
             resolve: {
               fallback: { crypto: false },
-              // Until @ops-ai/toggly-hooks-types resolves { enabled } envelopes
-              // (evaluated-signed), alias the entity gate used by the plugin client.
+              // Plugin imports toBooleanDefinitions from the package root, not entity-gate.js.
               alias: {
-                "@ops-ai/toggly-hooks-types/dist/entity-gate.js": entityGatePatch,
+                "@ops-ai/toggly-hooks-types": togglyHooksTypesShim,
+                "toggly-entity-gate-stock": entityGateStock,
+                "toggly-hooks-types-stock": togglyHooksTypesStock,
               },
             },
           };

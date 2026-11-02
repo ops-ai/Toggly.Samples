@@ -60,6 +60,12 @@ describe('shared catalogue inputs', () => {
     expect(getDemoEvalContext(requestEvent('/?preset=non-matching', cookie)).identity).toBe('carol')
   })
 
+  it('honours demo-identity cookie on ordinary reloads without harness preset signals', () => {
+    const cookie = 'demo-identity=carol'
+    expect(getDemoEvalContext(requestEvent('/', cookie)).identity).toBe('carol')
+    expect(getDemoEvalContext(requestEvent('/?preset=none', cookie)).identity).toBe('carol')
+  })
+
   it('prefers preset default identity over a stale demo-identity cookie for harness preset', () => {
     const cookie = 'demo-identity=alice'
     const request = Object.assign(new EventEmitter(), {

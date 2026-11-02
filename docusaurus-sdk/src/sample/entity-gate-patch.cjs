@@ -1,10 +1,12 @@
 "use strict";
 /**
- * Temporary shim until @ops-ai/toggly-hooks-types resolves evaluated-signed
- * `{ enabled: boolean }` envelopes (see tests/evaluated-envelope.test.cjs).
- * Webpack aliases this module over dist/entity-gate.js for browser bundles.
+ * Browser bundle shim (webpack alias target). Loads stock implementation via
+ * `toggly-entity-gate-stock`, which must alias to the real entity-gate.js and
+ * must not alias back to this file (see docusaurus.config.js).
+ *
+ * Canonical fix: https://linear.app/opsai/issue/OPS-2052
  */
-const original = require("@ops-ai/toggly-hooks-types/dist/entity-gate.js");
+const original = require("toggly-entity-gate-stock");
 
 function resolveEvaluatedDefinition(value, context, defaultValue = false) {
   if (

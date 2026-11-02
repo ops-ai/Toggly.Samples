@@ -1,7 +1,26 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
+const path = require("node:path");
+const Module = require("node:module");
 const stock = require("@ops-ai/toggly-hooks-types/dist/entity-gate.js");
-const patched = require("../src/sample/entity-gate-patch.cjs");
+
+const root = path.resolve(__dirname, "..");
+const stockPath = path.join(
+  root,
+  "node_modules/@ops-ai/toggly-hooks-types/dist/entity-gate.js",
+);
+const originalResolve = Module._resolveFilename;
+Module._resolveFilename = function (request, parent, isMain, options) {
+  if (request === "toggly-entity-gate-stock") {
+    return stockPath;
+  }
+  if (request === "toggly-hooks-types-stock") {
+    return path.join(root, "node_modules/@ops-ai/toggly-hooks-types/dist/index.js");
+  }
+  return originalResolve.call(this, request, parent, isMain, options);
+};
+const patched = require("../src/sample/toggly-hooks-types-browser-shim.cjs");
+Module._resolveFilename = originalResolve;
 
 test("stock hooks-types treats evaluated { enabled } envelopes as OFF", () => {
   assert.equal(stock.resolveEvaluatedDefinition({ enabled: true }), false);
