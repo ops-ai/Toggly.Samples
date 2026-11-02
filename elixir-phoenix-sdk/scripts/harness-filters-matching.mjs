@@ -40,7 +40,7 @@ try {
     {
       name: 'sample-preset',
       value: 'matching',
-      url: base.origin,
+      url: `${base.origin}/`,
     },
   ]);
   await assertMatchingTargeting(legacy, 'legacy harness headers');
@@ -48,12 +48,12 @@ try {
 
   const ado = await browser.newContext();
   await ado.addCookies([
-    { name: 'toggly-identity', value: 'alice', url: base.origin },
-    { name: 'toggly-filter-claims', value: 'admin', url: base.origin },
-    { name: 'toggly-filter-country', value: 'US', url: base.origin },
-    { name: 'toggly-filter-lang', value: 'en-US,en;q=0.9', url: base.origin },
-    { name: 'toggly-filter-ua', value: matchingUa, url: base.origin },
-    { name: 'toggly-filter-vip', value: '1', url: base.origin },
+    { name: 'toggly-identity', value: 'alice', url: `${base.origin}/` },
+    { name: 'toggly-filter-claims', value: 'admin', url: `${base.origin}/` },
+    { name: 'toggly-filter-country', value: 'US', url: `${base.origin}/` },
+    { name: 'toggly-filter-lang', value: encodeURIComponent('en-US,en;q=0.9'), url: `${base.origin}/` },
+    { name: 'toggly-filter-ua', value: matchingUa, url: `${base.origin}/` },
+    { name: 'toggly-filter-vip', value: '1', url: `${base.origin}/` },
   ]);
   await assertMatchingTargeting(ado, 'ADO filter cookies');
   await ado.close();

@@ -163,7 +163,7 @@ defmodule ShowcaseTest do
     assert conn.resp_body =~ ~s/id="current-identity">alice</
   end
 
-  test "filter cookie plug stores toggly_context without sample_preset (ADO ui-static)" do
+  test "filter cookie plug stores toggly_context from toggly-identity (ADO ui-static)" do
     conn =
       build_conn()
       |> put_req_cookie("toggly-identity", "alice")
@@ -176,7 +176,7 @@ defmodule ShowcaseTest do
       |> Plug.Conn.fetch_session()
       |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
 
-    assert Plug.Conn.get_session(conn, "sample_preset") == nil
+    assert Plug.Conn.get_session(conn, "sample_preset") == "matching"
     assert get_in(Plug.Conn.get_session(conn, "toggly_context"), ["identity"]) == "alice"
   end
 

@@ -7,18 +7,26 @@ import { chromium } from '@playwright/test';
 
 const origin = process.env.SAMPLE_URL || 'http://127.0.0.1:4000';
 const base = new URL(origin);
+const pageUrl = `${base.origin}/`;
+
+/** Playwright rejects raw commas in cookie values; ADO stores encoded values. */
+const cookieUrl = pageUrl;
 
 const matchingUa =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
 /** Cookie set observed on ADO run 9463 (preset=none fingerprint=matching). */
 const adoFilterCookies = [
-  { name: 'toggly-identity', value: 'alice', url: base.origin },
-  { name: 'toggly-filter-claims', value: 'admin', url: base.origin },
-  { name: 'toggly-filter-country', value: 'US', url: base.origin },
-  { name: 'toggly-filter-lang', value: 'en-US,en;q=0.9', url: base.origin },
-  { name: 'toggly-filter-ua', value: matchingUa, url: base.origin },
-  { name: 'toggly-filter-vip', value: '1', url: base.origin },
+  { name: 'toggly-identity', value: 'alice', url: cookieUrl },
+  { name: 'toggly-filter-claims', value: 'admin', url: cookieUrl },
+  { name: 'toggly-filter-country', value: 'US', url: cookieUrl },
+  {
+    name: 'toggly-filter-lang',
+    value: encodeURIComponent('en-US,en;q=0.9'),
+    url: cookieUrl,
+  },
+  { name: 'toggly-filter-ua', value: matchingUa, url: cookieUrl },
+  { name: 'toggly-filter-vip', value: '1', url: cookieUrl },
 ];
 
 async function readTargetingState(page) {

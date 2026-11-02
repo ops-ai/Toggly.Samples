@@ -67,7 +67,7 @@ defmodule Showcase.FilterEvalCookies do
     }
   end
 
-  defp meaningful?(%{identity: id} = bag) when is_binary(id) and id != "", do: true
+  defp meaningful?(%{identity: id}) when is_binary(id) and id != "", do: true
 
   defp meaningful?(bag) do
     bag.claims_preset != :none or bag.country != nil or bag.user_agent != nil or
@@ -122,6 +122,7 @@ defmodule Showcase.FilterEvalCookies do
   defp parse_claims(_), do: :none
 
   defp parse_vip(nil), do: nil
+
   defp parse_vip(value) when is_binary(value) do
     case String.downcase(String.trim(value)) do
       "1" -> true
