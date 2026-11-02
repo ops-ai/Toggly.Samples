@@ -154,6 +154,8 @@ defmodule Showcase.FilterEvalCookies do
           decoded when is_binary(decoded) and decoded != "" -> decoded
           _ -> trimmed
         end
+    rescue
+      ArgumentError -> trimmed
     end
   end
 

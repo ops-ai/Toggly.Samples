@@ -28,4 +28,9 @@ defmodule Showcase.FilterEvalCookiesTest do
 
     assert get_in(ctx, ["request", "acceptLanguage"]) == "en-US,en;q=0.9"
   end
+
+  test "malformed percent-encoding falls back to raw cookie value" do
+    ctx = Showcase.FilterEvalCookies.context_from_bag(%{"toggly-identity" => "alice%"})
+    assert ctx["identity"] == "alice%"
+  end
 end
