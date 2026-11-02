@@ -236,6 +236,32 @@ defmodule ShowcaseTest do
     assert Plug.Conn.get_session(anonymous, "toggly_context") == nil
   end
 
+  test "unknown preset query clears stale named preset session" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    session = Plug.Conn.get_session(conn)
+
+    follow =
+      build_conn()
+      |> init_test_session(session)
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Map.put(:query_params, %{"preset" => "junk"})
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(follow, "sample_preset") == nil
+    assert Plug.Conn.get_session(follow, "toggly_context") == nil
+  end
+
   test "ui-static dead render honors harness header before LiveView connects" do
     conn =
       build_conn()

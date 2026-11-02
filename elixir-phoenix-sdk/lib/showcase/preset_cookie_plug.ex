@@ -6,12 +6,17 @@ defmodule Showcase.PresetCookiePlug do
 
   def call(conn, _opts) do
     conn = fetch_query_params(conn)
-    preset = Showcase.PresetSources.from_conn(conn)
+
+    preset =
+      case Showcase.PresetSources.from_conn(conn) do
+        nil when invalid_explicit_preset?(conn) -> "anonymous"
+        other -> other
+      end
 
     case preset do
       "anonymous" ->
         conn =
-          if explicit_anonymous_query?(conn) do
+          if explicit_anonymous_query?(conn) or invalid_explicit_preset?(conn) do
             conn
             |> delete_session("sample_preset")
             |> delete_session("toggly_context")
@@ -56,5 +61,18 @@ defmodule Showcase.PresetCookiePlug do
 
   defp explicit_anonymous_query?(conn) do
     Map.get(conn.query_params, "preset") == "anonymous"
+  end
+
+  defp invalid_explicit_preset?(conn) do
+    case Map.get(conn.query_params, "preset") do
+      nil -> false
+      "" -> false
+      "none" -> false
+      "anonymous" -> false
+      "matching" -> false
+      "nonmatching" -> false
+      "non-matching" -> false
+      _ -> true
+    end
   end
 end
