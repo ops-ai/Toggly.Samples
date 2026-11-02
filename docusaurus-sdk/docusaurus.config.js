@@ -1,7 +1,12 @@
 // Environment variables are read by Node at build/start time. The plugin
 // serializes this public App Key into the browser; never put a private key here.
+const path = require("node:path");
 if (require("node:fs").existsSync(".env.local"))
   process.loadEnvFile(".env.local");
+const entityGatePatch = path.resolve(
+  __dirname,
+  "src/sample/entity-gate-patch.cjs",
+);
 const defaults = {
   "new-dashboard": false,
   "api-v2": false,
@@ -32,7 +37,17 @@ module.exports = {
       return {
         name: "browser-crypto",
         configureWebpack(_config, isServer) {
-          return isServer ? {} : { resolve: { fallback: { crypto: false } } };
+          if (isServer) return {};
+          return {
+            resolve: {
+              fallback: { crypto: false },
+              // Until @ops-ai/toggly-hooks-types resolves { enabled } envelopes
+              // (evaluated-signed), alias the entity gate used by the plugin client.
+              alias: {
+                "@ops-ai/toggly-hooks-types/dist/entity-gate.js": entityGatePatch,
+              },
+            },
+          };
         },
       };
     },

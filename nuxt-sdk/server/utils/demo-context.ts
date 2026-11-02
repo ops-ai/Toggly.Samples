@@ -34,10 +34,19 @@ export function getDemoEvalContext(event: H3Event) {
   const preset = getDemoPreset(event)
   const harnessIdentity = getHeader(event, 'x-toggly-identity')?.trim()
   const cookieIdentity = getCookie(event, 'demo-identity')?.trim()
+  const queryPreset = getQuery(event).preset
+  const presetFromHarnessOnly =
+    queryPreset === undefined ||
+    queryPreset === '' ||
+    queryPreset === 'none'
+
+  // Preset defaults beat a stale demo-identity cookie left from filters-matching
+  // when Live E2E runs filters-non-matching with preset=none (harness headers only).
   const identity =
     harnessIdentity ||
-    cookieIdentity ||
-    defaultIdentityForPreset(preset)
+    (presetFromHarnessOnly
+      ? defaultIdentityForPreset(preset) || cookieIdentity
+      : cookieIdentity || defaultIdentityForPreset(preset))
 
   if (preset === 'matching') {
     return {

@@ -54,10 +54,44 @@ describe('shared catalogue inputs', () => {
     })
   })
 
-  it('uses a changed browser-session cookie for both request presets', () => {
+  it('uses a changed browser-session cookie when the URL preset is explicit', () => {
     const cookie = 'demo-identity=carol'
     expect(getDemoEvalContext(requestEvent('/?preset=matching', cookie)).identity).toBe('carol')
     expect(getDemoEvalContext(requestEvent('/?preset=non-matching', cookie)).identity).toBe('carol')
+  })
+
+  it('prefers preset default identity over a stale demo-identity cookie for harness preset', () => {
+    const cookie = 'demo-identity=alice'
+    const request = Object.assign(new EventEmitter(), {
+      method: 'GET',
+      url: '/',
+      headers: { 'x-demo-preset': 'non-matching', cookie },
+    })
+    const response = Object.assign(new EventEmitter(), {
+      statusCode: 200,
+      getHeader: () => undefined,
+      setHeader: () => undefined,
+      end: () => undefined,
+    })
+    const event = createEvent(request as never, response as never)
+    expect(getDemoEvalContext(event).identity).toBe('bob')
+  })
+
+  it('uses harness preset when query is preset=none even with a stale identity cookie', () => {
+    const cookie = 'demo-identity=alice'
+    const request = Object.assign(new EventEmitter(), {
+      method: 'GET',
+      url: '/?preset=none',
+      headers: { 'x-demo-preset': 'non-matching', cookie },
+    })
+    const response = Object.assign(new EventEmitter(), {
+      statusCode: 200,
+      getHeader: () => undefined,
+      setHeader: () => undefined,
+      end: () => undefined,
+    })
+    const event = createEvent(request as never, response as never)
+    expect(getDemoEvalContext(event).identity).toBe('bob')
   })
 
   it('keeps each preset identity when no browser session cookie exists', () => {
