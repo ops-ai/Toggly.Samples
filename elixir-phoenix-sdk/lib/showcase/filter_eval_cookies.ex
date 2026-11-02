@@ -143,19 +143,19 @@ defmodule Showcase.FilterEvalCookies do
   defp non_empty(_), do: nil
 
   defp cookie_value(value) when is_binary(value) do
-    value
-    |> String.trim()
-    |> case do
-      "" ->
-        nil
+    trimmed = String.trim(value)
 
-      trimmed ->
+    if trimmed == "" do
+      nil
+    else
+      try do
         case URI.decode(trimmed) do
           decoded when is_binary(decoded) and decoded != "" -> decoded
           _ -> trimmed
         end
-    rescue
-      ArgumentError -> trimmed
+      rescue
+        ArgumentError -> trimmed
+      end
     end
   end
 
