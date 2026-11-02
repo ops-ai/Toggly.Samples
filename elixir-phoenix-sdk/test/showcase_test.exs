@@ -146,6 +146,40 @@ defmodule ShowcaseTest do
     assert filter_targeting_state(conn.resp_body) == "on"
   end
 
+  test "endpoint GET preset=none with LiveE2E filter cookies (ADO fingerprint) renders filter-targeting ON" do
+    conn =
+      build_conn()
+      |> put_req_cookie("toggly-identity", "alice")
+      |> put_req_cookie("toggly-filter-claims", "admin")
+      |> put_req_cookie("toggly-filter-country", "US")
+      |> put_req_cookie("toggly-filter-lang", "en-US,en;q=0.9")
+      |> put_req_cookie("toggly-filter-ua", Showcase.Context.matching_user_agent())
+      |> put_req_cookie("toggly-filter-vip", "1")
+      |> init_test_session(%{})
+
+    conn = get(conn, "/?preset=none")
+    assert conn.status == 200
+    assert filter_targeting_state(conn.resp_body) == "on"
+    assert conn.resp_body =~ ~s/id="current-identity">alice</
+  end
+
+  test "filter cookie plug stores toggly_context without sample_preset (ADO ui-static)" do
+    conn =
+      build_conn()
+      |> put_req_cookie("toggly-identity", "alice")
+      |> put_req_cookie("toggly-filter-claims", "admin")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(conn, "sample_preset") == nil
+    assert get_in(Plug.Conn.get_session(conn, "toggly_context"), ["identity"]) == "alice"
+  end
+
   test "ui-static dead render honors harness header before LiveView connects" do
     conn =
       build_conn()

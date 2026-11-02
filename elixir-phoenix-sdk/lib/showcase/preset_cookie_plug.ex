@@ -7,7 +7,15 @@ defmodule Showcase.PresetCookiePlug do
   def call(conn, _opts) do
     case Showcase.PresetSources.from_conn(conn) do
       "anonymous" ->
-        conn
+        case Showcase.FilterEvalCookies.context_from_conn(conn) do
+          nil ->
+            conn
+
+          context ->
+            conn
+            |> put_session("toggly_context", context)
+            |> put_private(:showcase_filter_context_capture, context)
+        end
 
       normalized when is_binary(normalized) ->
         conn
