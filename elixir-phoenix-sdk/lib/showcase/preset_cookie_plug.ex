@@ -7,10 +7,13 @@ defmodule Showcase.PresetCookiePlug do
   def call(conn, _opts) do
     conn = fetch_query_params(conn)
 
+    raw_preset = Showcase.PresetSources.from_conn(conn)
+
     preset =
-      case Showcase.PresetSources.from_conn(conn) do
-        nil when invalid_explicit_preset?(conn) -> "anonymous"
-        other -> other
+      if raw_preset == nil and invalid_explicit_preset?(conn) do
+        "anonymous"
+      else
+        raw_preset
       end
 
     case preset do
