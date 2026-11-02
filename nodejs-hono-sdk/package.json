@@ -18,7 +18,7 @@
     "@hono/node-server": "2.1.5",
     "@ops-ai/toggly-hono": "0.4.0",
     "@ops-ai/toggly-node-core": "0.13.1",
-    "hono": "4.13.13"
+    "hono": "4.13.14"
   },
   "overrides": {
     "@ops-ai/toggly-node-core": "0.13.1",
