@@ -234,6 +234,7 @@ defmodule ShowcaseTest do
 
     assert Plug.Conn.get_session(anonymous, "sample_preset") == nil
     assert Plug.Conn.get_session(anonymous, "toggly_context") == nil
+    assert anonymous.resp_cookies["sample-preset"].max_age == 0
   end
 
   test "unknown preset query clears stale named preset session" do

@@ -23,6 +23,7 @@ defmodule Showcase.PresetCookiePlug do
             conn
             |> delete_session("sample_preset")
             |> delete_session("toggly_context")
+            |> expire_sample_preset_cookie()
           else
             conn
           end
@@ -77,5 +78,9 @@ defmodule Showcase.PresetCookiePlug do
       "non-matching" -> false
       _ -> true
     end
+  end
+
+  defp expire_sample_preset_cookie(conn) do
+    put_resp_cookie(conn, "sample-preset", "", max_age: 0, path: "/", same_site: "Lax")
   end
 end
