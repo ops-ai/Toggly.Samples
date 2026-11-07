@@ -87,7 +87,6 @@ defmodule Showcase.PresetSources do
 
   defp harness_signals(query_params, cookies, headers, session) do
     session_preset(session) ||
-      preset_from_session_context(session) ||
       normalize_preset(Map.get(query_params, "fingerprint")) ||
       normalize_preset(Map.get(query_params, "identity")) ||
       header_preset(headers) ||
@@ -98,14 +97,6 @@ defmodule Showcase.PresetSources do
   defp session_preset(session) when is_map(session) do
     session["sample_preset"] || session[:sample_preset]
   end
-
-  defp preset_from_session_context(%{"toggly_context" => %{"identity" => "alice"}}),
-    do: "matching"
-
-  defp preset_from_session_context(%{"toggly_context" => %{"identity" => "bob"}}),
-    do: "nonmatching"
-
-  defp preset_from_session_context(_), do: nil
 
   defp header_preset(headers) do
     Enum.find_value(headers, fn

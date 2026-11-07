@@ -146,6 +146,123 @@ defmodule ShowcaseTest do
     assert filter_targeting_state(conn.resp_body) == "on"
   end
 
+  test "endpoint GET preset=none with LiveE2E filter cookies (ADO fingerprint) renders filter-targeting ON" do
+    conn =
+      build_conn()
+      |> put_req_cookie("toggly-identity", "alice")
+      |> put_req_cookie("toggly-filter-claims", "admin")
+      |> put_req_cookie("toggly-filter-country", "US")
+      |> put_req_cookie("toggly-filter-lang", "en-US,en;q=0.9")
+      |> put_req_cookie("toggly-filter-ua", Showcase.Context.matching_user_agent())
+      |> put_req_cookie("toggly-filter-vip", "1")
+      |> init_test_session(%{})
+
+    conn = get(conn, "/?preset=none")
+    assert conn.status == 200
+    assert filter_targeting_state(conn.resp_body) == "on"
+    assert conn.resp_body =~ ~s/id="current-identity">alice</
+  end
+
+  test "filter cookie plug stores toggly_context from toggly-identity (ADO ui-static)" do
+    conn =
+      build_conn()
+      |> put_req_cookie("toggly-identity", "alice")
+      |> put_req_cookie("toggly-filter-claims", "admin")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(conn, "sample_preset") == nil
+    assert get_in(Plug.Conn.get_session(conn, "toggly_context"), ["identity"]) == "alice"
+  end
+
+  test "preset plug clears filter-derived toggly_context when harness cookies are removed" do
+    conn =
+      build_conn()
+      |> put_req_cookie("toggly-identity", "alice")
+      |> put_req_cookie("toggly-filter-country", "CA")
+      |> put_req_cookie("toggly-filter-vip", "0")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert get_in(Plug.Conn.get_session(conn, "toggly_context"), ["request", "country"]) == "CA"
+
+    session = Plug.Conn.get_session(conn)
+
+    follow_up =
+      build_conn()
+      |> Plug.Conn.fetch_cookies()
+      |> init_test_session(session)
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(follow_up, "toggly_context") == nil
+    assert Plug.Conn.get_session(follow_up, "sample_preset") == nil
+  end
+
+  test "preset=anonymous clears named preset session and evaluation context" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(conn, "sample_preset") == "matching"
+
+    session = Plug.Conn.get_session(conn)
+
+    anonymous =
+      build_conn()
+      |> init_test_session(session)
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Map.put(:query_params, %{"preset" => "anonymous"})
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(anonymous, "sample_preset") == nil
+    assert Plug.Conn.get_session(anonymous, "toggly_context") == nil
+    assert anonymous.resp_cookies["sample-preset"].max_age == 0
+  end
+
+  test "unknown preset query clears stale named preset session" do
+    conn =
+      build_conn()
+      |> Plug.Conn.put_req_header("x-demo-preset", "matching")
+      |> init_test_session(%{})
+
+    conn =
+      conn
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    session = Plug.Conn.get_session(conn)
+
+    follow =
+      build_conn()
+      |> init_test_session(session)
+      |> Plug.Conn.fetch_cookies()
+      |> Plug.Conn.fetch_session()
+      |> Map.put(:query_params, %{"preset" => "junk"})
+      |> Showcase.PresetCookiePlug.call(Showcase.PresetCookiePlug.init([]))
+
+    assert Plug.Conn.get_session(follow, "sample_preset") == nil
+    assert Plug.Conn.get_session(follow, "toggly_context") == nil
+  end
+
   test "ui-static dead render honors harness header before LiveView connects" do
     conn =
       build_conn()

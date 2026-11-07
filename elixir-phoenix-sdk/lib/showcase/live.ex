@@ -11,7 +11,7 @@ defmodule Showcase.Live do
 
   def mount(params, session, socket) do
     preset = Showcase.PresetResolution.resolve(params, session, socket)
-    context = Showcase.Context.preset(preset)
+    context = Showcase.EvaluationContext.for_mount(preset, session, socket)
     socket = Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, @keys, context: context)
 
     socket =
@@ -25,7 +25,7 @@ defmodule Showcase.Live do
         refresh: "Waiting"
       )
 
-    {:ok, Showcase.LiveE2eDiag.assign_diag(socket, params, session)}
+    {:ok, socket}
   end
 
   @doc false
@@ -174,18 +174,10 @@ defmodule Showcase.Live do
           </thead><tbody>
             <tr :for={key <- @filters}>
               <td><code>{key}</code></td>
-              <td
-                id={key}
-                data-livee2e-diag-temp={if(key == "filter-targeting", do: "1", else: nil)}
-              >
+              <td id={key}>
                 <span data-toggly-state={if(@toggly_flags[key], do: "on", else: "off")}>
                   {if @toggly_flags[key], do: "ON", else: "OFF"}
                 </span>
-                <%= if key == "filter-targeting" do %>
-                  <span class="livee2e-diag-temp" data-livee2e-diag-temp="1">
-                    {@livee2e_diag_line}
-                  </span>
-                <% end %>
               </td>
             </tr>
           </tbody>

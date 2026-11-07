@@ -12,7 +12,7 @@ defmodule Showcase.AssignPresetContext do
   """
   def on_mount(_default, params, session, socket) do
     preset = Showcase.PresetResolution.resolve(params, session, socket)
-    context = Showcase.Context.preset(preset)
+    context = Showcase.EvaluationContext.for_mount(preset, session, socket)
     keys = Map.get(socket.assigns, :toggly_keys, Showcase.Live.toggly_keys())
 
     socket =
@@ -36,7 +36,7 @@ defmodule Showcase.AssignPresetContext do
 
   defp refresh_flags_with_preset({:toggly_updated, Showcase.Flags, _}, socket) do
     preset = Map.get(socket.assigns, :preset, "anonymous")
-    context = Showcase.Context.preset(preset)
+    context = Map.get(socket.assigns, :toggly_context, Showcase.Context.preset(preset))
 
     {:halt,
      Toggly.LiveView.assign_feature_flags(socket, Showcase.Flags, socket.assigns.toggly_keys,
