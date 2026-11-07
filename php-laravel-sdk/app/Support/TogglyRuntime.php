@@ -102,7 +102,9 @@ final class TogglyRuntime
     {
         if ($refresh && $this->provider !== null) {
             try {
-                $this->provider->refreshFeatures(false);
+                // Live E2E disables filter-targeting on the edge; conditional refresh
+                // can keep serving the previous revision until a forced reload.
+                $this->provider->refreshFeatures(true);
             } catch (\Throwable) {
                 $this->refreshFailed = true;
             }
