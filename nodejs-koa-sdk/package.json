@@ -16,7 +16,7 @@
     "dev": "node --env-file-if-exists=.env --env-file-if-exists=.env.local src/server.js"
   },
   "dependencies": {
-    "@koa/router": "15.7.0",
+    "@koa/router": "15.7.1",
     "@ops-ai/toggly-koa": "0.5.0",
     "@ops-ai/toggly-node-core": "0.13.1",
     "koa": "3.2.1"
