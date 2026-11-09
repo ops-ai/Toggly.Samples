@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-gem "rails", "8.1.4"
+gem "rails", "8.1.4.1"
 gem "toggly-rails", "0.5.0"
 gem "toggly", "2.0.0"
 gem "puma"
