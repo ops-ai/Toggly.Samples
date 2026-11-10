@@ -121,6 +121,29 @@ describe('shared catalogue inputs', () => {
     expect(getDemoPreset(event)).toBe('non-matching')
   })
 
+  it('treats the Live E2E toggly-identity cookie as the preset', () => {
+    const nonMatching = requestEvent('/?preset=none', 'toggly-identity=bob')
+    expect(getDemoPreset(nonMatching)).toBe('non-matching')
+    expect(getDemoEvalContext(nonMatching).identity).toBe('bob')
+    expect(getDemoEvalContext(nonMatching).claims).toEqual({ role: 'user' })
+
+    const matching = requestEvent('/', 'toggly-identity=alice')
+    expect(getDemoPreset(matching)).toBe('matching')
+    expect(getDemoEvalContext(matching).identity).toBe('alice')
+
+    const stale = requestEvent(
+      '/?preset=none',
+      'toggly-identity=bob; demo-identity=alice',
+    )
+    expect(getDemoEvalContext(stale).identity).toBe('bob')
+  })
+
+  it('lets an explicit preset query win over the toggly-identity cookie', () => {
+    const event = requestEvent('/?preset=matching', 'toggly-identity=bob')
+    expect(getDemoPreset(event)).toBe('matching')
+    expect(getDemoEvalContext(event).identity).toBe('alice')
+  })
+
   it('reads Live E2E harness preset when query omits preset', () => {
     const headers = { 'x-demo-preset': 'non-matching' }
     const request = Object.assign(new EventEmitter(), {

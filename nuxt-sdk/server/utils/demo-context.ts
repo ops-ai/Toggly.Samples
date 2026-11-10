@@ -8,6 +8,17 @@ function normalizePreset(raw: string | undefined | null): DemoPreset | null {
   return null
 }
 
+/**
+ * Live E2E sets `toggly-identity` (alice/bob) and never sends x-demo-preset.
+ * That cookie is the preset when the URL does not name one.
+ */
+function presetFromIdentityCookie(event: H3Event): DemoPreset | null {
+  const identity = getCookie(event, 'toggly-identity')?.trim().toLowerCase()
+  if (identity === 'alice') return 'matching'
+  if (identity === 'bob') return 'non-matching'
+  return null
+}
+
 /** True when Live E2E (or harness) chose the preset via header/cookie, not ?preset=. */
 function harnessPresetSelected(event: H3Event): boolean {
   const queryPreset = getQuery(event).preset
@@ -17,7 +28,8 @@ function harnessPresetSelected(event: H3Event): boolean {
   return (
     normalizePreset(getHeader(event, 'x-demo-preset')) != null ||
     normalizePreset(getCookie(event, 'sample-preset')) != null ||
-    normalizePreset(getCookie(event, 'toggly-preset')) != null
+    normalizePreset(getCookie(event, 'toggly-preset')) != null ||
+    presetFromIdentityCookie(event) != null
   )
 }
 
@@ -34,7 +46,8 @@ export function getDemoPreset(event: H3Event): DemoPreset {
   const fromHarness =
     normalizePreset(getHeader(event, 'x-demo-preset')) ??
     normalizePreset(getCookie(event, 'sample-preset')) ??
-    normalizePreset(getCookie(event, 'toggly-preset'))
+    normalizePreset(getCookie(event, 'toggly-preset')) ??
+    presetFromIdentityCookie(event)
 
   return fromHarness ?? 'matching'
 }
