@@ -268,11 +268,19 @@ async function expectNativeReady(page, enabled) {
         if (requestUrl.pathname.includes("/.well-known/jwks"))
           return route.fulfill({ json: { keys: [jwk] } });
         if (fail) return route.fulfill({ status: 503, body: "offline" });
-        const body = await envelope({
-          ...Object.fromEntries(catalog.allKeys.map((k) => [k, enabled])),
-          ExpressCheckout: entityEnabled ? catalog.orderGate : false,
-          "filter-context-property": entityEnabled ? catalog.orderGate : false,
-        });
+        const defs = Object.fromEntries(
+          catalog.allKeys.map((k) => {
+            if (k === "filter-always-on") {
+              return [k, { enabled: true }];
+            }
+            return [k, enabled];
+          }),
+        );
+        defs.ExpressCheckout = entityEnabled ? catalog.orderGate : false;
+        defs["filter-context-property"] = entityEnabled
+          ? catalog.orderGate
+          : false;
+        const body = await envelope(defs);
         if (tamper)
           body.signature =
             (body.signature[0] === "A" ? "B" : "A") + body.signature.slice(1);
@@ -283,6 +291,14 @@ async function expectNativeReady(page, enabled) {
     }
     let { p, context } = await livePage();
     await expectNativeReady(p, true);
+    await p.locator("#filters").scrollIntoViewIfNeeded();
+    await p.waitForFunction(
+      () =>
+        document.querySelector(
+          '[data-testid="filter-always-on"] [data-toggly-state="on"]',
+        )?.textContent === "ON",
+      { timeout: 60000 },
+    );
     await p.getByTestId("new-ui").waitFor();
     await p.waitForFunction(() =>
       document
@@ -365,11 +381,8 @@ async function expectNativeReady(page, enabled) {
         .querySelector('[data-testid="toggle-new-dashboard"]')
         ?.textContent.endsWith("OFF"),
     );
-    await p.waitForFunction(() =>
-      document
-        .querySelector('[data-testid="filter-always-on"]')
-        ?.textContent.endsWith("OFF"),
-    );
+    // filter-always-on uses an AlwaysOn { enabled: true } envelope and stays ON
+    // while other flags follow the remote toggle (see defs mock above).
     await p.getByRole("button", { name: "Check submit", exact: true }).click();
     assert.match(await p.getByTestId("action-result").innerText(), /denied/);
     await p.goto(url + "/docs/beta");
