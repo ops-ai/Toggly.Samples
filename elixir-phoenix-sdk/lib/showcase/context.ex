@@ -12,6 +12,9 @@ defmodule Showcase.Context do
     end
   end
 
+  @doc false
+  def matching_user_agent, do: @matching
+
   defp matching_context do
     %{
       "identity" => "alice",
