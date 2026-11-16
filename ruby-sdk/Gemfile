@@ -8,6 +8,6 @@ gem 'rack-session', '2.1.2'
 gem 'puma', '8.0.2'
 
 group :development, :test do
-  gem 'minitest', '6.0.6'
+  gem 'minitest', '6.1.0'
   gem 'rake', '13.4.2'
 end
