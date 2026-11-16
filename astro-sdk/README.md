@@ -10,8 +10,8 @@ and presentation gates are not authorization.
 
 ## Quick start
 
-Use Node **22.23.2+** (Astro 7 engines allow `>=22.12.0`; this sample matches
-the Samples CI Node pin) and npm **11**.
+Use Node **22.23.4+** (Astro 7.4.7 engines require `>=22.23.4`; this sample
+matches the Samples CI / LiveE2E Node pin) and npm **11**.
 
 ```sh
 cd astro-sdk
@@ -31,12 +31,12 @@ Installed host and integration versions (Toggly package pins and the full graph 
 
 | Package | Version |
 | --- | --- |
-| Astro | 7.4.0 |
-| `@astrojs/node` | 11.1.7 |
-| `@astrojs/react` / `vue` / `svelte` | 7.1.0 / 7.1.0 / 9.0.1 |
-| React / Vue / Svelte | 19.3.0 / 3.5.44 / 5.57.2 |
+| Astro | 7.4.7 |
+| `@astrojs/node` | 11.1.9 |
+| `@astrojs/react` / `vue` / `svelte` | 7.1.0 / 7.1.2 / 9.1.2 |
+| React / Vue / Svelte | 19.3.0 / 3.5.44 / 5.57.3 |
 | TypeScript | 6.0.3 |
-| `@astrojs/check` | 0.9.10 |
+| `@astrojs/check` | 0.9.12 |
 
 React and React DOM are pinned together. TypeScript stays on **6.0.3**, the
 newest published release in `@astrojs/check` 0.9.10's peer range
