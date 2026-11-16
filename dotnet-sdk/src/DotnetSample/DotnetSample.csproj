@@ -16,6 +16,6 @@
     <PackageReference Include="Toggly.FeatureManagement.NSwag" Version="3.14.3" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
     <PackageReference Include="Hangfire.InMemory" Version="1.0.0" />
-    <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
+    <PackageReference Include="NSwag.AspNetCore" Version="14.8.0" />
   </ItemGroup>
 </Project>
