@@ -1,7 +1,20 @@
 // Environment variables are read by Node at build/start time. The plugin
 // serializes this public App Key into the browser; never put a private key here.
+const path = require("node:path");
 if (require("node:fs").existsSync(".env.local"))
   process.loadEnvFile(".env.local");
+const togglyHooksTypesShim = path.resolve(
+  __dirname,
+  "src/sample/toggly-hooks-types-browser-shim.cjs",
+);
+const entityGateStock = path.resolve(
+  __dirname,
+  "node_modules/@ops-ai/toggly-hooks-types/dist/entity-gate.js",
+);
+const togglyHooksTypesStock = path.resolve(
+  __dirname,
+  "node_modules/@ops-ai/toggly-hooks-types/dist/index.js",
+);
 const defaults = {
   "new-dashboard": false,
   "api-v2": false,
@@ -32,7 +45,18 @@ module.exports = {
       return {
         name: "browser-crypto",
         configureWebpack(_config, isServer) {
-          return isServer ? {} : { resolve: { fallback: { crypto: false } } };
+          if (isServer) return {};
+          return {
+            resolve: {
+              fallback: { crypto: false },
+              // Plugin imports toBooleanDefinitions from the package root, not entity-gate.js.
+              alias: {
+                "@ops-ai/toggly-hooks-types": togglyHooksTypesShim,
+                "toggly-entity-gate-stock": entityGateStock,
+                "toggly-hooks-types-stock": togglyHooksTypesStock,
+              },
+            },
+          };
         },
       };
     },
