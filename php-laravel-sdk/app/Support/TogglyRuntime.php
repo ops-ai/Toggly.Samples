@@ -54,7 +54,7 @@ final class TogglyRuntime
         // The SDK does not start a timer or fetch on isEnabled(). Load first, so
         // sixteen snapshot evaluations do not each wait on an uninitialized provider.
         try {
-            $this->provider->refreshFeatures(true);
+            $this->refreshDefinitions($this->provider);
         } catch (\Throwable) {
             // A malformed signed envelope can raise a PHP Error in the native
             // parser. Preserve UNKNOWN and a safe banner; never accept its data.
@@ -98,13 +98,24 @@ final class TogglyRuntime
         }
     }
 
+    /**
+     * Drop the process-wide ETag before each load. php artisan serve keeps one
+     * FeatureProvider, and refreshFeatures(true) still sends If-None-Match. A 304
+     * then keeps the previous revision after Live E2E disables a flag.
+     */
+    private function refreshDefinitions(FeatureProvider $provider): void
+    {
+        if (app()->resolved(TogglyHttpClient::class)) {
+            app(TogglyHttpClient::class)->clearETag();
+        }
+        $provider->refreshFeatures(true);
+    }
+
     public function snapshot(bool $refresh = false): array
     {
         if ($refresh && $this->provider !== null) {
             try {
-                // Live E2E disables filter-targeting on the edge; conditional refresh
-                // can keep serving the previous revision until a forced reload.
-                $this->provider->refreshFeatures(true);
+                $this->refreshDefinitions($this->provider);
             } catch (\Throwable) {
                 $this->refreshFailed = true;
             }

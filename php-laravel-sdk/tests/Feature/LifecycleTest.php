@@ -176,4 +176,20 @@ final class LifecycleTest extends TestCase
         $this->withSession(['demo.scenario' => 'all']);
         $this->get('/native/all')->assertOk();
     }
+
+    public function test_later_request_drops_the_previous_definition_etag(): void
+    {
+        config(['toggly.app_key' => 'fixture-private-config']);
+        $transport = new FixtureTransport([
+            new Response(200, ['ETag' => '"v1"'], 'not-json'),
+            new Response(200, ['ETag' => '"v2"'], 'not-json'),
+        ]);
+        $this->app->instance(ClientInterface::class, $transport);
+
+        $this->get('/gates')->assertOk();
+        $this->get('/gates')->assertOk();
+
+        $this->assertCount(2, $transport->requests);
+        $this->assertFalse($transport->requests[1]->hasHeader('If-None-Match'));
+    }
 }
