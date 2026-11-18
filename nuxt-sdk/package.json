@@ -21,9 +21,9 @@
     "nuxt": "4.6.4"
   },
   "devDependencies": {
-    "playwright": "1.64.1",
+    "playwright": "1.65.0",
     "typescript": "7.0.2",
-    "vitest": "5.0.5"
+    "vitest": "5.1.0"
   },
   "overrides": {
     "@ops-ai/toggly-eval": "2.1.1",
