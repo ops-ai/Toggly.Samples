@@ -856,22 +856,23 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "3.3.0",
+            "version": "3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "8b0a7e7db965a687eebe18333a128edac95db246"
+                "reference": "ef2058cc884d864affa6ef7cd23a68d45e015c2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/8b0a7e7db965a687eebe18333a128edac95db246",
-                "reference": "8b0a7e7db965a687eebe18333a128edac95db246",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/ef2058cc884d864affa6ef7cd23a68d45e015c2f",
+                "reference": "ef2058cc884d864affa6ef7cd23a68d45e015c2f",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
                 "psr/http-factory": "^1.1",
                 "psr/http-message": "^2.0",
+                "symfony/deprecation-contracts": "^2.5 || ^3.0",
                 "symfony/polyfill-php80": "^1.25",
                 "symfony/polyfill-php82": "^1.27"
             },
@@ -887,6 +888,7 @@
                 "phpunit/phpunit": "^9.6.34"
             },
             "suggest": {
+                "ext-intl": "Convert internationalized hosts with Idna",
                 "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
             },
             "type": "library",
@@ -955,7 +957,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/3.3.0"
+                "source": "https://github.com/guzzle/psr7/tree/3.5.1"
             },
             "funding": [
                 {
@@ -971,7 +973,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-12T16:40:06+00:00"
+            "time": "2026-11-19T20:35:18+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
