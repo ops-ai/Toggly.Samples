@@ -15,7 +15,7 @@
   "dependencies": {
     "@astrojs/node": "11.1.11",
     "@astrojs/react": "7.1.4",
-    "@astrojs/svelte": "9.1.2",
+    "@astrojs/svelte": "9.1.6",
     "@astrojs/vue": "7.1.2",
     "@nanostores/react": "2.0.1",
     "@nanostores/vue": "1.1.0",
