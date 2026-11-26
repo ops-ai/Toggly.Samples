@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@ops-ai/svelte-feature-flags-toggly": "1.13.0",
-    "svelte": "^5.57.3"
+    "svelte": "^5.58.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.0",
