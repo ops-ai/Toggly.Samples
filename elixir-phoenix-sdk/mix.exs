@@ -11,10 +11,10 @@ defmodule TogglyShowcase.MixProject do
         {:toggly, "~> 0.7.1"},
         {:toggly_phoenix, "~> 0.3.0"},
         {:toggly_live_view, "~> 0.1.1"},
-        {:phoenix, "~> 1.8"},
-        {:phoenix_live_view, "~> 1.2"},
+        {:phoenix, "~> 1.8.17"},
+        {:phoenix_live_view, "~> 1.2.15"},
         {:phoenix_html, "~> 4.4"},
-        {:bandit, "~> 1.14.1"},
+        {:bandit, "~> 1.15.0"},
         {:jason, "~> 1.4"},
         {:lazy_html, ">= 0.1.0", only: :test}
       ],
