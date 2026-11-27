@@ -2,12 +2,12 @@
   "name": "toggly-docusaurus-sdk-sample",
   "private": true,
   "scripts": {
-    "prestart": "node src/sample/patch-evaluated-enabled-envelope.cjs",
-    "prebuild": "node src/sample/patch-evaluated-enabled-envelope.cjs",
+    "prestart": "node src/sample/patch-evaluated-enabled-envelope.cjs && node src/sample/patch-live-flag-refresh.cjs",
+    "prebuild": "node src/sample/patch-evaluated-enabled-envelope.cjs && node src/sample/patch-live-flag-refresh.cjs",
     "start": "docusaurus start --host 0.0.0.0",
     "build": "docusaurus build",
     "serve": "docusaurus serve",
-    "test": "node --test tests/core.test.cjs tests/harness-preset.test.cjs tests/evaluated-envelope.test.cjs tests/patch-evaluated-enabled-envelope.test.cjs tests/evaluated-envelope-webpack.test.cjs && node tests/browser.cjs"
+    "test": "node --test tests/core.test.cjs tests/harness-preset.test.cjs tests/evaluated-envelope.test.cjs tests/patch-evaluated-enabled-envelope.test.cjs tests/patch-live-flag-refresh.test.cjs tests/evaluated-envelope-webpack.test.cjs && node tests/browser.cjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.2",
@@ -15,8 +15,12 @@
     "@mdx-js/react": "^3.1.1",
     "@ops-ai/toggly-client-core": "0.5.3",
     "@ops-ai/toggly-docusaurus-plugin": "0.10.4",
+    "@ops-ai/toggly-hooks-types": "1.4.7",
     "react": "19.3.0",
     "react-dom": "19.3.0"
+  },
+  "overrides": {
+    "@ops-ai/toggly-hooks-types": "1.4.7"
   },
   "engines": {
     "node": ">=22.23.2"

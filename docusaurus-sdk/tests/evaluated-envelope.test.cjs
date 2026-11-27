@@ -42,13 +42,12 @@ test("stock hooks-types 1.4.6 treats evaluated { enabled } envelopes as OFF", ()
   assert.equal(stockResolveEvaluatedDefinition(true), true);
 });
 
-test("installed resolver follows the package patch when prestart has run", () => {
-  const installed = fs.readFileSync(stockPath, "utf8");
+test("installed hooks-types 1.4.7 honors evaluated { enabled } envelopes", () => {
   const resolve = require(stockPath).resolveEvaluatedDefinition;
-  const patched = installed.includes(
-    'typeof value.enabled === "boolean" && !isEntityGate(value)',
-  );
-  assert.equal(resolve({ enabled: true }), patched);
+  assert.equal(resolve({ enabled: true }), true);
+  assert.equal(resolve({ enabled: false }), false);
+  assert.equal(resolve(true), true);
+  assert.equal(resolve(false), false);
 });
 
 test("patched resolver matches evaluated-signed AlwaysOn envelopes", () => {

@@ -19,8 +19,17 @@ const ENABLED_CHECK = `
 const INSERT_AFTER =
   /if \(value === false\) \{\r?\n[ \t]*return false;\r?\n[ \t]*\}/;
 
+function alreadyHonorsEnabledEnvelope(source) {
+  return (
+    source.includes('typeof value.enabled === "boolean"') ||
+    source.includes("typeof value.enabled === 'boolean'")
+  );
+}
+
 function patchEntityGateSource(source) {
-  if (source.includes('typeof value.enabled === "boolean" && !isEntityGate(value)')) {
+  // 1.4.7 already unwraps { enabled }. The double-quote form is this sample's
+  // older patch. Either one must be left alone or prestart inserts a second check.
+  if (alreadyHonorsEnabledEnvelope(source)) {
     return { source, changed: false };
   }
   const match = INSERT_AFTER.exec(source);

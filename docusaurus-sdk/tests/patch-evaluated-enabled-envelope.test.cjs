@@ -21,6 +21,20 @@ const STOCK = `function resolveEvaluatedDefinition(value, context, defaultValue 
 }
 `;
 
+test("leaves published 1.4.7 enabled-envelope handling unchanged", () => {
+  const published = `if (value === false) {
+        return false;
+    }
+    if (typeof value === 'object' &&
+        typeof value.enabled === 'boolean' &&
+        !isEntityGate(value)) {
+        return value.enabled;
+    }`;
+  const result = patchEntityGateSource(published);
+  assert.equal(result.changed, false);
+  assert.equal(result.source, published);
+});
+
 test("patches the stock false branch to honor enabled envelopes", () => {
   const once = patchEntityGateSource(STOCK);
   assert.equal(once.changed, true);

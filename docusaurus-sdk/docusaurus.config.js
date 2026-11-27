@@ -45,16 +45,19 @@ module.exports = {
       return {
         name: "browser-crypto",
         configureWebpack(_config, isServer) {
-          if (isServer) return {};
+          // Plugin imports toBooleanDefinitions from the package root, not entity-gate.js.
+          // The server bundle must use the same shim; otherwise SSR paints OFF and
+          // the browser hydrates that first read.
+          const alias = {
+            "@ops-ai/toggly-hooks-types": togglyHooksTypesShim,
+            "toggly-entity-gate-stock": entityGateStock,
+            "toggly-hooks-types-stock": togglyHooksTypesStock,
+          };
+          if (isServer) return { resolve: { alias } };
           return {
             resolve: {
               fallback: { crypto: false },
-              // Plugin imports toBooleanDefinitions from the package root, not entity-gate.js.
-              alias: {
-                "@ops-ai/toggly-hooks-types": togglyHooksTypesShim,
-                "toggly-entity-gate-stock": entityGateStock,
-                "toggly-hooks-types-stock": togglyHooksTypesStock,
-              },
+              alias,
             },
           };
         },
