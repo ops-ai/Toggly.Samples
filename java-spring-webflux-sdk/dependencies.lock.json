@@ -1,7 +1,7 @@
 {
   "commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
-  "io/micrometer/micrometer-commons/1.16.7/micrometer-commons-1.16.7.jar": "cd1ad64a94650a2ed3988a4ab48c9a7fad40c4986a81e328194dd757b5170273",
-  "io/micrometer/micrometer-observation/1.16.7/micrometer-observation-1.16.7.jar": "74f9e4d51ef30c141de8a2409879282e572eef98665e033e8922c2fbee16862d",
+  "io/micrometer/micrometer-commons/1.18.0/micrometer-commons-1.18.0.jar": "5cdeac0b935d3d669f5f10c7e5eca4150dc20c4f31681efb9052d2a384b2f8b0",
+  "io/micrometer/micrometer-observation/1.18.0/micrometer-observation-1.18.0.jar": "b79fc1c35c67623ec4c40c5a6b50409c2c8085bc8d3b82267be09b96b9ccec77",
   "io/netty/netty-buffer/4.2.20.Final/netty-buffer-4.2.20.Final.jar": "794136fc6be78e44a286c2b1420a182e135c6d06eb8c397030c1551ee50acccd",
   "io/netty/netty-codec-base/4.2.20.Final/netty-codec-base-4.2.20.Final.jar": "5a66da26b86d7eecedd9e0d8fe0e22ef1733bbf873e476cb9b860afbed22210c",
   "io/netty/netty-codec-classes-quic/4.2.20.Final/netty-codec-classes-quic-4.2.20.Final.jar": "eb558b7906be9f37cfff0ef71acb0865aa3b7cf2e52ba0a646e6e79d487d1711",
@@ -44,13 +44,13 @@
   "org/junit/platform/junit-platform-engine/6.0.3/junit-platform-engine-6.0.3.jar": "491e9e4f745f161b8a8e4186a1a7c6a450ea12c70930c9aedae427215301d947",
   "org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar": "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
   "org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar": "f75ca597789b3dac58f61857b9ac2e1034a68fa672db35055a8fb4509e325f28",
-  "org/springframework/spring-aop/7.0.9/spring-aop-7.0.9.jar": "b8c5d6bfcb1f4993f2cc124f7ab7fac40edf5256b9e43c2f7250a733cb5510e9",
-  "org/springframework/spring-beans/7.0.9/spring-beans-7.0.9.jar": "ff218b827a25c9e8929b0cd56dfb56916cea9d5b669ed97dc7cb262508ff548b",
-  "org/springframework/spring-context-support/7.0.9/spring-context-support-7.0.9.jar": "3c0c35a0371539f5e7d4e9d0226b9a009a4109cd0e20e805e27132dd6ae0727d",
-  "org/springframework/spring-context/7.0.9/spring-context-7.0.9.jar": "7552a2fcfa30cea53eb14d7a65a7a8e1b1dd82e832a7164fb7e6fb105f438858",
-  "org/springframework/spring-core/7.0.9/spring-core-7.0.9.jar": "5195f4722699b39878d99a832549fe65df2890b159d063b88fff31b1ca65ae36",
-  "org/springframework/spring-expression/7.0.9/spring-expression-7.0.9.jar": "046434c40f43819729b9b1db0e6c659dfa68184c1c2c2efa5f7b3a5b27c4e2e2",
-  "org/springframework/spring-test/7.0.9/spring-test-7.0.9.jar": "6ce8fc116f5d309b9ac50a6738bd1b15ea4012a4a5563c0ee89b795bfc9af0dc",
-  "org/springframework/spring-web/7.0.9/spring-web-7.0.9.jar": "941ced476427bde2533872f293da535fd0258de3f3a650a7f1bfe01ed2927302",
-  "org/springframework/spring-webflux/7.0.9/spring-webflux-7.0.9.jar": "70ce35b3b507c2b5711daf78afccdb5d78142fdd3fc1ad0790257655bd6794da"
+  "org/springframework/spring-aop/7.1.0/spring-aop-7.1.0.jar": "30832db7b40fe67a264b8a07734c731826d39c5cf7f3094371031ef2cd57932d",
+  "org/springframework/spring-beans/7.1.0/spring-beans-7.1.0.jar": "1bca5ec9840bd3d1d3b528170161c2eb263cb2614fdf07be433a023d826d4e8a",
+  "org/springframework/spring-context-support/7.1.0/spring-context-support-7.1.0.jar": "e43a8d9c978adecb48be00f4ef334208cd852671fc5629eb46a3ce582d34ebb8",
+  "org/springframework/spring-context/7.1.0/spring-context-7.1.0.jar": "f55ed294901b43de40a74742dd3c900241540bbcd729c561c3679f76735ddc33",
+  "org/springframework/spring-core/7.1.0/spring-core-7.1.0.jar": "f4781a7ef0eba4aa520a35d877bef72db7aa64cc7c9fe692d3bb4d1898aa778a",
+  "org/springframework/spring-expression/7.1.0/spring-expression-7.1.0.jar": "8f17a06baf7087911469dbcccc723ba4744cf4e5a0af0dc55af5dcb713a9d20e",
+  "org/springframework/spring-test/7.1.0/spring-test-7.1.0.jar": "052d1526801edee13a6a04d48ab4d6d3cb08facea39f5772675f12496d6ad1a2",
+  "org/springframework/spring-web/7.1.0/spring-web-7.1.0.jar": "ef4359e641b60aeeb5d3d2cdb0de7d0bad1f37a5f2e47c51b908539475d5f833",
+  "org/springframework/spring-webflux/7.1.0/spring-webflux-7.1.0.jar": "67d568d785231080e2ed98ed1d5b5c98219619a52c801593c1f65573a488f94b"
 }
