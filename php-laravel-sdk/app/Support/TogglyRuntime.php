@@ -99,15 +99,14 @@ final class TogglyRuntime
     }
 
     /**
-     * Drop the process-wide ETag before each load. php artisan serve keeps one
-     * FeatureProvider, and refreshFeatures(true) still sends If-None-Match. A 304
-     * then keeps the previous revision after Live E2E disables a flag.
+     * Always revalidate. A reused FeatureProvider sends If-None-Match, and a 304
+     * keeps the previous revision after Live E2E disables a flag. Clearing only
+     * when the client is already resolved misses the instance refreshFeatures
+     * is about to use.
      */
     private function refreshDefinitions(FeatureProvider $provider): void
     {
-        if (app()->resolved(TogglyHttpClient::class)) {
-            app(TogglyHttpClient::class)->clearETag();
-        }
+        app(TogglyHttpClient::class)->clearETag();
         $provider->refreshFeatures(true);
     }
 

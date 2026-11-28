@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Support\DemoContext;
 use App\Support\DemoUser;
 use App\Support\OfflineTransport;
+use App\Support\RevalidatingTransport;
 use App\Support\TogglyRuntime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -26,7 +27,14 @@ final class AppServiceProvider extends ServiceProvider
                 return $app->make(OfflineTransport::class);
             }
 
-            return new Client(['connect_timeout' => 3, 'timeout' => 5]);
+            return new RevalidatingTransport(new Client([
+                'connect_timeout' => 3,
+                'timeout' => 5,
+                'headers' => [
+                    'Cache-Control' => 'no-cache',
+                    'Pragma' => 'no-cache',
+                ],
+            ]));
         });
         $this->app->singleton(OfflineTransport::class);
         $this->app->singleton(TogglyRuntime::class);

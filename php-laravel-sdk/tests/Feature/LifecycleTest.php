@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Support\OfflineTransport;
+use App\Support\RevalidatingTransport;
 use App\Support\TogglyRuntime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -107,7 +108,9 @@ final class LifecycleTest extends TestCase
 
         config(['toggly.app_key' => 'fixture-live-binding']);
         $this->app->forgetInstance(ClientInterface::class);
-        $this->assertInstanceOf(Client::class, app(ClientInterface::class));
+        $live = app(ClientInterface::class);
+        $this->assertInstanceOf(RevalidatingTransport::class, $live);
+        $this->assertInstanceOf(Client::class, $live->inner());
     }
 
     public function test_native_events_and_usage_are_released_after_rendering(): void
@@ -191,5 +194,19 @@ final class LifecycleTest extends TestCase
 
         $this->assertCount(2, $transport->requests);
         $this->assertFalse($transport->requests[1]->hasHeader('If-None-Match'));
+    }
+
+    public function test_front_controller_boots_a_new_application_for_every_request(): void
+    {
+        $index = (string) file_get_contents(dirname(__DIR__, 2) . '/public/index.php');
+
+        $this->assertMatchesRegularExpression(
+            '/\$app = require __DIR__ \. \'\/\.\.\/bootstrap\/app\.php\';/',
+            $index,
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/require_once __DIR__ \. \'\/\.\.\/bootstrap\/app\.php\'/',
+            $index,
+        );
     }
 }
